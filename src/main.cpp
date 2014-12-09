@@ -33,7 +33,6 @@
 
 #include "client-conf.h"
 #include "log.h"
-#include "python.h"
 #include "reader.h"
 #include "window.h"
 
@@ -61,9 +60,6 @@ struct libraries
 		 */
 		LIBXML_TEST_VERSION
 
-		if (!pythonInit())
-			exit(1);
-
 		// Reader::init runs Python scripts.
 		if (!Reader::init(argv0))
 			exit(1);
@@ -72,7 +68,6 @@ struct libraries
 	~libraries()
 	{
 		Reader::deinit();
-		pythonFinalize();
 		xmlCleanupParser();
 	}
 };

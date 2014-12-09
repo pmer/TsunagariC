@@ -24,8 +24,6 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "random.h"
 
 int randInt(int min, int max)
@@ -42,8 +40,5 @@ double randFloat(double min, double max)
 
 void exportRandom()
 {
-	using namespace boost::python;
-	pythonAddFunction("randint", randInt);
-	pythonAddFunction("randfloat", randFloat);
 }
 

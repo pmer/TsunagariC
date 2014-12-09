@@ -44,7 +44,7 @@ public:
 	virtual bool invoke() = 0;
 
 protected:
-	Script(); // this is the abstract class; see script-python.h for impl
+	Script();
 };
 
 void exportScript();

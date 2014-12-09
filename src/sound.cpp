@@ -27,8 +27,6 @@
 #include <Gosu/Math.hpp>
 
 #include "client-conf.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "reader.h"
 #include "sound.h"
 
@@ -136,25 +134,5 @@ SoundInstanceRef SoundManager::play(const std::string& path)
 
 void exportSound()
 {
-	using namespace boost::python;
-
-	class_<SoundInstance, SoundInstanceRef>
-		("SoundInstance", no_init)
-		.add_property("paused",
-		    &SoundInstance::isPaused, &SoundInstance::setPaused)
-		.add_property("volume",
-		    &SoundInstance::getVolume, &SoundInstance::setVolume)
-		.add_property("pan",
-		    &SoundInstance::getPan, &SoundInstance::setPan)
-		.add_property("speed",
-		    &SoundInstance::getSpeed, &SoundInstance::setSpeed)
-		.add_property("playing", &SoundInstance::isPlaying)
-		.def("stop", &SoundInstance::stop)
-		;
-	class_<SoundManager>
-		("SoundManager", no_init)
-		.def("play", &SoundManager::play)
-		;
-	pythonSetGlobal("Sound", new SoundManager);
 }
 

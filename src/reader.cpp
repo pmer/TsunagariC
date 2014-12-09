@@ -38,8 +38,6 @@
 #include "client-conf.h"
 #include "formatter.h"
 #include "log.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "reader.h"
 #include "script.h"
 #include "window.h"
@@ -185,15 +183,14 @@ static XMLDoc* readXMLDoc(const std::string& name,
 
 static bool callInitpy(const std::string& archivePath)
 {
-	ASSERT(Reader::prependPath(archivePath));
-	bool exists = Reader::resourceExists("__init__.py");
-	Log::info(archivePath,
-		std::string("__init__.py: ") +
-		(exists ? "found" : "not found"));
-	if (exists)
-		// FIXME: Python will cache the __init__ module with no path prefix
-		ASSERT(Script::create("__init__"));
-	ASSERT(Reader::rmPath(archivePath));
+	// ASSERT(Reader::prependPath(archivePath));
+	// bool exists = Reader::resourceExists("__init__.py");
+	// Log::info(archivePath,
+	// 	std::string("__init__.py: ") +
+	// 	(exists ? "found" : "not found"));
+	// if (exists)
+	// 	ASSERT(Script::create("__init__"));
+	// ASSERT(Reader::rmPath(archivePath));
 	return true;
 }
 
@@ -247,8 +244,6 @@ bool Reader::prependPath(const std::string& path)
 		return false;
 	}
 
-	pythonPrependPath(path);
-
 	return true;
 }
 
@@ -260,8 +255,6 @@ bool Reader::appendPath(const std::string& path)
 				% path % PHYSFS_getLastError());
 		return false;
 	}
-
-	pythonRmPath(path);
 
 	return true;
 }
@@ -410,17 +403,5 @@ void Reader::garbageCollect()
 
 void exportReader()
 {
-	// FIXME: Broken with shift to singleton. No instantiated object to bind.
-	// Fix will require a stub object.
-
-#if 0
-	using namespace boost::python;
-
-	class_<Reader>("Reader", no_init)
-		.def("resource_exists", &Reader::resourceExists)
-		.def("run_python_script", &Reader::runPythonScript)
-		.def("get_text", &Reader::getText);
-	pythonSetGlobal("Reader");
-#endif
 }
 

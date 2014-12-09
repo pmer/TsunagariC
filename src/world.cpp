@@ -31,8 +31,6 @@
 #include "client-conf.h"
 #include "log.h"
 #include "music.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "timeout.h"
 #include "window.h"
 #include "world.h"
@@ -52,7 +50,7 @@ World::World()
 {
 	globalWorld = this;
 	lastTime = GameWindow::instance().time();
-	pythonSetGlobal("World", this);
+	// pythonSetGlobal("World", this);
 }
 
 World::~World()
@@ -65,12 +63,12 @@ bool World::init()
 	ASSERT(pauseInfo = Reader::getImage("resource/pause_overlay.png"));
 
 	ASSERT(player.init(playerEntity, playerPhase));
-	pythonSetGlobal("Player", (Entity*)&player);
+	// pythonSetGlobal("Player", (Entity*)&player);
 
 	view.reset(new Viewport(viewportSz));
 	view->trackEntity(&player);
 
-	pythonSetGlobal("Music", &music);
+	// pythonSetGlobal("Music", &music);
 
 	if (loadScript)
 		loadScript->invoke();
@@ -276,9 +274,9 @@ void World::restoreKeys()
 
 void World::runAreaLoadScript(Area* area)
 {
-	pythonSetGlobal("Area", area);
-	if (areaLoadScript)
-		areaLoadScript->invoke();
+	// pythonSetGlobal("Area", area);
+	// if (areaLoadScript)
+	// 	areaLoadScript->invoke();
 }
 
 Music* World::getMusic()
@@ -449,24 +447,24 @@ bool World::processScript(XMLNode node)
 {
 	for (node = node.childrenNode(); node; node = node.next()) {
 		std::string filename = node.content();
-		ScriptRef script = Script::create(filename);
+		// ScriptRef script = Script::create(filename);
 
-		if (!script)
-			return false;
+		// if (!script)
+		// 	return false;
 
-		if (node.is("on_init")) {
-			if (!script->validate()) {
-				Log::err("World", "on_init: " + filename + ": invalid");
-				return false;
-			}
-			loadScript = script;
-		} else if (node.is("on_area_init")) {
-			if (!script->validate()) {
-				Log::err("World", "on_area_init: " + filename + ": invalid");
-				return false;
-			}
-			areaLoadScript = script;
-		}
+		// if (node.is("on_init")) {
+		// 	if (!script->validate()) {
+		// 		Log::err("World", "on_init: " + filename + ": invalid");
+		// 		return false;
+		// 	}
+		// 	loadScript = script;
+		// } else if (node.is("on_area_init")) {
+		// 	if (!script->validate()) {
+		// 		Log::err("World", "on_area_init: " + filename + ": invalid");
+		// 		return false;
+		// 	}
+		// 	areaLoadScript = script;
+		// }
 	}
 	return true;
 }
@@ -485,16 +483,5 @@ bool World::processInput(XMLNode node)
 
 void exportWorld()
 {
-	using namespace boost::python;
-
-	class_<World> ("World", no_init)
-		.def("area", &World::getArea,
-			return_value_policy<reference_existing_object>())
-		.def("focus",
-			static_cast<void (World::*) (Area*,int,int,double)>
-			(&World::focusArea))
-//		.def_readwrite("on_key_down", &World::keydownScript)
-//		.def_readwrite("on_key_up", &World::keyupScript)
-		;
 }
 

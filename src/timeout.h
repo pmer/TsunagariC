@@ -29,13 +29,10 @@
 
 #include <string>
 
-//#include <boost/python.hpp>
-
 #include "script.h"
 
 class Timeout {
 public:
-//	Timeout(boost::python::object callback, time_t delay);
 	void cancel();
 
 	bool isActive() const;

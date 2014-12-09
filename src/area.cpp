@@ -41,8 +41,6 @@
 #include "music.h"
 #include "npc.h"
 #include "overlay.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "reader.h"
 #include "tile.h"
 #include "window.h"
@@ -101,9 +99,9 @@ void Area::focus()
 	if (musicLoopSet)
 		World::instance()->getMusic()->setLoop(musicLoop);
 
-	pythonSetGlobal("Area", this);
-	if (focusScript)
-		focusScript->invoke();
+	//pythonSetGlobal("Area", this);
+	//if (focusScript)
+	//	focusScript->invoke();
 }
 
 void Area::buttonDown(const Gosu::Button btn)
@@ -180,23 +178,23 @@ void Area::requestRedraw()
 
 void Area::tick(unsigned long dt)
 {
-	pythonSetGlobal("Area", this);
-	if (tickScript)
-		tickScript->invoke();
+	//pythonSetGlobal("Area", this);
+	//if (tickScript)
+	//	tickScript->invoke();
 
 	for (OverlaySet::iterator it = overlays.begin(); it != overlays.end(); it++) {
 		Overlay* o = *it;
-		pythonSetGlobal("Area", this);
+		//pythonSetGlobal("Area", this);
 		o->tick(dt);
 	}
 
 	if (conf.moveMode != TURN) {
-		pythonSetGlobal("Area", this);
+		//pythonSetGlobal("Area", this);
 		player->tick(dt);
 
 		for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
 			Character* c = *it;
-			pythonSetGlobal("Area", this);
+			//pythonSetGlobal("Area", this);
 			c->tick(dt);
 		}
 	}
@@ -207,23 +205,22 @@ void Area::tick(unsigned long dt)
 
 void Area::turn()
 {
-	pythonSetGlobal("Area", this);
-	if (turnScript)
-		turnScript->invoke();
+	//pythonSetGlobal("Area", this);
+	//if (turnScript)
+	//	turnScript->invoke();
 
-	pythonSetGlobal("Area", this);
+	//pythonSetGlobal("Area", this);
 	player->turn();
 
 	for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
 		Character* c = *it;
-		pythonSetGlobal("Area", this);
+		// pythonSetGlobal("Area", this);
 		c->turn();
 	}
 
 	view->turn();
 }
 
-// Python API.
 void Area::setColorOverlay(int r, int g, int b, int a)
 {
 	using namespace Gosu;
@@ -240,7 +237,7 @@ void Area::setColorOverlay(int r, int g, int b, int a)
 		redraw = true;
 	}
 	else {
-		PyErr_Format(PyExc_ValueError,
+		Log::err("Area",
 			"Area::color_overlay() arguments must be "
 			"between 0 and 255");
 	}
@@ -548,11 +545,11 @@ double Area::indexDepth(int idx) const
 void Area::runLoadScripts()
 {
 	World* world = World::instance();
-	world->runAreaLoadScript(this);
+	// world->runAreaLoadScript(this);
 
-	pythonSetGlobal("Area", this);
-	if (loadScript)
-		loadScript->invoke();
+	// pythonSetGlobal("Area", this);
+	// if (loadScript)
+	// 	loadScript->invoke();
 }
 
 void Area::drawTiles()
@@ -617,42 +614,7 @@ void Area::drawColorOverlay()
 	}
 }
 
-/* FIXME: Don't expose boost::python::tuple to the header file. */
-//boost::python::tuple Area::pyGetDimensions()
-//{
-//	using namespace boost::python;
-//
-//	list zs;
-//	BOOST_FOREACH(double dep, idx2depth)
-//		zs.append(dep);
-//	return make_tuple(dim.x, dim.y, zs);
-//}
-
 void exportArea()
 {
-	using namespace boost::python;
-
-	class_<Area>("Area", no_init)
-		.add_property("descriptor", &Area::getDescriptor)
-//		.add_property("dimensions", &Area::pyGetDimensions)
-		.def("redraw", &Area::requestRedraw)
-		.def("tileset", &Area::getTileSet,
-		    return_value_policy<reference_existing_object>())
-		.def("tile",
-		    static_cast<Tile* (Area::*) (int, int, double)>
-		    (&Area::getTile),
-		    return_value_policy<reference_existing_object>())
-		.def("in_bounds",
-		    static_cast<bool (Area::*) (int, int, double) const>
-		    (&Area::inBounds))
-		.def("color_overlay", &Area::setColorOverlay)
-		.def("new_npc", &Area::spawnNPC,
-		    return_value_policy<reference_existing_object>())
-		.def("new_overlay", &Area::spawnOverlay,
-		    return_value_policy<reference_existing_object>())
-//		.def_readwrite("on_focus", &Area::focusScript)
-//		.def_readwrite("on_tick", &Area::tickScript)
-//		.def_readwrite("on_turn", &Area::turnScript)
-		;
 }
 

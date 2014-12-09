@@ -34,8 +34,6 @@
 #include "client-conf.h"
 #include "entity.h"
 #include "log.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "reader.h"
 #include "string.h"
 #include "world.h"
@@ -67,11 +65,11 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-	if (deleteScript) {
-		pythonSetGlobal("Area", area);
-		pythonSetGlobal("Entity", this);
-		deleteScript->invoke();
-	}
+	// if (deleteScript) {
+		// pythonSetGlobal("Area", area);
+		// pythonSetGlobal("Entity", this);
+		// deleteScript->invoke();
+	// }
 }
 
 bool Entity::init(const std::string& descriptor)
@@ -577,42 +575,42 @@ void Entity::enterTile(Tile* t)
 
 void Entity::runTickScript()
 {
-	if (!tickScript)
-		return;
-	pythonSetGlobal("Area", area);
-	pythonSetGlobal("Entity", this);
-	pythonSetGlobal("Tile", getTile());
-	tickScript->invoke();
+	// if (!tickScript)
+	// 	return;
+	// pythonSetGlobal("Area", area);
+	// pythonSetGlobal("Entity", this);
+	// pythonSetGlobal("Tile", getTile());
+	// tickScript->invoke();
 }
 
 void Entity::runTurnScript()
 {
-	if (!turnScript)
-		return;
-	pythonSetGlobal("Area", area);
-	pythonSetGlobal("Entity", this);
-	pythonSetGlobal("Tile", getTile());
-	turnScript->invoke();
+	// if (!turnScript)
+	// 	return;
+	// pythonSetGlobal("Area", area);
+	// pythonSetGlobal("Entity", this);
+	// pythonSetGlobal("Tile", getTile());
+	// turnScript->invoke();
 }
 
 void Entity::runTileExitScript()
 {
-	if (!tileExitScript)
-		return;
-	pythonSetGlobal("Area", area);
-	pythonSetGlobal("Entity", this);
-	pythonSetGlobal("Tile", getTile());
-	tileExitScript->invoke();
+	// if (!tileExitScript)
+	// 	return;
+	// pythonSetGlobal("Area", area);
+	// pythonSetGlobal("Entity", this);
+	// pythonSetGlobal("Tile", getTile());
+	// tileExitScript->invoke();
 }
 
 void Entity::runTileEntryScript()
 {
-	if (!tileEntryScript)
-		return;
-	pythonSetGlobal("Area", area);
-	pythonSetGlobal("Entity", this);
-	pythonSetGlobal("Tile", getTile());
-	tileEntryScript->invoke();
+	// if (!tileEntryScript)
+	// 	return;
+	// pythonSetGlobal("Area", area);
+	// pythonSetGlobal("Entity", this);
+	// pythonSetGlobal("Tile", getTile());
+	// tileEntryScript->invoke();
 }
 
 
@@ -776,15 +774,15 @@ bool Entity::processScript(const XMLNode node)
 		return false;
 	}
 
-	ScriptRef script = Script::create(filename);
-	if (!script || !script->validate())
-		return false;
+	// ScriptRef script = Script::create(filename);
+	// if (!script || !script->validate())
+	// 	return false;
 
-	if (!setScript(trigger, script)) {
-		Log::err(descriptor,
-			"unrecognized script trigger: " + trigger);
-		return false;
-	}
+	// if (!setScript(trigger, script)) {
+	// 	Log::err(descriptor,
+	// 		"unrecognized script trigger: " + trigger);
+	// 	return false;
+	// }
 
 	return true;
 }
@@ -817,40 +815,5 @@ bool Entity::setScript(const std::string& trigger, ScriptRef& script)
 
 void exportEntity()
 {
-	using namespace boost::python;
-
-	class_<Entity>("Entity", no_init)
-		.def("init", &Entity::init)
-		.def("delete", &Entity::destroy)
-		.add_property("frozen", &Entity::getFrozen, &Entity::setFrozen)
-		.add_property("phase", &Entity::getPhase, &Entity::setPhase)
-		.add_property("area",
-		    make_function(&Entity::getArea,
-		      return_value_policy<reference_existing_object>()),
-		    &Entity::setArea)
-		.add_property("tile", make_function(
-		    static_cast<Tile* (Entity::*) ()> (&Entity::getTile),
-		    return_value_policy<reference_existing_object>()))
-		.add_property("speed", &Entity::getSpeed, &Entity::setSpeed)
-		.add_property("moving", &Entity::isMoving)
-		.add_property("exempt", &Entity::exemptManip)
-		.add_property("coords", &Entity::getTileCoords_vi)
-		.def("set_coords",
-		    static_cast<void (Entity::*) (int,int,double)>
-		      (&Entity::setTileCoords))
-		.def("teleport", &Entity::teleport)
-		.def("move", &Entity::move)
-		.def("move_dest",
-		    static_cast<vicoord (Entity::*) (Tile*,int,int)>
-		      (&Entity::moveDest))
-		.def("can_move",
-		    static_cast<bool (Entity::*) (int,int,double)>
-		      (&Entity::canMove))
-//		.def_readwrite("on_tick", &Entity::tickScript)
-//		.def_readwrite("on_turn", &Entity::turnScript)
-//		.def_readwrite("on_tile_entry", &Entity::tileEntryScript)
-//		.def_readwrite("on_tile_exit", &Entity::tileExitScript)
-//		.def_readwrite("on_delete", &Entity::deleteScript)
-		;
 }
 

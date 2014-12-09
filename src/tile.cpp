@@ -29,8 +29,6 @@
 #include "area.h"
 #include "formatter.h"
 #include "log.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "string.h"
 #include "tile.h"
 #include "world.h"
@@ -57,11 +55,6 @@ static int ivec2_to_dir(ivec2 v)
 	default:
 		return -1;
 	}
-}
-
-static Exit pythonNewExit(std::string area, int x, int y, double z)
-{
-	return Exit(area, x, y, z);
 }
 
 
@@ -193,9 +186,9 @@ void TileBase::runUseScript(Entity* triggeredBy)
 
 void TileBase::runScript(Entity* triggeredBy, ScriptRef& script)
 {
-	pythonSetGlobal("Entity", triggeredBy);
-	pythonSetGlobal("Tile", this);
-	script->invoke();
+	// pythonSetGlobal("Entity", triggeredBy);
+	// pythonSetGlobal("Tile", this);
+	// script->invoke();
 }
 
 
@@ -335,63 +328,5 @@ size_t TileSet::idx(int x, int y) const
  */
 void exportTile()
 {
-	using namespace boost::python;
-
-	class_<FlagManip> ("FlagManipulator", no_init)
-		.add_property("nowalk",
-			&FlagManip::isNowalk, &FlagManip::setNowalk)
-		.add_property("nowalk_player",
-			&FlagManip::isNowalkPlayer, &FlagManip::setNowalkPlayer)
-		.add_property("nowalk_npc",
-			&FlagManip::isNowalkNPC, &FlagManip::setNowalkNPC)
-		.add_property("nowalk_exit",
-			&FlagManip::isNowalkExit, &FlagManip::setNowalkExit)
-		.add_property("nowalk_area_bound",
-			&FlagManip::isNowalkAreaBound,
-			&FlagManip::setNowalkAreaBound)
-		;
-	class_<TileBase> ("TileBase", no_init)
-		.add_property("flag", &TileBase::flagManip)
-		.add_property("type",
-		    make_function(
-		      static_cast<TileType* (TileBase::*) () const>
-		        (&TileBase::getType),
-		      return_value_policy<reference_existing_object>()),
-		    &TileBase::setType)
-//		.def_readwrite("on_enter", &TileBase::enterScript)
-//		.def_readwrite("on_leave", &TileBase::leaveScript)
-//		.def_readwrite("on_use", &TileBase::useScript)
-		.def("run_enter_script", &TileBase::runEnterScript)
-		.def("run_leave_script", &TileBase::runLeaveScript)
-		.def("run_use_script", &TileBase::runUseScript)
-		;
-	class_<Tile, bases<TileBase> > ("Tile", no_init)
-		.def_readonly("area", &Tile::area)
-		.def_readonly("x", &Tile::x)
-		.def_readonly("y", &Tile::y)
-		.add_property("z", &Tile::getZ)
-		.add_property("exit",
-		    make_function(
-		      static_cast<Exit* (Tile::*) () const>
-		        (&Tile::getNormalExit),
-		      return_value_policy<reference_existing_object>()),
-		    &Tile::setNormalExit)
-		.def_readonly("nentities", &Tile::entCnt)
-		.def("offset", &Tile::offset,
-		    return_value_policy<reference_existing_object>())
-		;
-	class_<TileType, bases<TileBase> > ("TileType", no_init)
-		;
-	class_<TileSet> ("TileSet", no_init)
-		.add_property("width", &TileSet::getWidth)
-		.add_property("height", &TileSet::getHeight)
-		.def("at", &TileSet::get,
-		    return_value_policy<reference_existing_object>())
-		;
-	class_<Exit> ("Exit", no_init)
-		.def_readwrite("area", &Exit::area)
-		.def_readwrite("coords", &Exit::coords)
-		;
-	pythonAddFunction("new_exit", pythonNewExit);
 }
 

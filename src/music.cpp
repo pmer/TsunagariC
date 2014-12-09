@@ -29,8 +29,6 @@
 #include "client-conf.h"
 #include "music.h"
 #include "reader.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 
 static Music::SongRef genSong(const std::string& name)
 {
@@ -242,14 +240,5 @@ void Music::tick()
 
 void exportMusic()
 {
-	using namespace boost::python;
-
-	class_<Music>("MusicManager", no_init)
-		.add_property("intro", &Music::getIntro, &Music::setIntro)
-		.add_property("loop", &Music::getLoop, &Music::setLoop)
-		.add_property("volume", &Music::getVolume, &Music::setVolume)
-		.add_property("paused", &Music::isPaused, &Music::setPaused)
-		.def("stop", &Music::stop)
-		;
 }
 

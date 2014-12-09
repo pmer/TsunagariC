@@ -25,16 +25,8 @@
 // **********
 
 #include "formatter.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "timer.h"
 #include "world.h"
-
-static Timer pythonNewTimer()
-{
-	return Timer();
-}
-
 
 Timer::Timer()
 	: running(false), prev_count(0)
@@ -93,16 +85,5 @@ std::string Timer::repr() const
 
 void exportTimer()
 {
-	using namespace boost::python;
-
-	class_<Timer> ("Timer", no_init)
-		.add_property("running", &Timer::isRunning, &Timer::setRunning)
-		.add_property("count",
-			static_cast<double (Timer::*) ()> (&Timer::count))
-		.def("reset", &Timer::reset)
-		.def("__repr__", &Timer::repr)
-		;
-
-	pythonAddFunction("new_timer", pythonNewTimer);
 }
 

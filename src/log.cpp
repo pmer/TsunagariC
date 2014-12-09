@@ -25,13 +25,12 @@
 // **********
 
 #include <iostream>
+#include <sstream>
 
 #include <Gosu/Timing.hpp>
 
 #include "client-conf.h"
 #include "log.h"
-#include "python.h"
-#include "python-bindings-template.cpp"
 #include "world.h"
 
 #ifdef _WIN32
@@ -89,37 +88,27 @@ void Log::err(std::string domain, std::string msg)
 		exit(1);
 	}
 	std::string str = ts() + "Error [" + domain + "] - " + chomp(msg);
-	if (inPythonScript) {
-		PyErr_SetString(PyExc_RuntimeError, str.c_str());
-	}
-	else {
-		if (verb > V_QUIET) {
-			std::cerr << str << std::endl;
-			#ifdef _WIN32
-				wMessageBox("Tsunagari - Error", str);
-			#endif
-			#ifdef __APPLE__
-				macMessageBox("Tsunagari - Error", str.c_str());
-			#endif
-		}
+	if (verb > V_QUIET) {
+		std::cerr << str << std::endl;
+		#ifdef _WIN32
+			wMessageBox("Tsunagari - Error", str);
+		#endif
+		#ifdef __APPLE__
+			macMessageBox("Tsunagari - Error", str.c_str());
+		#endif
 	}
 }
 
 void Log::fatal(std::string domain, std::string msg)
 {
 	std::string str = ts() + "Fatal [" + domain + "] - " + chomp(msg);
-	if (inPythonScript) {
-		PyErr_SetString(PyExc_RuntimeError, str.c_str());
-	}
-	else {
-		std::cerr << str << std::endl;
-		#ifdef _WIN32
-			wMessageBox("Tsunagari - Fatal", str);
-		#endif
-		#ifdef __APPLE__
-			macMessageBox("Tsunagari - Fatal", str.c_str());
-		#endif
-	}
+	std::cerr << str << std::endl;
+	#ifdef _WIN32
+		wMessageBox("Tsunagari - Fatal", str);
+	#endif
+	#ifdef __APPLE__
+		macMessageBox("Tsunagari - Fatal", str.c_str());
+	#endif
 }
 
 void Log::reportVerbosityOnStartup()
@@ -141,13 +130,7 @@ void Log::reportVerbosityOnStartup()
 			<< " mode." << std::endl;
 }
 
-static void pythonLogInfo(std::string msg)
-{
-	Log::info("Script", msg);
-}
-
 void exportLog()
 {
-	pythonAddFunction("log", pythonLogInfo);
 }
 

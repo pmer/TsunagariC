@@ -32,7 +32,6 @@
 #include <string>
 #include <vector>
 
-// #include <boost/python/tuple.hpp>
 #include <Gosu/Color.hpp>
 
 #include "entity.h"
@@ -164,9 +163,6 @@ public:
 	icoord virt2phys(rcoord virt) const;
 	rcoord virt2virt(vicoord virt) const;
 	vicoord virt2virt(rcoord virt) const;
-
-	// For Python interface.
-//	boost::python::tuple pyGetDimensions();
 
 
 	//

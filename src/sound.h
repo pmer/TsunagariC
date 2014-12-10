@@ -59,6 +59,7 @@ private:
 
 typedef std::shared_ptr<SoundInstance> SoundInstanceRef;
 
+
 class Sound
 {
 public:
@@ -70,6 +71,16 @@ private:
 };
 
 typedef std::shared_ptr<Sound> SampleRef;
+
+
+class SoundManager
+{
+public:
+	static SoundManager& instance();
+
+	SoundInstanceRef play(const std::string& path);
+};
+
 
 void exportSound();
 

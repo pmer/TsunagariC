@@ -103,7 +103,6 @@ void SoundInstance::setSpeed(double speed)
 
 
 
-
 Sound::Sound(Gosu::Sample* source)
 	: source(source)
 {
@@ -114,12 +113,14 @@ SoundInstance Sound::play()
 	return SoundInstance(source->play());
 }
 
-// Helper class for Python.
-class SoundManager
+
+
+static SoundManager globalSoundManager;
+
+SoundManager& SoundManager::instance()
 {
-public:
-	SoundInstanceRef play(const std::string& path);
-};
+	return globalSoundManager;
+}
 
 SoundInstanceRef SoundManager::play(const std::string& path)
 {
@@ -131,6 +132,8 @@ SoundInstanceRef SoundManager::play(const std::string& path)
 	else
 		return SoundInstanceRef(NULL);
 }
+
+
 
 void exportSound()
 {

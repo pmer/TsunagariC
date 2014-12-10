@@ -94,7 +94,8 @@ void Area::focus()
 {
 	if (!beenFocused) {
 		beenFocused = true;
-		runLoadScripts();
+		if (dataArea)
+			dataArea->onLoad();
 	}
 
 	if (musicIntroSet)
@@ -544,16 +545,6 @@ double Area::indexDepth(int idx) const
 }
 
 
-
-void Area::runLoadScripts()
-{
-	World& world = World::instance();
-	// world->runAreaLoadScript(this);
-
-	// pythonSetGlobal("Area", this);
-	// if (loadScript)
-	// 	loadScript->invoke();
-}
 
 void Area::drawTiles()
 {

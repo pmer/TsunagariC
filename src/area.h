@@ -180,9 +180,6 @@ protected:
 	int depthIndex(double depth) const;
 	double indexDepth(int idx) const;
 
-	//! Run scripts that needs to be run before this Area is usable.
-	void runLoadScripts();
-
 	//! Calculate frame to show for each type of tile
 	void drawTiles();
 	void drawTile(Tile& tile, int x, int y, double depth);

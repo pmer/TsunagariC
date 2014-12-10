@@ -57,14 +57,6 @@ void Timeout::execute()
 	// callback->invoke();
 }
 
-std::string Timeout::repr() const
-{
-	time_t now = World::instance().time();
-	return Formatter("<timeout time_remaining=%dms active=%s />")
-			% (start + delay - now)
-			% (isActive() ? "true" : "false");
-}
-
 void updateTimeouts()
 {
 	time_t now = World::instance().time();

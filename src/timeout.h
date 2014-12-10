@@ -38,9 +38,6 @@ public:
 	time_t readyTime() const;
 	void execute();
 
-	//! Return a rought string representation of this object.
-	std::string repr() const;
-
 private:
 	// ScriptRef callback;
 	time_t start, delay;

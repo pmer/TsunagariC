@@ -399,7 +399,7 @@ bool AreaTMX::processTileType(XMLNode node, TileType& type,
 			return false;
 		}
 		// Add 'now' to Animation constructor??
-		time_t now = World::instance()->time();
+		time_t now = World::instance().time();
 		type.anim = Animation(framesvec, frameLen);
 		type.anim.startOver(now, cycles);
 	}

@@ -42,7 +42,7 @@ void Timer::setRunning(bool running)
 {
 	if (running) {
 		this->running = true;
-		prev_time = World::instance()->time();
+		prev_time = World::instance().time();
 	}
 
 	else
@@ -59,7 +59,7 @@ double Timer::count() const
 	time_t prev_count = this->prev_count;
 
 	if (running) {
-		time_t now = World::instance()->time();
+		time_t now = World::instance().time();
 		prev_count = prev_count + (now - prev_time);
 	}
 
@@ -69,7 +69,7 @@ double Timer::count() const
 double Timer::count()
 {
 	if (running) {
-		time_t now = World::instance()->time();
+		time_t now = World::instance().time();
 		prev_count = prev_count + (now - prev_time);
 		prev_time = now;
 	}

@@ -204,17 +204,8 @@ static bool callInitpy(const std::string& archivePath)
 
 
 
-bool Reader::init(char* argv0)
+bool Reader::init()
 {
-	ASSERT(PHYSFS_init(argv0) != 0);
-
-	// If any of our archives contain a file called "__init__.py", call it.
-	for (Conf::StringVector::const_iterator it = conf.dataPath.begin(); it != conf.dataPath.end(); it++) {
-		const std::string archive = *it;
-		ASSERT(callInitpy(archive));
-	}
-	ASSERT(callInitpy(BASE_ZIP_PATH));
-
 	ASSERT(prependPath(BASE_ZIP_PATH));
 
 	// DTDs must be loaded from BASE_ZIP. They cannot be allowed to be
@@ -228,11 +219,6 @@ bool Reader::init(char* argv0)
 	}
 
 	return true;
-}
-
-void Reader::deinit()
-{
-	PHYSFS_deinit();
 }
 
 bool Reader::prependPath(const std::string& path)

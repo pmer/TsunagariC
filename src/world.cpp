@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** world.cpp                          **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -38,19 +38,16 @@
 
 #define ASSERT(x)  if (!(x)) { return false; }
 
-static World* globalWorld = NULL;
+static World globalWorld;
 
-World* World::instance()
+World& World::instance()
 {
 	return globalWorld;
 }
 
 World::World()
-	: total(0), redraw(false), userPaused(false), paused(0)
+	: lastTime(0), total(0), redraw(false), userPaused(false), paused(0)
 {
-	globalWorld = this;
-	lastTime = GameWindow::instance().time();
-	// pythonSetGlobal("World", this);
 }
 
 World::~World()
@@ -171,10 +168,16 @@ bool World::needsRedraw() const
 
 void World::update(time_t now)
 {
-	time_t dt = calculateDt(now);
-	if (!paused) {
-		total += dt;
-		tick(dt);
+	if (lastTime == 0) {
+		// There is no dt on the first update().  Don't tick.
+		lastTime = now;
+	}
+	else {
+		time_t dt = calculateDt(now);
+		if (!paused) {
+			total += dt;
+			tick(dt);
+		}
 	}
 }
 
@@ -238,10 +241,7 @@ void World::setPaused(bool b)
 
 	paused += b ? 1 : -1;
 
-	if (paused)
-		music.setPaused(true);
-	else
-		music.setPaused(false);
+	Music::instance().setPaused(paused != 0);
 
 	// If finally unpausing.
 	if (!paused)
@@ -277,11 +277,6 @@ void World::runAreaLoadScript(Area* area)
 	// pythonSetGlobal("Area", area);
 	// if (areaLoadScript)
 	// 	areaLoadScript->invoke();
-}
-
-Music* World::getMusic()
-{
-	return &music;
 }
 
 time_t World::calculateDt(time_t now)
@@ -399,7 +394,6 @@ bool World::processInfo(XMLNode node)
 	for (node = node.childrenNode(); node; node = node.next()) {
 		if (node.is("name")) {
 			name = node.content();
-			GameWindow::instance().setCaption(Gosu::widen(name));
 		} else if (node.is("author")) {
 			author = node.content();
 		} else if (node.is("version")) {

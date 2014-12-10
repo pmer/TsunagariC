@@ -80,8 +80,7 @@ GameWindow::~GameWindow()
 
 bool GameWindow::init()
 {
-	world.reset(new World());
-	return world->init();
+	return true;
 }
 
 int GameWindow::width() const
@@ -112,7 +111,7 @@ void GameWindow::buttonDown(const Gosu::Button btn)
 			// We process the initial buttonDown here so that it
 			// gets handled even if we receive a buttonUp before an
 			// update.
-			world->buttonDown(btn);
+			World::instance().buttonDown(btn);
 		}
 	}
 }
@@ -120,17 +119,17 @@ void GameWindow::buttonDown(const Gosu::Button btn)
 void GameWindow::buttonUp(const Gosu::Button btn)
 {
 	keystates.erase(btn);
-	world->buttonUp(btn);
+	World::instance().buttonUp(btn);
 }
 
 void GameWindow::draw()
 {
-	world->draw();
+	World::instance().draw();
 }
 
 bool GameWindow::needsRedraw() const
 {
-	return world->needsRedraw();
+	return World::instance().needsRedraw();
 }
 
 void GameWindow::update()
@@ -139,7 +138,7 @@ void GameWindow::update()
 
 	if (conf.moveMode == TURN)
 		handleKeyboardInput(now);
-	world->update(now);
+	World::instance().update(now);
 
 	if (now > lastGCtime + GC_CALL_PERIOD) {
 		lastGCtime = now;
@@ -176,7 +175,7 @@ void GameWindow::handleKeyboardInput(time_t now)
 		    conf.persistCons : conf.persistInit;
 		if (now >= state.since + delay) {
 			state.since = now;
-			world->buttonDown(btn);
+			World::instance().buttonDown(btn);
 			state.consecutive = true;
 		}
 	}

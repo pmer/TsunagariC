@@ -12,7 +12,7 @@ character.o client-conf.o entity.o formatter.o image.o log.o main.o music.o \
 npc.o os-windows.o overlay.o player.o random.o reader.o script.o sound.o \
 string.o tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o \
 world.o xml.o backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
-backend-gosu/gosu-tiledimage.o nbcl/nbcl.o
+backend-gosu/gosu-tiledimage.o nbcl/nbcl.o world/world.o
 
 # Name of testing world.
 BASEDATA = ../data/base.zip
@@ -64,71 +64,70 @@ clean:
 animation.o: animation.cpp animation.h image.h reader.h sound.h tiledimage.h \
  xml.h
 area-tmx.o: animation.h area-tmx.cpp area-tmx.h area.h bitrecord.h \
- cache-template.cpp cache.h character.h client-conf.h entity.h image.h log.h \
- music.h player.h reader.h readercache.h script.h sound.h string.h tile.h \
- tiledimage.h vec.h viewport.h window.h world.h xml.h
+ character.h entity.h image.h log.h player.h reader.h script.h sound.h \
+ string.h tile.h tiledimage.h vec.h viewport.h window.h world.h xml.h
 area.o: animation.h area.cpp area.h bitrecord.h cache-template.cpp cache.h \
  character.h client-conf.h entity.h formatter.h image.h log.h music.h npc.h \
  overlay.h player.h reader.h readercache.h script.h sound.h tile.h \
  tiledimage.h vec.h viewport.h window.h world.h xml.h
 bitrecord.o: bitrecord.cpp bitrecord.h window.h
-cache-template.o: cache-template.cpp cache.h client-conf.h log.h vec.h \
- window.h
+cache-template.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
+ character.h client-conf.h entity.h image.h log.h player.h reader.h script.h \
+ sound.h tile.h tiledimage.h vec.h viewport.h world.h xml.h
 character.o: animation.h area.h character.cpp character.h entity.h image.h \
  reader.h script.h sound.h tile.h tiledimage.h vec.h xml.h
 client-conf.o: client-conf.cpp client-conf.h log.h string.h vec.h \
  nbcl/nbcl.h
-entity.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
- character.h client-conf.h entity.cpp entity.h image.h log.h music.h \
- player.h reader.h readercache.h script.h sound.h string.h tile.h \
- tiledimage.h vec.h viewport.h window.h world.h xml.h
+entity.o: animation.h area.h bitrecord.h character.h client-conf.h \
+ entity.cpp entity.h image.h log.h player.h reader.h script.h sound.h \
+ string.h tile.h tiledimage.h vec.h viewport.h world.h xml.h
 formatter.o: formatter.cpp formatter.h
 image.o: image.cpp image.h
-log.o: animation.h area.h bitrecord.h cache-template.cpp cache.h character.h \
- client-conf.h entity.h image.h log.cpp log.h music.h os-mac.h player.h \
+log.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
+ image.h log.cpp log.h os-mac.h player.h reader.h script.h sound.h tile.h \
+ tiledimage.h vec.h viewport.h world.h xml.h
+main.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
+ formatter.h image.h log.h main.cpp os-mac.h player.h reader.h script.h \
+ sound.h tile.h tiledimage.h vec.h viewport.h window.h world.h xml.h \
+ world/world.h
+music.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
+ character.h client-conf.h entity.h image.h log.h music.cpp music.h player.h \
  reader.h readercache.h script.h sound.h tile.h tiledimage.h vec.h \
- viewport.h window.h world.h xml.h
-main.o: client-conf.h image.h log.h main.cpp os-mac.h reader.h sound.h \
- tiledimage.h vec.h window.h xml.h
-music.o: cache-template.cpp cache.h client-conf.h image.h log.h music.cpp \
- music.h reader.h readercache.h sound.h tiledimage.h vec.h window.h xml.h
+ viewport.h world.h xml.h
 npc.o: animation.h area.h character.h entity.h image.h npc.cpp npc.h \
  reader.h script.h sound.h tile.h tiledimage.h vec.h xml.h
 os-windows.o: os-windows.cpp
 overlay.o: animation.h area.h client-conf.h entity.h image.h log.h \
  overlay.cpp overlay.h reader.h script.h sound.h tile.h tiledimage.h vec.h \
  xml.h
-player.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
- character.h client-conf.h entity.h image.h log.h music.h player.cpp \
- player.h reader.h readercache.h script.h sound.h tile.h tiledimage.h vec.h \
- viewport.h window.h world.h xml.h
+player.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
+ image.h log.h player.cpp player.h reader.h script.h sound.h tile.h \
+ tiledimage.h vec.h viewport.h window.h world.h xml.h
 random.o: random.cpp random.h
-reader.o: cache-template.cpp cache.h client-conf.h formatter.h image.h log.h \
- reader.cpp reader.h script.h sound.h tiledimage.h vec.h window.h xml.h
+reader.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
+ character.h client-conf.h entity.h formatter.h image.h log.h player.h \
+ reader.cpp reader.h script.h sound.h tile.h tiledimage.h vec.h viewport.h \
+ window.h world.h xml.h
 script.o: script.cpp script.h
 sound.o: client-conf.h image.h log.h reader.h sound.cpp sound.h tiledimage.h \
  vec.h xml.h
 string.o: log.h string.cpp string.h
-tile.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
- character.h client-conf.h entity.h formatter.h image.h log.h music.h \
- player.h reader.h readercache.h script.h sound.h string.h tile.cpp tile.h \
- tiledimage.h vec.h viewport.h window.h world.h xml.h
+tile.o: animation.h area.h bitrecord.h character.h entity.h formatter.h \
+ image.h log.h player.h reader.h script.h sound.h string.h tile.cpp tile.h \
+ tiledimage.h vec.h viewport.h world.h xml.h
 tiledimage.o: image.h tiledimage.cpp tiledimage.h
-timeout.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
- character.h client-conf.h entity.h formatter.h image.h log.h music.h \
- player.h reader.h readercache.h script.h sound.h tile.h tiledimage.h \
- timeout.cpp timeout.h vec.h viewport.h window.h world.h xml.h
-timer.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
- character.h client-conf.h entity.h formatter.h image.h log.h music.h \
- player.h reader.h readercache.h script.h sound.h tile.h tiledimage.h \
- timer.cpp timer.h vec.h viewport.h window.h world.h xml.h
+timeout.o: animation.h area.h bitrecord.h character.h entity.h formatter.h \
+ image.h player.h reader.h script.h sound.h tile.h tiledimage.h timeout.cpp \
+ timeout.h vec.h viewport.h world.h xml.h
+timer.o: animation.h area.h bitrecord.h character.h entity.h formatter.h \
+ image.h player.h reader.h script.h sound.h tile.h tiledimage.h timer.cpp \
+ timer.h vec.h viewport.h world.h xml.h
 vec.o: vec.cpp vec.h
 viewport.o: animation.h area.h entity.h image.h reader.h script.h sound.h \
  tile.h tiledimage.h vec.h viewport.cpp viewport.h window.h xml.h
-window.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
- character.h client-conf.h entity.h image.h log.h music.h player.h reader.h \
- readercache.h script.h sound.h tile.h tiledimage.h vec.h viewport.h \
- window.cpp window.h world.h xml.h
+window.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
+ image.h log.h player.h reader.h script.h sound.h tile.h tiledimage.h vec.h \
+ viewport.h window.cpp window.h world.h xml.h
 world.o: animation.h area-tmx.h area.h bitrecord.h cache-template.cpp \
  cache.h character.h client-conf.h entity.h image.h log.h music.h player.h \
  reader.h readercache.h script.h sound.h tile.h tiledimage.h timeout.h vec.h \

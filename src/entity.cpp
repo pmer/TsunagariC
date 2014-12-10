@@ -95,7 +95,7 @@ void Entity::draw()
 	if (!phase)
 		return;
 
-	time_t now = World::instance()->time();
+	time_t now = World::instance().time();
 	Image* img = phase->frame(now);
 
 	img->draw(
@@ -107,7 +107,7 @@ void Entity::draw()
 
 bool Entity::needsRedraw() const
 {
-	time_t now = World::instance()->time();
+	time_t now = World::instance().time();
 	return redraw || (phase && phase->needsRedraw(now));
 }
 
@@ -458,7 +458,7 @@ enum SetPhaseResult Entity::_setPhase(const std::string& name)
 	}
 	Animation* newPhase = &it->second;
 	if (phase != newPhase) {
-		time_t now = World::instance()->time();
+		time_t now = World::instance().time();
 		phase = newPhase;
 		phase->startOver(now, ANIM_INFINITE_CYCLES);
 		phaseName = name;

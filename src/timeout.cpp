@@ -59,7 +59,7 @@ void Timeout::execute()
 
 std::string Timeout::repr() const
 {
-	time_t now = World::instance()->time();
+	time_t now = World::instance().time();
 	return Formatter("<timeout time_remaining=%dms active=%s />")
 			% (start + delay - now)
 			% (isActive() ? "true" : "false");
@@ -67,7 +67,7 @@ std::string Timeout::repr() const
 
 void updateTimeouts()
 {
-	time_t now = World::instance()->time();
+	time_t now = World::instance().time();
 	bool next = true;
 
 	while (next && timeouts.size()) {

@@ -1,8 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** cache.h                            **
-** Copyright 2011-2013 PariahSoft LLC **
-***************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** world.cpp                     **
+** Copyright 2014 PariahSoft LLC **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,37 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef CACHE_H
-#define CACHE_H
+#include "world.h"
 
-#include <map>
-#include <string>
-
-template<class T>
-class Cache
-{
-public:
-	T momentaryRequest(const std::string& name);
-
-	T lifetimeRequest(const std::string& name);
-
-	void momentaryPut(const std::string& name, T data);
-
-	void lifetimePut(const std::string& name, T data);
-
-	void garbageCollect();
-
-private:
-	struct CacheEntry
-	{
-		T resource;
-		time_t lastUsed; // time in milliseconds
-		size_t memoryUsed;
-	};
-
-	typedef std::map<const std::string, CacheEntry> CacheMap;
-	typedef typename CacheMap::iterator CacheMapIter;
-	CacheMap map;
-};
-
-#endif
+WorldWorld::WorldWorld() {}
+WorldWorld::~WorldWorld() {}

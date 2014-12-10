@@ -24,53 +24,28 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <iostream>
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+#include <Gosu/Utility.hpp>
 #include <libxml/parser.h>
+#include <physfs.h>
 
 #include "client-conf.h"
+#include "formatter.h"
 #include "log.h"
 #include "reader.h"
 #include "window.h"
+#include "world.h"
+#include "world/world.h"
 
 #ifdef _WIN32
-	#include "os-windows.h"
+  #include "os-windows.h"
 #endif
 
 #ifdef __APPLE__
-	#include "os-mac.h"
+  #include "os-mac.h"
 #endif
-
-#define ASSERT_RETURN1(x)  if (!(x)) { return 1; }
-
-struct libraries
-{
-	libraries(char* argv0)
-	{
-		// Initialize the C library's random seed.
-		srand((unsigned)time(NULL));
-
-		/*
-		 * This initializes the XML library and checks for potential
-		 * ABI mismatches between the version it was compiled for and
-		 * the actual shared library used.
-		 */
-		LIBXML_TEST_VERSION
-
-		// Reader::init runs Python scripts.
-		if (!Reader::init(argv0))
-			exit(1);
-	}
-
-	~libraries()
-	{
-		Reader::deinit();
-		xmlCleanupParser();
-	}
-};
 
 /**
  * Load client config and instantiate window.
@@ -78,34 +53,77 @@ struct libraries
  * The client config tells us our window parameters along with which World
  * we're going to load. The GameWindow class then loads and plays the game.
  */
-int TsunagariMain(int argc, char** argv)
+int main(int argc, char** argv)
 {
-	#ifdef _WIN32
-		wFixConsole();
-	#endif
-	
-	#ifdef __APPLE__
-		macSetWorkingDirectory();
-	#endif
+#ifdef _WIN32
+	wFixConsole();
+#endif
 
-	ASSERT_RETURN1(Log::init());
+	srand((unsigned)time(NULL));
+
+	if (!Log::init())
+		return 1;
+
+#ifdef __APPLE__
+	macSetWorkingDirectory();
+#endif
 
 	parseConfig(CLIENT_CONF_PATH);
-	ASSERT_RETURN1(parseCommandLine(argc, argv));
-	ASSERT_RETURN1(conf.validate(CLIENT_CONF_PATH));
-
-	std::cout << "[0.000] Starting " << TSUNAGARI_RELEASE_VERSION << std::endl;
+	if (!parseCommandLine(argc, argv)) {
+		Log::fatal("Main", "parseCommandLine");
+		return 1;
+	}
+	if (!conf.validate(CLIENT_CONF_PATH)) {
+		Log::fatal("Main", "Conf::validate");
+		return 1;
+	}
 
 	Log::setVerbosity(conf.verbosity);
+	Log::info("Main", Formatter("Starting %") % TSUNAGARI_RELEASE_VERSION);
 	Log::reportVerbosityOnStartup();
 
+	/* This initializes the XML library and checks for potential
+	 * ABI mismatches between the version it was compiled for and
+	 * the actual shared library used.
+	 */
+	LIBXML_TEST_VERSION
+
+	if (!PHYSFS_init(argv[0])) {
+		Log::fatal("Main", "PHYSFS_init");
+		return 1;
+	}
+
+	if (!Reader::init()) {
+		Log::fatal("Main", "Reader::init");
+		return 1;
+	}
+
 	GameWindow window;
+	World& world = World::instance();
+	WorldWorld& worldWorld = WorldWorld::instance();
 
-	// Init various libraries we use.
-	libraries libs(argv[0]);
+	if (!window.init()) {
+		Log::fatal("Main", "GameWindow::init");
+		return 1;
+	}
 
-	ASSERT_RETURN1(window.init());
+	if (!world.init()) {
+		Log::fatal("Main", "World::init");
+		return 1;
+	}
+
+	if (!worldWorld.init()) {
+		Log::fatal("Main", "WorldWorld::init");
+		return 1;
+	}
+
+	window.setCaption(Gosu::widen(world.getName()));
+
 	window.show();
+
+	PHYSFS_deinit();
+
+	xmlCleanupParser();
+
 	return 0;
 }
-

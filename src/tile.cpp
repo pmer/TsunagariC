@@ -270,7 +270,7 @@ TileType::TileType(ImageRef& img)
 
 bool TileType::needsRedraw() const
 {
-	time_t now = World::instance()->time();
+	time_t now = World::instance().time();
 	return anim.needsRedraw(now);
 }
 

@@ -35,7 +35,6 @@
 #include <Gosu/Graphics.hpp> // for Gosu::Transform
 
 #include "bitrecord.h"
-#include "music.h"
 #include "player.h"
 #include "script.h"
 #include "viewport.h"
@@ -45,7 +44,6 @@ namespace Gosu {
 }
 
 class Area;
-class GameWindow;
 
 /**
  * Top class holding all data necessary to create a game. Such a collection of
@@ -59,7 +57,7 @@ public:
 	/**
 	 * Get the currently open World.
 	 */
-	static World* instance();
+	static World& instance();
 
 	World();
 	~World();
@@ -145,8 +143,6 @@ public:
 
 	void runAreaLoadScript(Area* area);
 
-	Music* getMusic();
-
 	ScriptRef keydownScript, keyupScript;
 
 protected:
@@ -204,7 +200,6 @@ protected:
 
 	AreaMap areas;
 	Area* area;
-	Music music;
 	Player player;
 	std::string playerPhase;
 	std::shared_ptr<Viewport> view;

@@ -51,6 +51,8 @@
 class Music
 {
 public:
+	static Music& instance();
+
 	Music();
 	~Music();
 

@@ -95,9 +95,9 @@ void Area::focus()
 	}
 
 	if (musicIntroSet)
-		World::instance()->getMusic()->setIntro(musicIntro);
+		Music::instance().setIntro(musicIntro);
 	if (musicLoopSet)
-		World::instance()->getMusic()->setLoop(musicLoop);
+		Music::instance().setLoop(musicLoop);
 
 	//pythonSetGlobal("Area", this);
 	//if (focusScript)
@@ -200,7 +200,7 @@ void Area::tick(unsigned long dt)
 	}
 
 	view->tick(dt);
-	World::instance()->getMusic()->tick();
+	Music::instance().tick();
 }
 
 void Area::turn()
@@ -544,7 +544,7 @@ double Area::indexDepth(int idx) const
 
 void Area::runLoadScripts()
 {
-	World* world = World::instance();
+	World& world = World::instance();
 	// world->runAreaLoadScript(this);
 
 	// pythonSetGlobal("Area", this);
@@ -571,7 +571,7 @@ void Area::drawTile(Tile& tile, int x, int y, double depth)
 {
 	TileType* type = (TileType*)tile.parent;
 	if (type) {
-		time_t now = World::instance()->time();
+		time_t now = World::instance().time();
 		const Image* img = type->anim.frame(now);
 		if (img) {
 			rvec2 drawPos(

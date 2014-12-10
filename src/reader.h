@@ -53,8 +53,7 @@ namespace Gosu {
 class Reader
 {
 public:
-	static bool init(char* argv0);
-	static void deinit();
+	static bool init();
 
 	static bool prependPath(const std::string& path);
 	static bool appendPath(const std::string& path);

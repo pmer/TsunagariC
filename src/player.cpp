@@ -136,8 +136,7 @@ void Player::moveByTile(ivec2 delta)
 
 	Entity::moveByTile(delta);
 
-	World* world = World::instance();
-	world->turn();
+	World::instance().turn();
 }
 
 void Player::useTile()
@@ -149,9 +148,9 @@ void Player::useTile()
 
 void Player::setFrozen(bool b)
 {
-	World* world = World::instance();
+	World& world = World::instance();
 
-	b ?  world->storeKeys() : world->restoreKeys();
+	b ?  world.storeKeys() : world.restoreKeys();
 	Entity::setFrozen(b);
 	if (!frozen && velocity)
 		moveByTile(velocity);
@@ -183,10 +182,10 @@ void Player::postMove()
 
 void Player::takeExit(Exit* exit)
 {
-	World* world = World::instance();
-	Area* newArea = world->getArea(exit->area);
+	World& world = World::instance();
+	Area* newArea = world.getArea(exit->area);
 	if (newArea) {
-		world->focusArea(newArea, exit->coords);
+		world.focusArea(newArea, exit->coords);
 	}
 	else {
 		// Roll back movement if exit failed to open.

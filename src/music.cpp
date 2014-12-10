@@ -47,6 +47,13 @@ Music::SongRef Music::getSong(const std::string& name)
 	return songs.lifetimeRequest(name);
 }
 
+static Music globalMusic;
+
+Music& Music::instance()
+{
+	return globalMusic;
+}
+
 
 /*
 static const char* stateStr(MUSIC_STATE state)

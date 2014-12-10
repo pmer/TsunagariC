@@ -28,7 +28,6 @@
 #define WINDOW_H
 
 #include <map>
-#include <memory>
 #include <string>
 
 #include <Gosu/Window.hpp> // for Gosu::Window
@@ -36,8 +35,6 @@
 namespace Gosu {
 	class Button;
 }
-
-class World;
 
 //! GameWindow Class
 /*!
@@ -49,10 +46,7 @@ class GameWindow : public Gosu::Window
 public:
 	static GameWindow& instance();
 
-	//! GameWindow Constructor
 	GameWindow();
-
-	//! GameWindow Destructor
 	virtual ~GameWindow();
 
 	//! GameWindow Initializer
@@ -85,8 +79,6 @@ public:
 protected:
 	//! Process persistent keyboard input
 	void handleKeyboardInput(time_t now);
-
-	std::unique_ptr<World> world;
 
 	time_t now;
 	time_t lastGCtime;

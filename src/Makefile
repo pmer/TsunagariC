@@ -30,7 +30,8 @@ all: tsunagari $(BASEDATA) $(TESTWORLD)
 
 depend:
 	sed "/^### --- DO NOT DELETE THIS LINE --- ###/,$$$$d" Makefile > Mf
-	/bin/echo -e "### --- DO NOT DELETE THIS LINE --- ###\n" >> Mf
+	/bin/echo "### --- DO NOT DELETE THIS LINE --- ###" >> Mf
+	/bin/echo >> Mf
 	$(CXX) $(CXXFLAGS) -MM *.cpp | perl ../scripts/filter-depend.pl >> Mf
 	mv Mf Makefile
 
@@ -59,6 +60,7 @@ clean:
 # a #include anywhere or if you add/remove a C++ file.
 
 ### --- DO NOT DELETE THIS LINE --- ###
+
 animation.o: animation.cpp animation.h image.h reader.h sound.h tiledimage.h \
  xml.h
 area-tmx.o: animation.h area-tmx.cpp area-tmx.h area.h bitrecord.h \

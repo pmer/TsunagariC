@@ -29,7 +29,9 @@
 DataArea::DataArea() {}
 DataArea::~DataArea() {}
 void DataArea::onLoad() {}
+void DataArea::onFocus() {}
 void DataArea::onTick() {}
+void DataArea::onTurn() {}
 
 DataArea::TileScript DataArea::script(const std::string& scriptName)
 {

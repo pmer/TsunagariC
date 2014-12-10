@@ -125,10 +125,6 @@ bool AreaTMX::processMapProperties(XMLNode node)
   <property name="name" value="Wooded AreaTMX"/>
   <property name="intro_music" value="arrive.ogg"/>
   <property name="main_music" value="wind.ogg"/>
-  <property name="on_load" value="wood_setup.py"/>
-  <property name="on_focus" value="wood_focus.py"/>
-  <property name="on_tick" value="wood_tick.py"/>
-  <property name="on_turn" value="wood_turn.py"/>
   <property name="loop" value="xy"/>
   <property name="color_overlay" value="255,255,255,127"/>
  </properties>
@@ -149,34 +145,6 @@ bool AreaTMX::processMapProperties(XMLNode node)
 		else if (name == "main_music") {
 			musicLoop = value;
 			musicLoopSet = true;
-		}
-		else if (name == "on_load") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// loadScript = script;
-		}
-		else if (name == "on_focus") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// focusScript = script;
-		}
-		else if (name == "on_tick") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// tickScript = script;
-		}
-		else if (name == "on_turn") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// turnScript = script;
 		}
 		else if (name == "loop") {
 			loopX = value.find('x') != std::string::npos;
@@ -305,9 +273,9 @@ bool AreaTMX::processTileType(XMLNode node, TileType& type,
   <tile id="8">
    <properties>
     <property name="flags" value="nowalk"/>
-    <property name="onEnter" value="skid();speed(2)"/>
-    <property name="onLeave" value="undo()"/>
-    <property name="onUse" value="undo()"/>
+    <property name="onEnter" value="skid"/>
+    <property name="onLeave" value="no_skid"/>
+    <property name="onUse" value="no_skid"/>
    </properties>
   </tile>
   <tile id="14">
@@ -532,9 +500,9 @@ bool AreaTMX::processObjectGroup(XMLNode node)
   </properties>
   <object name="tile2" gid="7" x="64" y="320">
    <properties>
-    <property name="onEnter" value="speed(0.5)"/>
-    <property name="onLeave" value="undo()"/>
-    <property name="onUse" value="undo()"/>
+    <property name="onEnter" value="half_speed"/>
+    <property name="onLeave" value="normal_speed"/>
+    <property name="onUse" value="normal_speed"/>
     <property name="exit" value="grassfield.area,1,1,0"/>
     <property name="flags" value="npc_nowalk"/>
    </properties>
@@ -604,9 +572,9 @@ bool AreaTMX::processObject(XMLNode node, int z)
 /*
   <object name="tile2" gid="7" x="64" y="320">
    <properties>
-    <property name="onEnter" value="speed(0.5)"/>
-    <property name="onLeave" value="undo()"/>
-    <property name="onUse" value="undo()"/>
+    <property name="onEnter" value="half_speed"/>
+    <property name="onLeave" value="normal_speed"/>
+    <property name="onUse" value="normal_speed"/>
     <property name="exit" value="grassfield.area,1,1,0"/>
     <property name="flags" value="npc_nowalk"/>
    </properties>

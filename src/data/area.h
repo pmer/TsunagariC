@@ -45,7 +45,9 @@ public:
 	Area* area;
 
 	virtual void onLoad();
+	virtual void onFocus();
 	virtual void onTick();
+	virtual void onTurn();
 
 	TileScript script(const std::string& scriptName);
 

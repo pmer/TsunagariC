@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="10" height="10" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16">
  <properties>
   <property name="name" value="Grove House"/>
  </properties>
@@ -326,7 +326,7 @@
    <tile gid="0"/>
   </data>
  </layer>
- <objectgroup name="Prop(0)" width="10" height="10">
+ <objectgroup name="Prop(0)">
   <properties>
    <property name="layer" value="0"/>
   </properties>
@@ -363,7 +363,7 @@
   <object x="128" y="16" width="16" height="16">
    <properties>
     <property name="flags" value="nowalk"/>
-    <property name="on_use" value="areas.sounds:sound_book"/>
+    <property name="on_use" value="sound_book"/>
    </properties>
   </object>
   <object x="48" y="64" width="64" height="32">
@@ -373,7 +373,7 @@
   </object>
   <object x="96" y="0" width="16" height="16">
    <properties>
-    <property name="on_use" value="areas.grove_house:open_door"/>
+    <property name="on_use" value="open_door"/>
    </properties>
   </object>
   <object x="80" y="144" width="16" height="16">
@@ -384,12 +384,12 @@
   <object x="112" y="16" width="16" height="16">
    <properties>
     <property name="flags" value="nowalk"/>
-    <property name="on_use" value="areas.sounds:sound_armor"/>
+    <property name="on_use" value="sound_armor"/>
    </properties>
   </object>
   <object x="32" y="0" width="16" height="16">
    <properties>
-    <property name="on_use" value="areas.sounds:sound_ouch"/>
+    <property name="on_use" value="sound_ouch"/>
    </properties>
   </object>
   <object x="32" y="80" width="16" height="16">

@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** world.h                       **
+** area.cpp                      **
 ** Copyright 2014 PariahSoft LLC **
 **********************************/
 
@@ -24,35 +24,9 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DATAWORLD_H
-#define DATAWORLD_H
-
-#include <map>
-
 #include "area.h"
 
-class DataWorld
-{
-public:
-	static DataWorld& instance();
-
-	virtual ~DataWorld();
-
-	//! After the engine has booted, initialize the world.
-	virtual bool init() = 0;
-
-	DataAreaRef area(const std::string& areaName);
-
-protected:
-	DataWorld();
-
-	std::map<std::string,DataAreaRef> areas;
-
-private:
-	DataWorld(const DataWorld&) = delete;
-	DataWorld(DataWorld&&) = delete;
-	DataWorld& operator=(const DataWorld&) = delete;
-	DataWorld& operator=(DataWorld&&) = delete;
-};
-
-#endif
+DataArea::DataArea() {}
+DataArea::~DataArea() {}
+void DataArea::onLoad() {}
+void DataArea::onTick() {}

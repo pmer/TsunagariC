@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** world.h                       **
+** area.h                        **
 ** Copyright 2014 PariahSoft LLC **
 **********************************/
 
@@ -24,35 +24,43 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DATAWORLD_H
-#define DATAWORLD_H
+#ifndef DATAAREA_H
+#define DATAAREA_H
 
 #include <map>
+#include <memory>
+#include <string>
 
-#include "area.h"
+class Area;
+class Entity;
+class Tile;
 
-class DataWorld
+class DataArea
 {
 public:
-	static DataWorld& instance();
+	typedef void (DataArea::* TileScript)(Entity& triggeredBy, Tile& tile);
 
-	virtual ~DataWorld();
+	virtual ~DataArea();
 
-	//! After the engine has booted, initialize the world.
-	virtual bool init() = 0;
+	Area* area;
 
-	DataAreaRef area(const std::string& areaName);
+	virtual void onLoad();
+	virtual void onTick();
+
+	TileScript script(const std::string& scriptName);
 
 protected:
-	DataWorld();
+	DataArea();
 
-	std::map<std::string,DataAreaRef> areas;
+	std::map<std::string,TileScript> scripts;
 
 private:
-	DataWorld(const DataWorld&) = delete;
-	DataWorld(DataWorld&&) = delete;
-	DataWorld& operator=(const DataWorld&) = delete;
-	DataWorld& operator=(DataWorld&&) = delete;
+	DataArea(const DataArea&) = delete;
+	DataArea(DataArea&&) = delete;
+	DataArea& operator=(const DataArea&) = delete;
+	DataArea& operator=(DataArea&&) = delete;
 };
+
+typedef std::shared_ptr<DataArea> DataAreaRef;
 
 #endif

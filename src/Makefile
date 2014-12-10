@@ -12,7 +12,7 @@ character.o client-conf.o entity.o formatter.o image.o log.o main.o music.o \
 npc.o os-windows.o overlay.o player.o random.o reader.o script.o sound.o \
 string.o tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o \
 world.o xml.o backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
-backend-gosu/gosu-tiledimage.o data/world.o nbcl/nbcl.o
+backend-gosu/gosu-tiledimage.o data/area.o data/world.o nbcl/nbcl.o
 
 # Name of testing world.
 BASEDATA = ../data/base.zip
@@ -32,7 +32,7 @@ depend:
 	sed "/^### --- DO NOT DELETE THIS LINE --- ###/,$$$$d" Makefile > Mf
 	/bin/echo "### --- DO NOT DELETE THIS LINE --- ###" >> Mf
 	/bin/echo >> Mf
-	$(CXX) $(CXXFLAGS) -MM *.cpp | perl ../scripts/filter-depend.pl >> Mf
+	$(CXX) $(CXXFLAGS) -MM *.cpp */*.cpp | perl ../scripts/filter-depend.pl >> Mf
 	mv Mf Makefile
 
 tsunagari: $(OBJECTS) $(WORLDOBJECTS)
@@ -89,7 +89,7 @@ log.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
 main.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
  formatter.h image.h log.h main.cpp os-mac.h player.h reader.h script.h \
  sound.h tile.h tiledimage.h vec.h viewport.h window.h world.h xml.h \
- data/world.h
+ data/area.h data/world.h
 music.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
  character.h client-conf.h entity.h image.h log.h music.cpp music.h player.h \
  reader.h readercache.h script.h sound.h tile.h tiledimage.h vec.h \
@@ -133,3 +133,13 @@ world.o: animation.h area-tmx.h area.h bitrecord.h cache-template.cpp \
  reader.h readercache.h script.h sound.h tile.h tiledimage.h timeout.h vec.h \
  viewport.h window.h world.cpp world.h xml.h
 xml.o: log.h string.h xml.cpp xml.h
+gosu-cbuffer.o: backend-gosu/gosu-cbuffer.cpp backend-gosu/gosu-cbuffer.h
+gosu-image.o: backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.cpp \
+ backend-gosu/gosu-image.h backend-gosu/../image.h backend-gosu/../window.h
+gosu-tiledimage.o: backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.h \
+ backend-gosu/gosu-tiledimage.cpp backend-gosu/gosu-tiledimage.h \
+ backend-gosu/../image.h backend-gosu/../tiledimage.h \
+ backend-gosu/../window.h
+area.o: data/area.cpp data/area.h
+world.o: data/area.h data/world.cpp data/world.h
+nbcl.o: nbcl/nbcl.cpp nbcl/nbcl.h

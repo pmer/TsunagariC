@@ -182,9 +182,8 @@ void Area::requestRedraw()
 
 void Area::tick(unsigned long dt)
 {
-	//pythonSetGlobal("Area", this);
-	//if (tickScript)
-	//	tickScript->invoke();
+	if (dataArea)
+		dataArea->onTick();
 
 	for (OverlaySet::iterator it = overlays.begin(); it != overlays.end(); it++) {
 		Overlay* o = *it;
@@ -526,6 +525,10 @@ vicoord Area::virt2virt(rcoord virt) const
 	);
 }
 
+DataArea* Area::getDataArea()
+{
+	return dataArea;
+}
 
 int Area::depthIndex(double depth) const
 {

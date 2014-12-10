@@ -166,13 +166,7 @@ public:
 	rcoord virt2virt(vicoord virt) const;
 	vicoord virt2virt(rcoord virt) const;
 
-
-	//
-	// Variables public for Python scripts
-	//
-
-	// Script hooks.
-	ScriptRef loadScript, focusScript, tickScript, turnScript;
+	DataArea* getDataArea();
 
 
 protected:

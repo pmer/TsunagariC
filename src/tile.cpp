@@ -136,7 +136,8 @@ Exit::Exit(const std::string area, int x, int y, double z)
  * TILEBASE
  */
 TileBase::TileBase()
-	: parent(NULL), flags(0x0)
+	: parent(NULL), flags(0x0),
+	  enterScript(NULL), leaveScript(NULL), useScript(NULL)
 {
 }
 
@@ -158,37 +159,6 @@ TileType* TileBase::getType() const
 void TileBase::setType(TileType* type)
 {
 	parent = type;
-}
-
-void TileBase::runEnterScript(Entity* triggeredBy)
-{
-	if (enterScript)
-		runScript(triggeredBy, enterScript);
-	if (parent)
-		parent->runEnterScript(triggeredBy);
-}
-
-void TileBase::runLeaveScript(Entity* triggeredBy)
-{
-	if (leaveScript)
-		runScript(triggeredBy, leaveScript);
-	if (parent)
-		parent->runLeaveScript(triggeredBy);
-}
-
-void TileBase::runUseScript(Entity* triggeredBy)
-{
-	if (useScript)
-		runScript(triggeredBy, useScript);
-	if (parent)
-		parent->runUseScript(triggeredBy);
-}
-
-void TileBase::runScript(Entity* triggeredBy, ScriptRef& script)
-{
-	// pythonSetGlobal("Entity", triggeredBy);
-	// pythonSetGlobal("Tile", this);
-	// script->invoke();
 }
 
 
@@ -251,6 +221,36 @@ double* Tile::layermodAt(ivec2 dir) const
 {
 	int idx = ivec2_to_dir(dir);
 	return idx == -1 ? NULL : layermods[idx];
+}
+
+void Tile::runEnterScript(Entity* triggeredBy)
+{
+	DataArea* dataArea = area->getDataArea();
+	for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
+		DataArea::TileScript script = scripted->enterScript;
+		if (script)
+			(dataArea->*script)(*triggeredBy, *this);
+	}
+}
+
+void Tile::runLeaveScript(Entity* triggeredBy)
+{
+	DataArea* dataArea = area->getDataArea();
+	for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
+		DataArea::TileScript script = scripted->leaveScript;
+		if (script)
+			(dataArea->*script)(*triggeredBy, *this);
+	}
+}
+
+void Tile::runUseScript(Entity* triggeredBy)
+{
+	DataArea* dataArea = area->getDataArea();
+	for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
+		DataArea::TileScript script = scripted->useScript;
+		if (script)
+			(dataArea->*script)(*triggeredBy, *this);
+	}
 }
 
 

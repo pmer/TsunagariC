@@ -335,25 +335,16 @@ bool AreaTMX::processTileType(XMLNode node, TileType& type,
 			ASSERT(splitTileFlags(value, &type.flags));
 		}
 		else if (name == "on_enter") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// type.enterScript = script;
+			std::string scriptName = value;
+			type.enterScript = dataArea->script(scriptName);
 		}
 		else if (name == "on_leave") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// type.leaveScript = script;
+			std::string scriptName = value;
+			type.leaveScript = dataArea->script(scriptName);
 		}
 		else if (name == "on_use") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// type.useScript = script;
+			std::string scriptName = value;
+			type.useScript = dataArea->script(scriptName);
 		}
 		else if (name == "frames") {
 			std::string memtemp;
@@ -628,7 +619,8 @@ bool AreaTMX::processObject(XMLNode node, int z)
 	// Gather object properties now. Assign them to tiles later.
 	bool wwide[5], hwide[5]; /* wide exit in dimensions: width, height */
 
-	// ScriptRef enterScript, leaveScript, useScript;
+	DataArea::TileScript enterScript = NULL, leaveScript = NULL,
+		useScript = NULL;
 	std::unique_ptr<Exit> exit[5];
 	std::unique_ptr<double> layermods[5];
 	unsigned flags = 0x0;
@@ -646,25 +638,16 @@ bool AreaTMX::processObject(XMLNode node, int z)
 			ASSERT(splitTileFlags(value, &flags));
 		}
 		else if (name == "on_enter") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// enterScript = script;
+			std::string scriptName = value;
+			enterScript = dataArea->script(scriptName);
 		}
 		else if (name == "on_leave") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// leaveScript = script;
+			std::string scriptName = value;
+			leaveScript = dataArea->script(scriptName);
 		}
 		else if (name == "on_use") {
-			std::string filename = value;
-			// ScriptRef script = Script::create(filename);
-			// if (!script || !script->validate())
-			// 	return false;
-			// useScript = script;
+			std::string scriptName = value;
+			useScript = dataArea->script(scriptName);
 		}
 		else if (name == "exit") {
 			exit[EXIT_NORMAL].reset(new Exit);
@@ -766,9 +749,9 @@ bool AreaTMX::processObject(XMLNode node, int z)
 			}
 			for (int i = 0; i < 5; i++)
 				tile.layermods[i] = layermods[i] ? new double(*layermods[i].get()) : NULL;
-			// tile.enterScript = enterScript;
-			// tile.leaveScript = leaveScript;
-			// tile.useScript = useScript;
+			tile.enterScript = enterScript;
+			tile.leaveScript = leaveScript;
+			tile.useScript = useScript;
 		}
 	}
 

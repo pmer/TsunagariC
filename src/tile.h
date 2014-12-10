@@ -40,6 +40,8 @@ class TileSet;
 #include "script.h"
 #include "vec.h"
 
+#include "data/area.h"
+
 class Area;
 class Entity;
 class TileType;
@@ -179,17 +181,10 @@ public:
 	TileType* getType() const;
 	void setType(TileType* type);
 
-	void runEnterScript(Entity* triggeredBy);
-	void runLeaveScript(Entity* triggeredBy);
-	void runUseScript(Entity* triggeredBy);
-
-private:
-	void runScript(Entity* triggeredBy, ScriptRef& script);
-
 public:
 	TileBase* parent;
 	unsigned flags;
-	ScriptRef enterScript, leaveScript, useScript;
+	DataArea::TileScript enterScript, leaveScript, useScript;
 };
 
 //! Contains properties unique to this tile.
@@ -225,6 +220,10 @@ public:
 
 	Exit* exitAt(ivec2 dir) const;
 	double* layermodAt(ivec2 dir) const;
+
+	void runEnterScript(Entity* triggeredBy);
+	void runLeaveScript(Entity* triggeredBy);
+	void runUseScript(Entity* triggeredBy);
 
 public:
 	Area* area;

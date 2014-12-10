@@ -30,3 +30,8 @@ DataArea::DataArea() {}
 DataArea::~DataArea() {}
 void DataArea::onLoad() {}
 void DataArea::onTick() {}
+
+DataArea::TileScript DataArea::script(const std::string& scriptName)
+{
+	return scripts[scriptName];
+}

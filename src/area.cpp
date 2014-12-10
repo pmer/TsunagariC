@@ -46,6 +46,8 @@
 #include "window.h"
 #include "world.h"
 
+#include "data/world.h"
+
 #define ASSERT(x)  if (!(x)) { return false; }
 
 /* NOTE: In the TMX map format used by Tiled, tileset tiles start counting
@@ -65,7 +67,8 @@ static T wrap(T min, T value, T max)
 Area::Area(Viewport* view,
            Player* player,
            const std::string& descriptor)
-	: view(view),
+	: dataArea(DataWorld::instance().area(descriptor)),
+	  view(view),
 	  player(player),
 	  colorOverlay(0, 0, 0, 0),
 	  dim(0, 0, 0),

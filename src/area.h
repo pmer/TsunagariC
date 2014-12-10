@@ -39,6 +39,8 @@
 #include "tile.h"
 #include "vec.h"
 
+#include "data/area.h"
+
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
 
 namespace Gosu {
@@ -188,6 +190,8 @@ protected:
 	void drawColorOverlay();
 
 protected:
+	DataArea* dataArea;
+
 	Viewport* view;
 	Player* player;
 	Gosu::Color colorOverlay;

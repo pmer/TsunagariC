@@ -32,7 +32,16 @@
 
 #include "gosu-cbuffer.h"
 #include "gosu-image.h"
+#include "gosu-window.h"
 #include "../window.h"
+
+
+static Gosu::Graphics& graphics()
+{
+	GameWindow& window = GameWindow::instance();
+	GosuGameWindow& gosu = (GosuGameWindow&)window;
+	return gosu.graphics();
+}
 
 
 Image* Image::create(void* data, size_t length)
@@ -61,12 +70,11 @@ bool ImageImpl::init(void* data, size_t length)
 {
 	assert(img == NULL);
 
-	Gosu::Graphics& graphics = GameWindow::instance().graphics();
 	Gosu::CBuffer buffer(data, length);
 	Gosu::Bitmap bitmap;
 
 	Gosu::loadImageFile(bitmap, buffer.frontReader());
-	img = new Gosu::Image(graphics, bitmap, false);
+	img = new Gosu::Image(graphics(), bitmap, false);
 
 	return true;
 }
@@ -76,8 +84,7 @@ bool ImageImpl::init(Gosu::Bitmap& bitmap, unsigned x, unsigned y,
 {
 	assert(img == NULL);
 
-	Gosu::Graphics& graphics = GameWindow::instance().graphics();
-	img = new Gosu::Image(graphics, bitmap, x, y, w, h, false);
+	img = new Gosu::Image(graphics(), bitmap, x, y, w, h, false);
 	return true;
 }
 
@@ -95,7 +102,7 @@ void ImageImpl::drawSubrect(double dstX, double dstY, double z,
 {
 	assert(img != NULL);
 
-	Gosu::Graphics& g = GameWindow::instance().graphics();
+	Gosu::Graphics& g = graphics();
 	g.beginClipping(dstX + srcX, dstY + srcY, srcW, srcH);
 	draw(dstX, dstY, z);
 	g.endClipping();

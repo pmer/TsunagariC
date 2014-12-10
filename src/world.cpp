@@ -24,9 +24,6 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <Gosu/Image.hpp>
-#include <Gosu/Utility.hpp>
-
 #include "area-tmx.h"
 #include "client-conf.h"
 #include "log.h"
@@ -87,17 +84,17 @@ time_t World::time() const
 	return total;
 }
 
-void World::buttonDown(const Gosu::Button btn)
+void World::buttonDown(KeyboardKey key)
 {
-	switch (btn.id()) {
-	case Gosu::kbEscape:
+	switch (key) {
+	case KBEscape:
 		userPaused = !userPaused;
 		setPaused(userPaused);
 		redraw = true;
 		break;
 	default:
 		if (!paused && keyStates.empty()) {
-			area->buttonDown(btn);
+			area->buttonDown(key);
 			// if (keydownScript)
 			// 	keydownScript->invoke();
 		}
@@ -105,14 +102,14 @@ void World::buttonDown(const Gosu::Button btn)
 	}
 }
 
-void World::buttonUp(const Gosu::Button btn)
+void World::buttonUp(KeyboardKey key)
 {
-	switch (btn.id()) {
-	case Gosu::kbEscape:
+	switch (key) {
+	case KBEscape:
 		break;
 	default:
 		if (!paused && keyStates.empty()) {
-			area->buttonUp(btn);
+			area->buttonUp(key);
 			// if (keyupScript)
 			// 	keyupScript->invoke();
 		}
@@ -125,33 +122,41 @@ void World::draw()
 	redraw = false;
 
 	GameWindow& window = GameWindow::instance();
-	Gosu::Graphics& graphics = window.graphics();
-
-	int clips = pushLetterbox();
-	graphics.pushTransform(getTransform());
-
-	area->draw();
-
-	graphics.popTransform();
-	popLetterbox(clips);
 
 	if (paused) {
-		unsigned ww = graphics.width();
-		unsigned wh = graphics.height();
-		Gosu::Color darken(127, 0, 0, 0);
-		double top = std::numeric_limits<double>::max();
-
-		drawRect(0, ww, 0, wh, darken, top);
+		unsigned ww = window.width();
+		unsigned wh = window.height();
+		window.drawRect(0, ww, 0, wh, 0x7F000000);
 
 		if (userPaused) {
 			unsigned iw = pauseInfo->width();
 			unsigned ih = pauseInfo->height();
-
+			double top = std::numeric_limits<double>::max();
 			pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
 		}
 	}
 
+	pushLetterbox();
 
+	// Zoom and pan the Area to fit on-screen.
+	rvec2 padding = view->getLetterboxOffset();
+	window.translate(-padding.x, -padding.y);
+
+	rvec2 scale = view->getScale();
+	window.scale(scale.x, scale.y);
+
+	rvec2 scroll = view->getMapOffset();
+	window.translate(-scroll.x, -scroll.y);
+
+	// Gosu::Transform t = { {
+	// 	scale.x, 0,       0, 0,
+	// 	0,       scale.y, 0, 0,
+	// 	0,       0,       1, 0,
+	// 	scale.x * -scroll.x - padding.x,
+	// 	scale.y * -scroll.y - padding.y, 0, 1
+	// } };
+
+	area->draw();
 }
 
 bool World::needsRedraw() const
@@ -253,12 +258,12 @@ void World::setPaused(bool b)
 
 void World::storeKeys()
 {
-	keyStates.push(BitRecord::fromGosuInput());
+	keyStates.push(GameWindow::instance().getKeysDown());
 }
 
 void World::restoreKeys()
 {
-	BitRecord now = BitRecord::fromGosuInput();
+	BitRecord now = GameWindow::instance().getKeysDown();
 	BitRecord then = keyStates.top();
 	typedef std::vector<size_t> Size_tVector;
 	Size_tVector diffs = now.diff(then);
@@ -266,12 +271,11 @@ void World::restoreKeys()
 	keyStates.pop();
 
 	for (Size_tVector::iterator it = diffs.begin(); it != diffs.end(); it++) {
-		size_t id = *it;
-		Gosu::Button btn((unsigned)id);
-		if (now[id])
-			buttonDown(btn);
+		KeyboardKey key = (KeyboardKey)*it;
+		if (now[key])
+			buttonDown(key);
 		else
-			buttonUp(btn);
+			buttonUp(key);
 	}
 }
 
@@ -282,16 +286,15 @@ time_t World::calculateDt(time_t now)
 	return dt;
 }
 
-int World::pushLetterbox()
+void World::pushLetterbox()
 {
-	GameWindow& w = GameWindow::instance();
-	Gosu::Graphics& g = w.graphics();
+	GameWindow& window = GameWindow::instance();
 
 	// Aspect ratio correction.
 	rvec2 sz = view->getPhysRes();
 	rvec2 lb = -1 * view->getLetterboxOffset();
 
-	g.beginClipping(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y);
+	window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y);
 	int clips = 1;
 
 	// Map bounds.
@@ -306,51 +309,14 @@ int World::pushLetterbox()
 
 	if (!loopX && physScroll.x > 0) {
 		// Boxes on left-right.
-		g.beginClipping(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x);
+		window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x);
 		clips++;
 	}
 	if (!loopY && physScroll.y > 0) {
 		// Boxes on top-bottom.
-		g.beginClipping(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y);
+		window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y);
 		clips++;
 	}
-
-	return clips;
-}
-
-void World::popLetterbox(int clips)
-{
-	GameWindow& w = GameWindow::instance();
-	for (; clips; clips--)
-		w.graphics().endClipping();
-}
-
-void World::drawRect(double x1, double x2, double y1, double y2,
-                       Gosu::Color c, double z)
-{
-	GameWindow& window = GameWindow::instance();
-	window.graphics().drawQuad(
-		x1, y1, c,
-		x2, y1, c,
-		x2, y2, c,
-		x1, y2, c,
-		z
-	);
-}
-
-Gosu::Transform World::getTransform()
-{
-	rvec2 scale = view->getScale();
-	rvec2 scroll = view->getMapOffset();
-	rvec2 padding = view->getLetterboxOffset();
-	Gosu::Transform t = { {
-		scale.x, 0,       0, 0,
-		0,       scale.y, 0, 0,
-		0,       0,       1, 0,
-		scale.x * -scroll.x - padding.x,
-		scale.y * -scroll.y - padding.y, 0, 1
-	} };
-	return t;
 }
 
 bool World::processDescriptor()

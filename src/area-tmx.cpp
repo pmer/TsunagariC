@@ -151,9 +151,9 @@ bool AreaTMX::processMapProperties(XMLNode node)
 			loopY = value.find('y') != std::string::npos;
 		}
 		else if (name == "color_overlay") {
-			Gosu::Color::Channel r, g, b, a;
-			ASSERT(parseRGBA(value, &r, &g, &b, &a));
-			colorOverlay = Gosu::Color(a, r, g, b);
+			unsigned char r, g, b, a;
+			ASSERT(parseARGB(value, a, r, g, b));
+			colorOverlayARGB = (a << 24) + (r << 16) + (g << 8) + b;
 		}
 	}
 
@@ -815,34 +815,32 @@ bool AreaTMX::parseExit(const std::string& dest, Exit* exit,
 	return true;
 }
 
-bool AreaTMX::parseRGBA(const std::string& str,
-	Gosu::Color::Channel* r,
-	Gosu::Color::Channel* g,
-	Gosu::Color::Channel* b,
-	Gosu::Color::Channel* a)
+bool AreaTMX::parseARGB(const std::string& str,
+	unsigned char& a, unsigned char& r,
+	unsigned char& g, unsigned char& b)
 {
 	std::vector<std::string> strs = splitStr(str, ",");
 
 	if (strs.size() != 4) {
-		Log::err(descriptor, "invalid RGBA format");
+		Log::err(descriptor, "invalid ARGB format");
 		return false;
 	}
 
-	Gosu::Color::Channel* channels[] = { r, g, b, a };
+	unsigned char* channels[] = { &a, &r, &g, &b };
 
 	for (int i = 0; i < 4; i++) {
 		std::string s = strs[i];
 		if (!isInteger(s)) {
-			Log::err(descriptor, "invalid RGBA format");
+			Log::err(descriptor, "invalid ARGB format");
 			return false;
 		}
 		int v = atoi(s.c_str());
 		if (!(0 <= v && v < 256)) {
 			Log::err(descriptor,
-				"RGBA values must be between 0 and 255");
+				"ARGB values must be between 0 and 255");
 			return false;
 		}
-		*channels[i] = (Gosu::Color::Channel)v;
+		*channels[i] = (unsigned char)v;
 	}
 
 	return true;

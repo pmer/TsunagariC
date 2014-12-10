@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** window.h                           **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -30,65 +30,73 @@
 #include <map>
 #include <string>
 
-#include <Gosu/Window.hpp> // for Gosu::Window
+#include "bitrecord.h"
 
-namespace Gosu {
-	class Button;
-}
+enum KeyboardKey {
+	KBEscape = 1,
+	KBLeftControl,
+	KBRightControl,
+	KBLeftShift,
+	KBRightShift,
+	KBSpace,
+	KBLeftArrow,
+	KBRightArrow,
+	KBUpArrow,
+	KBDownArrow,
+	KB_SIZE,
+};
 
 //! GameWindow Class
 /*!
 	This class is structurally the main class of the Tsunagari Tile Engine.
 	It handles input and drawing.
 */
-class GameWindow : public Gosu::Window
+class GameWindow
 {
 public:
+	static GameWindow* create();
 	static GameWindow& instance();
 
-	GameWindow();
+	//! Time since epoch.
+	static time_t time();
+
 	virtual ~GameWindow();
 
 	//! GameWindow Initializer
-	bool init();
+	virtual bool init() = 0;
 
 	//! Width of the window in pixels.
-	int width() const;
+	virtual int width() const = 0;
 
 	//! Height of the window in pixels.
-	int height() const;
+	virtual int height() const = 0;
 
-	//! Gosu Callback
-	void buttonDown(const Gosu::Button btn);
+	//! Set window manager caption.
+	virtual void setCaption(const std::string& caption) = 0;
 
-	//! Gosu Callback
-	void buttonUp(const Gosu::Button btn);
+	//! Show the window and start the main loop.
+	virtual void mainLoop() = 0;
 
-	//! Gosu Callback
-	void draw();
+	/**
+	 * Draws a rectangle on the screen of the specified color. Coordinates
+	 * are in pixels.
+	 */
+	virtual void drawRect(double x1, double x2, double y1, double y2,
+		unsigned int argb) = 0;
 
-	//! Gosu Callback
-	bool needsRedraw() const;
+	virtual void scale(double x, double y) = 0;
+	virtual void translate(double x, double y) = 0;
+	virtual void clip(double x, double y, double width, double height) = 0;
 
-	//! Gosu Callback
-	void update();
-
-	//! Time since epoch.
-	time_t time() const;
+	void emitKeyDown(KeyboardKey key);
+	void emitKeyUp(KeyboardKey key);
+	bool isKeyDown(KeyboardKey key);
+	BitRecord getKeysDown();
 
 protected:
-	//! Process persistent keyboard input
-	void handleKeyboardInput(time_t now);
+	GameWindow();
 
-	time_t now;
-	time_t lastGCtime;
-
-	struct keystate {
-		bool consecutive, initiallyResolved;
-		time_t since;
-	};
-
-	std::map<Gosu::Button, keystate> keystates;
+	BitRecord keysDown;
 };
 
 #endif

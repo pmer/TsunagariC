@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <Gosu/Utility.hpp>
 #include <libxml/parser.h>
 #include <physfs.h>
 
@@ -99,28 +98,29 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	GameWindow window;
+	GameWindow* window = GameWindow::create();
 	World& world = World::instance();
 	DataWorld& dataWorld = DataWorld::instance();
 
-	if (!window.init()) {
+	if (!window->init()) {
 		Log::fatal("Main", "GameWindow::init");
 		return 1;
 	}
-
 	if (!world.init()) {
 		Log::fatal("Main", "World::init");
 		return 1;
 	}
-
 	if (!dataWorld.init()) {
 		Log::fatal("Main", "WorldWorld::init");
 		return 1;
 	}
 
-	window.setCaption(Gosu::widen(world.getName()));
+	window->setCaption(world.getName());
 
-	window.show();
+	window->mainLoop();
+
+	// Cleanup
+	delete window;
 
 	PHYSFS_deinit();
 

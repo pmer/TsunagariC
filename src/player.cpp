@@ -24,10 +24,6 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <Gosu/Audio.hpp>
-#include <Gosu/Input.hpp>
-#include <Gosu/Math.hpp>
-
 #include "area.h"
 #include "client-conf.h"
 #include "entity.h"
@@ -127,8 +123,7 @@ void Player::moveByTile(ivec2 delta)
 	// an awkward position of being able to switch directions to up or
 	// down but not to left or right.
 	// --pdm Dec 6, 2014
-	const GameWindow& window = GameWindow::instance();
-	if (window.input().down(Gosu::kbLeftControl)) {
+	if (GameWindow::instance().isKeyDown(KBLeftControl)) {
 		setPhase(directionStr(facing));
 		redraw = true;
 		return;

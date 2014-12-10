@@ -27,6 +27,8 @@
 #ifndef VEC_H
 #define VEC_H
 
+#include <math.h>
+
 /**
  * Virtual integer coordinate.
  *
@@ -116,6 +118,13 @@ public:
 	{
 		return x || y;
 	}
+
+	double distanceTo(vec2<T> other)
+	{
+		T dx = x - other.x;
+		T dy = y - other.y;
+		return sqrt(dx * dx + dy * dy);
+	}
 };
 
 
@@ -190,6 +199,13 @@ public:
 	operator bool()
 	{
 		return x || y || z;
+	}
+
+	double distanceTo(vec3<T> other)
+	{
+		T dx = x - other.x;
+		T dy = y - other.y;
+		return sqrt(dx * dx + dy * dy);
 	}
 };
 

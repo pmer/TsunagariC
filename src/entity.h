@@ -41,11 +41,6 @@ class Entity;
 class Animation;
 class Area;
 
-namespace Gosu {
-	class Bitmap;
-	class Image;
-}
-
 enum SetPhaseResult {
 	PHASE_NOTFOUND,
 	PHASE_NOTCHANGED,
@@ -76,7 +71,6 @@ public:
 	//! Entity destroyer.
 	virtual void destroy();
 
-	//! Gosu Callback
 	void draw();
 	bool needsRedraw() const;
 

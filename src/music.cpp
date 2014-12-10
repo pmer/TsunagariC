@@ -24,9 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <Gosu/Math.hpp>
-
 #include "client-conf.h"
+#include "math.h"
 #include "music.h"
 #include "reader.h"
 
@@ -170,7 +169,7 @@ void Music::setVolume(int level)
 {
 	if (0 < level || level > 100) {
 		Log::info("Music", "volume can only be set between 0 and 100");
-		level = Gosu::clamp(level, 0, 100);
+		level = bound(level, 0, 100);
 	}
 	conf.musicVolume = level;
 	if (musicInst)

@@ -24,9 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <Gosu/Math.hpp>
-
 #include "client-conf.h"
+#include "math.h"
 #include "reader.h"
 #include "sound.h"
 
@@ -71,7 +70,7 @@ void SoundInstance::setVolume(int volume)
 {
 	if (0 < volume || volume > 100) {
 		Log::info("SoundInstance", "volume can only be set between 0 and 100");
-		volume = Gosu::clamp(volume, 0, 100);
+		volume = bound(volume, 0, 100);
 	}
 	this->volume = volume;
 	inst.changeVolume(volume / 100.0);

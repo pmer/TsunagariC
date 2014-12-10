@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** bitrecord.cpp                      **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -24,24 +24,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <Gosu/Input.hpp>
-
 #include "bitrecord.h"
-#include "window.h"
 
-BitRecord BitRecord::fromGosuInput()
+BitRecord::BitRecord(size_t length)
+	: states(length)
 {
-	size_t cnt = Gosu::numButtons;
-	Gosu::Input& in = GameWindow::instance().input();
-
-	BitRecord rec(cnt);
-	for (size_t i = 0; i < cnt; i++)
-		rec.states[i] = in.down(Gosu::Button((unsigned)i));
-
-	return rec;
 }
 
-bool BitRecord::operator[] (size_t idx)
+char& BitRecord::operator[] (size_t idx)
 {
 	return states[idx];
 }
@@ -55,9 +45,3 @@ std::vector<size_t> BitRecord::diff(const BitRecord& other)
 			changes.push_back(i);
 	return changes;
 }
-
-BitRecord::BitRecord(size_t length)
-	: states(length)
-{
-}
-

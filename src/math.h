@@ -1,8 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** bitrecord.h                        **
-** Copyright 2011-2014 PariahSoft LLC **
-***************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** math.h                        **
+** Copyright 2014 PariahSoft LLC **
+***********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,21 +24,25 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef BITRECORD_H
-#define BITRECORD_H
+#ifndef MATH_H
+#define MATH_H
 
-#include <cstring> // for size_t
-#include <vector>
+template<class T>
+static T bound(T value, T min, T max)
+{
+	if (value < min)
+		return min;
+	if (value > max)
+		return max;
+	return value;
+}
 
-class BitRecord {
-public:
-	BitRecord(size_t length);
-
-	char& operator[] (size_t idx);
-	std::vector<size_t> diff(const BitRecord& other);
-
-private:
-	std::vector<char> states;
-};
+template<class T>
+static T wrap(T min, T value, T max)
+{
+	while (value < min)
+		value += max;
+	return value % max;
+}
 
 #endif

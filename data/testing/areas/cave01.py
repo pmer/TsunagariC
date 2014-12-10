@@ -9,7 +9,7 @@ def load():
 		Player.frozen = True
 		Player.phase = "up"
 		overlay_alpha = 255
-		Area.color_overlay(0, 0, 0, overlay_alpha)
+		Area.color_overlay(overlay_alpha, 0, 0, 0)
 
 def tick():
 	global fall_gfx_timer, fall_snd, fall_stage, overlay_alpha

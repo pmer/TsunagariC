@@ -28,16 +28,13 @@
 #include <math.h>
 #include <stdlib.h> // for exit(1) on fatal
 
-#include <Gosu/Graphics.hpp>
-#include <Gosu/Math.hpp>
-#include <Gosu/Timing.hpp>
-
 #include "area.h"
 #include "client-conf.h"
 #include "entity.h"
 #include "formatter.h"
 #include "log.h"
 #include "image.h"
+#include "math.h"
 #include "music.h"
 #include "npc.h"
 #include "overlay.h"
@@ -56,21 +53,13 @@
          account.
 */
 
-template<class T>
-static T wrap(T min, T value, T max)
-{
-	while (value < min)
-		value += max;
-	return value % max;
-}
-
 Area::Area(Viewport* view,
            Player* player,
            const std::string& descriptor)
 	: dataArea(DataWorld::instance().area(descriptor)),
 	  view(view),
 	  player(player),
-	  colorOverlay(0, 0, 0, 0),
+	  colorOverlayARGB(0),
 	  dim(0, 0, 0),
 	  tileDim(0, 0),
 	  loopX(false), loopY(false),
@@ -107,30 +96,47 @@ void Area::focus()
 		dataArea->onFocus();
 }
 
-void Area::buttonDown(const Gosu::Button btn)
+void Area::buttonDown(KeyboardKey key)
 {
-	if (btn == Gosu::kbRight)
-		player->startMovement(ivec2(1, 0));
-	else if (btn == Gosu::kbLeft)
+	switch (key) {
+	case KBLeftArrow:
 		player->startMovement(ivec2(-1, 0));
-	else if (btn == Gosu::kbUp)
+		break;
+	case KBRightArrow:
+		player->startMovement(ivec2(1, 0));
+		break;
+	case KBUpArrow:
 		player->startMovement(ivec2(0, -1));
-	else if (btn == Gosu::kbDown)
+		break;
+	case KBDownArrow:
 		player->startMovement(ivec2(0, 1));
-	else if (btn == Gosu::kbSpace)
+		break;
+	case KBSpace:
 		player->useTile();
+		break;
+	default:
+		break;
+	}
 }
 
-void Area::buttonUp(const Gosu::Button btn)
+void Area::buttonUp(KeyboardKey key)
 {
-	if (btn == Gosu::kbRight)
-		player->stopMovement(ivec2(1, 0));
-	else if (btn == Gosu::kbLeft)
+	switch (key) {
+	case KBLeftArrow:
 		player->stopMovement(ivec2(-1, 0));
-	else if (btn == Gosu::kbUp)
+		break;
+	case KBRightArrow:
+		player->stopMovement(ivec2(1, 0));
+		break;
+	case KBUpArrow:
 		player->stopMovement(ivec2(0, -1));
-	else if (btn == Gosu::kbDown)
+		break;
+	case KBDownArrow:
 		player->stopMovement(ivec2(0, 1));
+		break;
+	default:
+		break;
+	}
 }
 
 void Area::draw()
@@ -223,26 +229,12 @@ void Area::turn()
 	view->turn();
 }
 
-void Area::setColorOverlay(int r, int g, int b, int a)
+void Area::setColorOverlay(unsigned char a, unsigned char r, unsigned char g,
+		unsigned char b)
 {
-	using namespace Gosu;
-
-	if (0 <= r && r < 256 &&
-	    0 <= g && g < 256 &&
-	    0 <= b && b < 256 &&
-	    0 <= a && a < 256) {
-		Color::Channel ac = (Color::Channel)a;
-		Color::Channel rc = (Color::Channel)r;
-		Color::Channel gc = (Color::Channel)g;
-		Color::Channel bc = (Color::Channel)b;
-		colorOverlay = Color(ac, rc, gc, bc);
-		redraw = true;
-	}
-	else {
-		Log::err("Area",
-			"Area::color_overlay() arguments must be "
-			"between 0 and 255");
-	}
+	colorOverlayARGB = (unsigned int)(a << 24) + (unsigned int)(r << 16) +
+		(unsigned int)(g << 8) + (unsigned int)b;
+	redraw = true;
 }
 
 
@@ -595,18 +587,11 @@ void Area::drawEntities()
 
 void Area::drawColorOverlay()
 {
-	if (colorOverlay.alpha() != 0) {
+	if ((colorOverlayARGB & 0xFF000000) != 0) {
 		GameWindow& window = GameWindow::instance();
-		Gosu::Color c = colorOverlay;
 		int x = window.width();
 		int y = window.height();
-		window.graphics().drawQuad(
-			0, 0, c,
-			x, 0, c,
-			x, y, c,
-			0, y, c,
-			750
-		);
+		GameWindow::instance().drawRect(0, x, 0, y, colorOverlayARGB);
 	}
 }
 

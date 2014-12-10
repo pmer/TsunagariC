@@ -32,15 +32,9 @@
 #include <string>
 #include <vector>
 
-#include <Gosu/Graphics.hpp> // for Gosu::Transform
-
 #include "bitrecord.h"
 #include "player.h"
 #include "viewport.h"
-
-namespace Gosu {
-	class Button;
-}
 
 class Area;
 
@@ -79,8 +73,8 @@ public:
 	/**
 	 * Process key presses.
 	 */
-	void buttonDown(const Gosu::Button btn);
-	void buttonUp(const Gosu::Button btn);
+	void buttonDown(KeyboardKey btn);
+	void buttonUp(KeyboardKey btn);
 
 	/**
 	 * Draw game state to the screen.
@@ -155,21 +149,7 @@ protected:
 	 * ratio and optimize drawing if the Area doesn't fit into the
 	 * Viewport.
 	 */
-	int pushLetterbox();
-	void popLetterbox(int clips);
-
-	/**
-	 * Draws a rectangle on the screen of the specified color. Coordinates
-	 * are in pixels.
-	 */
-	void drawRect(double x1, double x2, double y1, double y2,
-	              Gosu::Color c, double z);
-
-	/**
-	 * Returns an affine transformation that will zoom and pan the Area to
-	 * fit on-screen.
-	 */
-	Gosu::Transform getTransform();
+	void pushLetterbox();
 
 	bool processDescriptor();
 	bool processInfo(XMLNode node);

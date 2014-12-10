@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** area-tmx.h                         **
+** window.h                           **
 ** Copyright 2011-2013 PariahSoft LLC **
 ***************************************/
 
@@ -24,52 +24,72 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef AREA_TMX_H
-#define AREA_TMX_H
+#ifndef GOSU_WINDOW_H
+#define GOSU_WINDOW_H
 
+#include <map>
 #include <string>
 
-#include "area.h"
-#include "tile.h"
-#include "xml.h"
+#include <Gosu/Window.hpp> // for Gosu::Window
 
-class Viewport;
-class Player;
+#include "../window.h"
 
-class AreaTMX : public Area
+namespace Gosu {
+	class Button;
+}
+
+class GosuGameWindow : public GameWindow, public Gosu::Window
 {
 public:
-	AreaTMX(Viewport* view, Player* player, const std::string& filename);
-	virtual ~AreaTMX();
+	GosuGameWindow();
+	virtual ~GosuGameWindow();
 
-	//! Parse the file specified in the constructor, generating a full Area
-	//! object. Must be called before use.
-	virtual bool init();
+	bool init();
 
-private:
-	//! Allocate Tile objects for one layer of map.
-	void allocateMapLayer();
+	int width() const;
 
-	//! Parse an Area file.
-	bool processDescriptor();
-	bool processMapProperties(XMLNode node);
-	bool processTileSet(XMLNode node);
-	bool processTileType(XMLNode node, TileType& type,
-			TiledImageRef& img, int id);
-	bool processLayer(XMLNode node);
-	bool processLayerProperties(XMLNode node, double* depth);
-	bool processLayerData(XMLNode node, int z);
-	bool processObjectGroup(XMLNode node);
-	bool processObjectGroupProperties(XMLNode node, double* depth);
-	bool processObject(XMLNode node, int z);
-	bool splitTileFlags(const std::string& strOfFlags, unsigned* flags);
-	bool parseExit(const std::string& dest, Exit* exit,
-		bool* wwide, bool* hwide);
-	bool parseARGB(const std::string& str,
-		unsigned char& a, unsigned char& r,
-		unsigned char& g, unsigned char& b);
+	int height() const;
 
-	std::vector<TileType*> gids;
+	void setCaption(const std::string& caption);
+
+	//! Gosu Callback
+	void buttonDown(const Gosu::Button btn);
+
+	//! Gosu Callback
+	void buttonUp(const Gosu::Button btn);
+
+	//! Gosu Callback
+	void draw();
+
+	//! Gosu Callback
+	bool needsRedraw() const;
+
+	//! Gosu Callback
+	void update();
+
+	void mainLoop();
+
+        void drawRect(double x1, double x2, double y1, double y2,
+                unsigned int argb);
+
+	void scale(double x, double y);
+	void translate(double x, double y);
+	void clip(double x, double y, double width, double height);
+
+protected:
+	//! Process persistent keyboard input
+	void handleKeyboardInput(time_t now);
+
+	time_t now;
+	time_t lastGCtime;
+
+	struct keystate {
+		bool consecutive, initiallyResolved;
+		time_t since;
+	};
+
+	std::map<Gosu::Button, keystate> keystates;
+	std::vector<KeyboardKey> gosuToTsunagariKey;
 };
 
 #endif

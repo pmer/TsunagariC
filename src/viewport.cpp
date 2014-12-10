@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** viewport.cpp                       **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -24,14 +24,11 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <Gosu/Graphics.hpp> // for Gosu::screenWidth/Height()
-#include <Gosu/Math.hpp>
-
 #include "area.h"
+#include "math.h"
 #include "vec.h"
 #include "viewport.h"
 #include "window.h"
-
 
 Viewport::Viewport(icoord vsize)
 	: off(0, 0),
@@ -39,8 +36,8 @@ Viewport::Viewport(icoord vsize)
 	  mode(TM_MANUAL),
 	  area(NULL)
 {
-	double width = (double)Gosu::screenWidth();
-	double height = (double)Gosu::screenHeight();
+	double width = (double)GameWindow::instance().width();
+	double height = (double)GameWindow::instance().height();
 	aspectRatio = width / height;
 }
 
@@ -210,7 +207,7 @@ double Viewport::boundDimension(double screen, double area, double pt,
 	double wiggleRoom = area - screen;
 	return wiggleRoom <= 0 ?
 	       wiggleRoom/2 :
-	       Gosu::boundBy(pt, 0.0, wiggleRoom);
+	       bound(pt, 0.0, wiggleRoom);
 }
 
 rvec2 Viewport::addLetterboxOffset(rvec2 pt) const

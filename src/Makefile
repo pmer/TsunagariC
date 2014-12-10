@@ -12,7 +12,8 @@ character.o client-conf.o entity.o formatter.o image.o log.o main.o music.o \
 npc.o os-windows.o overlay.o player.o random.o reader.o sound.o string.o \
 tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o world.o xml.o \
 backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
-backend-gosu/gosu-tiledimage.o data/area.o data/world.o nbcl/nbcl.o
+backend-gosu/gosu-tiledimage.o backend-gosu/gosu-window.o data/area.o \
+data/world.o nbcl/nbcl.o
 
 # Name of testing world.
 BASEDATA = ../data/base.zip
@@ -126,9 +127,7 @@ timer.o: animation.h area.h bitrecord.h character.h entity.h formatter.h \
 vec.o: vec.cpp vec.h
 viewport.o: animation.h area.h entity.h image.h reader.h sound.h tile.h \
  tiledimage.h vec.h viewport.cpp viewport.h window.h xml.h data/area.h
-window.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
- image.h log.h player.h reader.h sound.h tile.h tiledimage.h vec.h \
- viewport.h window.cpp window.h world.h xml.h data/area.h
+window.o: window.cpp window.h
 world.o: animation.h area-tmx.h area.h bitrecord.h cache-template.cpp \
  cache.h character.h client-conf.h entity.h image.h log.h music.h player.h \
  reader.h readercache.h sound.h tile.h tiledimage.h timeout.h vec.h \
@@ -141,6 +140,14 @@ gosu-tiledimage.o: backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.h \
  backend-gosu/gosu-tiledimage.cpp backend-gosu/gosu-tiledimage.h \
  backend-gosu/../image.h backend-gosu/../tiledimage.h \
  backend-gosu/../window.h
+gosu-window.o: backend-gosu/gosu-window.cpp backend-gosu/../animation.h \
+ backend-gosu/../area.h backend-gosu/../bitrecord.h \
+ backend-gosu/../character.h backend-gosu/../client-conf.h \
+ backend-gosu/../entity.h backend-gosu/../image.h backend-gosu/../log.h \
+ backend-gosu/../player.h backend-gosu/../reader.h backend-gosu/../sound.h \
+ backend-gosu/../tile.h backend-gosu/../tiledimage.h backend-gosu/../vec.h \
+ backend-gosu/../viewport.h backend-gosu/../window.h backend-gosu/../world.h \
+ backend-gosu/../xml.h backend-gosu/../data/area.h
 area.o: data/area.cpp data/area.h
 world.o: data/area.h data/world.cpp data/world.h
 nbcl.o: nbcl/nbcl.cpp nbcl/nbcl.h

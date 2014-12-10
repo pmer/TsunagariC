@@ -28,10 +28,18 @@
 #include <sstream>
 #include <stdlib.h>
 
-#include <Gosu/Math.hpp>
-
 #include "log.h"
 #include "string.h"
+
+template<class T>
+static T bound(T value, T min, T max)
+{
+	if (value < min)
+		return min;
+	if (value > max)
+		return max;
+	return value;
+}
 
 /**
  * Matches regex /\s*-?\d+/
@@ -170,13 +178,13 @@ bool parseBool(const std::string& s)
 int parseUInt(const std::string& s)
 {
 	int i = atoi(s.c_str());
-	return Gosu::clamp(i, 0, INT_MAX);
+	return bound(i, 0, INT_MAX);
 }
 
 int parseInt100(const std::string& s)
 {
 	int i = atoi(s.c_str());
-	return Gosu::clamp(i, 0, 100);
+	return bound(i, 0, 100);
 }
 
 std::vector<std::string> splitStr(const std::string& input,

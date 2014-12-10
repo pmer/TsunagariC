@@ -24,7 +24,7 @@ def tick():
 		else:
 			overlay_alpha = 0
 			drinking = False
-		Area.color_overlay(255, 255, 255, overlay_alpha) # white overlay
+		Area.color_overlay(overlay_alpha, 255, 255, 255) # white overlay
 
 def well():
 	global drinking, well_timer

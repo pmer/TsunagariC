@@ -32,21 +32,14 @@
 #include <string>
 #include <vector>
 
-#include <Gosu/Color.hpp>
-
 #include "entity.h"
 #include "tile.h"
 #include "vec.h"
+#include "window.h"
 
 #include "data/area.h"
 
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
-
-namespace Gosu {
-	class Bitmap;
-	class Button;
-	class Image;
-}
 
 class Character;
 class Overlay;
@@ -78,8 +71,8 @@ public:
 	void focus();
 
 	//! Processes keyboard input, calling the Player object when necessary.
-	void buttonDown(const Gosu::Button btn);
-	void buttonUp(const Gosu::Button btn);
+	void buttonDown(KeyboardKey key);
+	void buttonUp(KeyboardKey key);
 
 	//! Renders all visible Tiles and Entities within this Area.
 	void draw();
@@ -103,7 +96,8 @@ public:
 	 */
 	void turn();
 
-	void setColorOverlay(int r, int g, int b, int a);
+	void setColorOverlay(unsigned char a, unsigned char r, unsigned char g,
+		unsigned char b);
 
 	const Tile* getTile(int x, int y, int z) const; /* phys */
 	const Tile* getTile(int x, int y, double z) const; /* virt */
@@ -184,7 +178,7 @@ protected:
 
 	Viewport* view;
 	Player* player;
-	Gosu::Color colorOverlay;
+	unsigned long colorOverlayARGB;
 
 	typedef std::set<Character*> CharacterSet;
 	CharacterSet characters;

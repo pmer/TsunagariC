@@ -27,10 +27,9 @@
 #include <iostream>
 #include <sstream>
 
-#include <Gosu/Timing.hpp>
-
 #include "client-conf.h"
 #include "log.h"
+#include "window.h"
 #include "world.h"
 
 #ifdef _WIN32
@@ -54,7 +53,7 @@ static std::string& chomp(std::string& str)
 
 static std::string ts()
 {
-	unsigned long now = Gosu::milliseconds();
+	time_t now = GameWindow::time();
 
 	std::ostringstream ts;
 	ts.precision(3);
@@ -65,7 +64,7 @@ static std::string ts()
 
 bool Log::init()
 {
-	startTime = Gosu::milliseconds();
+	startTime = GameWindow::time();
 	return true;
 }
 

@@ -26,14 +26,11 @@
 
 #include <math.h>
 
-#include <Gosu/Image.hpp>
-#include <Gosu/Math.hpp>
-#include <Gosu/Timing.hpp>
-
 #include "area.h"
 #include "client-conf.h"
 #include "entity.h"
 #include "log.h"
+#include "math.h"
 #include "reader.h"
 #include "string.h"
 #include "world.h"
@@ -140,7 +137,7 @@ void Entity::tickTile(time_t dt)
 
 	redraw = true;
 	double traveled = speed * (double)dt;
-	double destDist = Gosu::distance(r.x, r.y, destCoord.x, destCoord.y);
+	double destDist = r.distanceTo(destCoord);
 	if (destDist <= traveled) {
 		r = destCoord;
 		moving = false;
@@ -438,8 +435,8 @@ SampleRef Entity::getSound(const std::string& name) const
 ivec2 Entity::setFacing(ivec2 facing)
 {
 	this->facing = ivec2(
-		Gosu::clamp(facing.x, -1, 1),
-		Gosu::clamp(facing.y, -1, 1)
+		bound(facing.x, -1, 1),
+		bound(facing.y, -1, 1)
 	);
 	return this->facing;
 }

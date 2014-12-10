@@ -180,22 +180,6 @@ static XMLDoc* readXMLDoc(const std::string& name,
 	return doc;
 }
 
-static bool callInitpy(const std::string& archivePath)
-{
-	// ASSERT(Reader::prependPath(archivePath));
-	// bool exists = Reader::resourceExists("__init__.py");
-	// Log::info(archivePath,
-	// 	std::string("__init__.py: ") +
-	// 	(exists ? "found" : "not found"));
-	// if (exists)
-	// 	ASSERT(Script::create("__init__"));
-	// ASSERT(Reader::rmPath(archivePath));
-	return true;
-}
-
-
-
-
 
 
 

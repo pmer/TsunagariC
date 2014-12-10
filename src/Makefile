@@ -18,8 +18,10 @@ backend-gosu/gosu-tiledimage.o nbcl/nbcl.o
 BASEDATA = ../data/base.zip
 TESTWORLD = ../data/testing.world
 
-MAC_OBJECTS = os-mac.o
-MAC_LDFLAGS = -framework Foundation -framework AppKit
+ifeq ($(shell uname -s),Darwin)
+	OBJECTS := $(OBJECTS) os-mac.o
+	LDFLAGS := $(LDFLAGS) -framework Foundation -framework AppKit
+endif
 
 
 ### --- RULES --- ###
@@ -34,9 +36,6 @@ depend:
 
 tsunagari: $(OBJECTS)
 	$(CXX) -o tsunagari $(OBJECTS) $(WORLDOBJECTS) $(LDFLAGS)
-
-tsunagari-mac: $(OBJECTS) $(MAC_OBJECTS)
-	$(CXX) -o tsunagari $(OBJECTS) $(MAC_OBJECTS) $(WORLDOBJECTS) $(LDFLAGS) $(MAC_LDFLAGS)
 
 data:
 	$(RM) $(BASEDATA) $(TESTWORLD)

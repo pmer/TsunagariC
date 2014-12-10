@@ -296,7 +296,7 @@ void TileSet::set(int idx, TileType* type)
 	types[idx] = type;
 }
 
-TileType* TileSet::get(int x, int y)
+TileType* TileSet::at(int x, int y)
 {
 	size_t i = idx(x, y);
 	if (i > types.size()) {

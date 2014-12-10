@@ -29,8 +29,6 @@
 
 #include <string>
 
-#include "script.h"
-
 class Timeout {
 public:
 	void cancel();
@@ -44,7 +42,7 @@ public:
 	std::string repr() const;
 
 private:
-	ScriptRef callback;
+	// ScriptRef callback;
 	time_t start, delay;
 	bool active;
 };

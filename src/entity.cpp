@@ -787,6 +787,7 @@ bool Entity::processScript(const XMLNode node)
 	return true;
 }
 
+/*
 bool Entity::setScript(const std::string& trigger, ScriptRef& script)
 {
 	if (trigger == "on_tick") {
@@ -811,6 +812,7 @@ bool Entity::setScript(const std::string& trigger, ScriptRef& script)
 	}
 	return false;
 }
+*/
 
 
 void exportEntity()

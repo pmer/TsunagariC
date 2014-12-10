@@ -54,7 +54,7 @@ time_t Timeout::readyTime() const
 
 void Timeout::execute()
 {
-	callback->invoke();
+	// callback->invoke();
 }
 
 std::string Timeout::repr() const

@@ -98,8 +98,8 @@ void World::buttonDown(const Gosu::Button btn)
 	default:
 		if (!paused && keyStates.empty()) {
 			area->buttonDown(btn);
-			if (keydownScript)
-				keydownScript->invoke();
+			// if (keydownScript)
+			// 	keydownScript->invoke();
 		}
 		break;
 	}
@@ -113,8 +113,8 @@ void World::buttonUp(const Gosu::Button btn)
 	default:
 		if (!paused && keyStates.empty()) {
 			area->buttonUp(btn);
-			if (keyupScript)
-				keyupScript->invoke();
+			// if (keyupScript)
+			// 	keyupScript->invoke();
 		}
 		break;
 	}

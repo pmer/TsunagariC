@@ -35,7 +35,6 @@
 #include <Gosu/Color.hpp>
 
 #include "entity.h"
-#include "script.h"
 #include "tile.h"
 #include "vec.h"
 

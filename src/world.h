@@ -36,7 +36,6 @@
 
 #include "bitrecord.h"
 #include "player.h"
-#include "script.h"
 #include "viewport.h"
 
 namespace Gosu {
@@ -143,7 +142,7 @@ public:
 
 	void runAreaLoadScript(Area* area);
 
-	ScriptRef keydownScript, keyupScript;
+	// ScriptRef keydownScript, keyupScript;
 
 protected:
 	/**
@@ -193,8 +192,6 @@ protected:
 	vicoord startCoords;
 
 
-	ScriptRef loadScript;
-	ScriptRef areaLoadScript;
 	ImageRef pauseInfo;
 
 

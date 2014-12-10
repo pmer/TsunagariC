@@ -39,7 +39,6 @@
 #include "formatter.h"
 #include "log.h"
 #include "reader.h"
-#include "script.h"
 #include "window.h"
 #include "xml.h"
 

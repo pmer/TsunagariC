@@ -5,9 +5,9 @@
   <property name="main_music" value=""/>
   <property name="name" value="Basement"/>
  </properties>
- <tileset firstgid="1" source="areas/tiles/indoors.png.tsx"/>
- <tileset firstgid="85" source="areas/tiles/objects.png.tsx"/>
- <tileset firstgid="134" source="areas/tiles/indoors_2.png.tsx"/>
+ <tileset firstgid="1" source="tiles/indoors.png.tsx"/>
+ <tileset firstgid="85" source="tiles/objects.png.tsx"/>
+ <tileset firstgid="134" source="tiles/indoors_2.png.tsx"/>
  <layer name="Tiles(-0.3)" width="6" height="6">
   <properties>
    <property name="layer" value="-0.3"/>

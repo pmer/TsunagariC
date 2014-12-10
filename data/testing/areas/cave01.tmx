@@ -3,8 +3,8 @@
  <properties>
   <property name="name" value="Cave 01"/>
  </properties>
- <tileset firstgid="1" source="areas/tiles/cave.png.tsx"/>
- <tileset firstgid="337" source="areas/tiles/objects.png.tsx"/>
+ <tileset firstgid="1" source="tiles/cave.png.tsx"/>
+ <tileset firstgid="337" source="tiles/objects.png.tsx"/>
  <layer name="Tiles(-0.2)" width="14" height="20">
   <properties>
    <property name="layer" value="-0.2"/>

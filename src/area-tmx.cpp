@@ -160,6 +160,18 @@ bool AreaTMX::processMapProperties(XMLNode node)
 	return true;
 }
 
+/**
+ * dirname
+ *
+ * Returns the directory component of a path, including trailing slash.  If
+ * there is no directory component, return an empty string.
+ */
+static std::string dirname(const std::string& path)
+{
+	size_t slash = path.rfind('/');
+	return slash == std::string::npos ? "" : path.substr(0, slash + 1);
+}
+
 bool AreaTMX::processTileSet(XMLNode node)
 {
 
@@ -187,6 +199,7 @@ bool AreaTMX::processTileSet(XMLNode node)
 	// and process the root tileset element of the TSX, instead.
 	source = node.attr("source");
 	if (source.size()) {
+		source = dirname(descriptor) + source;
 		if (!(doc = Reader::getXMLDoc(source, "dtd/tsx.dtd"))) {
 			Log::err(descriptor, source + ": failed to load valid TSX file");
 			return false;
@@ -212,12 +225,12 @@ bool AreaTMX::processTileSet(XMLNode node)
 			int width = pixelw / tileDim.x;
 			int height = pixelh / tileDim.y;
 
-			std::string source = child.attr("source");
-			tileSets[source] = TileSet(width, height);
-			set = &tileSets[source];
+			std::string imgSource = dirname(source) + child.attr("source");
+			tileSets[imgSource] = TileSet(width, height);
+			set = &tileSets[imgSource];
 
 			// Load tileset image.
-			img = Reader::getTiledImage(source, tilex, tiley);
+			img = Reader::getTiledImage(imgSource, tilex, tiley);
 			if (!img) {
 				Log::err(descriptor, "tileset image not found");
 				return false;

@@ -37,7 +37,8 @@
 #include "reader.h"
 #include "window.h"
 #include "world.h"
-#include "world/world.h"
+
+#include "data/world.h"
 
 #ifdef _WIN32
   #include "os-windows.h"
@@ -100,7 +101,7 @@ int main(int argc, char** argv)
 
 	GameWindow window;
 	World& world = World::instance();
-	WorldWorld& worldWorld = WorldWorld::instance();
+	DataWorld& dataWorld = DataWorld::instance();
 
 	if (!window.init()) {
 		Log::fatal("Main", "GameWindow::init");
@@ -112,7 +113,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	if (!worldWorld.init()) {
+	if (!dataWorld.init()) {
 		Log::fatal("Main", "WorldWorld::init");
 		return 1;
 	}

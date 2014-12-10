@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** world.cpp                     **
+** world.h                       **
 ** Copyright 2014 PariahSoft LLC **
 **********************************/
 
@@ -24,7 +24,27 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "world.h"
+#ifndef DATAWORLD_H
+#define DATAWORLD_H
 
-WorldWorld::WorldWorld() {}
-WorldWorld::~WorldWorld() {}
+class DataWorld
+{
+public:
+	static DataWorld& instance();
+
+	virtual ~DataWorld();
+
+	//! After the engine has booted, initialize the world.
+	virtual bool init() = 0;
+
+protected:
+	DataWorld();
+
+private:
+	DataWorld(const DataWorld&) = delete;
+	DataWorld(DataWorld&&) = delete;
+	DataWorld& operator=(const DataWorld&) = delete;
+	DataWorld& operator=(DataWorld&&) = delete;
+};
+
+#endif

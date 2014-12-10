@@ -12,7 +12,7 @@ character.o client-conf.o entity.o formatter.o image.o log.o main.o music.o \
 npc.o os-windows.o overlay.o player.o random.o reader.o script.o sound.o \
 string.o tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o \
 world.o xml.o backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
-backend-gosu/gosu-tiledimage.o nbcl/nbcl.o world/world.o
+backend-gosu/gosu-tiledimage.o data/world.o nbcl/nbcl.o
 
 # Name of testing world.
 BASEDATA = ../data/base.zip
@@ -89,7 +89,7 @@ log.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
 main.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
  formatter.h image.h log.h main.cpp os-mac.h player.h reader.h script.h \
  sound.h tile.h tiledimage.h vec.h viewport.h window.h world.h xml.h \
- world/world.h
+ data/world.h
 music.o: animation.h area.h bitrecord.h cache-template.cpp cache.h \
  character.h client-conf.h entity.h image.h log.h music.cpp music.h player.h \
  reader.h readercache.h script.h sound.h tile.h tiledimage.h vec.h \

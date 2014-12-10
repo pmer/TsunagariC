@@ -77,13 +77,3 @@ double Timer::count()
 	return (double)prev_count / 1000.0;
 }
 
-std::string Timer::repr() const
-{
-	return Formatter("<timer count=%.02fsec running=%s />")
-			% count() % (isRunning() ? "true" : "false");
-}
-
-void exportTimer()
-{
-}
-

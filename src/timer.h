@@ -63,18 +63,11 @@ public:
 	double count() const;
 	//@}
 
-	/**
-	 * Return a rough string representation of this object.
-	 */
-	std::string repr() const;
-
 private:
 	bool running;
 	time_t prev_time;
 	time_t prev_count;
 };
-
-void exportTimer();
 
 #endif
 

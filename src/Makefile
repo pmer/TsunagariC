@@ -35,7 +35,7 @@ depend:
 	$(CXX) $(CXXFLAGS) -MM *.cpp | perl ../scripts/filter-depend.pl >> Mf
 	mv Mf Makefile
 
-tsunagari: $(OBJECTS)
+tsunagari: $(OBJECTS) $(WORLDOBJECTS)
 	$(CXX) -o tsunagari $(OBJECTS) $(WORLDOBJECTS) $(LDFLAGS)
 
 data:

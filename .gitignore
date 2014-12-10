@@ -1,6 +1,7 @@
 notes.txt
 doc/notes/
 src/*.o
+src/*/*.o
 src/*.world
 src/tsunagari
 data/*.zip

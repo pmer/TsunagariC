@@ -524,13 +524,13 @@ bool AreaTMX::processObjectGroup(XMLNode node)
 */
 
 	double invalid = (double)NAN; // Not a number.
-	int x, y;
+	int x = 0, y = 0;
 	ASSERT(node.intAttr("width", &x));
 	ASSERT(node.intAttr("height", &y));
 
 	double depth = invalid;
 
-	if (dim.x != x || dim.y != y) {
+	if (x && y && (dim.x != x || dim.y != y)) {
 		Log::err(descriptor, "objectgroup x,y size != map x,y size");
 		return false;
 	}

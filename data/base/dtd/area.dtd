@@ -22,6 +22,7 @@
   xsi:schemaLocation  CDATA #IMPLIED
   version     CDATA   #REQUIRED
   orientation (orthogonal | isometric | hexagonal | shifted)  #REQUIRED
+  renderorder CDATA   #IMPLIED
   width       CDATA   #REQUIRED
   height      CDATA   #REQUIRED
   tilewidth   CDATA   #REQUIRED

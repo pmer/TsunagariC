@@ -33,10 +33,10 @@ depend:
 	mv Mf Makefile
 
 tsunagari: $(OBJECTS)
-	$(CXX) -o tsunagari $(OBJECTS) $(LDFLAGS)
+	$(CXX) -o tsunagari $(OBJECTS) $(WORLDOBJECTS) $(LDFLAGS)
 
 tsunagari-mac: $(OBJECTS) $(MAC_OBJECTS)
-	$(CXX) -o tsunagari $(OBJECTS) $(MAC_OBJECTS) $(LDFLAGS) $(MAC_LDFLAGS)
+	$(CXX) -o tsunagari $(OBJECTS) $(MAC_OBJECTS) $(WORLDOBJECTS) $(LDFLAGS) $(MAC_LDFLAGS)
 
 data:
 	$(RM) $(BASEDATA) $(TESTWORLD)

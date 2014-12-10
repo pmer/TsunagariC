@@ -78,7 +78,7 @@ struct libraries
  * The client config tells us our window parameters along with which World
  * we're going to load. The GameWindow class then loads and plays the game.
  */
-int main(int argc, char** argv)
+int TsunagariMain(int argc, char** argv)
 {
 	#ifdef _WIN32
 		wFixConsole();

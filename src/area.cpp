@@ -103,9 +103,8 @@ void Area::focus()
 	if (musicLoopSet)
 		Music::instance().setLoop(musicLoop);
 
-	//pythonSetGlobal("Area", this);
-	//if (focusScript)
-	//	focusScript->invoke();
+	if (dataArea)
+		dataArea->onFocus();
 }
 
 void Area::buttonDown(const Gosu::Button btn)

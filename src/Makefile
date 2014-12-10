@@ -131,7 +131,7 @@ window.o: animation.h area.h bitrecord.h character.h client-conf.h entity.h \
 world.o: animation.h area-tmx.h area.h bitrecord.h cache-template.cpp \
  cache.h character.h client-conf.h entity.h image.h log.h music.h player.h \
  reader.h readercache.h script.h sound.h tile.h tiledimage.h timeout.h vec.h \
- viewport.h window.h world.cpp world.h xml.h
+ viewport.h window.h world.cpp world.h xml.h data/area.h data/world.h
 xml.o: log.h string.h xml.cpp xml.h
 gosu-cbuffer.o: backend-gosu/gosu-cbuffer.cpp backend-gosu/gosu-cbuffer.h
 gosu-image.o: backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.cpp \

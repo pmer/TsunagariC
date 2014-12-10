@@ -41,7 +41,7 @@ public:
 	//! After the engine has booted, initialize the world.
 	virtual bool init() = 0;
 
-	DataAreaRef area(const std::string& areaName);
+	DataArea* area(const std::string& areaName);
 
 protected:
 	DataWorld();

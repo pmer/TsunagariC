@@ -36,6 +36,8 @@
 #include "world.h"
 #include "xml.h"
 
+#include "data/world.h"
+
 #define ASSERT(x)  if (!(x)) { return false; }
 
 static World globalWorld;
@@ -64,11 +66,6 @@ bool World::init()
 
 	view.reset(new Viewport(viewportSz));
 	view->trackEntity(&player);
-
-	// pythonSetGlobal("Music", &music);
-
-	if (loadScript)
-		loadScript->invoke();
 
 	Area* area = getArea(startArea);
 	if (area == NULL) {
@@ -205,7 +202,13 @@ Area* World::getArea(const std::string& filename)
 
 	if (!newArea->init())
 		newArea = NULL;
+
 	areas[filename] = newArea;
+
+	DataArea* dataArea = DataWorld::instance().area(filename);
+	if (dataArea)
+		dataArea->area = newArea;
+
 	return newArea;
 }
 
@@ -270,13 +273,6 @@ void World::restoreKeys()
 		else
 			buttonUp(btn);
 	}
-}
-
-void World::runAreaLoadScript(Area* area)
-{
-	// pythonSetGlobal("Area", area);
-	// if (areaLoadScript)
-	// 	areaLoadScript->invoke();
 }
 
 time_t World::calculateDt(time_t now)

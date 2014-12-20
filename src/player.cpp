@@ -34,6 +34,13 @@
 
 #define ASSERT(x)  if (!(x)) { return false; }
 
+static Player* globalPlayer = NULL;
+
+Player& Player::instance()
+{
+	return *globalPlayer;
+}
+
 template<class Cont, class ValueType>
 void removeValue(Cont* c, ValueType v)
 {
@@ -50,6 +57,7 @@ void removeValue(Cont* c, ValueType v)
 Player::Player()
 	: Character(), velocity(0, 0)
 {
+	globalPlayer = this;
 	nowalkFlags = TILE_NOWALK | TILE_NOWALK_PLAYER;
 	nowalkExempt = TILE_NOWALK_EXIT;
 }

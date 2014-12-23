@@ -61,6 +61,13 @@ void Formatter::findNextPlaceholder()
 
 
 template<>
+std::string Formatter::format(bool data)
+{
+	return std::string(data ? "true" : "false");
+}
+
+
+template<>
 std::string Formatter::format(int data)
 {
 	char buf[512];

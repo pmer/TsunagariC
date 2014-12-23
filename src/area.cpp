@@ -188,7 +188,7 @@ void Area::requestRedraw()
 void Area::tick(unsigned long dt)
 {
 	if (dataArea)
-		dataArea->onTick();
+		dataArea->tick(dt);
 
 	for (OverlaySet::iterator it = overlays.begin(); it != overlays.end(); it++) {
 		Overlay* o = *it;

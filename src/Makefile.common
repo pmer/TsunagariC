@@ -3,6 +3,6 @@ WFLAGS += -Wall -Wextra -Wconversion -Wdeprecated
 
 # Compiler and linker flags.
 CXXFLAGS += -g $(BLDCFLAGS) -pipe -pedantic $(WFLAGS) \
-	$(shell xml2-config --cflags) -I/usr/local/include -std=c++11
+	$(shell xml2-config --cflags) -I/usr/local/include -std=c++1y
 LDFLAGS += $(BLDLDFLAGS) -lboost_program_options -lgosu -lphysfs \
 	$(shell xml2-config --libs) -L/usr/local/lib

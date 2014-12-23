@@ -27,28 +27,43 @@
 #ifndef DATAAREA_H
 #define DATAAREA_H
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
+#include <time.h>
+#include <vector>
 
 class Area;
 class Entity;
+class InProgress;
 class Tile;
 
 class DataArea
 {
 public:
 	typedef void (DataArea::* TileScript)(Entity& triggeredBy, Tile& tile);
+	typedef std::function<void (double)> ProgressFn;
+	typedef std::function<void ()> ThenFn;
 
 	virtual ~DataArea();
 
-	Area* area;
+	Area* area; // borrowed reference
 
 	virtual void onLoad();
 	virtual void onFocus();
-	virtual void onTick();
+	virtual void onTick(time_t dt);
 	virtual void onTurn();
 
+	// For scripts
+	void playSoundAndThen(std::string sound, ThenFn then);
+	void timerProgress(time_t duration, ProgressFn progress);
+	void timerThen(time_t duration, ThenFn then);
+	void timerProgressAndThen(time_t duration, ProgressFn progress,
+		ThenFn then);
+
+	// For engine
+	void tick(time_t dt);
 	TileScript script(const std::string& scriptName);
 
 protected:
@@ -61,6 +76,8 @@ private:
 	DataArea(DataArea&&) = delete;
 	DataArea& operator=(const DataArea&) = delete;
 	DataArea& operator=(DataArea&&) = delete;
+
+	std::vector<std::unique_ptr<InProgress>> inProgresses;
 };
 
 typedef std::shared_ptr<DataArea> DataAreaRef;

@@ -24,14 +24,59 @@
 // IN THE SOFTWARE.
 // **********
 
+#include <algorithm>
+
 #include "area.h"
+#include "inprogress.h"
 
 DataArea::DataArea() {}
 DataArea::~DataArea() {}
 void DataArea::onLoad() {}
 void DataArea::onFocus() {}
-void DataArea::onTick() {}
+void DataArea::onTick(time_t) {}
 void DataArea::onTurn() {}
+
+void DataArea::tick(time_t dt)
+{
+	for (auto& inProgress : inProgresses) {
+		inProgress->tick(dt);
+	}
+	std::remove_if(inProgresses.begin(), inProgresses.end(),
+		[] (std::unique_ptr<InProgress>& inProgress) {
+			return inProgress->isOver();
+		}
+	);
+	onTick(dt);
+}
+
+void DataArea::playSoundAndThen(std::string sound, ThenFn then)
+{
+	inProgresses.emplace_back(
+		new InProgressSound(sound, then)
+	);
+}
+
+void DataArea::timerProgress(time_t duration, ProgressFn progress)
+{
+	inProgresses.emplace_back(
+		new InProgressTimer(duration, progress)
+	);
+}
+
+void DataArea::timerThen(time_t duration, ThenFn then)
+{
+	inProgresses.emplace_back(
+		new InProgressTimer(duration, then)
+	);
+}
+
+void DataArea::timerProgressAndThen(time_t duration, ProgressFn progress,
+	ThenFn then)
+{
+	inProgresses.emplace_back(
+		new InProgressTimer(duration, progress, then)
+	);
+}
 
 DataArea::TileScript DataArea::script(const std::string& scriptName)
 {

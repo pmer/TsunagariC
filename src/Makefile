@@ -13,7 +13,7 @@ npc.o os-windows.o overlay.o player.o random.o reader.o sound.o string.o \
 tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o world.o xml.o \
 backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
 backend-gosu/gosu-tiledimage.o backend-gosu/gosu-window.o data/area.o \
-data/world.o nbcl/nbcl.o
+data/inprogress.o data/world.o nbcl/nbcl.o
 
 # Name of testing world.
 BASEDATA = ../data/base.zip
@@ -137,17 +137,18 @@ world.o: animation.h area-tmx.h area.h bitrecord.h cache-template.cpp \
  reader.h readercache.h sound.h tile.h tiledimage.h timeout.h vec.h \
  viewport.h window.h world.cpp world.h xml.h data/area.h data/world.h
 xml.o: log.h string.h xml.cpp xml.h
-gosu-cbuffer.o: backend-gosu/gosu-cbuffer.cpp backend-gosu/gosu-cbuffer.h
-gosu-image.o: backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.cpp \
- backend-gosu/gosu-image.h backend-gosu/gosu-window.h \
- backend-gosu/../bitrecord.h backend-gosu/../image.h \
- backend-gosu/../window.h
-gosu-tiledimage.o: backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.h \
- backend-gosu/gosu-tiledimage.cpp backend-gosu/gosu-tiledimage.h \
- backend-gosu/../bitrecord.h backend-gosu/../image.h \
- backend-gosu/../tiledimage.h backend-gosu/../window.h
-gosu-window.o: backend-gosu/gosu-window.cpp backend-gosu/gosu-window.h \
- backend-gosu/../animation.h backend-gosu/../area.h \
+backend-gosu/gosu-cbuffer.o: backend-gosu/gosu-cbuffer.cpp \
+ backend-gosu/gosu-cbuffer.h
+backend-gosu/gosu-image.o: backend-gosu/gosu-cbuffer.h \
+ backend-gosu/gosu-image.cpp backend-gosu/gosu-image.h \
+ backend-gosu/gosu-window.h backend-gosu/../bitrecord.h \
+ backend-gosu/../image.h backend-gosu/../window.h
+backend-gosu/gosu-tiledimage.o: backend-gosu/gosu-cbuffer.h \
+ backend-gosu/gosu-image.h backend-gosu/gosu-tiledimage.cpp \
+ backend-gosu/gosu-tiledimage.h backend-gosu/../bitrecord.h \
+ backend-gosu/../image.h backend-gosu/../tiledimage.h backend-gosu/../window.h
+backend-gosu/gosu-window.o: backend-gosu/gosu-window.cpp \
+ backend-gosu/gosu-window.h backend-gosu/../animation.h backend-gosu/../area.h \
  backend-gosu/../bitrecord.h backend-gosu/../character.h \
  backend-gosu/../client-conf.h backend-gosu/../entity.h \
  backend-gosu/../image.h backend-gosu/../log.h backend-gosu/../player.h \
@@ -155,6 +156,8 @@ gosu-window.o: backend-gosu/gosu-window.cpp backend-gosu/gosu-window.h \
  backend-gosu/../tiledimage.h backend-gosu/../vec.h \
  backend-gosu/../viewport.h backend-gosu/../window.h backend-gosu/../world.h \
  backend-gosu/../xml.h backend-gosu/../data/area.h
-area.o: data/area.cpp data/area.h
-world.o: data/area.h data/world.cpp data/world.h
-nbcl.o: nbcl/nbcl.cpp nbcl/nbcl.h
+data/area.o: data/area.cpp data/area.h data/inprogress.h data/../sound.h
+data/inprogress.o: data/inprogress.cpp data/inprogress.h data/../log.h \
+ data/../sound.h
+data/world.o: data/area.h data/world.cpp data/world.h
+nbcl/nbcl.o: nbcl/nbcl.cpp nbcl/nbcl.h

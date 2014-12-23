@@ -61,14 +61,14 @@ void InProgressSound::tick(time_t)
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress)
-	: duration(duration), progress(progress)
+	: duration(duration), passed(0), progress(progress)
 {
 	if (!progress)
 		Log::err("InProgressTimer", "invalid 'progress'");
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ThenFn then)
-	: duration(duration), then(then)
+	: duration(duration), passed(0), then(then)
 {
 	if (!then)
 		Log::err("InProgressTimer", "invalid 'then'");
@@ -76,7 +76,7 @@ InProgressTimer::InProgressTimer(time_t duration, ThenFn then)
 
 InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress,
 		ThenFn then)
-	: duration(duration), progress(progress), then(then)
+	: duration(duration), passed(0), progress(progress), then(then)
 {
 	if (!progress)
 		Log::err("InProgressTimer", "invalid 'progress'");

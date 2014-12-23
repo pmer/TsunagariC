@@ -41,11 +41,13 @@ void DataArea::tick(time_t dt)
 	for (auto& inProgress : inProgresses) {
 		inProgress->tick(dt);
 	}
-	std::remove_if(inProgresses.begin(), inProgresses.end(),
-		[] (std::unique_ptr<InProgress>& inProgress) {
-			return inProgress->isOver();
-		}
-	);
+	for (auto it = inProgresses.begin(); it != inProgresses.end(); ) {
+		auto& inProgress = *it;
+		if (inProgress->isOver())
+			it = inProgresses.erase(it);
+		else
+			it++;
+	}
 	onTick(dt);
 }
 

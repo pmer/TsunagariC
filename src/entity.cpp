@@ -617,7 +617,7 @@ void Entity::runTileEntryScript()
 
 bool Entity::processDescriptor()
 {
-	XMLRef doc = Reader::getXMLDoc(descriptor, "dtd/entity.dtd");
+	XMLRef doc = Reader::getXMLDoc(descriptor, "entity");
 	if (!doc)
 		return false;
 	const XMLNode root = doc->root(); // <entity>

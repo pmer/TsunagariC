@@ -8,10 +8,10 @@
 include Makefile.common
 
 OBJECTS = animation.o area.o area-tmx.o bitrecord.o cache-template.o \
-character.o client-conf.o entity.o formatter.o image.o log.o main.o music.o \
-npc.o os-windows.o overlay.o player.o random.o reader.o sound.o string.o \
-tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o world.o xml.o \
-backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
+character.o client-conf.o dtds.o entity.o formatter.o image.o log.o main.o \
+music.o npc.o os-windows.o overlay.o player.o random.o reader.o sound.o \
+string.o tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o \
+world.o xml.o backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
 backend-gosu/gosu-music.o backend-gosu/gosu-tiledimage.o \
 backend-gosu/gosu-window.o data/area.o data/inprogress.o data/world.o \
 nbcl/nbcl.o

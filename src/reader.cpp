@@ -36,6 +36,7 @@
 #include "cache.h"
 #include "cache-template.cpp"
 #include "client-conf.h"
+#include "dtds.h"
 #include "formatter.h"
 #include "log.h"
 #include "reader.h"
@@ -127,16 +128,12 @@ static bool readFromDisk(const std::string& name, T& buf)
 }
 
 // FIXME: Should be moved to xml.cpp!!!!!!
-static DTDRef parseDTD(const std::string& path)
+static DTDRef parseDTD(const std::string& dtdContent)
 {
 	xmlCharEncoding enc = XML_CHAR_ENCODING_NONE;
 
-	std::string bytes = Reader::readString(path);
-	if (bytes.empty())
-		return DTDRef();
-
 	xmlParserInputBuffer* input = xmlParserInputBufferCreateMem(
-			bytes.c_str(), (int)bytes.size(), enc);
+			dtdContent.c_str(), (int)dtdContent.size(), enc);
 	if (!input)
 		return DTDRef();
 
@@ -150,25 +147,25 @@ static DTDRef parseDTD(const std::string& path)
 // FIXME: Should be moved to xml.cpp!!!!!!
 static bool preloadDTDs()
 {
-	ASSERT(dtds["dtd/area.dtd"]   = parseDTD("dtd/area.dtd"));
-	ASSERT(dtds["dtd/entity.dtd"] = parseDTD("dtd/entity.dtd"));
-	ASSERT(dtds["dtd/tsx.dtd"] = parseDTD("dtd/tsx.dtd"));
-	ASSERT(dtds["dtd/world.dtd"]  = parseDTD("dtd/world.dtd"));
+	ASSERT(dtds["area"] = parseDTD(CONTENT_OF_AREA_DTD()));
+	ASSERT(dtds["entity"] = parseDTD(CONTENT_OF_ENTITY_DTD()));
+	ASSERT(dtds["tsx"] = parseDTD(CONTENT_OF_TSX_DTD()));
+	ASSERT(dtds["world"]  = parseDTD(CONTENT_OF_WORLD_DTD()));
 	return true;
 }
 
-static xmlDtd* getDTD(const std::string& name)
+static xmlDtd* getDTD(const std::string& type)
 {
-	DTDMap::iterator it = dtds.find(name);
+	DTDMap::iterator it = dtds.find(type);
 	return it == dtds.end() ? NULL : it->second.get();
 }
 
 static XMLDoc* readXMLDoc(const std::string& name,
-                          const std::string& dtdPath)
+                          const std::string& dtdType)
 {
 	std::string p = path(name);
 	std::string data = Reader::readString(name);
-	xmlDtd* dtd = getDTD(dtdPath);
+	xmlDtd* dtd = getDTD(dtdType);
 
 	if (!dtd || data.empty())
 		return NULL;
@@ -336,13 +333,13 @@ SampleRef Reader::getSample(const std::string& name)
 }
 
 XMLRef Reader::getXMLDoc(const std::string& name,
-                            const std::string& dtdFile)
+                            const std::string& dtdType)
 {
 	XMLRef existing = xmls.momentaryRequest(name);
 	if (existing)
 		return existing;
 
-	XMLRef result(readXMLDoc(name, dtdFile));
+	XMLRef result(readXMLDoc(name, dtdType));
 
 	xmls.momentaryPut(name, result);
 	return result;

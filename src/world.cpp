@@ -324,7 +324,7 @@ bool World::processDescriptor()
 	XMLRef doc;
 	XMLNode root;
 
-	ASSERT(doc = Reader::getXMLDoc("world.conf", "dtd/world.dtd"));
+	ASSERT(doc = Reader::getXMLDoc("world.conf", "world"));
 	ASSERT(root = doc->root()); // <world>
 
 	for (XMLNode child = root.childrenNode(); child; child = child.next()) {

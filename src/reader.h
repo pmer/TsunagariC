@@ -81,7 +81,7 @@ public:
 
 	//! Request an XML document from the World.
 	static XMLRef getXMLDoc(const std::string& name,
-		const std::string& dtdPath);
+		const std::string& dtdType);
 
 	//! Request a text file from the World.
 	static std::string getText(const std::string& name);

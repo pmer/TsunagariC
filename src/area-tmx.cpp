@@ -92,7 +92,7 @@ bool AreaTMX::processDescriptor()
 	XMLRef doc;
 	XMLNode root;
 
-	ASSERT(doc = Reader::getXMLDoc(descriptor, "dtd/area.dtd"));
+	ASSERT(doc = Reader::getXMLDoc(descriptor, "area"));
 	ASSERT(root = doc->root()); // <map>
 
 	ASSERT(root.intAttr("width", &dim.x));
@@ -200,7 +200,7 @@ bool AreaTMX::processTileSet(XMLNode node)
 	source = node.attr("source");
 	if (source.size()) {
 		source = dirname(descriptor) + source;
-		if (!(doc = Reader::getXMLDoc(source, "dtd/tsx.dtd"))) {
+		if (!(doc = Reader::getXMLDoc(source, "tsx"))) {
 			Log::err(descriptor, source + ": failed to load valid TSX file");
 			return false;
 		}

@@ -51,6 +51,11 @@ void DataArea::tick(time_t dt)
 	onTick(dt);
 }
 
+void DataArea::turn()
+{
+	onTurn();
+}
+
 void DataArea::playSoundAndThen(std::string sound, ThenFn then)
 {
 	inProgresses.emplace_back(

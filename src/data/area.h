@@ -64,6 +64,7 @@ public:
 
 	// For engine
 	void tick(time_t dt);
+	void turn();
 	TileScript script(const std::string& scriptName);
 
 protected:

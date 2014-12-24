@@ -193,17 +193,14 @@ void Area::tick(time_t dt)
 
 	for (OverlaySet::iterator it = overlays.begin(); it != overlays.end(); it++) {
 		Overlay* o = *it;
-		//pythonSetGlobal("Area", this);
 		o->tick(dt);
 	}
 
 	if (conf.moveMode != TURN) {
-		//pythonSetGlobal("Area", this);
 		player->tick(dt);
 
 		for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
 			Character* c = *it;
-			//pythonSetGlobal("Area", this);
 			c->tick(dt);
 		}
 	}
@@ -214,16 +211,13 @@ void Area::tick(time_t dt)
 
 void Area::turn()
 {
-	//pythonSetGlobal("Area", this);
-	//if (turnScript)
-	//	turnScript->invoke();
+	if (dataArea)
+		dataArea->turn();
 
-	//pythonSetGlobal("Area", this);
 	player->turn();
 
 	for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
 		Character* c = *it;
-		// pythonSetGlobal("Area", this);
 		c->turn();
 	}
 
@@ -583,9 +577,5 @@ void Area::drawColorOverlay()
 		int y = window.height();
 		GameWindow::instance().drawRect(0, x, 0, y, colorOverlayARGB);
 	}
-}
-
-void exportArea()
-{
 }
 

@@ -219,8 +219,5 @@ protected:
 	bool musicIntroSet, musicLoopSet;
 };
 
-//! Register Areas with Python.
-void exportArea();
-
 #endif
 

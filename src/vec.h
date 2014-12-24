@@ -62,11 +62,6 @@ public:
 	{
 	}
 
-	vec2(const vec2<T>& other)
-		: x(other.x), y(other.y)
-	{
-	}
-
 	vec2(T x, T y)
 		: x(x), y(y)
 	{
@@ -135,11 +130,6 @@ public:
 	T x, y, z;
 
 	vec3()
-	{
-	}
-
-	vec3(const vec3<T>& other)
-		: x(other.x), y(other.y), z(other.z)
 	{
 	}
 

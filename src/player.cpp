@@ -63,13 +63,6 @@ Player::Player()
 	nowalkExempt = TILE_NOWALK_EXIT;
 }
 
-bool Player::init(const std::string& descriptor, const std::string& initialPhase)
-{
-	ASSERT(Entity::init(descriptor));
-	setPhase(initialPhase);
-	return true;
-}
-
 void Player::destroy()
 {
 	// Assuming this is being called from Python code, where this function

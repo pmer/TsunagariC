@@ -69,10 +69,12 @@ Entity::~Entity()
 	// }
 }
 
-bool Entity::init(const std::string& descriptor)
+bool Entity::init(const std::string& descriptor, const std::string& initialPhase)
 {
 	this->descriptor = descriptor;
-	return processDescriptor();
+	ASSERT(processDescriptor());
+	setPhase(initialPhase);
+	return true;
 }
 
 void Entity::destroy()

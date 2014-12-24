@@ -39,7 +39,6 @@ public:
 	static Player& instance();
 
 	Player();
-	bool init(const std::string& descriptor, const std::string& initialPhase);
 	void destroy();
 
 	//! Smooth continuous movement.

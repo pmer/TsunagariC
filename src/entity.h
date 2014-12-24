@@ -65,7 +65,7 @@ public:
 	virtual ~Entity();
 
 	//! Entity initializer
-	virtual bool init(const std::string& descriptor);
+	virtual bool init(const std::string& descriptor, const std::string& initialPhase);
 
 	//! Entity destroyer.
 	virtual void destroy();

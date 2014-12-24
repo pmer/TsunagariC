@@ -411,17 +411,12 @@ Entity* Area::spawnNPC(const std::string& descriptor,
 	int x, int y, double z, const std::string& phase)
 {
 	Character* c = new NPC();
-	if (!c->init(descriptor)) {
+	if (!c->init(descriptor, phase)) {
 		// Error logged.
 		delete c;
 		return NULL;
 	}
 	c->setArea(this);
-	if (!c->setPhase(phase)) {
-		// Error logged.
-		delete c;
-		return NULL;
-	}
 	c->setTileCoords(x, y, z);
 	insert(c);
 	return c;
@@ -431,17 +426,12 @@ Entity* Area::spawnOverlay(const std::string& descriptor,
 	int x, int y, double z, const std::string& phase)
 {
 	Overlay* o = new Overlay();
-	if (!o->init(descriptor)) {
+	if (!o->init(descriptor, phase)) {
 		// Error logged.
 		delete o;
 		return NULL;
 	}
 	o->setArea(this);
-	if (!o->setPhase(phase)) {
-		// Error logged.
-		delete o;
-		return NULL;
-	}
 	o->setTileCoords(x, y, z);
 	// XXX: o->leaveTile(); // Overlays don't consume tiles.
 

@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** music.h                            **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -27,13 +27,8 @@
 #ifndef MUSIC_H
 #define MUSIC_H
 
-#include <Gosu/Audio.hpp> // for Gosu::SampleInstance
-
 #include <memory>
 #include <string>
-
-#include "cache-template.cpp"
-#include "readercache.h"
 
 /**
  * State manager for currently playing music. Continuously controls which music
@@ -53,28 +48,27 @@ class Music
 public:
 	static Music& instance();
 
-	Music();
-	~Music();
+	virtual ~Music();
 
-	std::string getIntro();
-	std::string getLoop();
-
-	void setIntro(const std::string& filename);
-	void setLoop(const std::string& filename);
+	virtual bool setIntro(const std::string& filename);
+	virtual bool setLoop(const std::string& filename);
 
 	int getVolume();
-	void setVolume(int level);
+	virtual bool setVolume(int level);
 
 	bool isPaused();
-	void setPaused(bool p);
+	virtual bool setPaused(bool p);
 
-	void stop();
+	virtual void stop();
 
-	void tick();
-	
-	typedef std::shared_ptr<Gosu::Song> SongRef;
+	virtual void tick();
 
-private:
+protected:
+	Music();
+
+	void playIntro();
+	void playLoop();
+
 	enum MUSIC_STATE
 	{
 		NOT_PLAYING,
@@ -82,30 +76,14 @@ private:
 		PLAYING_LOOP,
 		CHANGED_INTRO,
 		CHANGED_LOOP
-	};
+	} state;
 
-	void setState(MUSIC_STATE state_);
-	void playIntro();
-	void playLoop();
-	
-	SongRef getSong(const std::string& name);
-
-	ReaderCache<SongRef> songs;
-
-	SongRef musicInst, introMusic, loopMusic;
-	
+	int volume;
 	bool paused;
-	
-	MUSIC_STATE state;
-	
-	std::string newIntro;
-	std::string newLoop;
-	std::string curIntro;
-	std::string curLoop;
-};
 
-//! Register Music with Python.
-void exportMusic();
+	std::string curIntro, newIntro;
+	std::string curLoop, newLoop;
+};
 
 #endif
 

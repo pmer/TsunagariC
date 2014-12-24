@@ -70,7 +70,7 @@ public:
 	void mainLoop();
 
         void drawRect(double x1, double x2, double y1, double y2,
-                unsigned int argb);
+                uint32_t argb);
 
 	void scale(double x, double y);
 	void translate(double x, double y);

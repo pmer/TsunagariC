@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** area.cpp                           **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -230,11 +230,10 @@ void Area::turn()
 	view->turn();
 }
 
-void Area::setColorOverlay(unsigned char a, unsigned char r, unsigned char g,
-		unsigned char b)
+void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
 {
-	colorOverlayARGB = (unsigned int)(a << 24) + (unsigned int)(r << 16) +
-		(unsigned int)(g << 8) + (unsigned int)b;
+	colorOverlayARGB = (uint32_t)(a << 24) + (uint32_t)(r << 16) +
+		(uint32_t)(g << 8) + (uint32_t)b;
 	redraw = true;
 }
 

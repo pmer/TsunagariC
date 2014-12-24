@@ -82,7 +82,7 @@ public:
 	 * are in pixels.
 	 */
 	virtual void drawRect(double x1, double x2, double y1, double y2,
-		unsigned int argb) = 0;
+		uint32_t argb) = 0;
 
 	virtual void scale(double x, double y) = 0;
 	virtual void translate(double x, double y) = 0;

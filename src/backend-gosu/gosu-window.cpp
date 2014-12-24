@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** window.cpp                         **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -181,7 +181,7 @@ void GosuGameWindow::mainLoop()
 }
 
 void GosuGameWindow::drawRect(double x1, double x2, double y1, double y2,
-		unsigned int argb)
+		uint32_t argb)
 {
 	Gosu::Color c(argb);
 	double top = std::numeric_limits<double>::max();

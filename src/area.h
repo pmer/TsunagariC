@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** area.h                             **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -96,8 +96,7 @@ public:
 	 */
 	void turn();
 
-	void setColorOverlay(unsigned char a, unsigned char r, unsigned char g,
-		unsigned char b);
+	void setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 
 	const Tile* getTile(int x, int y, int z) const; /* phys */
 	const Tile* getTile(int x, int y, double z) const; /* virt */
@@ -178,7 +177,7 @@ protected:
 
 	Viewport* view;
 	Player* player;
-	unsigned long colorOverlayARGB;
+	uint32_t colorOverlayARGB;
 
 	typedef std::set<Character*> CharacterSet;
 	CharacterSet characters;

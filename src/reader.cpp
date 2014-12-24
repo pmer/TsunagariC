@@ -150,7 +150,6 @@ static bool preloadDTDs()
 	ASSERT(dtds["area"] = parseDTD(CONTENT_OF_AREA_DTD()));
 	ASSERT(dtds["entity"] = parseDTD(CONTENT_OF_ENTITY_DTD()));
 	ASSERT(dtds["tsx"] = parseDTD(CONTENT_OF_TSX_DTD()));
-	ASSERT(dtds["world"]  = parseDTD(CONTENT_OF_WORLD_DTD()));
 	return true;
 }
 

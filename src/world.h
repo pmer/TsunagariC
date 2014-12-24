@@ -62,11 +62,6 @@ public:
 	bool init();
 
 	/**
-	 * User's friendly name for this map.
-	 */
-	const std::string& getName() const;
-
-	/**
 	 * Syncronized time value used throughout the engine.
 	 */
 	time_t time() const;
@@ -152,36 +147,15 @@ protected:
 	 */
 	void pushLetterbox();
 
-	bool processDescriptor();
-	bool processInfo(XMLNode node);
-	bool processInit(XMLNode node);
-	bool processScript(XMLNode node);
-	bool processInput(XMLNode node);
-
 protected:
 	typedef std::map<std::string, Area*> AreaMap;
 
-
-	std::string name;
-	std::string author;
-	double version;
-	icoord viewportSz;
-
-
-	std::string playerEntity;
-	std::string startArea;
-	vicoord startCoords;
-
-
 	ImageRef pauseInfo;
-
 
 	AreaMap areas;
 	Area* area;
 	Player player;
-	std::string playerPhase;
 	std::shared_ptr<Viewport> view;
-
 
 	/**
 	 * Last time engine state was updated. See World::update().
@@ -193,16 +167,12 @@ protected:
 	 */
 	time_t total;
 
-
 	bool redraw;
 	bool userPaused;
 	int paused;
 
-
 	std::stack<BitRecord> keyStates;
 };
-
-void exportWorld();
 
 #endif
 

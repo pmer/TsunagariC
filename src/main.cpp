@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	window->setCaption(world.getName());
+	window->setCaption(dataWorld.about.name);
 
 	window->mainLoop();
 

@@ -33,6 +33,5 @@
 const std::string& CONTENT_OF_AREA_DTD();
 const std::string& CONTENT_OF_ENTITY_DTD();
 const std::string& CONTENT_OF_TSX_DTD();
-const std::string& CONTENT_OF_WORLD_DTD();
 
 #endif

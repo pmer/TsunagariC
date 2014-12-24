@@ -56,28 +56,26 @@ World::~World()
 
 bool World::init()
 {
-	ASSERT(processDescriptor()); // Try to load in descriptor.
 	ASSERT(pauseInfo = Reader::getImage("resource/pause_overlay.png"));
 
-	ASSERT(player.init(playerEntity, playerPhase));
-	// pythonSetGlobal("Player", (Entity*)&player);
+	auto& parameters = DataWorld::instance().parameters;
+	auto& gameStart = parameters.gameStart;
 
-	view.reset(new Viewport(viewportSz));
+	conf.moveMode = parameters.moveMode;
+
+	ASSERT(player.init(gameStart.player.file, gameStart.player.phase));
+
+	view.reset(new Viewport(parameters.viewportSize));
 	view->trackEntity(&player);
 
-	Area* area = getArea(startArea);
+	Area* area = getArea(gameStart.area);
 	if (area == NULL) {
 		Log::fatal("World", "failed to load initial Area");
 		return false;
 	}
-	focusArea(area, startCoords);
+	focusArea(area, gameStart.coords);
 
 	return true;
-}
-
-const std::string& World::getName() const
-{
-	return name;
 }
 
 time_t World::time() const
@@ -310,127 +308,5 @@ void World::pushLetterbox()
 		window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y);
 		clips++;
 	}
-}
-
-bool World::processDescriptor()
-{
-	XMLRef doc;
-	XMLNode root;
-
-	ASSERT(doc = Reader::getXMLDoc("world.conf", "world"));
-	ASSERT(root = doc->root()); // <world>
-
-	for (XMLNode child = root.childrenNode(); child; child = child.next()) {
-		if (child.is("info")) {
-			ASSERT(processInfo(child));
-		}
-		else if (child.is("init")) {
-			ASSERT(processInit(child));
-		}
-		else if (child.is("script")) {
-			ASSERT(processScript(child));
-		}
-		else if (child.is("input")) {
-			ASSERT(processInput(child));
-		}
-	}
-
-	if (conf.moveMode == TURN &&
-	   (conf.persistInit == 0 || conf.persistCons == 0)) {
-		Log::fatal("world.conf", "\"input->persist\" option required in \"turn\" mode");
-		return false;
-	}
-
-	return true;
-}
-
-bool World::processInfo(XMLNode node)
-{
-	for (node = node.childrenNode(); node; node = node.next()) {
-		if (node.is("name")) {
-			name = node.content();
-		} else if (node.is("author")) {
-			author = node.content();
-		} else if (node.is("version")) {
-			version = atof(node.content().c_str());
-		}
-	}
-	return true;
-}
-
-bool World::processInit(XMLNode node)
-{
-	for (node = node.childrenNode(); node; node = node.next()) {
-		if (node.is("area")) {
-			startArea = node.content();
-		}
-		else if (node.is("player")) {
-			playerEntity = node.attr("file");
-			playerPhase = node.attr("phase");
-		}
-		else if (node.is("mode")) {
-			std::string str = node.content();
-			if (str == "turn")
-				conf.moveMode = TURN;
-			else if (str == "tile")
-				conf.moveMode = TILE;
-			else if (str == "notile")
-				conf.moveMode = NOTILE;
-		}
-		else if (node.is("coords")) {
-			if (!node.intAttr("x", &startCoords.x) ||
-			    !node.intAttr("y", &startCoords.y) ||
-			    !node.doubleAttr("z", &startCoords.z))
-				return false;
-		}
-		else if (node.is("viewport")) {
-			if (!node.intAttr("width", &viewportSz.x) ||
-			    !node.intAttr("height", &viewportSz.y))
-				return false;
-		}
-	}
-	return true;
-}
-
-bool World::processScript(XMLNode node)
-{
-	for (node = node.childrenNode(); node; node = node.next()) {
-		std::string filename = node.content();
-		// ScriptRef script = Script::create(filename);
-
-		// if (!script)
-		// 	return false;
-
-		// if (node.is("on_init")) {
-		// 	if (!script->validate()) {
-		// 		Log::err("World", "on_init: " + filename + ": invalid");
-		// 		return false;
-		// 	}
-		// 	loadScript = script;
-		// } else if (node.is("on_area_init")) {
-		// 	if (!script->validate()) {
-		// 		Log::err("World", "on_area_init: " + filename + ": invalid");
-		// 		return false;
-		// 	}
-		// 	areaLoadScript = script;
-		// }
-	}
-	return true;
-}
-
-bool World::processInput(XMLNode node)
-{
-	for (node = node.childrenNode(); node; node = node.next()) {
-		if (node.is("persist")) {
-			if (!node.intAttr("init", &conf.persistInit) ||
-				!node.intAttr("cons", &conf.persistCons))
-			    return false;
-		}
-	}
-	return true;
-}
-
-void exportWorld()
-{
 }
 

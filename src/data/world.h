@@ -28,6 +28,9 @@
 #define DATAWORLD_H
 
 #include <map>
+#include <string>
+
+#include "../client-conf.h"
 
 #include "area.h"
 
@@ -42,6 +45,27 @@ public:
 	virtual bool init() = 0;
 
 	DataArea* area(const std::string& areaName);
+
+	// Miscellaneous engine parameters set by world's author.
+	struct {
+		std::string name, author, version;
+	} about;
+	struct {
+		enum movement_mode_t moveMode;
+		icoord viewportSize;
+		struct {
+			struct {
+				int initial, consecutive;
+			} persistDelay;
+		} input;
+		struct {
+			struct {
+				std::string file, phase;
+			} player;
+			std::string area;
+			vicoord coords;
+		} gameStart;
+	} parameters;
 
 protected:
 	DataWorld();

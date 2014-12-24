@@ -52,12 +52,14 @@ Animation::Animation(const std::vector<ImageRef>& _frames, time_t frameTime)
 	  frameShowing(0),
 	  offset(0)
 {
+	assert(frameTime >= 0);
+
 	ImageVec::const_iterator it;
 	for (it = _frames.begin(); it != _frames.end(); it++)
 		frames.push_back(*it);
 	if (cycles == 0 && frames.size() > 1)
 		cycles = ANIM_INFINITE_CYCLES;
-	cycleTime = frameTime * frames.size();
+	cycleTime = frameTime * (time_t)frames.size();
 }
 
 void Animation::startOver(time_t now, int cycles)
@@ -73,7 +75,7 @@ bool Animation::needsRedraw(time_t now) const
 {
 	if (cycles) {
 		time_t pos = now - offset;
-		size_t frame = (pos % cycleTime) / frameTime;
+		size_t frame = (size_t)((pos % cycleTime) / frameTime);
 		return frame != frameShowing;
 	}
 	return false;
@@ -87,7 +89,7 @@ Image* Animation::frame(time_t now)
 		return frames[frameShowing].get();
 
 	time_t pos = now - offset;
-	frameShowing = (pos % cycleTime) / frameTime;
+	frameShowing = (size_t)((pos % cycleTime) / frameTime);
 
 	if (cycles != ANIM_INFINITE_CYCLES && pos / cycleTime >= cycles) {
 		cycles = 0;

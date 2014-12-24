@@ -37,26 +37,24 @@ Animation::Animation()
 }
 
 Animation::Animation(const ImageRef& frame)
-	: cycles(0),
+	: frames { frame },
+	  cycles(0),
 	  frameTime(1),
 	  cycleTime(1),
 	  frameShowing(0)
 {
-	frames.push_back(frame);
 }
 
-Animation::Animation(const std::vector<ImageRef>& _frames, time_t frameTime)
-	: cycles(0),
+Animation::Animation(const std::vector<ImageRef>& frames, time_t frameTime)
+	: frames(frames),
+	  cycles(0),
 	  frameTime(frameTime),
 	  cycleTime(1),
 	  frameShowing(0),
 	  offset(0)
 {
-	assert(frameTime >= 0);
+	assert(frameTime > 0);
 
-	ImageVec::const_iterator it;
-	for (it = _frames.begin(); it != _frames.end(); it++)
-		frames.push_back(*it);
 	if (cycles == 0 && frames.size() > 1)
 		cycles = ANIM_INFINITE_CYCLES;
 	cycleTime = frameTime * (time_t)frames.size();

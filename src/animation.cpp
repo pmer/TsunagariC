@@ -26,8 +26,6 @@
 
 #include <cassert>
 
-#include <Gosu/Graphics.hpp>
-
 #include "animation.h"
 
 Animation::Animation()

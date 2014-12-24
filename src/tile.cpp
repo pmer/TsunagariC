@@ -281,7 +281,7 @@ TileSet::TileSet()
 {
 }
 
-TileSet::TileSet(int width, int height)
+TileSet::TileSet(size_t width, size_t height)
 	: width(width), height(height)
 {
 }
@@ -291,12 +291,12 @@ void TileSet::add(TileType* type)
 	types.push_back(type);
 }
 
-void TileSet::set(int idx, TileType* type)
+void TileSet::set(size_t idx, TileType* type)
 {
 	types[idx] = type;
 }
 
-TileType* TileSet::at(int x, int y)
+TileType* TileSet::at(size_t x, size_t y)
 {
 	size_t i = idx(x, y);
 	if (i > types.size()) {
@@ -307,17 +307,17 @@ TileType* TileSet::at(int x, int y)
 	return types[i];
 }
 
-int TileSet::getWidth() const
+size_t TileSet::getWidth() const
 {
 	return height;
 }
 
-int TileSet::getHeight() const
+size_t TileSet::getHeight() const
 {
 	return width;
 }
 
-size_t TileSet::idx(int x, int y) const
+size_t TileSet::idx(size_t x, size_t y) const
 {
 	return y * width + x;
 }

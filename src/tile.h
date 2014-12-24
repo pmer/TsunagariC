@@ -55,19 +55,19 @@ class TileType;
  * TILE_NOWALK
  * Neither the player nor NPCs can walk here.
  */
-#define TILE_NOWALK          0x001
+#define TILE_NOWALK          (unsigned)(0x001)
 
 /**
  * TILE_NOWALK_PLAYER
  * The player cannot walk here. NPCs can, though.
  */
-#define TILE_NOWALK_PLAYER   0x002
+#define TILE_NOWALK_PLAYER   ((unsigned)(0x002))
 
 /**
  * TILE_NOWALK_NPC
  * NPCs cannot walk here. The player can, though.
  */
-#define TILE_NOWALK_NPC      0x004
+#define TILE_NOWALK_NPC      ((unsigned)(0x004))
 
 /**
  * TILE_NOWALK_EXIT
@@ -77,7 +77,7 @@ class TileType;
  * This flag is not carried by actual Tiles, but can instead be flipped in an
  * Entity's "exempt" flag which will be read elsewhere in the engine.
  */
-#define TILE_NOWALK_EXIT     0x008
+#define TILE_NOWALK_EXIT     ((unsigned)(0x008))
 
 /**
  * TILE_NOWALK_AREA_BOUND
@@ -90,7 +90,7 @@ class TileType;
  * This flag is not carried by actual Tiles, but can instead be flipped in an
  * Entity's "exempt" flag which will be read elsewhere in the engine.
  */
-#define TILE_NOWALK_AREA_BOUND 0x016
+#define TILE_NOWALK_AREA_BOUND ((unsigned)(0x016))
 
 
 /**
@@ -261,19 +261,19 @@ class TileSet
 {
 public:
 	TileSet();
-	TileSet(int width, int height);
+	TileSet(size_t width, size_t height);
 
 	void add(TileType* type);
-	void set(int idx, TileType* type);
-	TileType* at(int x, int y);
-	int getWidth() const;
-	int getHeight() const;
+	void set(size_t idx, TileType* type);
+	TileType* at(size_t x, size_t y);
+	size_t getWidth() const;
+	size_t getHeight() const;
 
 private:
-	size_t idx(int x, int y) const;
+	size_t idx(size_t x, size_t y) const;
 
 	std::vector<TileType*> types;
-	int width, height;
+	size_t width, height;
 };
 
 void exportTile();

@@ -16,9 +16,7 @@ backend-gosu/gosu-music.o backend-gosu/gosu-tiledimage.o \
 backend-gosu/gosu-window.o data/area.o data/inprogress.o data/world.o \
 nbcl/nbcl.o
 
-# Name of testing world.
 BASEDATA = ../data/base.zip
-TESTWORLD = ../data/testing.world
 
 ifeq ($(shell uname -s),Darwin)
 	OBJECTS := $(OBJECTS) os-mac.o
@@ -28,7 +26,7 @@ endif
 
 ### --- RULES --- ###
 
-all: tsunagari $(BASEDATA) $(TESTWORLD)
+all: tsunagari $(BASEDATA)
 
 depend:
 	sed "/^### --- DO NOT DELETE THIS LINE --- ###/,$$$$d" Makefile > Mf
@@ -41,17 +39,14 @@ tsunagari: $(OBJECTS) $(WORLDOBJECTS)
 	$(CXX) -o tsunagari $(OBJECTS) $(WORLDOBJECTS) $(LDFLAGS)
 
 data:
-	$(RM) $(BASEDATA) $(TESTWORLD)
-	$(MAKE) $(BASEDATA) $(TESTWORLD)
+	$(RM) $(BASEDATA)
+	$(MAKE) $(BASEDATA)
 
 %.zip:
 	cd $(basename $@) && zip --symlinks -r -0 ../$@ *
 
-%.world:
-	cd $(basename $@) && zip --symlinks -r -0 ../$@ *
-
 clean:
-	$(RM) tsunagari *.o */*.o $(BASEDATA) $(TESTWORLD)
+	$(RM) tsunagari *.o */*.o $(BASEDATA)
 
 .PHONY: data
 

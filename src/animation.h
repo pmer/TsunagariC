@@ -28,10 +28,10 @@
 #ifndef ANIMATED_H
 #define ANIMATED_H
 
+#include <time.h>
 #include <vector>
 
 #include "image.h"
-#include "reader.h"
 
 #define ANIM_INFINITE_CYCLES -1
 

@@ -156,7 +156,7 @@ bool iequals(const std::string& a, const std::string& b)
 	if (a.length() != b.length())
 		return false;
 	size_t len = a.length();
-	for (int i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++) {
 		if (tolower(a[i]) != tolower(b[i]))
 			return false;
 	}

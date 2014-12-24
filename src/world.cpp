@@ -148,14 +148,6 @@ void World::draw()
 	rvec2 scroll = view->getMapOffset();
 	window.translate(-scroll.x, -scroll.y);
 
-	// Gosu::Transform t = { {
-	// 	scale.x, 0,       0, 0,
-	// 	0,       scale.y, 0, 0,
-	// 	0,       0,       1, 0,
-	// 	scale.x * -scroll.x - padding.x,
-	// 	scale.y * -scroll.y - padding.y, 0, 1
-	// } };
-
 	area->draw();
 }
 

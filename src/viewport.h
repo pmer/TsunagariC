@@ -41,7 +41,7 @@ public:
 	Viewport(icoord vsize);
 	~Viewport();
 
-	void tick(unsigned long dt);
+	void tick(time_t dt);
 	void turn();
 
 	//! How far the map is scrolled in pixels, counting from the upper-left.

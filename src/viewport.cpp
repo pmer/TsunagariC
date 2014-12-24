@@ -46,7 +46,7 @@ Viewport::~Viewport()
 }
 
 
-void Viewport::tick(unsigned long)
+void Viewport::tick(time_t)
 {
 	update();
 }

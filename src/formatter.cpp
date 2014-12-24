@@ -95,6 +95,15 @@ std::string Formatter::format(long data)
 
 
 template<>
+std::string Formatter::format(unsigned long data)
+{
+	char buf[512];
+	sprintf(buf, "%lu", data);
+	return std::string(buf);
+}
+
+
+template<>
 std::string Formatter::format(double data)
 {
 	char buf[512];

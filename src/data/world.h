@@ -66,6 +66,7 @@ public:
 			vicoord coords;
 		} gameStart;
 	} parameters;
+	std::string datafile;
 
 protected:
 	DataWorld();

@@ -28,8 +28,6 @@
 #define CLIENT_CONF_H
 
 #include <string>
-#include <vector>
-
 #include "log.h"
 #include "vec.h"
 
@@ -78,9 +76,6 @@ struct Conf {
 	 */
 	bool validate(const std::string& filename);
 
-	std::string worldFilename;
-	typedef std::vector<std::string> StringVector;
-	StringVector dataPath;
 	verbosity_t verbosity;
 	movement_mode_t moveMode;
 	halting_mode_t halting;

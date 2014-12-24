@@ -24,8 +24,9 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <vector>
 
 #include <boost/config.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -46,10 +47,6 @@ Conf::Conf()
 
 bool Conf::validate(const std::string& filename)
 {
-	if (conf.worldFilename == "") {
-		Log::fatal(filename, "\"[engine] world\" option or equivalent command line option expected");
-		return false;
-	}
 	return true;
 }
 
@@ -99,8 +96,6 @@ bool parseConfig(const std::string& filename)
 		parse_error = true;
 	}
 
-	conf.worldFilename = ini.get("engine.world", "");
-	conf.dataPath = splitStr(ini.get("engine.datapath", ""), ",");
 	conf.windowSize.x = ini.get("window.width", DEF_WINDOW_WIDTH);
 	conf.windowSize.y = ini.get("window.height", DEF_WINDOW_HEIGHT);
 	conf.fullscreen = ini.get("window.fullscreen", DEF_WINDOW_FULLSCREEN);
@@ -190,21 +185,6 @@ bool parseCommandLine(int argc, char* argv[])
 		return false;
 	}
 
-	std::vector<std::string> strayArgs = cmd.getStrayArgsList();
-#ifdef __APPLE__
-	/* September 2013: Mac OSX 10.7 sends stray arguments to its applications, so we can have >1 stray argument. Allow passing a world file if it is the first argument and it is not a debug flag from XCode 4.6. */
-	/* FIXME: This kludge can be fixed by iterating through the stray arguments and trying each of them as a world. */
-	if (strayArgs.size() && strayArgs[0] != "YES")
-		conf.worldFilename = strayArgs[0];
-#else
-	if (strayArgs.size() > 1) {
-		cmd.usage();
-		return false;
-	}
-	else if (strayArgs.size() == 1)
-		conf.worldFilename = strayArgs[0];
-#endif
-
 	if (cmd.check("--help")) {
 		cmd.usage();
 		return false;
@@ -224,9 +204,6 @@ bool parseCommandLine(int argc, char* argv[])
 		if (!parseConfig(cmd.get("--config")))
 			return false;
 	}
-
-	if (cmd.check("--datapath"))
-		conf.dataPath = splitStr(cmd.get("--datapath"), ",");
 
 	int verbcount = 0;
 	if (cmd.check("--quiet")) {

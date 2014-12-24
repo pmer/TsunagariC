@@ -56,8 +56,6 @@ public:
 	static bool init();
 
 	static bool prependPath(const std::string& path);
-	static bool appendPath(const std::string& path);
-	static bool rmPath(const std::string& path);
 
 	//! Returns true if the World contains a resource by that name.
 	static bool resourceExists(const std::string& name);

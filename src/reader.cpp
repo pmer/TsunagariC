@@ -43,6 +43,8 @@
 #include "window.h"
 #include "xml.h"
 
+#include "data/world.h"
+
 #define ASSERT(x)  if (!(x)) { return false; }
 
 typedef std::shared_ptr<xmlDtd> DTDRef;
@@ -65,7 +67,7 @@ static DTDMap dtds;
 static std::string path(const std::string& entryName)
 {
 	// XXX: archive might not be world
-	return conf.worldFilename + "/" + entryName;
+	return DataWorld::instance().datafile + "/" + entryName;
 }
 
 template <class T>
@@ -191,11 +193,7 @@ bool Reader::init()
 	// loaded from the world.
 	ASSERT(preloadDTDs());
 
-	ASSERT(prependPath(conf.worldFilename));
-	for (Conf::StringVector::const_iterator it = conf.dataPath.begin(); it != conf.dataPath.end(); it++) {
-		const std::string archive = *it;
-		ASSERT(prependPath(archive));
-	}
+	ASSERT(prependPath(DataWorld::instance().datafile));
 
 	return true;
 }
@@ -205,30 +203,6 @@ bool Reader::prependPath(const std::string& path)
 	int err = PHYSFS_mount(path.c_str(), NULL, 0);
 	if (err == 0) {
 		Log::fatal("Reader", Formatter("%: could not open archive: %")
-				% path % PHYSFS_getLastError());
-		return false;
-	}
-
-	return true;
-}
-
-bool Reader::appendPath(const std::string& path)
-{
-	int err = PHYSFS_mount(path.c_str(), NULL, 1);
-	if (err == 0) {
-		Log::fatal("Reader", Formatter("%: could not open archive: %")
-				% path % PHYSFS_getLastError());
-		return false;
-	}
-
-	return true;
-}
-
-bool Reader::rmPath(const std::string& path)
-{
-	int err = PHYSFS_removeFromSearchPath(path.c_str());
-	if (err == 0) {
-		Log::err("Reader", Formatter("libphysfs: %: %")
 				% path % PHYSFS_getLastError());
 		return false;
 	}

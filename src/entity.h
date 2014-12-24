@@ -31,15 +31,14 @@
 #include <string>
 #include <vector>
 
-#include <libxml/parser.h>
-
-class Entity;
-
-#include "tile.h" // for enum TileEventTrigger
-#include "reader.h"
+#include "sound.h"
+#include "tiledimage.h"
+#include "vec.h"
+#include "xml.h"
 
 class Animation;
 class Area;
+class Tile;
 
 enum SetPhaseResult {
 	PHASE_NOTFOUND,
@@ -152,14 +151,6 @@ public:
 
 	virtual void setFrozen(bool b);
 	bool getFrozen();
-
-
-	//
-	// Python-specific interface
-	//
-
-	//! Exempt ourselves from TILE_NOWALK et al.
-	FlagManip exemptManip();
 
 
 	//

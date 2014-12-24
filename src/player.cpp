@@ -29,6 +29,7 @@
 #include "entity.h"
 #include "log.h"
 #include "player.h"
+#include "tile.h"
 #include "world.h"
 #include "window.h"
 

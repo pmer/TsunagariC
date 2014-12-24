@@ -31,6 +31,8 @@
 
 #include "character.h"
 
+class Exit;
+
 class Player : public Character
 {
 public:

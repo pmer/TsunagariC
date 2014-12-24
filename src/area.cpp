@@ -38,6 +38,7 @@
 #include "music.h"
 #include "npc.h"
 #include "overlay.h"
+#include "player.h"
 #include "reader.h"
 #include "tile.h"
 #include "window.h"

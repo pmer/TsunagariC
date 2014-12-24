@@ -402,11 +402,6 @@ bool Entity::getFrozen()
 	return frozen;
 }
 
-FlagManip Entity::exemptManip()
-{
-	return FlagManip(&nowalkExempt);
-}
-
 void Entity::erase()
 {
 	throw "pure virtual function";

@@ -28,6 +28,7 @@
 #include "client-conf.h"
 #include "log.h"
 #include "music.h"
+#include "reader.h"
 #include "timeout.h"
 #include "window.h"
 #include "world.h"

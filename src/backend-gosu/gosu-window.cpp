@@ -65,7 +65,7 @@ GameWindow& GameWindow::instance()
 
 time_t GameWindow::time()
 {
-	return Gosu::milliseconds();
+	return (time_t)Gosu::milliseconds();
 }
 
 
@@ -80,7 +80,7 @@ GosuGameWindow::GosuGameWindow()
 	                      (unsigned)conf.windowSize.y,
 	    conf.fullscreen
 	  ),
-	  now(Gosu::milliseconds()),
+	  now(this->time()),
 	  lastGCtime(0)
 {
 	globalWindow = this;
@@ -126,7 +126,7 @@ void GosuGameWindow::setCaption(const std::string& caption)
 
 void GosuGameWindow::buttonDown(const Gosu::Button btn)
 {
-	now = (int)Gosu::milliseconds();
+	now = this->time();
 	if (keystates.find(btn) == keystates.end()) {
 		keystate& state = keystates[btn];
 		state.since = now;
@@ -163,7 +163,7 @@ bool GosuGameWindow::needsRedraw() const
 
 void GosuGameWindow::update()
 {
-	now = time();
+	now = this->time();
 
 	if (conf.moveMode == TURN)
 		handleKeyboardInput(now);
@@ -217,6 +217,7 @@ void GosuGameWindow::handleKeyboardInput(time_t now)
 	// Persistent input handling code
 	for (it = keystates.begin(); it != keystates.end(); it++) {
 		Gosu::Button btn = it->first;
+		auto mapped = gosuToTsunagariKey[btn.id()];
 		keystate& state = it->second;
 
 		// If there is persistCons milliseconds of latency
@@ -233,8 +234,8 @@ void GosuGameWindow::handleKeyboardInput(time_t now)
 		time_t delay = state.consecutive ?
 		    conf.persistCons : conf.persistInit;
 		if (now >= state.since + delay) {
-			state.since = now;
-			//World::instance().buttonDown(btn);
+			state.since += delay;
+			World::instance().buttonDown(mapped);
 			state.consecutive = true;
 		}
 	}

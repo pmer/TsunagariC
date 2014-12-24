@@ -35,6 +35,7 @@
 #include "bitrecord.h"
 #include "player.h"
 #include "viewport.h"
+#include "window.h" // for KeyboardKey
 
 class Area;
 

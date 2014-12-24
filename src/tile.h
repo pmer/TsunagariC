@@ -34,9 +34,7 @@ class Tile;
 class TileType;
 class TileSet;
 
-#include "area.h"
 #include "animation.h"
-#include "reader.h" // for TiledImage
 #include "vec.h"
 
 #include "data/area.h"

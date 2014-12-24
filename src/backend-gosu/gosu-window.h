@@ -46,9 +46,9 @@ public:
 
 	bool init();
 
-	int width() const;
+	unsigned width() const;
 
-	int height() const;
+	unsigned height() const;
 
 	void setCaption(const std::string& caption);
 

@@ -176,7 +176,7 @@ void World::update(time_t now)
 	}
 }
 
-void World::tick(unsigned long dt)
+void World::tick(time_t dt)
 {
 	updateTimeouts();
 	area->tick(dt);

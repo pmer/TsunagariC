@@ -37,7 +37,7 @@ Overlay::~Overlay()
 {
 }
 
-void Overlay::tick(unsigned long dt)
+void Overlay::tick(time_t dt)
 {
 	runTickScript();
 	switch (conf.moveMode) {

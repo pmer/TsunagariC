@@ -66,10 +66,10 @@ public:
 	virtual bool init() = 0;
 
 	//! Width of the window in pixels.
-	virtual int width() const = 0;
+	virtual unsigned width() const = 0;
 
 	//! Height of the window in pixels.
-	virtual int height() const = 0;
+	virtual unsigned height() const = 0;
 
 	//! Set window manager caption.
 	virtual void setCaption(const std::string& caption) = 0;

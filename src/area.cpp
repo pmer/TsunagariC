@@ -186,7 +186,7 @@ void Area::requestRedraw()
 	redraw = true;
 }
 
-void Area::tick(unsigned long dt)
+void Area::tick(time_t dt)
 {
 	if (dataArea)
 		dataArea->tick(dt);

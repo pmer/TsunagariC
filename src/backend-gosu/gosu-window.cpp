@@ -109,14 +109,14 @@ bool GosuGameWindow::init()
 	return true;
 }
 
-int GosuGameWindow::width() const
+unsigned GosuGameWindow::width() const
 {
-	return (int)graphics().width();
+	return graphics().width();
 }
 
-int GosuGameWindow::height() const
+unsigned GosuGameWindow::height() const
 {
-	return (int)graphics().height();
+	return graphics().height();
 }
 
 void GosuGameWindow::setCaption(const std::string& caption)

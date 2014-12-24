@@ -99,7 +99,7 @@ public:
 	 * Character       no       yes      yes
 	 * Overlay         yes      yes      yes
 	 */
-	void tick(unsigned long dt);
+	void tick(time_t dt);
 
 	/**
 	 * Update the game world when the turn is over (Player moves).

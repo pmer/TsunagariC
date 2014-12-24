@@ -88,7 +88,7 @@ public:
 	 * passed since the last call. Updates Entities, runs scripts, and
 	 * checks for Tile animation updates.
 	 */
-	void tick(unsigned long dt);
+	void tick(time_t dt);
 
 	/**
 	 * Updates Entities, runs scripts, and checks for Tile animation

@@ -28,11 +28,6 @@
 #include <memory>
 #include <vector>
 
-#include <Gosu/Graphics.hpp>
-#include <Gosu/Image.hpp>
-#include <Gosu/Math.hpp>
-#include <Gosu/Timing.hpp>
-
 #include "area-tmx.h"
 #include "entity.h"
 #include "log.h"

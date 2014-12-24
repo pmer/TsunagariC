@@ -27,6 +27,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -153,9 +154,11 @@ public:
 	bool getFrozen();
 
 
-	//
-	// Variables public for Python scripts
-	//
+	typedef std::function<void (time_t)> OnTickFn;
+	typedef std::function<void ()> OnTurnFn;
+
+	void attach(OnTickFn fn);
+	void attach(OnTurnFn fn);
 
 	//! Script hooks.
 	// ScriptRef tickScript, turnScript, tileEntryScript,
@@ -193,8 +196,6 @@ protected:
 	void enterTile();
 	void enterTile(Tile* t);
 
-	void runTickScript();
-	void runTurnScript();
 	void runTileExitScript();
 	void runTileEntryScript();
 
@@ -258,6 +259,9 @@ protected:
 
 	//! List of sounds this Entity knows about.
 	SampleMap sounds;
+
+	std::vector<OnTickFn> onTickFns;
+	std::vector<OnTurnFn> onTurnFns;
 };
 
 void exportEntity();

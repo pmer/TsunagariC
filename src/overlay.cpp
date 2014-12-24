@@ -29,29 +29,11 @@
 #include "overlay.h"
 
 Overlay::Overlay()
-	: Entity()
 {
 }
 
 Overlay::~Overlay()
 {
-}
-
-void Overlay::tick(time_t dt)
-{
-	runTickScript();
-	switch (conf.moveMode) {
-	case TURN:
-		// Replace with MOVE_TO_DEST();
-		tickTile(dt);
-		break;
-	case TILE:
-		tickTile(dt);
-		break;
-	case NOTILE:
-		tickNoTile(dt);
-		break;
-	}
 }
 
 void Overlay::teleport(int x, int y)

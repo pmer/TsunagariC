@@ -35,8 +35,6 @@ public:
 	Overlay();
 	virtual ~Overlay();
 
-	void tick(time_t dt);
-
 	void teleport(int x, int y);
 	void move(int x, int y);
 

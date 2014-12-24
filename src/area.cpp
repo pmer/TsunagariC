@@ -400,10 +400,10 @@ const std::string Area::getDescriptor() const
 	return descriptor;
 }
 
-Entity* Area::spawnNPC(const std::string& descriptor,
+NPC* Area::spawnNPC(const std::string& descriptor,
 	int x, int y, double z, const std::string& phase)
 {
-	Character* c = new NPC();
+	NPC* c = new NPC();
 	if (!c->init(descriptor, phase)) {
 		// Error logged.
 		delete c;
@@ -415,7 +415,7 @@ Entity* Area::spawnNPC(const std::string& descriptor,
 	return c;
 }
 
-Entity* Area::spawnOverlay(const std::string& descriptor,
+Overlay* Area::spawnOverlay(const std::string& descriptor,
 	int x, int y, double z, const std::string& phase)
 {
 	Overlay* o = new Overlay();

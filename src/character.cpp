@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** character.cpp                      **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -24,32 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "area.h"
 #include "character.h"
 
-Character::Character()
-	: Entity()
-{
-}
+Character::Character() {}
 
-Character::~Character()
-{
-}
-
-void Character::teleport(int x, int y)
-{
-	icoord dest = getTileCoords_i() + icoord(x, y, 0);
-	if (canMove(dest))
-		setTileCoords(dest);
-}
-
-void Character::move(int x, int y)
-{
-	moveByTile(x, y);
-}
-
-void Character::erase()
-{
-	area->erase(this);
-}
-
+Character::~Character() {}

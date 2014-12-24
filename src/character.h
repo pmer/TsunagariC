@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** character.h                        **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -34,12 +34,6 @@ class Character : public Entity
 public:
 	Character();
 	virtual ~Character();
-
-	void teleport(int x, int y);
-	void move(int x, int y);
-
-protected:
-	virtual void erase();
 };
 
 #endif

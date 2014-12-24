@@ -42,6 +42,7 @@
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
 
 class Character;
+class NPC;
 class Overlay;
 class Player;
 class Viewport;
@@ -137,9 +138,9 @@ public:
 
 	const std::string getDescriptor() const;
 
-	Entity* spawnNPC(const std::string& descriptor,
+	NPC* spawnNPC(const std::string& descriptor,
 		int x, int y, double z, const std::string& phase);
-	Entity* spawnOverlay(const std::string& descriptor,
+	Overlay* spawnOverlay(const std::string& descriptor,
 		int x, int y, double z, const std::string& phase);
 	void insert(Character* c);
 	void insert(Overlay* o);

@@ -113,7 +113,9 @@ bool Entity::needsRedraw() const
 
 void Entity::tick(time_t dt)
 {
-	runTickScript();
+	for (auto& fn : onTickFns)
+		fn(dt);
+
 	switch (conf.moveMode) {
 	case TURN:
 		tickTurn(dt);
@@ -168,7 +170,8 @@ void Entity::tickNoTile(time_t)
 
 void Entity::turn()
 {
-	runTurnScript();
+	for (auto& fn : onTurnFns)
+		fn();
 }
 
 const std::string Entity::getFacing() const
@@ -404,6 +407,16 @@ bool Entity::getFrozen()
 	return frozen;
 }
 
+void Entity::attach(OnTickFn fn)
+{
+	onTickFns.push_back(fn);
+}
+
+void Entity::attach(OnTurnFn fn)
+{
+	onTurnFns.push_back(fn);
+}
+
 void Entity::erase()
 {
 	throw "pure virtual function";
@@ -565,26 +578,6 @@ void Entity::enterTile(Tile* t)
 {
 	if (t)
 		t->entCnt++;
-}
-
-void Entity::runTickScript()
-{
-	// if (!tickScript)
-	// 	return;
-	// pythonSetGlobal("Area", area);
-	// pythonSetGlobal("Entity", this);
-	// pythonSetGlobal("Tile", getTile());
-	// tickScript->invoke();
-}
-
-void Entity::runTurnScript()
-{
-	// if (!turnScript)
-	// 	return;
-	// pythonSetGlobal("Area", area);
-	// pythonSetGlobal("Entity", this);
-	// pythonSetGlobal("Tile", getTile());
-	// turnScript->invoke();
 }
 
 void Entity::runTileExitScript()

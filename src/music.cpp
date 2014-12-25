@@ -28,7 +28,7 @@
 #include "math.h"
 #include "music.h"
 
-Music::Music() : volume(100), paused(false), state(NOT_PLAYING)
+Music::Music() : state(NOT_PLAYING), volume(100), paused(false)
 {
 }
 

@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** npc.cpp                            **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -24,35 +24,18 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "area.h"
 #include "npc.h"
 
-NPC::NPC()
-	: Character()
-{
-}
+NPC::NPC() {}
 
-void NPC::postMove()
+void NPC::arrived()
 {
-	Entity::postMove();
+	Entity::arrived();
 
-	// Normal exit.
-	if (destTile) {
-		Exit* exit = destTile->exits[EXIT_NORMAL];
-		if (exit)
-			takeExit(exit);
+	if (destExit) {
+		moving = false; // Prevent time rollover check in
+		                // Entity::moveTowardDestination().
+		destroy();
 	}
-
-	// Side exit.
-	ivec2 dxy(deltaCoord.x, deltaCoord.y);
-	Exit* exit = fromTile->exitAt(dxy);
-	if (exit)
-		takeExit(exit);
-}
-
-void NPC::takeExit(Exit*)
-{
-	moving = false; // Prevent time rollover check in Entity::updateTile().
-	destroy();
 }
 

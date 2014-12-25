@@ -28,6 +28,7 @@
 #define AREA_H
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -139,13 +140,11 @@ public:
 	const std::string getDescriptor() const;
 
 	NPC* spawnNPC(const std::string& descriptor,
-		int x, int y, double z, const std::string& phase);
+		vicoord coord, const std::string& phase);
 	Overlay* spawnOverlay(const std::string& descriptor,
-		int x, int y, double z, const std::string& phase);
+		vicoord coord, const std::string& phase);
 	void insert(Character* c);
 	void insert(Overlay* o);
-	void erase(Character* c);
-	void erase(Overlay* o);
 
 	// Convert between virtual and physical map coordinates. Physical
 	// coordinates are the physical indexes into the Tile matrix. Layer
@@ -180,9 +179,9 @@ protected:
 	Player* player;
 	uint32_t colorOverlayARGB;
 
-	typedef std::set<Character*> CharacterSet;
+	typedef std::set<std::unique_ptr<Character>> CharacterSet;
 	CharacterSet characters;
-	typedef std::set<Overlay*> OverlaySet;
+	typedef std::set<std::unique_ptr<Overlay>> OverlaySet;
 	OverlaySet overlays;
 
 	typedef std::vector<Tile> row_t;

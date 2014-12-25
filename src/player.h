@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "character.h"
+#include "vec.h"
 
 class Exit;
 
@@ -55,7 +56,7 @@ public:
 	void setFrozen(bool b);
 
 protected:
-	void postMove();
+	void arrived();
 
 	void takeExit(Exit* exit);
 

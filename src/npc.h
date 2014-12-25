@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** npc.h                              **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -34,10 +34,8 @@ class NPC : public Character
 public:
 	NPC();
 
-	void postMove();
-
-private:
-	void takeExit(Exit* exit);
+protected:
+	void arrived();
 };
 
 #endif

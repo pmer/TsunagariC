@@ -1,8 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** overlay.cpp                        **
-** Copyright 2011-2013 PariahSoft LLC **
-***************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** algorithm.h                   **
+** Copyright 2014 PariahSoft LLC **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,47 +24,18 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "area.h"
-#include "client-conf.h"
-#include "overlay.h"
+#ifndef ALGORITHM_H
+#define ALGORITHM_H
 
-Overlay::Overlay()
+template <class Container, class Predicate>
+void erase_if(Container& container, Predicate pred)
 {
+	for (auto it = container.begin(); it != container.end(); ) {
+		if (pred(*it))
+			it = container.erase(it);
+		else
+			++it;
+	}
 }
 
-Overlay::~Overlay()
-{
-}
-
-void Overlay::tick(time_t dt)
-{
-	Entity::tick(dt);
-	moveTowardDestination(dt);
-}
-
-void Overlay::teleport(vicoord coord)
-{
-	r = area->virt2virt(coord);
-	redraw = true;
-}
-
-void Overlay::drift(ivec2 xy)
-{
-	driftTo(ivec2((int)r.x + xy.x, (int)r.y + xy.y));
-}
-
-void Overlay::driftTo(ivec2 xy)
-{
-	setDestinationCoordinate(rcoord(xy.x, xy.y, r.z));
-	pickFacingForAngle();
-	moving = true;
-	setAnimationMoving();
-
-	// Movement happens in Entity::moveTowardDestination() during tick().
-}
-
-void Overlay::pickFacingForAngle()
-{
-	// TODO
-}
-
+#endif

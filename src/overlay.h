@@ -35,11 +35,15 @@ public:
 	Overlay();
 	virtual ~Overlay();
 
-	void teleport(int x, int y);
-	void move(int x, int y);
+	void tick(time_t dt);
+
+	void teleport(vicoord coord);
+
+	void drift(ivec2 xy);
+	void driftTo(ivec2 xy);
 
 protected:
-	virtual void erase();
+	void pickFacingForAngle();
 };
 
 #endif

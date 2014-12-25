@@ -28,6 +28,7 @@
 #include <math.h>
 #include <stdlib.h> // for exit(1) on fatal
 
+#include "algorithm.h"
 #include "area.h"
 #include "client-conf.h"
 #include "entity.h"
@@ -155,16 +156,12 @@ bool Area::needsRedraw() const
 	if (player->needsRedraw())
 		return true;
 
-	for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
-		Character* c = *it;
-		if (c->needsRedraw())
+	for (auto& character : characters)
+		if (character->needsRedraw())
 			return true;
-	}
-	for (OverlaySet::iterator it = overlays.begin(); it != overlays.end(); it++) {
-		Overlay* o = *it;
-		if (o->needsRedraw())
+	for (auto& overlay : overlays)
+		if (overlay->needsRedraw())
 			return true;
-	}
 
 	// Do any on-screen tile types need to update their animations?
 	const icube tiles = visibleTiles();
@@ -191,18 +188,20 @@ void Area::tick(time_t dt)
 	if (dataArea)
 		dataArea->tick(dt);
 
-	for (OverlaySet::iterator it = overlays.begin(); it != overlays.end(); it++) {
-		Overlay* o = *it;
-		o->tick(dt);
-	}
+	for (auto& overlay : overlays)
+		overlay->tick(dt);
+	erase_if(overlays, [] (const std::unique_ptr<Overlay>& o) {
+		return o->isDead();
+	});
 
 	if (conf.moveMode != TURN) {
 		player->tick(dt);
 
-		for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
-			Character* c = *it;
-			c->tick(dt);
-		}
+		for (auto& character : characters)
+			character->tick(dt);
+		erase_if(characters, [] (const std::unique_ptr<Character>& c) {
+			return c->isDead();
+		});
 	}
 
 	view->tick(dt);
@@ -216,10 +215,11 @@ void Area::turn()
 
 	player->turn();
 
-	for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
-		Character* c = *it;
-		c->turn();
-	}
+	for (auto& character : characters)
+		character->turn();
+	erase_if(characters, [] (const std::unique_ptr<Character>& c) {
+		return c->isDead();
+	});
 
 	view->turn();
 }
@@ -401,7 +401,7 @@ const std::string Area::getDescriptor() const
 }
 
 NPC* Area::spawnNPC(const std::string& descriptor,
-	int x, int y, double z, const std::string& phase)
+	vicoord coord, const std::string& phase)
 {
 	NPC* c = new NPC();
 	if (!c->init(descriptor, phase)) {
@@ -410,13 +410,13 @@ NPC* Area::spawnNPC(const std::string& descriptor,
 		return NULL;
 	}
 	c->setArea(this);
-	c->setTileCoords(x, y, z);
+	c->setTileCoords(coord);
 	insert(c);
 	return c;
 }
 
 Overlay* Area::spawnOverlay(const std::string& descriptor,
-	int x, int y, double z, const std::string& phase)
+	vicoord coord, const std::string& phase)
 {
 	Overlay* o = new Overlay();
 	if (!o->init(descriptor, phase)) {
@@ -425,33 +425,20 @@ Overlay* Area::spawnOverlay(const std::string& descriptor,
 		return NULL;
 	}
 	o->setArea(this);
-	o->setTileCoords(x, y, z);
-	// XXX: o->leaveTile(); // Overlays don't consume tiles.
-
+	o->teleport(coord);
 	insert(o);
 	return o;
 }
 
 void Area::insert(Character* c)
 {
-	characters.insert(c);
+	characters.insert(std::unique_ptr<Character>(c));
 }
 
 void Area::insert(Overlay* o)
 {
-	overlays.insert(o);
+	overlays.insert(std::unique_ptr<Overlay>(o));
 }
-
-void Area::erase(Character* c)
-{
-	characters.erase(c);
-}
-
-void Area::erase(Overlay* o)
-{
-	overlays.erase(o);
-}
-
 
 
 vicoord Area::phys2virt_vi(icoord phys) const
@@ -558,14 +545,10 @@ void Area::drawTile(Tile& tile, int x, int y, double depth)
 
 void Area::drawEntities()
 {
-	for (CharacterSet::iterator it = characters.begin(); it != characters.end(); it++) {
-		Character* c = *it;
-		c->draw();
-	}
-	for (OverlaySet::iterator it = overlays.begin(); it != overlays.end(); it++) {
-		Overlay* o = *it;
-		o->draw();
-	}
+	for (auto& character : characters)
+		character->draw();
+	for (auto& overlay : overlays)
+		overlay->draw();
 	player->draw();
 }
 

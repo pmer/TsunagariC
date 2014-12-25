@@ -24,7 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <algorithm>
+#include "../algorithm.h"
 
 #include "area.h"
 #include "inprogress.h"
@@ -41,13 +41,7 @@ void DataArea::tick(time_t dt)
 	for (auto& inProgress : inProgresses) {
 		inProgress->tick(dt);
 	}
-	for (auto it = inProgresses.begin(); it != inProgresses.end(); ) {
-		auto& inProgress = *it;
-		if (inProgress->isOver())
-			it = inProgresses.erase(it);
-		else
-			it++;
-	}
+	erase_if(inProgresses, [] (std::unique_ptr<InProgress>& ip) { return ip->isOver(); });
 	onTick(dt);
 }
 

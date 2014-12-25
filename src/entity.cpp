@@ -46,30 +46,25 @@ static std::string directions[][3] = {
 
 
 Entity::Entity()
-	: redraw(true),
+	: dead(false),
+	  redraw(true),
 	  area(NULL),
 	  r(0.0, 0.0, 0.0),
 	  frozen(false),
 	  speedMul(1.0),
 	  moving(false),
-	  stillMoving(false),
-	  nowalkFlags(TILE_NOWALK | TILE_NOWALK_NPC),
-	  nowalkExempt(0),
 	  phase(NULL),
-	  phaseName("")
+	  phaseName(""),
+	  facing(0, 0)
 {
 }
 
 Entity::~Entity()
 {
-	// if (deleteScript) {
-		// pythonSetGlobal("Area", area);
-		// pythonSetGlobal("Entity", this);
-		// deleteScript->invoke();
-	// }
 }
 
-bool Entity::init(const std::string& descriptor, const std::string& initialPhase)
+bool Entity::init(const std::string& descriptor,
+		const std::string& initialPhase)
 {
 	this->descriptor = descriptor;
 	ASSERT(processDescriptor());
@@ -79,13 +74,9 @@ bool Entity::init(const std::string& descriptor, const std::string& initialPhase
 
 void Entity::destroy()
 {
-	leaveTile();
-	if (area) {
-		erase();
+	dead = true;
+	if (area)
 		area->requestRedraw();
-	}
-	area = NULL;
-	delete this;
 }
 
 void Entity::draw()
@@ -110,62 +101,16 @@ bool Entity::needsRedraw() const
 	return redraw || (phase && phase->needsRedraw(now));
 }
 
+bool Entity::isDead() const
+{
+	return dead;
+}
+
 
 void Entity::tick(time_t dt)
 {
 	for (auto& fn : onTickFns)
 		fn(dt);
-
-	switch (conf.moveMode) {
-	case TURN:
-		tickTurn(dt);
-		break;
-	case TILE:
-		tickTile(dt);
-		break;
-	case NOTILE:
-		tickNoTile(dt);
-		break;
-	}
-}
-
-void Entity::tickTurn(time_t)
-{
-	// FIXME Characters (!!) don't do anything in TILE mode.
-}
-
-void Entity::tickTile(time_t dt)
-{
-	if (!moving)
-		return;
-
-	redraw = true;
-	double traveled = speed * (double)dt;
-	double destDist = r.distanceTo(destCoord);
-	if (destDist <= traveled) {
-		r = destCoord;
-		moving = false;
-		postMove();
-		if (moving) {
-			// Time rollover.
-			double perc = 1.0 - destDist/traveled;
-			time_t remt = (time_t)(perc * (double)dt);
-			tick(remt);
-		}
-	}
-	else {
-		double angle = atan2(destCoord.y - r.y, destCoord.x - r.x);
-		double dx = cos(angle);
-		double dy = sin(angle);
-
-		r.x += dx * traveled;
-		r.y += dy * traveled;
-	}
-}
-
-void Entity::tickNoTile(time_t)
-{
-	// TODO
 }
 
 void Entity::turn()
@@ -196,167 +141,25 @@ std::string Entity::getPhase() const
 	return phaseName;
 }
 
+void Entity::setAnimationStanding()
+{
+	setPhase(getFacing());
+}
+
+void Entity::setAnimationMoving()
+{
+	setPhase("moving " + getFacing());
+}
+
+
 rcoord Entity::getPixelCoord() const
 {
 	return r;
 }
 
-icoord Entity::getTileCoords_i() const
-{
-	return area->virt2phys(r);
-}
-
-vicoord Entity::getTileCoords_vi() const
-{
-	return area->virt2virt(r);
-}
-
-void Entity::setTileCoords(int x, int y)
-{
-	leaveTile();
-	vicoord virt(x, y, r.z);
-	redraw = true;
-	r = area->virt2virt(virt);
-	enterTile();
-}
-
-void Entity::setTileCoords(int x, int y, double z)
-{
-	leaveTile();
-	vicoord virt(x, y, z);
-	redraw = true;
-	r = area->virt2virt(virt);
-	enterTile();
-}
-
-void Entity::setTileCoords(icoord phys)
-{
-	leaveTile();
-	redraw = true;
-	r = area->phys2virt_r(phys);
-	enterTile();
-}
-
-void Entity::setTileCoords(vicoord virt)
-{
-	leaveTile();
-	redraw = true;
-	r = area->virt2virt(virt);
-	enterTile();
-}
-
-void Entity::setTileCoords(rcoord virt)
-{
-	leaveTile();
-	redraw = true;
-	r = virt;
-	enterTile();
-}
-
-void Entity::teleport(int, int)
-{
-	throw "pure virtual function";
-}
-
-icoord Entity::moveDest(ivec2 facing)
-{
-	Tile* tile = getTile();
-	icoord here = getTileCoords_i();
-
-	if (tile)
-		// Handle layermod.
-		return tile->moveDest(here, facing);
-	else
-		return here + icoord(facing.x, facing.y, 0);
-}
-
-// Python API.
-vicoord Entity::moveDest(Tile* t, int dx, int dy)
-{
-	icoord here = getTileCoords_i();
-	icoord dest;
-
-	if (t) {
-		// Handle layermod.
-		dest = t->moveDest(here, ivec2(dx, dy));
-		return t->area->phys2virt_vi(dest);
-	}
-	else {
-		dest = here + icoord(dx, dy, 0);
-		return area->phys2virt_vi(dest);
-	}
-}
-
-// Python API.
-bool Entity::canMove(int x, int y, double z)
-{
-	vicoord virt(x, y, z);
-	return canMove(area->virt2phys(virt));
-}
-
-bool Entity::canMove(icoord dest)
-{
-	icoord dxyz = dest - getTileCoords_i();
-	ivec2 dxy(dxyz.x, dxyz.y);
-
-	Tile* curTile = getTile();
-	this->destTile = area->getTile(dest);
-	this->destCoord = area->phys2virt_r(dest);
-
-	if ((curTile && curTile->exitAt(dxy)) ||
-	    (destTile && destTile->exits[EXIT_NORMAL])) {
-		// We can always take exits as long as we can take exits.
-		// (Even if they would cause us to be out of bounds.)
-		if (nowalkExempt & TILE_NOWALK_EXIT)
-			return true;
-	}
-
-	bool inBounds = area->inBounds(dest);
-	if (destTile && inBounds) {
-		// Tile is inside map. Can we move?
-		if (nowalked(*destTile))
-			return false;
-		if (destTile->entCnt)
-			// Space is occupied by another Entity.
-			return false;
-
-		return true;
-	}
-
-	// The tile is legitimately off the map.
-	return nowalkExempt & TILE_NOWALK_AREA_BOUND;
-}
-
-bool Entity::canMove(vicoord dest)
-{
-	return canMove(area->virt2phys(dest));
-}
-
 bool Entity::isMoving() const
 {
-	return moving || stillMoving;
-}
-
-void Entity::moveByTile(int x, int y)
-{
-	moveByTile(ivec2(x, y));
-}
-
-void Entity::moveByTile(ivec2 delta)
-{
-	if (moving)
-		return;
-	setFacing(delta);
-
-	if (canMove(moveDest(facing)))
-		preMove();
-	else
-		setPhase(directionStr(facing));
-}
-
-void Entity::move(int, int)
-{
-	throw "pure virtual function";
+	return moving;
 }
 
 Area* Entity::getArea()
@@ -364,13 +167,11 @@ Area* Entity::getArea()
 	return area;
 }
 
-void Entity::setArea(Area* a)
+void Entity::setArea(Area* area)
 {
-	leaveTile();
-	area = a;
+	this->area = area;
 	calcDraw();
 	setSpeed(speedMul); // Calculate new speed based on tile size.
-	enterTile();
 }
 
 double Entity::getSpeed() const
@@ -385,16 +186,6 @@ void Entity::setSpeed(double multiplier)
 		double tilesPerSecond = area->getTileDimensions().x / 1000.0;
 		speed = baseSpeed * speedMul * tilesPerSecond;
 	}
-}
-
-Tile* Entity::getTile() const
-{
-	return area ? area->getTile(r) : NULL;
-}
-
-Tile* Entity::getTile()
-{
-	return area ? area->getTile(r) : NULL;
 }
 
 void Entity::setFrozen(bool b)
@@ -415,11 +206,6 @@ void Entity::attach(OnTickFn fn)
 void Entity::attach(OnTurnFn fn)
 {
 	onTurnFns.push_back(fn);
-}
-
-void Entity::erase()
-{
-	throw "pure virtual function";
 }
 
 void Entity::calcDraw()
@@ -475,129 +261,53 @@ enum SetPhaseResult Entity::_setPhase(const std::string& name)
 	return PHASE_NOTCHANGED;
 }
 
-bool Entity::nowalked(Tile& t)
+void Entity::setDestinationCoordinate(rcoord destCoord)
 {
-	unsigned flags = nowalkFlags & ~nowalkExempt;
-	return t.hasFlag(flags);
-}
-
-void Entity::preMove()
-{
-	fromCoord = r;
-	fromTile = getTile();
-
-	rcoord d = destCoord - fromCoord;
-	deltaCoord = area->virt2virt(d);
-
-	moving = true;
-
-	// Start moving animation.
-	switch (conf.moveMode) {
-	case TURN:
-		break;
-	case TILE:
-	case NOTILE:
-		setPhase("moving " + getFacing());
-		break;
-	}
-
-	// Process triggers.
-	runTileExitScript();
-	if (fromTile)
-		fromTile->runLeaveScript(this);
-
-	// Modify tile's entity count.
-	leaveTile();
-	enterTile(destTile);
-
-	SampleRef step = getSound("step");
-	if (step)
-		step->play();
-
 	// Set z right away so that we're on-level with the square we're
 	// entering.
 	r.z = destCoord.z;
 
-	if (conf.moveMode == TURN) {
-		// Movement is instantaneous.
-		redraw = true;
-		r = destCoord;
-		postMove();
+	this->destCoord = destCoord;
+	angleToDest = atan2(destCoord.y - r.y, destCoord.x - r.x);
+}
+
+void Entity::moveTowardDestination(time_t dt)
+{
+	if (!moving)
+		return;
+
+	redraw = true;
+
+	double traveledPixels = speed * (double)dt;
+	double toDestPixels = r.distanceTo(destCoord);
+	if (toDestPixels > traveledPixels) {
+		// The destination has not been reached yet.
+		r.x += cos(angleToDest) * traveledPixels;
+		r.y += sin(angleToDest) * traveledPixels;
 	}
 	else {
-		// Movement happens over time. See tickTile().
+		// We have arrived at the destination.
+		r = destCoord;
+		moving = false;
+		arrived();
+
+		// If arrived() starts a new movement, rollover unused traveled
+		// pixels and leave the the moving animation.
+		if (moving) {
+			double percent = 1.0 - toDestPixels/traveledPixels;
+			time_t rem = (time_t)(percent * (double)dt);
+			moveTowardDestination(rem);
+		}
+		else {
+			setAnimationStanding();
+		}
 	}
 }
 
-void Entity::postMove()
+void Entity::arrived()
 {
-	moving = false;
-
-	if (destTile) {
-		double* layermod = destTile->layermods[EXIT_NORMAL];
-		if (layermod)
-			r.z = *layermod;
-	}
-
-	// Stop moving animation.
-	if (!stillMoving)
-		setPhase(getFacing());
-
-	// Process triggers.
-	if (destTile)
-		destTile->runEnterScript(this);
-
-	runTileEntryScript();
-
-	// TODO: move teleportation here
-	/*
-	 * if (onExit()) {
-	 * 	leaveTile();
-	 * 	moveArea(getExit());
-	 * 	postMoveScript();
-	 * 	enterTile();
-	 * }
-	 */
-}
-
-void Entity::leaveTile()
-{
-	Tile* t = getTile();
-	if (t)
-		t->entCnt--;
-}
-
-void Entity::enterTile()
-{
-	Tile* t = getTile();
-	if (t)
-		enterTile(getTile());
-}
-
-void Entity::enterTile(Tile* t)
-{
-	if (t)
-		t->entCnt++;
-}
-
-void Entity::runTileExitScript()
-{
-	// if (!tileExitScript)
-	// 	return;
-	// pythonSetGlobal("Area", area);
-	// pythonSetGlobal("Entity", this);
-	// pythonSetGlobal("Tile", getTile());
-	// tileExitScript->invoke();
-}
-
-void Entity::runTileEntryScript()
-{
-	// if (!tileEntryScript)
-	// 	return;
-	// pythonSetGlobal("Area", area);
-	// pythonSetGlobal("Entity", this);
-	// pythonSetGlobal("Tile", getTile());
-	// tileEntryScript->invoke();
+	// for (auto& fn : onArrivedFns)
+	// 	fn();
 }
 
 

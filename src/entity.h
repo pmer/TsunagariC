@@ -66,20 +66,18 @@ public:
 	virtual ~Entity();
 
 	//! Entity initializer
-	virtual bool init(const std::string& descriptor, const std::string& initialPhase);
+	virtual bool init(const std::string& descriptor,
+		const std::string& initialPhase);
 
 	//! Entity destroyer.
 	virtual void destroy();
 
 	void draw();
 	bool needsRedraw() const;
+	bool isDead() const;
 
 	virtual void tick(time_t dt);
-	void tickTurn(time_t dt);
-	void tickTile(time_t dt);
-	void tickNoTile(time_t dt);
-
-	void turn();
+	virtual void turn();
 
 	const std::string getFacing() const;
 
@@ -89,46 +87,17 @@ public:
 
 	std::string getPhase() const;
 
+	void setAnimationStanding();
+	void setAnimationMoving();
+
 
 	//! The offset from the upper-left of the Area to the upper-left of the
 	//! Tile the Entity is standing on.
 	rcoord getPixelCoord() const;
 
-	//! Retrieve position within Area.
-	icoord getTileCoords_i() const;
-	vicoord getTileCoords_vi() const;
-
-	//! Set location within Area.
-	void setTileCoords(int x, int y);
-	void setTileCoords(int x, int y, double z);
-	void setTileCoords(icoord phys);
-	void setTileCoords(vicoord virt);
-	void setTileCoords(rcoord virt);
-
-	//! Abstract, Python-specific method.
-	virtual void teleport(int x, int y);
-
-
-	//! Indicates which coordinate we will move into if we proceed in
-	//! direction specified.
-	icoord moveDest(ivec2 facing);
-	vicoord moveDest(Tile* tile, int dx, int dy); // Python-specific version
-
-	//! Returns true if we can move in the desired direction.
-	bool canMove(int x, int y, double z); // Python-specific version.
-	bool canMove(icoord dest);
-	bool canMove(vicoord dest);
-
 	//! Indicates whether we are in the middle of transitioning between
 	//! tiles.
 	bool isMoving() const;
-
-	//! Initiate a movement within the Area.
-	void moveByTile(int x, int y);
-	void moveByTile(ivec2 delta);
-
-	//! Abstract, Python-specific method.
-	virtual void move(int x, int y);
 
 
 	//! Gets the Entity's current Area.
@@ -136,7 +105,7 @@ public:
 
 	//! Specifies the Area object this entity will ask when looking for
 	//! nearby Tiles. Doesn't change x,y,z position.
-	void setArea(Area* area);
+	virtual void setArea(Area* area);
 
 
 	//! Gets speed multiplier.
@@ -145,10 +114,6 @@ public:
 	//! Sets speed multiplier.
 	void setSpeed(double multiplier);
 
-
-	//! Get the Tile that we are standing on.
-	Tile* getTile() const;
-	Tile* getTile();
 
 	virtual void setFrozen(bool b);
 	bool getFrozen();
@@ -162,12 +127,10 @@ public:
 
 	//! Script hooks.
 	// ScriptRef tickScript, turnScript, tileEntryScript,
-	//            tileExitScript, deleteScript;
+	//            tileExitScript;
 
 
 protected:
-	virtual void erase();
-
 	//! Precalculate various drawing measurements.
 	void calcDraw();
 
@@ -184,20 +147,14 @@ protected:
 
 	enum SetPhaseResult _setPhase(const std::string& name);
 
-	bool nowalked(Tile& t);
+	void setDestinationCoordinate(rcoord destCoord);
 
-	//! Called right before starting to moving onto another tile.
-	virtual void preMove();
+	void moveTowardDestination(time_t dt);
 
-	//! Called after we have arrived at another tile.
-	virtual void postMove();
-
-	void leaveTile();
-	void enterTile();
-	void enterTile(Tile* t);
-
-	void runTileExitScript();
-	void runTileEntryScript();
+	//! arrived() is called when an Entity arrives at its destination.  If
+	//! it is ordered to begin moving again from within arrived(), then the
+	//! Entity’s graphics will appear as if it never stopped moving.
+	virtual void arrived();
 
 	// XML parsing functions used in constructing an Entity
 	bool processDescriptor();
@@ -220,6 +177,9 @@ protected:
 	typedef std::map<std::string, SampleRef> SampleMap;
 
 
+	//! Set to true if the Entity was destroyed this tick.
+	bool dead;
+
 	//! Set to true if the Entity wants the screen to be redrawn.
 	bool redraw;
 
@@ -236,20 +196,11 @@ protected:
 	double speedMul;  //!< Speed multiplier.
 	double speed;     //!< Effective speed = original speed * multiplier
 
-	//! True if currently moving between two Tiles in an Area. Only used in
-	//! TILE game mode.
+	//! True if currently moving to a new coordinate in an Area.
 	bool moving;
-	/** Hack flag can be used to not stop the moving animation in-between
-	 * tiles. */
-	bool stillMoving;
-	unsigned nowalkFlags;
-	unsigned nowalkExempt;
 
-	vicoord deltaCoord;
-	rcoord fromCoord;
 	rcoord destCoord;
-	Tile* fromTile;
-	Tile* destTile;
+	double angleToDest;
 
 	ivec2 imgsz;
 	AnimationMap phases;

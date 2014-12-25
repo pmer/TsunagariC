@@ -65,9 +65,7 @@ Player::Player()
 
 void Player::destroy()
 {
-	// Assuming this is being called from Python code, where this function
-	// is bound to the name "delete()".
-	Log::err("Player", "delete(): Player cannot be destroyed");
+	Log::fatal("Player", "destroy(): Player should not be destroyed");
 }
 
 void Player::startMovement(ivec2 delta)
@@ -85,7 +83,6 @@ void Player::startMovement(ivec2 delta)
 		// TODO
 		break;
 	}
-	stillMoving = velocity;
 }
 
 void Player::stopMovement(ivec2 delta)
@@ -105,7 +102,6 @@ void Player::stopMovement(ivec2 delta)
 		// TODO
 		break;
 	}
-	stillMoving = velocity;
 }
 
 void Player::moveByTile(ivec2 delta)
@@ -126,12 +122,12 @@ void Player::moveByTile(ivec2 delta)
 	// down but not to left or right.
 	// --pdm Dec 6, 2014
 	if (GameWindow::instance().isKeyDown(KBLeftControl)) {
-		setPhase(directionStr(facing));
+		setAnimationStanding();
 		redraw = true;
 		return;
 	}
 
-	Entity::moveByTile(delta);
+	Character::moveByTile(delta);
 
 	World::instance().turn();
 }
@@ -153,24 +149,12 @@ void Player::setFrozen(bool b)
 		moveByTile(velocity);
 }
 
-void Player::postMove()
+void Player::arrived()
 {
-	Entity::postMove();
+	Entity::arrived();
 
-	// Normal exit.
-	if (destTile) {
-		Exit* exit = destTile->exits[EXIT_NORMAL];
-		if (exit)
-			takeExit(exit);
-	}
-
-	// Side exit.
-	if (fromTile) {
-		ivec2 dxy(deltaCoord.x, deltaCoord.y);
-		Exit* exit = fromTile->exitAt(dxy);
-		if (exit)
-			takeExit(exit);
-	}
+	if (destExit)
+		takeExit(destExit);
 
 	// If we have a velocity, keep moving.
 	if (conf.moveMode == TILE && velocity)

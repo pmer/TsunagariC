@@ -83,7 +83,5 @@ public:
 	static void garbageCollect();
 };
 
-void exportReader();
-
 #endif
 

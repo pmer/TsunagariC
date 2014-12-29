@@ -321,7 +321,3 @@ void Reader::garbageCollect()
 	texts.garbageCollect();
 }
 
-void exportReader()
-{
-}
-

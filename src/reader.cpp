@@ -40,6 +40,7 @@
 #include "formatter.h"
 #include "log.h"
 #include "reader.h"
+#include "sounds.h"
 #include "window.h"
 #include "xml.h"
 

@@ -139,12 +139,17 @@ public:
 
 	const std::string getDescriptor() const;
 
-	NPC* spawnNPC(const std::string& descriptor,
+	// Create an NPC and insert it into the Area.
+	std::shared_ptr<NPC> spawnNPC(const std::string& descriptor,
 		vicoord coord, const std::string& phase);
-	Overlay* spawnOverlay(const std::string& descriptor,
+	// Create an Overlay and insert it into the Area.
+	std::shared_ptr<Overlay> spawnOverlay(const std::string& descriptor,
 		vicoord coord, const std::string& phase);
-	void insert(Character* c);
-	void insert(Overlay* o);
+
+	// Insert a Character into the Area.
+	void insert(std::shared_ptr<Character> c);
+	// Insert an Overlay into the Area.
+	void insert(std::shared_ptr<Overlay> o);
 
 	// Convert between virtual and physical map coordinates. Physical
 	// coordinates are the physical indexes into the Tile matrix. Layer
@@ -179,9 +184,9 @@ protected:
 	Player* player;
 	uint32_t colorOverlayARGB;
 
-	typedef std::set<std::unique_ptr<Character>> CharacterSet;
+	typedef std::set<std::shared_ptr<Character>> CharacterSet;
 	CharacterSet characters;
-	typedef std::set<std::unique_ptr<Overlay>> OverlaySet;
+	typedef std::set<std::shared_ptr<Overlay>> OverlaySet;
 	OverlaySet overlays;
 
 	typedef std::vector<Tile> row_t;

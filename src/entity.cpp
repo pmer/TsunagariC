@@ -210,12 +210,14 @@ void Entity::attach(OnTurnFn fn)
 
 void Entity::calcDraw()
 {
-	ivec2 tile = area->getTileDimensions();
+	if (area) {
+		ivec2 tile = area->getTileDimensions();
 
-	// X-axis is centered on tile.
-	doff.x = (tile.x - imgsz.x) / 2;
-	// Y-axis is aligned with bottom of tile.
-	doff.y = tile.y - imgsz.y;
+		// X-axis is centered on tile.
+		doff.x = (tile.x - imgsz.x) / 2;
+		// Y-axis is aligned with bottom of tile.
+		doff.y = tile.y - imgsz.y;
+	}
 }
 
 SampleRef Entity::getSound(const std::string& name) const

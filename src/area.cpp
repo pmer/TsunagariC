@@ -190,8 +190,11 @@ void Area::tick(time_t dt)
 
 	for (auto& overlay : overlays)
 		overlay->tick(dt);
-	erase_if(overlays, [] (const std::unique_ptr<Overlay>& o) {
-		return o->isDead();
+	erase_if(overlays, [] (const std::shared_ptr<Overlay>& o) {
+		bool dead = o->isDead();
+		if (dead)
+			o->setArea(NULL);
+		return dead;
 	});
 
 	if (conf.moveMode != TURN) {
@@ -199,8 +202,11 @@ void Area::tick(time_t dt)
 
 		for (auto& character : characters)
 			character->tick(dt);
-		erase_if(characters, [] (const std::unique_ptr<Character>& c) {
-			return c->isDead();
+		erase_if(characters, [] (const std::shared_ptr<Character>& c) {
+			bool dead = c->isDead();
+			if (dead)
+				c->setArea(NULL);
+			return dead;
 		});
 	}
 
@@ -217,8 +223,11 @@ void Area::turn()
 
 	for (auto& character : characters)
 		character->turn();
-	erase_if(characters, [] (const std::unique_ptr<Character>& c) {
-		return c->isDead();
+	erase_if(characters, [] (const std::shared_ptr<Character>& c) {
+		bool dead = c->isDead();
+		if (dead)
+			c->setArea(NULL);
+		return dead;
 	});
 
 	view->turn();
@@ -400,14 +409,13 @@ const std::string Area::getDescriptor() const
 	return descriptor;
 }
 
-NPC* Area::spawnNPC(const std::string& descriptor,
+std::shared_ptr<NPC> Area::spawnNPC(const std::string& descriptor,
 	vicoord coord, const std::string& phase)
 {
-	NPC* c = new NPC();
+	auto c = std::make_shared<NPC>();
 	if (!c->init(descriptor, phase)) {
 		// Error logged.
-		delete c;
-		return NULL;
+		return std::shared_ptr<NPC>();
 	}
 	c->setArea(this);
 	c->setTileCoords(coord);
@@ -415,14 +423,13 @@ NPC* Area::spawnNPC(const std::string& descriptor,
 	return c;
 }
 
-Overlay* Area::spawnOverlay(const std::string& descriptor,
+std::shared_ptr<Overlay> Area::spawnOverlay(const std::string& descriptor,
 	vicoord coord, const std::string& phase)
 {
-	Overlay* o = new Overlay();
+	auto o = std::make_shared<Overlay>();
 	if (!o->init(descriptor, phase)) {
 		// Error logged.
-		delete o;
-		return NULL;
+		return std::shared_ptr<Overlay>();
 	}
 	o->setArea(this);
 	o->teleport(coord);
@@ -430,14 +437,14 @@ Overlay* Area::spawnOverlay(const std::string& descriptor,
 	return o;
 }
 
-void Area::insert(Character* c)
+void Area::insert(std::shared_ptr<Character> c)
 {
-	characters.insert(std::unique_ptr<Character>(c));
+	characters.insert(c);
 }
 
-void Area::insert(Overlay* o)
+void Area::insert(std::shared_ptr<Overlay> o)
 {
-	overlays.insert(std::unique_ptr<Overlay>(o));
+	overlays.insert(o);
 }
 
 

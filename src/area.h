@@ -38,7 +38,7 @@
 #include "vec.h"
 #include "window.h"
 
-#include "data/area.h"
+#include "data/data-area.h"
 
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
 

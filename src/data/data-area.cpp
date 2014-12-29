@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** world.cpp                     **
+** area.cpp                      **
 ** Copyright 2014 PariahSoft LLC **
 **********************************/
 
@@ -24,12 +24,62 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "world.h"
+#include "../algorithm.h"
 
-DataWorld::DataWorld() {}
-DataWorld::~DataWorld() {}
+#include "data-area.h"
+#include "inprogress.h"
 
-DataArea* DataWorld::area(const std::string& areaName)
+DataArea::DataArea() {}
+DataArea::~DataArea() {}
+void DataArea::onLoad() {}
+void DataArea::onFocus() {}
+void DataArea::onTick(time_t) {}
+void DataArea::onTurn() {}
+
+void DataArea::tick(time_t dt)
 {
-	return &*areas[areaName];
+	for (auto& inProgress : inProgresses) {
+		inProgress->tick(dt);
+	}
+	erase_if(inProgresses, [] (std::unique_ptr<InProgress>& ip) { return ip->isOver(); });
+	onTick(dt);
+}
+
+void DataArea::turn()
+{
+	onTurn();
+}
+
+void DataArea::playSoundAndThen(std::string sound, ThenFn then)
+{
+	inProgresses.emplace_back(
+		new InProgressSound(sound, then)
+	);
+}
+
+void DataArea::timerProgress(time_t duration, ProgressFn progress)
+{
+	inProgresses.emplace_back(
+		new InProgressTimer(duration, progress)
+	);
+}
+
+void DataArea::timerThen(time_t duration, ThenFn then)
+{
+	inProgresses.emplace_back(
+		new InProgressTimer(duration, then)
+	);
+}
+
+void DataArea::timerProgressAndThen(time_t duration, ProgressFn progress,
+	ThenFn then)
+{
+	inProgresses.emplace_back(
+		new InProgressTimer(duration, progress, then)
+	);
+}
+
+DataArea::TileScript DataArea::script(const std::string& scriptName)
+{
+	return scripts[scriptName];
 }

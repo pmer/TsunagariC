@@ -32,7 +32,7 @@
 
 #include "../client-conf.h"
 
-#include "area.h"
+#include "data-area.h"
 
 class DataWorld
 {

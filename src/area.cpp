@@ -45,7 +45,7 @@
 #include "window.h"
 #include "world.h"
 
-#include "data/world.h"
+#include "data/data-world.h"
 
 #define ASSERT(x)  if (!(x)) { return false; }
 

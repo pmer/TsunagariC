@@ -37,7 +37,7 @@
 #include "window.h"
 #include "world.h"
 
-#include "data/world.h"
+#include "data/data-world.h"
 
 #ifdef _WIN32
   #include "os-windows.h"

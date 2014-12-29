@@ -392,7 +392,7 @@ bool Entity::processPhase(const XMLNode node, const TiledImageRef& tiles)
 				"<phase> frames attribute index out of bounds");
 			return false;
 		}
-		const ImageRef& image = (*tiles.get())[frame];
+		const ImageRef& image = (*tiles.get())[(size_t)frame];
 		phases[name] = Animation(image);
 	}
 	else if (isRanges(framesStr)) {
@@ -413,7 +413,7 @@ bool Entity::processPhase(const XMLNode node, const TiledImageRef& tiles)
 					"<phase> frames attribute index out of bounds");
 				return false;
 			}
-			images.push_back((*tiles.get())[i]);
+			images.push_back((*tiles.get())[(size_t)i]);
 		}
 
 		phases[name] = Animation(images, (time_t)(1000.0 / fps));

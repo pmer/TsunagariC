@@ -27,7 +27,7 @@
 #include "area.h"
 #include "character.h"
 #include "client-conf.h"
-#include "sound.h"
+#include "sounds.h"
 #include "tile.h"
 
 Character::Character()

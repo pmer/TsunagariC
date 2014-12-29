@@ -32,7 +32,7 @@
 #include <string>
 #include <time.h>
 
-#include "../sound.h"
+#include "../sounds.h"
 
 /**
  * InProgress objects contain logic that is to be evaluated over time from

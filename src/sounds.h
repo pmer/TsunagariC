@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** sound.h                            **
+** sounds.h                           **
 ** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SOUND_H
-#define SOUND_H
+#ifndef SOUNDS_H
+#define SOUNDS_H
 
 #include <memory>
 #include <string>

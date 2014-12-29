@@ -30,7 +30,7 @@
 #include <Gosu/Audio.hpp>
 
 #include "../cache-template.cpp"
-#include "../sound.h"
+#include "../sounds.h"
 #include "../readercache.h"
 
 class GosuSoundInstance : public SoundInstance

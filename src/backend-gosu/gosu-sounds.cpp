@@ -32,7 +32,7 @@
 #include "../math.h"
 #include "../reader.h"
 
-#include "gosu-sound.h"
+#include "gosu-sounds.h"
 
 GosuSoundInstance::GosuSoundInstance(Gosu::SampleInstance instance)
 	: instance(instance)

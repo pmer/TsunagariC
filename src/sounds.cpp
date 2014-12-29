@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** sound.cpp                          **
+** sounds.cpp                         **
 ** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
@@ -24,7 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "sound.h"
+#include "sounds.h"
 
 SoundInstance::~SoundInstance() {}
 Sounds::~Sounds() {}

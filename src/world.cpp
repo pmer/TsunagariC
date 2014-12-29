@@ -29,7 +29,6 @@
 #include "log.h"
 #include "music.h"
 #include "reader.h"
-#include "timeout.h"
 #include "window.h"
 #include "world.h"
 #include "xml.h"
@@ -176,14 +175,12 @@ void World::update(time_t now)
 
 void World::tick(time_t dt)
 {
-	updateTimeouts();
 	area->tick(dt);
 }
 
 void World::turn()
 {
 	if (conf.moveMode == TURN) {
-		updateTimeouts();
 		area->turn();
 	}
 }

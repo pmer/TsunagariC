@@ -10,7 +10,7 @@ include Makefile.common
 OBJECTS = animation.o area.o area-tmx.o bitrecord.o cache-template.o \
 character.o client-conf.o cooldown.o dtds.o entity.o formatter.o image.o log.o \
 main.o music.o npc.o os-windows.o overlay.o player.o random.o reader.o sound.o \
-string.o tile.o tiledimage.o timeout.o timer.o vec.o viewport.o window.o \
+string.o tile.o tiledimage.o timer.o vec.o viewport.o window.o \
 world.o xml.o backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
 backend-gosu/gosu-music.o backend-gosu/gosu-tiledimage.o \
 backend-gosu/gosu-window.o data/area.o data/inprogress.o data/world.o \
@@ -112,13 +112,9 @@ tile.o: animation.h area.h bitrecord.h character.h entity.h formatter.h \
  image.h log.h player.h reader.h sound.h string.h tile.cpp tile.h \
  tiledimage.h vec.h viewport.h window.h world.h xml.h data/area.h
 tiledimage.o: image.h tiledimage.cpp tiledimage.h
-timeout.o: animation.h area.h bitrecord.h character.h entity.h formatter.h \
- image.h player.h reader.h sound.h tile.h tiledimage.h timeout.cpp timeout.h \
- vec.h viewport.h window.h world.h xml.h data/area.h
 timer.o: animation.h area.h bitrecord.h character.h entity.h formatter.h \
  image.h player.h reader.h sound.h tile.h tiledimage.h timer.cpp timer.h \
  vec.h viewport.h window.h world.h xml.h data/area.h
-vec.o: vec.cpp vec.h
 viewport.o: animation.h area.h bitrecord.h entity.h image.h math.h reader.h \
  sound.h tile.h tiledimage.h vec.h viewport.cpp viewport.h window.h xml.h \
  data/area.h
@@ -127,7 +123,7 @@ window.o: animation.h area.h bitrecord.h character.h entity.h image.h \
  window.h world.h xml.h data/area.h
 world.o: animation.h area-tmx.h area.h bitrecord.h character.h client-conf.h \
  entity.h image.h log.h music.h player.h reader.h sound.h tile.h \
- tiledimage.h timeout.h vec.h viewport.h window.h world.cpp world.h xml.h \
+ tiledimage.h vec.h viewport.h window.h world.cpp world.h xml.h \
  data/area.h data/world.h
 xml.o: log.h string.h xml.cpp xml.h
 gosu-cbuffer.o: backend-gosu/gosu-cbuffer.cpp backend-gosu/gosu-cbuffer.h

@@ -45,7 +45,6 @@ private:
 };
 
 void updateTimeouts();
-void exportTimeout();
 
 #endif
 

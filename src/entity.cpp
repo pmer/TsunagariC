@@ -513,8 +513,3 @@ bool Entity::setScript(const std::string& trigger, ScriptRef& script)
 }
 */
 
-
-void exportEntity()
-{
-}
-

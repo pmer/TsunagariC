@@ -81,8 +81,5 @@ public:
 	SoundInstanceRef play(const std::string& path);
 };
 
-
-void exportSound();
-
 #endif
 

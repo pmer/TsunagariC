@@ -78,10 +78,5 @@ private:
 	Log& operator=(Log&&) = delete;
 };
 
-/**
- * Exports Log hooks to the python interpreter.
- */
-void exportLog();
-
 #endif
 

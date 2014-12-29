@@ -132,9 +132,3 @@ SoundInstanceRef SoundManager::play(const std::string& path)
 		return SoundInstanceRef(NULL);
 }
 
-
-
-void exportSound()
-{
-}
-

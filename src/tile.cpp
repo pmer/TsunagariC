@@ -322,11 +322,3 @@ size_t TileSet::idx(size_t x, size_t y) const
 	return y * width + x;
 }
 
-
-/*
- * PYTHON
- */
-void exportTile()
-{
-}
-

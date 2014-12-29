@@ -45,7 +45,5 @@ int randInt(int min, int max);
 	*/
 double randFloat(double min, double max);
 
-void exportRandom();
-
 #endif
 

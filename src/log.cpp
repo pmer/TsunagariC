@@ -129,7 +129,3 @@ void Log::reportVerbosityOnStartup()
 			<< " mode." << std::endl;
 }
 
-void exportLog()
-{
-}
-

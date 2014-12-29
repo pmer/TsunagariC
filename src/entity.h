@@ -215,7 +215,5 @@ protected:
 	std::vector<OnTurnFn> onTurnFns;
 };
 
-void exportEntity();
-
 #endif
 

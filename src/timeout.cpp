@@ -79,7 +79,3 @@ void updateTimeouts()
 	}
 }
 
-void exportTimeout()
-{
-}
-

@@ -276,7 +276,5 @@ private:
 	size_t width, height;
 };
 
-void exportTile();
-
 #endif
 

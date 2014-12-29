@@ -368,8 +368,5 @@ typedef vec3<double> rvec3;
 typedef ivec3 icoord;
 typedef rvec3 rcoord;
 
-
-void exportVecs();
-
 #endif
 

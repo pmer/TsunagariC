@@ -38,7 +38,3 @@ double randFloat(double min, double max)
         return d * (max-min) + min;
 }
 
-void exportRandom()
-{
-}
-

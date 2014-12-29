@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** sound.cpp                          **
+** gosu-sound.h                       **
 ** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
@@ -24,7 +24,60 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "sound.h"
+#ifndef GOSU_SOUND_H
+#define GOSU_SOUND_H
 
-SoundInstance::~SoundInstance() {}
-Sounds::~Sounds() {}
+#include <Gosu/Audio.hpp>
+
+#include "../cache-template.cpp"
+#include "../sound.h"
+#include "../readercache.h"
+
+class GosuSoundInstance : public SoundInstance
+{
+public:
+	GosuSoundInstance(Gosu::SampleInstance instance);
+
+	~GosuSoundInstance() = default;
+
+	bool playing();
+	void stop();
+
+	bool paused();
+	void pause();
+	void resume();
+
+	void volume(double volume);
+	void pan(double pan);
+	void speed(double speed);
+
+private:
+	GosuSoundInstance() = delete;
+	GosuSoundInstance(const GosuSoundInstance&) = delete;
+	GosuSoundInstance& operator=(const GosuSoundInstance&) = delete;
+
+	Gosu::SampleInstance instance;
+};
+
+
+class GosuSounds : public Sounds
+{
+public:
+	GosuSounds();
+
+	~GosuSounds() = default;
+
+	std::shared_ptr<SoundInstance> play(const std::string& path);
+
+	void garbageCollect();
+
+private:
+	GosuSounds(const GosuSounds&) = delete;
+	GosuSounds& operator=(const GosuSounds&) = delete;
+
+	std::shared_ptr<Gosu::Sample> getSample(const std::string& name);
+
+	ReaderCache<std::shared_ptr<Gosu::Sample>> samples;
+};
+
+#endif

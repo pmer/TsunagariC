@@ -42,8 +42,8 @@ bool InProgress::isOver()
 }
 
 
-InProgressSound::InProgressSound(std::string sound, ThenFn then)
-	: sound(SoundManager::instance().play(sound)), then(then)
+InProgressSound::InProgressSound(const std::string& sound, ThenFn then)
+	: sound(Sounds::instance().play(sound)), then(then)
 {
 	if (!then)
 		Log::err("InProgressSound", "invalid 'then'");
@@ -54,7 +54,7 @@ void InProgressSound::tick(time_t)
 	if (over)
 		return;
 
-	if (!sound->isPlaying()) {
+	if (!sound->playing()) {
 		over = true;
 		then();
 	}

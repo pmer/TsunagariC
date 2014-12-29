@@ -28,6 +28,7 @@
 #define INPROGRESS_H
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <time.h>
 
@@ -81,12 +82,12 @@ class InProgressSound : public InProgress
 public:
 	typedef std::function<void ()> ThenFn;
 
-	InProgressSound(std::string sound, ThenFn then);
+	InProgressSound(const std::string& sound, ThenFn then);
 
 	void tick(time_t dt);
 
 private:
-	SoundInstanceRef sound;
+	std::shared_ptr<SoundInstance> sound;
 	ThenFn then;
 };
 

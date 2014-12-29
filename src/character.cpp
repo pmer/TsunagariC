@@ -27,6 +27,7 @@
 #include "area.h"
 #include "character.h"
 #include "client-conf.h"
+#include "sound.h"
 #include "tile.h"
 
 Character::Character()
@@ -171,9 +172,7 @@ void Character::moveByTile(ivec2 delta)
 	leaveTile(fromTile);
 	enterTile(destTile);
 
-	SampleRef step = getSound("step");
-	if (step)
-		step->play();
+	Sounds::instance().play(soundPaths["step"]);
 
 	switch (conf.moveMode) {
 	case TURN:

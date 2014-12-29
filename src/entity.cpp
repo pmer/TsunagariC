@@ -220,16 +220,6 @@ void Entity::calcDraw()
 	}
 }
 
-SampleRef Entity::getSound(const std::string& name) const
-{
-	SampleMap::const_iterator it;
-	it = sounds.find(name);
-	if (it != sounds.end())
-		return it->second;
-	else
-		return SampleRef();
-}
-
 ivec2 Entity::setFacing(ivec2 facing)
 {
 	this->facing = ivec2(
@@ -447,9 +437,7 @@ bool Entity::processSound(const XMLNode node)
 		return false;
 	}
 
-	SampleRef s = Reader::getSample(filename);
-	if (s)
-		sounds[name] = s;
+	soundPaths[name] = filename;
 	return true;
 }
 

@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** sound.h                            **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2014 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -28,58 +28,66 @@
 #define SOUND_H
 
 #include <memory>
-
-#include <Gosu/Audio.hpp>
+#include <string>
 
 class SoundInstance
 {
 public:
-	SoundInstance(Gosu::SampleInstance inst);
+	virtual ~SoundInstance();
 
-	bool isPlaying();
-	void stop();
+	//! Whether the sound is currently playing.
+	virtual bool playing() = 0;
+	//! Stop playing the sound.  SoundInstances cannot resume from stop().
+	//! Create a new one to play again.
+	virtual void stop() = 0;
 
-	bool isPaused();
-	void setPaused(bool paused);
+	//! Whether the sound is paused.
+	virtual bool paused() = 0;
+	//! Pause playback of the sound.
+	virtual void pause() = 0;
+	//! Resume playback of the sound.
+	virtual void resume() = 0;
 
-	int getVolume();
-	void setVolume(int volume);
+	//! Between 0.0 (silence) and 1.0 (full).
+	virtual void volume(double volume) = 0;
+	//! Between -1.0 (left) and 1.0 (right).
+	virtual void pan(double pan) = 0;
+	//! 1.0 is normal speed
+	virtual void speed(double speed) = 0;
 
-	double getPan();
-	void setPan(double pan);
-
-	double getSpeed();
-	void setSpeed(double speed);
-
-private:
-	Gosu::SampleInstance inst;
-	int volume;
-	double pan, speed;
-};
-
-typedef std::shared_ptr<SoundInstance> SoundInstanceRef;
-
-
-class Sound
-{
-public:
-	Sound(Gosu::Sample* source);
-	SoundInstance play();
+protected:
+	SoundInstance() = default;
 
 private:
-	Gosu::Sample* source;
+	SoundInstance(const SoundInstance&) = delete;
+	SoundInstance(SoundInstance&&) = delete;
+	SoundInstance& operator=(const SoundInstance&) = delete;
+	SoundInstance& operator=(SoundInstance&&) = delete;
 };
 
-typedef std::shared_ptr<Sound> SampleRef;
 
-
-class SoundManager
+class Sounds
 {
 public:
-	static SoundManager& instance();
+	//! Acquire the global Sounds object.
+	static Sounds& instance();
 
-	SoundInstanceRef play(const std::string& path);
+	virtual ~Sounds();
+
+	//! Play a sound from the file at the given path.
+	virtual std::shared_ptr<SoundInstance> play(const std::string& path) = 0;
+
+	//! Free sounds not recently played.
+	virtual void garbageCollect() = 0;
+
+protected:
+	Sounds() = default;
+
+private:
+	Sounds(const Sounds&) = delete;
+	Sounds(Sounds&&) = delete;
+	Sounds& operator=(const Sounds&) = delete;
+	Sounds& operator=(Sounds&&) = delete;
 };
 
 #endif
-

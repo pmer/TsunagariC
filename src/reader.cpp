@@ -54,7 +54,6 @@ typedef std::shared_ptr<std::string> StringRef;
 // Caches that store processed, game-ready objects. Garbage collected.
 static Cache<ImageRef> images;
 static Cache<TiledImageRef> tiles;
-static Cache<SampleRef> sounds;
 static Cache<XMLRef> xmls;
 static Cache<StringRef> texts;
 
@@ -287,24 +286,6 @@ TiledImageRef Reader::getTiledImage(const std::string& name,
 	return result;
 }
 
-SampleRef Reader::getSample(const std::string& name)
-{
-	if (!conf.audioEnabled)
-		return SampleRef();
-
-	SampleRef existing = sounds.lifetimeRequest(name);
-	if (existing)
-		return existing;
-
-	std::unique_ptr<Gosu::Buffer> buffer(readBuffer(name));
-	if (!buffer)
-		return SampleRef();
-	SampleRef result(new Sound(new Gosu::Sample(buffer->frontReader())));
-
-	sounds.lifetimePut(name, result);
-	return result;
-}
-
 XMLRef Reader::getXMLDoc(const std::string& name,
                             const std::string& dtdType)
 {
@@ -334,7 +315,7 @@ void Reader::garbageCollect()
 {
 	images.garbageCollect();
 	tiles.garbageCollect();
-	sounds.garbageCollect();
+	Sounds::instance().garbageCollect();
 	// songs.garbageCollect();
 	xmls.garbageCollect();
 	texts.garbageCollect();

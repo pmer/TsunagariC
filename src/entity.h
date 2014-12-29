@@ -32,7 +32,6 @@
 #include <string>
 #include <vector>
 
-#include "sound.h"
 #include "tiledimage.h"
 #include "vec.h"
 #include "xml.h"
@@ -134,10 +133,6 @@ protected:
 	//! Precalculate various drawing measurements.
 	void calcDraw();
 
-	//! Retrieves a sound custom-defined within this Entity's descriptor
-	//! file.
-	SampleRef getSound(const std::string& name) const;
-
 	//! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
 	//! to 'facing'.
 	ivec2 setFacing(ivec2 facing);
@@ -174,7 +169,6 @@ protected:
 
 protected:
 	typedef std::map<std::string, Animation> AnimationMap;
-	typedef std::map<std::string, SampleRef> SampleMap;
 
 
 	//! Set to true if the Entity was destroyed this tick.
@@ -208,8 +202,9 @@ protected:
 	std::string phaseName;
 	ivec2 facing;
 
-	//! List of sounds this Entity knows about.
-	SampleMap sounds;
+	//! Map from effect name to filenames.
+	//!  e.g.: ["step"] = "sounds/player_step.oga"
+	std::map<std::string, std::string> soundPaths;
 
 	std::vector<OnTickFn> onTickFns;
 	std::vector<OnTurnFn> onTurnFns;

@@ -38,8 +38,6 @@
 
 namespace Gosu {
 	class Buffer;
-	class Sample;
-	class Song;
 }
 
 /**
@@ -72,10 +70,6 @@ public:
 	//! number of tiles that each have width and height w by h.
 	static TiledImageRef getTiledImage(const std::string& name,
 		int w, int h);
-
-	//! Request a sound object from the World. The sound will be
-	//! completely loaded into memory at once.
-	static SampleRef getSample(const std::string& name);
 
 	//! Request an XML document from the World.
 	static XMLRef getXMLDoc(const std::string& name,

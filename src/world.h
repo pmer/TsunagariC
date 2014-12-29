@@ -150,7 +150,7 @@ protected:
 protected:
 	typedef std::map<std::string, Area*> AreaMap;
 
-	ImageRef pauseInfo;
+	std::shared_ptr<Image> pauseInfo;
 
 	AreaMap areas;
 	Area* area;

@@ -55,7 +55,7 @@ private:
 	bool processMapProperties(XMLNode node);
 	bool processTileSet(XMLNode node);
 	bool processTileType(XMLNode node, TileType& type,
-			TiledImageRef& img, int id);
+			std::shared_ptr<TiledImage>& img, int id);
 	bool processLayer(XMLNode node);
 	bool processLayerProperties(XMLNode node, double* depth);
 	bool processLayerData(XMLNode node, int z);

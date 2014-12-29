@@ -32,13 +32,14 @@
 #include <string>
 #include <vector>
 
-#include "tiledimage.h"
 #include "vec.h"
 #include "xml.h"
 
 class Animation;
 class Area;
+class Image;
 class Tile;
+class TiledImage;
 
 enum SetPhaseResult {
 	PHASE_NOTFOUND,
@@ -154,12 +155,16 @@ protected:
 	// XML parsing functions used in constructing an Entity
 	bool processDescriptor();
 	bool processSprite(XMLNode node);
-	bool processPhases(XMLNode node, const TiledImageRef& tiles);
-	bool processPhase(const XMLNode node, const TiledImageRef& tiles);
-	bool processMembers(XMLNode node, std::vector<ImageRef>& frames,
-                            const TiledImage& tiles);
-	bool processMember(const XMLNode node, std::vector<ImageRef>& frames,
-                           const TiledImage& tiles);
+	bool processPhases(XMLNode node,
+		const std::shared_ptr<TiledImage>& tiles);
+	bool processPhase(const XMLNode node,
+		const std::shared_ptr<TiledImage>& tiles);
+	bool processMembers(XMLNode node,
+		std::vector<std::shared_ptr<Image>>& frames,
+		const TiledImage& tiles);
+	bool processMember(const XMLNode node,
+		std::vector<std::shared_ptr<Image>>& frames,
+		const TiledImage& tiles);
 	bool processSounds(XMLNode node);
 	bool processSound(const XMLNode node);
 	bool processScripts(XMLNode node);

@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include "image.h"
+class Image;
 
 class TiledImage
 {
@@ -40,16 +40,14 @@ public:
 
 	virtual size_t size() const = 0;
 
-	virtual ImageRef& operator[](size_t n) = 0;
-	virtual const ImageRef& operator[](size_t n) const = 0;
+	virtual std::shared_ptr<Image>& operator[](size_t n) = 0;
+	virtual const std::shared_ptr<Image>& operator[](size_t n) const = 0;
 
 private:
 	TiledImage();
 
 	friend class TiledImageImpl;
 };
-
-typedef std::shared_ptr<TiledImage> TiledImageRef;
 
 #endif
 

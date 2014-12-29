@@ -28,10 +28,11 @@
 #ifndef ANIMATED_H
 #define ANIMATED_H
 
+#include <memory>
 #include <time.h>
 #include <vector>
 
-#include "image.h"
+class Image;
 
 #define ANIM_INFINITE_CYCLES -1
 
@@ -59,7 +60,7 @@ public:
 	 *
 	 * @param frame static image
 	 */
-	Animation(const ImageRef& frame);
+	Animation(const std::shared_ptr<Image>& frame);
 
 	/**
 	 * Constructs a Animation from a list of frames.
@@ -71,7 +72,8 @@ public:
 	 * @param frameTime length of time in milliseconds that each frame
 	 *        will display for
 	 */
-	Animation(const std::vector<ImageRef>& frames, time_t frameTime);
+	Animation(const std::vector<std::shared_ptr<Image>>& frames,
+		time_t frameTime);
 
 	/**
 	 * Starts the animation over.
@@ -100,7 +102,7 @@ public:
 
 private:
 
-	typedef std::vector<ImageRef> ImageVec;
+	typedef std::vector<std::shared_ptr<Image>> ImageVec;
 
 
 	/** List of images in animation. */

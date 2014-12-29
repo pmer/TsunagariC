@@ -29,10 +29,12 @@
 #include "area.h"
 #include "client-conf.h"
 #include "entity.h"
+#include "image.h"
 #include "log.h"
 #include "math.h"
 #include "reader.h"
 #include "string.h"
+#include "tiledimage.h"
 #include "world.h"
 #include "xml.h"
 
@@ -309,7 +311,7 @@ void Entity::arrived()
 
 bool Entity::processDescriptor()
 {
-	XMLRef doc = Reader::getXMLDoc(descriptor, "entity");
+	auto doc = Reader::getXMLDoc(descriptor, "entity");
 	if (!doc)
 		return false;
 	const XMLNode root = doc->root(); // <entity>
@@ -333,7 +335,7 @@ bool Entity::processDescriptor()
 
 bool Entity::processSprite(XMLNode node)
 {
-	TiledImageRef tiles;
+	std::shared_ptr<TiledImage> tiles;
 	for (; node; node = node.next()) {
 		if (node.is("sheet")) {
 			std::string imageSheet = node.content();
@@ -348,7 +350,8 @@ bool Entity::processSprite(XMLNode node)
 	return true;
 }
 
-bool Entity::processPhases(XMLNode node, const TiledImageRef& tiles)
+bool Entity::processPhases(XMLNode node,
+		const std::shared_ptr<TiledImage>& tiles)
 {
 	for (; node; node = node.next())
 		if (node.is("phase"))
@@ -356,7 +359,8 @@ bool Entity::processPhases(XMLNode node, const TiledImageRef& tiles)
 	return true;
 }
 
-bool Entity::processPhase(const XMLNode node, const TiledImageRef& tiles)
+bool Entity::processPhase(const XMLNode node,
+		const std::shared_ptr<TiledImage>& tiles)
 {
 	/* Each phase requires a 'name' and 'frames'. Additionally,
 	 * 'speed' is required if 'frames' has more than one member.
@@ -382,7 +386,7 @@ bool Entity::processPhase(const XMLNode node, const TiledImageRef& tiles)
 				"<phase> frames attribute index out of bounds");
 			return false;
 		}
-		const ImageRef& image = (*tiles.get())[(size_t)frame];
+		const auto& image = (*tiles.get())[(size_t)frame];
 		phases[name] = Animation(image);
 	}
 	else if (isRanges(framesStr)) {
@@ -395,7 +399,7 @@ bool Entity::processPhase(const XMLNode node, const TiledImageRef& tiles)
 
 		typedef std::vector<int> IntVector;
 		IntVector frames = parseRanges(framesStr);
-		std::vector<ImageRef> images;
+		std::vector<std::shared_ptr<Image>> images;
 		for (IntVector::iterator it = frames.begin(); it != frames.end(); it++) {
 			int i = *it;
 			if (i < 0 || (int)tiles->size() < i) {

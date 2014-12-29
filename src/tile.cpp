@@ -262,7 +262,7 @@ TileType::TileType()
 {
 }
 
-TileType::TileType(ImageRef& img)
+TileType::TileType(std::shared_ptr<Image>& img)
 	: TileBase()
 {
 	anim = Animation(img);

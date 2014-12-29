@@ -27,11 +27,13 @@
 #ifndef GOSU_MUSIC_H
 #define GOSU_MUSIC_H
 
-#include <Gosu/Audio.hpp>
-
 #include "../cache-template.cpp"
 #include "../music.h"
 #include "../readercache.h"
+
+namespace Gosu {
+	class Song;
+}
 
 class GosuMusic : public Music
 {
@@ -54,11 +56,11 @@ private:
 	void playIntro();
 	void playLoop();
 
-	SongRef getSong(const std::string& name);
+	std::shared_ptr<Gosu::Song> getSong(const std::string& name);
 
-	ReaderCache<SongRef> songs;
+	ReaderCache<std::shared_ptr<Gosu::Song>> songs;
 
-	SongRef musicInst, introMusic, loopMusic;
+	std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
 };
 
 #endif

@@ -24,16 +24,20 @@
 // IN THE SOFTWARE.
 // **********
 
+#include <Gosu/Audio.hpp>
+
 #include "../client-conf.h"
 #include "gosu-music.h"
 #include "../reader.h"
 
-static GosuMusic::SongRef genSong(const std::string& name)
+static std::shared_ptr<Gosu::Song> genSong(const std::string& name)
 {
 	std::unique_ptr<Gosu::Buffer> buffer(Reader::readBuffer(name));
 	if (!buffer)
-		return GosuMusic::SongRef();
-	return GosuMusic::SongRef(new Gosu::Song(buffer->frontReader()));
+		return std::shared_ptr<Gosu::Song>();
+	return std::shared_ptr<Gosu::Song>(
+		new Gosu::Song(buffer->frontReader())
+	);
 }
 
 
@@ -59,7 +63,8 @@ bool GosuMusic::setIntro(const std::string& filename)
 {
 	if (Music::setIntro(filename)) {
 		// Optimize XXX: Don't load until played.
-		introMusic = filename.size() ? getSong(filename) : SongRef();
+		introMusic = filename.size() ? getSong(filename) :
+			std::shared_ptr<Gosu::Song>();
 		return true;
 	}
 	else
@@ -70,7 +75,8 @@ bool GosuMusic::setLoop(const std::string& filename)
 {
 	if (Music::setLoop(filename)) {
 		// Optimize XXX: Don't load until played.
-		loopMusic = filename.size() ? getSong(filename) : SongRef();
+		loopMusic = filename.size() ? getSong(filename) :
+			std::shared_ptr<Gosu::Song>();
 		return true;
 	}
 	else
@@ -171,10 +177,10 @@ void GosuMusic::playLoop()
 	musicInst = loopMusic;
 }
 
-GosuMusic::SongRef GosuMusic::getSong(const std::string& name)
+std::shared_ptr<Gosu::Song> GosuMusic::getSong(const std::string& name)
 {
 	if (!conf.audioEnabled)
-		return SongRef();
+		return std::shared_ptr<Gosu::Song>();
 	return songs.lifetimeRequest(name);
 }
 

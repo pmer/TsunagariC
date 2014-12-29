@@ -28,7 +28,6 @@
 #define IMAGE_H
 
 #include <cstring> // for size_t
-#include <memory>
 
 class Image
 {
@@ -49,8 +48,6 @@ private:
 
 	friend class ImageImpl;
 };
-
-typedef std::shared_ptr<Image> ImageRef;
 
 #endif
 

@@ -91,7 +91,5 @@ private:
 	std::string path_;
 };
 
-typedef std::shared_ptr<XMLDoc> XMLRef;
-
 #endif
 

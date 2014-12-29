@@ -27,6 +27,7 @@
 #ifndef GOSU_TILEDIMAGE_H
 #define GOSU_TILEDIMAGE_H
 
+#include <memory>
 #include <vector>
 
 #include "../tiledimage.h"
@@ -38,11 +39,11 @@ public:
 
 	size_t size() const;
 
-	ImageRef& operator[](size_t n);
-	const ImageRef& operator[](size_t n) const;
+	std::shared_ptr<Image>& operator[](size_t n);
+	const std::shared_ptr<Image>& operator[](size_t n) const;
 
 private:
-	std::vector<ImageRef> vec;
+	std::vector<std::shared_ptr<Image>> vec;
 };
 
 #endif

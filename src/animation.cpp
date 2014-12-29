@@ -36,7 +36,7 @@ Animation::Animation()
 {
 }
 
-Animation::Animation(const ImageRef& frame)
+Animation::Animation(const std::shared_ptr<Image>& frame)
 	: frames { frame },
 	  cycles(0),
 	  frameTime(1),
@@ -45,7 +45,8 @@ Animation::Animation(const ImageRef& frame)
 {
 }
 
-Animation::Animation(const std::vector<ImageRef>& frames, time_t frameTime)
+Animation::Animation(const std::vector<std::shared_ptr<Image>>& frames,
+		time_t frameTime)
 	: frames(frames),
 	  cycles(0),
 	  frameTime(frameTime),

@@ -81,6 +81,4 @@ private:
 	std::vector<std::unique_ptr<InProgress>> inProgresses;
 };
 
-typedef std::shared_ptr<DataArea> DataAreaRef;
-
 #endif

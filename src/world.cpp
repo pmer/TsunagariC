@@ -26,6 +26,7 @@
 
 #include "area-tmx.h"
 #include "client-conf.h"
+#include "image.h"
 #include "log.h"
 #include "music.h"
 #include "reader.h"

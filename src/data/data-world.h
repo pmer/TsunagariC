@@ -32,7 +32,7 @@
 
 #include "../client-conf.h"
 
-#include "data-area.h"
+class DataArea;
 
 class DataWorld
 {
@@ -71,7 +71,7 @@ public:
 protected:
 	DataWorld();
 
-	std::map<std::string,DataAreaRef> areas;
+	std::map<std::string,std::shared_ptr<DataArea>> areas;
 
 private:
 	DataWorld(const DataWorld&) = delete;

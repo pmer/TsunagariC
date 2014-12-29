@@ -55,7 +55,7 @@ bool TiledImageImpl::init(void* data, size_t length, unsigned tileW, unsigned ti
 		for (unsigned x = 0; x < bitmap.width(); x += tileW) {
 			ImageImpl* img = new ImageImpl;
 			if (img->init(bitmap, x, y, tileW, tileH))
-				vec.push_back(ImageRef(img));
+				vec.push_back(std::shared_ptr<Image>(img));
 			else {
 				delete img;
 				return false;
@@ -73,12 +73,12 @@ size_t TiledImageImpl::size() const
 }
 
 
-ImageRef& TiledImageImpl::operator[](size_t n)
+std::shared_ptr<Image>& TiledImageImpl::operator[](size_t n)
 {
 	return vec[n];
 }
 
-const ImageRef& TiledImageImpl::operator[](size_t n) const
+const std::shared_ptr<Image>& TiledImageImpl::operator[](size_t n) const
 {
 	return vec[n];
 }

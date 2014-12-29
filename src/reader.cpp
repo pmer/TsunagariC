@@ -38,9 +38,11 @@
 #include "client-conf.h"
 #include "dtds.h"
 #include "formatter.h"
+#include "image.h"
 #include "log.h"
 #include "reader.h"
 #include "sounds.h"
+#include "tiledimage.h"
 #include "window.h"
 #include "xml.h"
 
@@ -48,20 +50,14 @@
 
 #define ASSERT(x)  if (!(x)) { return false; }
 
-typedef std::shared_ptr<xmlDtd> DTDRef;
-typedef std::shared_ptr<std::string> StringRef;
-
-
 // Caches that store processed, game-ready objects. Garbage collected.
-static Cache<ImageRef> images;
-static Cache<TiledImageRef> tiles;
-static Cache<XMLRef> xmls;
-static Cache<StringRef> texts;
+static Cache<std::shared_ptr<Image>> images;
+static Cache<std::shared_ptr<TiledImage>> tiles;
+static Cache<std::shared_ptr<XMLDoc>> xmls;
+static Cache<std::shared_ptr<std::string>> texts;
 
 // DTDs don't expire. No garbage collection.
-typedef std::map<std::string, DTDRef> DTDMap;
-static DTDMap dtds;
-
+static std::map<std::string, std::shared_ptr<xmlDtd>> dtds;
 
 
 static std::string path(const std::string& entryName)
@@ -130,20 +126,20 @@ static bool readFromDisk(const std::string& name, T& buf)
 }
 
 // FIXME: Should be moved to xml.cpp!!!!!!
-static DTDRef parseDTD(const std::string& dtdContent)
+static std::shared_ptr<xmlDtd> parseDTD(const std::string& dtdContent)
 {
 	xmlCharEncoding enc = XML_CHAR_ENCODING_NONE;
 
 	xmlParserInputBuffer* input = xmlParserInputBufferCreateMem(
 			dtdContent.c_str(), (int)dtdContent.size(), enc);
 	if (!input)
-		return DTDRef();
+		return std::shared_ptr<xmlDtd>();
 
 	xmlDtd* dtd = xmlIOParseDTD(NULL, input, enc);
 	if (!dtd)
-		return DTDRef();
+		return std::shared_ptr<xmlDtd>();
 
-	return DTDRef(dtd, xmlFreeDtd);
+	return std::shared_ptr<xmlDtd>(dtd, xmlFreeDtd);
 }
 
 // FIXME: Should be moved to xml.cpp!!!!!!
@@ -157,7 +153,7 @@ static bool preloadDTDs()
 
 static xmlDtd* getDTD(const std::string& type)
 {
-	DTDMap::iterator it = dtds.find(type);
+	auto it = dtds.find(type);
 	return it == dtds.end() ? NULL : it->second.get();
 }
 
@@ -244,57 +240,58 @@ std::string Reader::readString(const std::string& name)
 	return readFromDisk(name, str) ? str : "";
 }
 
-ImageRef Reader::getImage(const std::string& name)
+std::shared_ptr<Image> Reader::getImage(const std::string& name)
 {
-	ImageRef existing = images.lifetimeRequest(name);
+	std::shared_ptr<Image> existing = images.lifetimeRequest(name);
 	if (existing)
 		return existing;
 
 	std::unique_ptr<Gosu::Buffer> buffer(readBuffer(name));
 	if (!buffer)
-		return ImageRef();
+		return std::shared_ptr<Image>();
 
-	ImageRef result(Image::create(buffer->data(), buffer->size()));
+	std::shared_ptr<Image> result(Image::create(buffer->data(),
+		buffer->size()));
 	if (!result)
-		return ImageRef();
+		return std::shared_ptr<Image>();
 
 	images.lifetimePut(name, result);
 	return result;
 }
 
-TiledImageRef Reader::getTiledImage(const std::string& name,
+std::shared_ptr<TiledImage> Reader::getTiledImage(const std::string& name,
 		int w, int h)
 {
-	TiledImageRef existing = tiles.momentaryRequest(name);
+	std::shared_ptr<TiledImage> existing = tiles.momentaryRequest(name);
 	if (existing)
 		return existing;
 
 	if (w <= 0 || h <= 0)
-		return TiledImageRef();
+		return std::shared_ptr<TiledImage>();
 
 	std::unique_ptr<Gosu::Buffer> buffer(readBuffer(name));
 	if (!buffer)
-		return TiledImageRef();
+		return std::shared_ptr<TiledImage>();
 
-	TiledImageRef result(
+	std::shared_ptr<TiledImage> result(
 		TiledImage::create(buffer->data(), buffer->size(),
 			(unsigned int)w, (unsigned int)h)
 	);
 	if (!result)
-		return TiledImageRef();
+		return std::shared_ptr<TiledImage>();
 
 	tiles.momentaryPut(name, result);
 	return result;
 }
 
-XMLRef Reader::getXMLDoc(const std::string& name,
+std::shared_ptr<XMLDoc> Reader::getXMLDoc(const std::string& name,
                             const std::string& dtdType)
 {
-	XMLRef existing = xmls.momentaryRequest(name);
+	std::shared_ptr<XMLDoc> existing = xmls.momentaryRequest(name);
 	if (existing)
 		return existing;
 
-	XMLRef result(readXMLDoc(name, dtdType));
+	std::shared_ptr<XMLDoc> result(readXMLDoc(name, dtdType));
 
 	xmls.momentaryPut(name, result);
 	return result;
@@ -302,11 +299,11 @@ XMLRef Reader::getXMLDoc(const std::string& name,
 
 std::string Reader::getText(const std::string& name)
 {
-	StringRef existing = texts.momentaryRequest(name);
+	std::shared_ptr<std::string> existing = texts.momentaryRequest(name);
 	if (existing)
 		return *existing.get();
 
-	StringRef result(new std::string(readString(name)));
+	std::shared_ptr<std::string> result(new std::string(readString(name)));
 
 	texts.momentaryPut(name, result);
 	return *result.get();

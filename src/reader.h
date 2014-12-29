@@ -29,11 +29,9 @@
 
 #include <string>
 
-#include <libxml/parser.h>
-
-#include "image.h"
-#include "tiledimage.h"
-#include "xml.h"
+class Image;
+class TiledImage;
+class XMLDoc;
 
 namespace Gosu {
 	class Buffer;
@@ -63,15 +61,15 @@ public:
 	static std::string readString(const std::string& name);
 
 	//! Request an image from the World.
-	static ImageRef getImage(const std::string& name);
+	static std::shared_ptr<Image> getImage(const std::string& name);
 
 	//! Request an image resource from the World and splits it into a
 	//! number of tiles that each have width and height w by h.
-	static TiledImageRef getTiledImage(const std::string& name,
-		int w, int h);
+	static std::shared_ptr<TiledImage> getTiledImage(
+		const std::string& name, int w, int h);
 
 	//! Request an XML document from the World.
-	static XMLRef getXMLDoc(const std::string& name,
+	static std::shared_ptr<XMLDoc> getXMLDoc(const std::string& name,
 		const std::string& dtdType);
 
 	//! Request a text file from the World.

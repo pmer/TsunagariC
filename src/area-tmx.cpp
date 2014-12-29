@@ -34,6 +34,7 @@
 #include "reader.h"
 #include "string.h"
 #include "tile.h"
+#include "tiledimage.h"
 #include "window.h"
 #include "world.h"
 
@@ -84,7 +85,7 @@ void AreaTMX::allocateMapLayer()
 
 bool AreaTMX::processDescriptor()
 {
-	XMLRef doc;
+	std::shared_ptr<XMLDoc> doc;
 	XMLNode root;
 
 	ASSERT(doc = Reader::getXMLDoc(descriptor, "area"));
@@ -179,11 +180,11 @@ bool AreaTMX::processTileSet(XMLNode node)
  </tileset>
 */
 
-	XMLRef doc;
+	std::shared_ptr<XMLDoc> doc;
 	std::string source;
 
 	TileSet* set = NULL;
-	TiledImageRef img;
+	std::shared_ptr<TiledImage> img;
 	int tilex, tiley;
 	int firstGid;
 
@@ -233,7 +234,7 @@ bool AreaTMX::processTileSet(XMLNode node)
 
 			// Initialize "vanilla" tile type array.
 			for (size_t i = 0; i < img->size(); i++) {
-				ImageRef& tileImg = (*img.get())[i];
+				auto& tileImg = (*img.get())[i];
 				TileType* type = new TileType(tileImg);
 				set->add(type);
 				gids.push_back(type);
@@ -274,7 +275,7 @@ bool AreaTMX::processTileSet(XMLNode node)
 }
 
 bool AreaTMX::processTileType(XMLNode node, TileType& type,
-		TiledImageRef& img, int id)
+		std::shared_ptr<TiledImage>& img, int id)
 {
 
 /*
@@ -298,7 +299,7 @@ bool AreaTMX::processTileType(XMLNode node, TileType& type,
 	// to worry about it.
 
 	// If a Tile is animated, it needs both member frames and a speed.
-	std::vector<ImageRef> framesvec;
+	std::vector<std::shared_ptr<Image>> framesvec;
 	int cycles = ANIM_INFINITE_CYCLES;
 	int frameLen = -1;
 

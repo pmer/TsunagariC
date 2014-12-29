@@ -15,7 +15,7 @@ xml.o \
 backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
 backend-gosu/gosu-music.o backend-gosu/gosu-sounds.o \
 backend-gosu/gosu-tiledimage.o backend-gosu/gosu-window.o \
-data/data-area.o data/inprogress.o data/data-world.o \
+data/data-area.o data/data-world.o data/inprogress.o \
 nbcl/nbcl.o
 
 BASEDATA = ../data/base.zip

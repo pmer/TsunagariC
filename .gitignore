@@ -6,4 +6,5 @@ src/*.world
 src/tsunagari
 data/*.zip
 data/*.world
+.DS_Store
 

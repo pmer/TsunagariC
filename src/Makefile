@@ -7,7 +7,7 @@
 
 include Makefile.common
 
-OBJECTS = animation.o area.o area-tmx.o bitrecord.o cache-template.o \
+OBJECTS = animation.o area.o area-tmx.o bitrecord.o \
 character.o client-conf.o cooldown.o dtds.o entity.o formatter.o image.o log.o \
 main.o music.o npc.o os-windows.o overlay.o player.o random.o reader.o \
 sounds.o string.o tile.o tiledimage.o timer.o viewport.o window.o world.o \

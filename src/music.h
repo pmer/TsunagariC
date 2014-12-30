@@ -42,26 +42,46 @@
  *
  * When switching to a new Area with the same intro or loop music as the
  * previous Area, the music is left alone, if possible.
+ *
+ * When a new music is played, the pause state of the previous music is
+ * dropped.
  */
 class Music
 {
 public:
+	//! Acquire the global Music object.
 	static Music& instance();
 
 	virtual ~Music();
 
-	virtual bool setIntro(const std::string& filename);
-	virtual bool setLoop(const std::string& filename);
+	//! If the intro filepath has changed, start playing it.
+	virtual bool setIntro(const std::string& filepath);
+	//! If the loop filepath has changed, then play the loop either now,
+	//! or after an also-new intro music has played.
+	virtual bool setLoop(const std::string& filepath);
 
-	int getVolume();
-	virtual bool setVolume(int level);
-
-	bool isPaused();
-	virtual bool setPaused(bool p);
-
+	//! Whether music is currently playing.
+	virtual bool playing() = 0;
+	//! Stop playing music.  To begin again, set a new intro or loop.
 	virtual void stop();
 
-	virtual void tick();
+	//! Whether music is paused.
+	virtual bool paused();
+	//! Pause playback of music.
+	virtual void pause();
+	//! Resume playback of music.
+	virtual void resume();
+
+	//! Between 0.0 (silence) and 1.0 (full).
+	double getVolume();
+	//! Between 0.0 (silence) and 1.0 (full).
+	virtual void setVolume(double volume);
+
+	//! Perform per-tick maintenance of the music subsystem.
+	virtual void tick() = 0;
+
+	//! Free music not recently played.
+	virtual void garbageCollect() = 0;
 
 protected:
 	Music();
@@ -78,8 +98,8 @@ protected:
 		CHANGED_LOOP
 	} state;
 
-	int volume;
-	bool paused;
+	double volume;
+	int pausedCount;
 
 	std::string curIntro, newIntro;
 	std::string curLoop, newLoop;

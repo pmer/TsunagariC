@@ -75,8 +75,6 @@ private:
 	GosuSounds(const GosuSounds&) = delete;
 	GosuSounds& operator=(const GosuSounds&) = delete;
 
-	std::shared_ptr<Gosu::Sample> getSample(const std::string& name);
-
 	ReaderCache<std::shared_ptr<Gosu::Sample>> samples;
 };
 

@@ -59,11 +59,11 @@ GosuMusic::~GosuMusic()
 		musicInst->stop();
 }
 
-bool GosuMusic::setIntro(const std::string& filename)
+bool GosuMusic::setIntro(const std::string& filepath)
 {
-	if (Music::setIntro(filename)) {
+	if (Music::setIntro(filepath)) {
 		// Optimize XXX: Don't load until played.
-		introMusic = filename.size() ? getSong(filename) :
+		introMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
 			std::shared_ptr<Gosu::Song>();
 		return true;
 	}
@@ -71,11 +71,11 @@ bool GosuMusic::setIntro(const std::string& filename)
 		return false;
 }
 
-bool GosuMusic::setLoop(const std::string& filename)
+bool GosuMusic::setLoop(const std::string& filepath)
 {
-	if (Music::setLoop(filename)) {
+	if (Music::setLoop(filepath)) {
 		// Optimize XXX: Don't load until played.
-		loopMusic = filename.size() ? getSong(filename) :
+		loopMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
 			std::shared_ptr<Gosu::Song>();
 		return true;
 	}
@@ -83,28 +83,10 @@ bool GosuMusic::setLoop(const std::string& filename)
 		return false;
 }
 
-bool GosuMusic::setVolume(int level)
+bool GosuMusic::playing()
 {
-	if (Music::setVolume(level)) {
-		if (musicInst)
-			musicInst->changeVolume(level);
-		return true;
-	}
-	else
-		return false;
-}
-
-bool GosuMusic::setPaused(bool p)
-{
-	if (Music::setPaused(p)) {
-		if (musicInst) {
-			if (p)
-				musicInst->pause();
-			else
-				musicInst->play();
-		}
-		return true;
-	}
+	if (musicInst)
+		return musicInst->playing();
 	else
 		return false;
 }
@@ -116,11 +98,28 @@ void GosuMusic::stop()
 		musicInst->stop();
 }
 
+void GosuMusic::pause()
+{
+	Music::pause();
+	if (pausedCount == 1 && musicInst)
+		musicInst->pause();
+}
+
+void GosuMusic::resume()
+{
+	Music::resume();
+	if (pausedCount == 0 && musicInst)
+		musicInst->play();
+}
+
+void GosuMusic::setVolume(double level)
+{
+	if (musicInst)
+		musicInst->changeVolume(level);
+}
+
 void GosuMusic::tick()
 {
-	if (paused)
-		return;
-
 	switch (state) {
 	case NOT_PLAYING:
 		if (musicInst && musicInst->playing())
@@ -163,7 +162,7 @@ void GosuMusic::playIntro()
 	if (musicInst && musicInst->playing())
 		musicInst->stop();
 	introMusic->play(false);
-	introMusic->changeVolume(conf.musicVolume / 100.0);
+	introMusic->changeVolume(volume);
 	musicInst = introMusic;
 }
 
@@ -173,14 +172,11 @@ void GosuMusic::playLoop()
 	if (musicInst && musicInst->playing())
 		musicInst->stop();
 	loopMusic->play(true);
-	loopMusic->changeVolume(conf.musicVolume / 100.0);
+	loopMusic->changeVolume(volume);
 	musicInst = loopMusic;
 }
 
-std::shared_ptr<Gosu::Song> GosuMusic::getSong(const std::string& name)
+void GosuMusic::garbageCollect()
 {
-	if (!conf.audioEnabled)
-		return std::shared_ptr<Gosu::Song>();
-	return songs.lifetimeRequest(name);
+	songs.garbageCollect();
 }
-

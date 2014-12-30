@@ -40,6 +40,7 @@
 #include "formatter.h"
 #include "image.h"
 #include "log.h"
+#include "music.h"
 #include "reader.h"
 #include "sounds.h"
 #include "tiledimage.h"
@@ -314,7 +315,7 @@ void Reader::garbageCollect()
 	images.garbageCollect();
 	tiles.garbageCollect();
 	Sounds::instance().garbageCollect();
-	// songs.garbageCollect();
+	Music::instance().garbageCollect();
 	xmls.garbageCollect();
 	texts.garbageCollect();
 }

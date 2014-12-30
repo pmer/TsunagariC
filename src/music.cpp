@@ -25,10 +25,32 @@
 // **********
 
 #include "client-conf.h"
+#include "formatter.h"
 #include "math.h"
 #include "music.h"
 
-Music::Music() : state(NOT_PLAYING), volume(100), paused(false)
+
+static void clientIniVolumeVerify()
+{
+	if (conf.musicVolume < 0 || 100 < conf.musicVolume)
+		Log::err("Music", "Music volume not within bounds [0,100]");
+}
+
+static double clientIniVolumeApply(double volume)
+{
+	clientIniVolumeVerify();
+	return volume * conf.musicVolume / 100.0;
+}
+
+static double clientIniVolumeUnapply(double volume)
+{
+	clientIniVolumeVerify();
+	return volume / conf.musicVolume * 100.0;
+}
+
+
+Music::Music()
+	: state(NOT_PLAYING), volume(1.0), pausedCount(0)
 {
 }
 
@@ -68,53 +90,60 @@ bool Music::setLoop(const std::string& filename)
 	return true;
 }
 
-int Music::getVolume()
+bool Music::paused()
 {
-	return volume;
+	return pausedCount != 0;
 }
 
-bool Music::setVolume(int level)
+void Music::pause()
 {
-	if (level == volume)
-		return false;
-	if (0 < level || level > 100) {
-		Log::info("Music", "volume can only be set between 0 and 100");
-		level = bound(level, 0, 100);
+	pausedCount++;
+}
+
+void Music::resume()
+{
+	if (pausedCount <= 0) {
+		Log::err("Music", "unpausing, but music not paused");
+		return;
 	}
-	volume = conf.musicVolume = level;
-	return true;
+	pausedCount--;
 }
 
-bool Music::isPaused()
+double Music::getVolume()
 {
-	return paused;
+	return clientIniVolumeUnapply(volume);
 }
 
-bool Music::setPaused(bool p)
+void Music::setVolume(double attemptedVolume)
 {
-	if (paused == p)
-		return false;
-	paused = p;
-	return true;
+	double newVolume = bound(attemptedVolume, 0.0, 1.0);
+	if (attemptedVolume != newVolume) {
+		Log::info("Music",
+			Formatter(
+				"Attempted to set volume to %, setting it to %"
+			) % attemptedVolume % newVolume
+		);
+	}
+
+	volume = clientIniVolumeApply(newVolume);
 }
 
 void Music::stop()
 {
-	paused = false;
 	state = NOT_PLAYING;
 }
-
-void Music::tick() {}
 
 void Music::playIntro()
 {
 	curIntro = newIntro;
 	state = PLAYING_INTRO;
+	pausedCount = 0;
 }
 
 void Music::playLoop()
 {
 	curLoop = newLoop;
 	state = PLAYING_LOOP;
+	pausedCount = 0;
 }
 

@@ -38,30 +38,31 @@ namespace Gosu {
 class GosuMusic : public Music
 {
 public:
-	typedef std::shared_ptr<Gosu::Song> SongRef;
-
 	GosuMusic();
 	~GosuMusic();
 
-private:
 	bool setIntro(const std::string& filename);
 	bool setLoop(const std::string& filename);
 
-	bool setVolume(int level);
-	bool setPaused(bool p);
-
+	bool playing();
 	void stop();
+
+	void pause();
+	void resume();
+
+	void setVolume(double volume);
+
 	void tick();
 
+	void garbageCollect();
+
+private:
 	void playIntro();
 	void playLoop();
 
-	std::shared_ptr<Gosu::Song> getSong(const std::string& name);
+	std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
 
 	ReaderCache<std::shared_ptr<Gosu::Song>> songs;
-
-	std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
 };
 
 #endif
-

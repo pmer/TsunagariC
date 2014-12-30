@@ -99,7 +99,6 @@ bool parseConfig(const std::string& filename)
 	conf.windowSize.x = ini.get("window.width", DEF_WINDOW_WIDTH);
 	conf.windowSize.y = ini.get("window.height", DEF_WINDOW_HEIGHT);
 	conf.fullscreen = ini.get("window.fullscreen", DEF_WINDOW_FULLSCREEN);
-	conf.audioEnabled = ini.get("audio.enabled", true);
 	conf.cacheEnabled = ini.get("cache.enabled", DEF_CACHE_ENABLED);
 
 	conf.musicVolume = ini.get("audio.musicvolume", 100);
@@ -236,9 +235,6 @@ bool parseCommandLine(int argc, char* argv[])
 	}
 	if (haltcount > 1)
 		Log::err("cmdline", "multiple halting flags on cmdline, using most stringent");
-
-	if (cmd.check("--no-audio"))
-		conf.audioEnabled = false;
 
 	if (cmd.check("--volume-music"))
 		conf.musicVolume = parseInt100(cmd.get("--volume-music"));

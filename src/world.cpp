@@ -75,6 +75,9 @@ bool World::init()
 	}
 	focusArea(area, gameStart.coords);
 
+	// Apply client.ini music volume now that client.ini is loaded.
+	Music::instance().setVolume(1.0);
+
 	return true;
 }
 
@@ -238,7 +241,10 @@ void World::setPaused(bool b)
 
 	paused += b ? 1 : -1;
 
-	Music::instance().setPaused(paused != 0);
+	if (paused)
+		Music::instance().pause();
+	else
+		Music::instance().resume();
 
 	// If finally unpausing.
 	if (!paused)

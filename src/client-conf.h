@@ -81,7 +81,6 @@ struct Conf {
 	halting_mode_t halting;
 	icoord windowSize;
 	bool fullscreen;
-	bool audioEnabled;
 	int musicVolume;
 	int soundVolume;
 	bool cacheEnabled;

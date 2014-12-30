@@ -1,10 +1,15 @@
 notes.txt
 doc/notes/
-src/*.o
-src/*/*.o
-src/*.world
+
+*.o
 src/tsunagari
+
 data/*.zip
 data/*.world
+
+# Mac
 .DS_Store
+
+# vim
+*.swp
 

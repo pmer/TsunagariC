@@ -249,7 +249,7 @@ const Tile* Area::getTile(int x, int y, int z) const
 	if (loopY)
 		y = wrap(0, y, dim.y);
 	if (inBounds(x, y, z))
-		return &map[z][y][x];
+		return &map[(size_t)z][(size_t)y][(size_t)x];
 	else
 		return NULL;
 }
@@ -281,7 +281,7 @@ Tile* Area::getTile(int x, int y, int z)
 	if (loopY)
 		y = wrap(0, y, dim.y);
 	if (inBounds(x, y, z))
-		return &map[z][y][x];
+		return &map[(size_t)z][(size_t)y][(size_t)x];
 	else
 		return NULL;
 }
@@ -513,7 +513,8 @@ int Area::depthIndex(double depth) const
 
 double Area::indexDepth(int idx) const
 {
-	return idx2depth[idx];
+	assert(0 <= idx && idx <= dim.z);
+	return idx2depth[(size_t)idx];
 }
 
 
@@ -522,7 +523,8 @@ void Area::drawTiles()
 {
 	icube tiles = visibleTiles();
 	for (int z = tiles.z1; z < tiles.z2; z++) {
-		double depth = idx2depth[z];
+		assert(0 <= z && z <= dim.z);
+		double depth = idx2depth[(size_t)z];
 		for (int y = tiles.y1; y < tiles.y2; y++) {
 			for (int x = tiles.x1; x < tiles.x2; x++) {
 				Tile* tile = getTile(x, y, z);
@@ -563,8 +565,8 @@ void Area::drawColorOverlay()
 {
 	if ((colorOverlayARGB & 0xFF000000) != 0) {
 		GameWindow& window = GameWindow::instance();
-		int x = window.width();
-		int y = window.height();
+		unsigned x = window.width();
+		unsigned y = window.height();
 		GameWindow::instance().drawRect(0, x, 0, y, colorOverlayARGB);
 	}
 }

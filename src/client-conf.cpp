@@ -71,8 +71,6 @@ static void defaultsQuery()
 		<< DEF_CACHE_ENABLED << std::endl;
 	std::cerr << "DEF_CACHE_TTL:                       "
 		<< DEF_CACHE_TTL << std::endl;
-	std::cerr << "DEF_CACHE_SIZE:                      "
-		<< DEF_CACHE_SIZE << std::endl;
 }
 
 // Parse and process the client config file, and set configuration defaults for
@@ -84,7 +82,7 @@ bool parseConfig(const std::string& filename)
 
 	bool parse_error = false;
 
-	conf.cacheEnabled = DEF_CACHE_TTL && DEF_CACHE_SIZE;
+	conf.cacheEnabled = DEF_CACHE_TTL ? true : false;
 
 	try
 	{
@@ -115,10 +113,6 @@ bool parseConfig(const std::string& filename)
 
 	conf.cacheTTL = ini.get("cache.ttl", DEF_CACHE_TTL);
 	if (!conf.cacheTTL)
-		conf.cacheEnabled = false;
-
-	conf.cacheSize = ini.get("cache.size", DEF_CACHE_SIZE);
-	if (!conf.cacheSize)
 		conf.cacheEnabled = false;
 
 	std::string verbosity = ini.get("engine.verbosity", DEF_ENGINE_VERBOSITY);
@@ -245,12 +239,6 @@ bool parseCommandLine(int argc, char* argv[])
 	if (cmd.check("--cache-ttl")) {
 		conf.cacheTTL = parseUInt(cmd.get("--cache-ttl"));
 		if (conf.cacheTTL == 0)
-			conf.cacheEnabled = false;
-	}
-
-	if (cmd.check("--cache-size")) {
-		conf.cacheSize = parseUInt(cmd.get("--cache-size"));
-		if (conf.cacheSize == 0)
 			conf.cacheEnabled = false;
 	}
 

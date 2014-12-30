@@ -50,7 +50,6 @@
 	#define DEF_WINDOW_FULLSCREEN false
 	#define DEF_CACHE_ENABLED     true
 	#define DEF_CACHE_TTL         300
-	#define DEF_CACHE_SIZE        100
 // ===
 
 //! Game Movement Mode
@@ -85,7 +84,6 @@ struct Conf {
 	int soundVolume;
 	bool cacheEnabled;
 	int cacheTTL;
-	int cacheSize;
 	int persistInit;
 	int persistCons;
 };

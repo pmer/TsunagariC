@@ -33,11 +33,11 @@
 #include <vector>
 
 #include "bitrecord.h"
-#include "player.h"
 #include "viewport.h"
 #include "window.h" // for KeyboardKey
 
 class Area;
+class Player;
 
 /**
  * Top class holding all data necessary to create a game. Such a collection of
@@ -154,7 +154,7 @@ protected:
 
 	AreaMap areas;
 	Area* area;
-	Player player;
+	std::unique_ptr<Player> player;
 	std::shared_ptr<Viewport> view;
 
 	/**

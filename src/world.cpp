@@ -29,6 +29,7 @@
 #include "image.h"
 #include "log.h"
 #include "music.h"
+#include "player.h"
 #include "reader.h"
 #include "window.h"
 #include "world.h"
@@ -45,7 +46,8 @@ World& World::instance()
 }
 
 World::World()
-	: lastTime(0), total(0), redraw(false), userPaused(false), paused(0)
+	: player(new Player),
+	  lastTime(0), total(0), redraw(false), userPaused(false), paused(0)
 {
 }
 
@@ -62,10 +64,10 @@ bool World::init()
 
 	conf.moveMode = parameters.moveMode;
 
-	ASSERT(player.init(gameStart.player.file, gameStart.player.phase));
+	ASSERT(player->init(gameStart.player.file, gameStart.player.phase));
 
 	view.reset(new Viewport(parameters.viewportSize));
-	view->trackEntity(&player);
+	view->trackEntity(player.get());
 
 	Area* area = getArea(gameStart.area);
 	if (area == NULL) {
@@ -194,7 +196,7 @@ Area* World::getArea(const std::string& filename)
 	if (entry != areas.end())
 		return entry->second;
 
-	Area* newArea = new AreaTMX(view.get(), &player, filename);
+	Area* newArea = new AreaTMX(view.get(), player.get(), filename);
 
 	if (!newArea->init())
 		newArea = NULL;
@@ -221,8 +223,8 @@ void World::focusArea(Area* area, int x, int y, double z)
 void World::focusArea(Area* area, vicoord playerPos)
 {
 	this->area = area;
-	player.setArea(area);
-	player.setTileCoords(playerPos);
+	player->setArea(area);
+	player->setTileCoords(playerPos);
 	view->setArea(area);
 	area->focus();
 }

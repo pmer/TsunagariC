@@ -32,7 +32,6 @@
 #include "reader.h"
 #include "window.h"
 #include "world.h"
-#include "xml.h"
 
 #include "data/data-world.h"
 

@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** os-windows.cpp                     **
 ** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2007      Julian Raschke **
 ***************************************/
 
 // **********
@@ -30,7 +31,6 @@
 #include "window.h"
 #include "world.h"
 
-#include <Gosu/Gosu.hpp>
 #include <Windows.h>
 
 void wFixConsole()
@@ -41,12 +41,26 @@ void wFixConsole()
 	}
 }
 
+/* From gosu/src/Utility.cpp by Julian Raschke in 2007 */
+wstring widen(const string& s)
+{                   
+	size_t wideLen = std::mbstowcs(0, s.c_str(), 0);
+	if (wideLen == static_cast<size_t>(-1))
+		throw std::runtime_error("Could not convert from string to wstring: " + s); 
+
+	vector<wchar_t> buf(wideLen + 1);
+	mbstowcs(&buf.front(), s.c_str(), buf.size());
+
+	return wstring(buf.begin(), buf.end() - 1);
+}
+
+
 void wMessageBox(const std::string& title, const std::string& text)
 {
 	World::instance().setPaused(true);
 	MessageBox(GameWindow::instance().handle(),
-		Gosu::widen(text).c_str(),
-		Gosu::widen(title).c_str(),
+		widen(text).c_str(),
+		widen(title).c_str(),
 		MB_OK
 	);
 	World::instance().setPaused(false);

@@ -24,6 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
+#include <cassert>
+#include <limits>
 #include <math.h>
 #include <memory>
 #include <vector>
@@ -71,12 +73,16 @@ bool AreaTMX::init()
 
 void AreaTMX::allocateMapLayer()
 {
-	map.push_back(grid_t(dim.y, row_t(dim.x)));
-	grid_t& grid = map[dim.z];
+	assert(0 <= dim.y && dim.y <= std::numeric_limits<int>::max());
+	assert(0 <= dim.x && dim.x <= std::numeric_limits<int>::max());
+	assert(0 <= dim.z && dim.z + 1 <= std::numeric_limits<int>::max());
+
+	map.push_back(grid_t((size_t)dim.y, row_t((size_t)dim.x)));
+	grid_t& grid = map[(size_t)dim.z];
 	for (int y = 0; y < dim.y; y++) {
-		row_t& row = grid[y];
+		row_t& row = grid[(size_t)y];
 		for (int x = 0; x < dim.x; x++) {
-			Tile& tile = row[x];
+			Tile& tile = row[(size_t)x];
 			new (&tile) Tile(this, x, y, dim.z);
 		}
 	}
@@ -147,9 +153,11 @@ bool AreaTMX::processMapProperties(XMLNode node)
 			loopY = value.find('y') != std::string::npos;
 		}
 		else if (name == "color_overlay") {
-			unsigned char r, g, b, a;
+			unsigned char a, r, g, b;
 			ASSERT(parseARGB(value, a, r, g, b));
-			colorOverlayARGB = (a << 24) + (r << 16) + (g << 8) + b;
+			colorOverlayARGB =
+				(uint32_t)(a << 24) + (uint32_t)(r << 16) +
+				(uint32_t)(g <<  8) + (uint32_t)b;
 		}
 	}
 
@@ -191,6 +199,12 @@ bool AreaTMX::processTileSet(XMLNode node)
 	// Read firstgid from original node.
 	ASSERT(node.intAttr("firstgid", &firstGid));
 
+	if (firstGid < 0) {
+		Log::err(descriptor, "first gid is invalid");
+		return false;
+	}
+
+
 	// If this node is just a reference to an external TSX file, load it
 	// and process the root tileset element of the TSX, instead.
 	source = node.attr("source");
@@ -221,8 +235,12 @@ bool AreaTMX::processTileSet(XMLNode node)
 			int width = pixelw / tileDim.x;
 			int height = pixelh / tileDim.y;
 
+			assert(0 <= width);
+			assert(0 <= height);
+
 			std::string imgSource = dirname(source) + child.attr("source");
-			tileSets[imgSource] = TileSet(width, height);
+			tileSets[imgSource] = TileSet((size_t)width,
+				(size_t)height);
 			set = &tileSets[imgSource];
 
 			// Load tileset image.
@@ -260,14 +278,13 @@ bool AreaTMX::processTileSet(XMLNode node)
 			}
 
 			// Initialize a default TileType, we'll build on that.
-			TileType* type = new TileType((*img.get())[id]);
+			TileType* type = new TileType((*img.get())[(size_t)id]);
 			ASSERT(processTileType(child, *type, img, id));
-
 			// "gid" is the global area-wide id of the tile.
-			size_t gid = id + firstGid;
+			size_t gid = (size_t)id + (size_t)firstGid;
 			delete gids[gid]; // "vanilla" type
 			gids[gid] = type;
-			set->set(id, type);
+			set->set((size_t)id, type);
 		}
 	}
 
@@ -347,7 +364,7 @@ bool AreaTMX::processTileType(XMLNode node, TileType& type,
 						"of range for animated tile");
 					return false;
 				}
-				framesvec.push_back((*img.get())[idx]);
+				framesvec.push_back((*img.get())[(size_t)idx]);
 			}
 		}
 		else if (name == "speed") {
@@ -468,7 +485,9 @@ bool AreaTMX::processLayerData(XMLNode node, int z)
   </data>
 */
 
-	int x = 0, y = 0;
+	assert(0 <= z && z < dim.z);
+
+	size_t x = 0, y = 0;
 
 	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
 		if (child.is("tile")) {
@@ -483,13 +502,13 @@ bool AreaTMX::processLayerData(XMLNode node, int z)
 			// A gid of zero means there is no tile at this
 			// position on this layer.
 			if (gid > 0) {
-				TileType* type = gids[gid];
-				Tile& tile = map[z][y][x];
+				TileType* type = gids[(size_t)gid];
+				Tile& tile = map[(size_t)z][y][x];
 				type->allOfType.push_back(&tile);
 				tile.parent = type;
 			}
 
-			if (++x == dim.x) {
+			if (++x == (size_t)dim.x) {
 				x = 0;
 				y++;
 			}
@@ -593,6 +612,8 @@ bool AreaTMX::processObject(XMLNode node, int z)
   </object>
 */
 
+	assert(0 <= z && z < dim.z);
+
 	// Gather object properties now. Assign them to tiles later.
 	bool wwide[5], hwide[5]; /* wide exit in dimensions: width, height */
 
@@ -681,8 +702,12 @@ bool AreaTMX::processObject(XMLNode node, int z)
 	int x, y, w, h;
 	ASSERT(node.intAttr("x", &x));
 	ASSERT(node.intAttr("y", &y));
+
 	x /= tileDim.x;
 	y /= tileDim.y;
+
+	assert(0 <= x && x < dim.x);
+	assert(0 <= y && y < dim.y);
 
 	if (node.hasAttr("gid")) {
 		// This is one of Tiled's "Tile Objects". It is one tile wide
@@ -705,26 +730,29 @@ bool AreaTMX::processObject(XMLNode node, int z)
 		ASSERT(node.intAttr("height", &h));
 		w /= tileDim.x;
 		h /= tileDim.y;
+
+		assert(0 < w && w <= dim.x);
+		assert(0 < h && h <= dim.y);
 	}
 
 	// We know which Tiles are being talked about now... yay
 	for (int Y = y; Y < y + h; Y++) {
 		for (int X = x; X < x + w; X++) {
-			Tile& tile = map[z][Y][X];
+			Tile& tile = map[(size_t)z][(size_t)Y][(size_t)X];
 
 			tile.flags |= flags;
-			for (int i = 0; i < 5; i++) {
+			for (size_t i = 0; i < 5; i++) {
 				if (exit[i]) {
 					tile.exits[i] = new Exit(*exit[i].get());
 					int dx = X - x;
 					int dy = Y - y;
 					if (wwide[i])
-						tile.exits[i]->coords.x += dx;
+						tile.exits[i]->coords.x += (size_t)dx;
 					if (hwide[i])
-						tile.exits[i]->coords.y += dy;
+						tile.exits[i]->coords.y += (size_t)dy;
 				}
 			}
-			for (int i = 0; i < 5; i++)
+			for (size_t i = 0; i < 5; i++)
 				tile.layermods[i] = layermods[i] ? new double(*layermods[i].get()) : NULL;
 			tile.enterScript = enterScript;
 			tile.leaveScript = leaveScript;
@@ -837,7 +865,7 @@ bool AreaTMX::parseARGB(const std::string& str,
 
 	unsigned char* channels[] = { &a, &r, &g, &b };
 
-	for (int i = 0; i < 4; i++) {
+	for (size_t i = 0; i < 4; i++) {
 		std::string s = strs[i];
 		if (!isInteger(s)) {
 			Log::err(descriptor, "invalid ARGB format");

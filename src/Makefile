@@ -90,7 +90,7 @@ log.o: log.cpp client-conf.h log.h vec.h window.h bitrecord.h world.h \
 main.o: main.cpp client-conf.h log.h vec.h formatter.h reader.h window.h \
  bitrecord.h world.h player.h character.h entity.h xml.h viewport.h \
  data/data-world.h os-mac.h
-music.o: music.cpp client-conf.h log.h vec.h math.h music.h
+music.o: music.cpp client-conf.h log.h vec.h formatter.h math.h music.h
 npc.o: npc.cpp npc.h character.h entity.h vec.h xml.h
 os-windows.o: os-windows.cpp
 overlay.o: overlay.cpp area.h entity.h vec.h xml.h tile.h animation.h \
@@ -101,7 +101,8 @@ player.o: player.cpp area.h entity.h vec.h xml.h tile.h animation.h \
 random.o: random.cpp random.h
 reader.o: reader.cpp cache.h cache-template.cpp client-conf.h log.h vec.h \
  world.h bitrecord.h player.h character.h entity.h xml.h viewport.h window.h \
- dtds.h formatter.h image.h reader.h sounds.h tiledimage.h data/data-world.h
+ dtds.h formatter.h image.h music.h reader.h sounds.h tiledimage.h \
+ data/data-world.h
 sounds.o: sounds.cpp sounds.h
 string.o: string.cpp log.h string.h
 tile.o: tile.cpp area.h entity.h vec.h xml.h tile.h animation.h \

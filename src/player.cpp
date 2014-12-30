@@ -24,6 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
+#include <algorithm>
+
 #include "area.h"
 #include "client-conf.h"
 #include "entity.h"
@@ -40,18 +42,6 @@ static Player* globalPlayer = NULL;
 Player& Player::instance()
 {
 	return *globalPlayer;
-}
-
-template<class Cont, class ValueType>
-void removeValue(Cont* c, ValueType v)
-{
-	typename Cont::iterator it;
-	for (it = c->begin(); it != c->end(); ++it) {
-		if (*it == v) {
-			c->erase(it);
-			return;
-		}
-	}
 }
 
 
@@ -91,7 +81,7 @@ void Player::stopMovement(ivec2 delta)
 	case TURN:
 		break;
 	case TILE:
-		removeValue(&movements, delta);
+		movements.erase(std::find(movements.begin(), movements.end(), delta));
 		velocity = movements.size() ?
 		           movements.back() :
 			   ivec2(0, 0);

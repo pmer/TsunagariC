@@ -27,8 +27,6 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include <Gosu/Bitmap.hpp>
-#include <Gosu/Image.hpp>
 #include <Gosu/IO.hpp>
 #include <map>
 #include <physfs.h>

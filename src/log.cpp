@@ -30,7 +30,6 @@
 #include "client-conf.h"
 #include "log.h"
 #include "window.h"
-#include "world.h"
 
 #ifdef _WIN32
 	#include "os-windows.h"

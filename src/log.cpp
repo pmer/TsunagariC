@@ -42,7 +42,7 @@
 
 static verbosity_t verb = V_NORMAL;
 
-static unsigned long startTime;
+static time_t startTime;
 
 static std::string& chomp(std::string& str)
 {

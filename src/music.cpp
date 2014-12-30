@@ -131,6 +131,9 @@ void Music::setVolume(double attemptedVolume)
 void Music::stop()
 {
 	state = NOT_PLAYING;
+	pausedCount = 0;
+	curIntro = newIntro = "";
+	curLoop = newLoop = "";
 }
 
 void Music::playIntro()

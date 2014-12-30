@@ -96,6 +96,7 @@ void GosuMusic::stop()
 	Music::stop();
 	if (musicInst)
 		musicInst->stop();
+	musicInst = introMusic = loopMusic = std::shared_ptr<Gosu::Song>();
 }
 
 void GosuMusic::pause()

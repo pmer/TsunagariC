@@ -87,6 +87,8 @@ public:
 
 	std::string getPhase() const;
 
+	ivec2 getImageSize() const;
+
 	void setAnimationStanding();
 	void setAnimationMoving();
 
@@ -108,11 +110,15 @@ public:
 	virtual void setArea(Area* area);
 
 
-	//! Gets speed multiplier.
-	double getSpeed() const;
+	//! Gets speed in pixels per second.
+	double getSpeedInPixels() const;
+	//! Gets speed in tiles per second.
+	double getSpeedInTiles() const;
 
+	//! Gets speed multiplier.
+	double getSpeedMultiplier() const;
 	//! Sets speed multiplier.
-	void setSpeed(double multiplier);
+	void setSpeedMultiplier(double multiplier);
 
 
 	virtual void setFrozen(bool b);

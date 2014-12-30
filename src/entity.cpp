@@ -24,6 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
+#include <cassert>
 #include <math.h>
 
 #include "area.h"
@@ -143,6 +144,11 @@ std::string Entity::getPhase() const
 	return phaseName;
 }
 
+ivec2 Entity::getImageSize() const
+{
+	return imgsz;
+}
+
 void Entity::setAnimationStanding()
 {
 	setPhase(getFacing());
@@ -173,20 +179,32 @@ void Entity::setArea(Area* area)
 {
 	this->area = area;
 	calcDraw();
-	setSpeed(speedMul); // Calculate new speed based on tile size.
+	setSpeedMultiplier(speedMul); // Calculate new speed based on tile size.
 }
 
-double Entity::getSpeed() const
+double Entity::getSpeedInPixels() const
+{
+	double tileWidth = area->getTileDimensions().x;
+	return getSpeedInTiles() * tileWidth;
+}
+
+double Entity::getSpeedInTiles() const
+{
+	return baseSpeed * speedMul;
+}
+
+double Entity::getSpeedMultiplier() const
 {
 	return speedMul;
 }
 
-void Entity::setSpeed(double multiplier)
+void Entity::setSpeedMultiplier(double multiplier)
 {
 	speedMul = multiplier;
 	if (area) {
-		double tilesPerSecond = area->getTileDimensions().x / 1000.0;
-		speed = baseSpeed * speedMul * tilesPerSecond;
+		assert(area->getTileDimensions().x == area->getTileDimensions().y);
+		double tilesPerMillisecond = area->getTileDimensions().x / 1000.0;
+		speed = baseSpeed * speedMul * tilesPerMillisecond;
 	}
 }
 
@@ -321,7 +339,7 @@ bool Entity::processDescriptor()
 	for (XMLNode node = root.childrenNode(); node; node = node.next()) {
 		if (node.is("speed")) {
 			ASSERT(node.doubleContent(&baseSpeed));
-			setSpeed(speedMul); // Calculate speed from tile size.
+			setSpeedMultiplier(speedMul); // Calculate speed from tile size.
 		} else if (node.is("sprite")) {
 			ASSERT(processSprite(node.childrenNode()));
 		} else if (node.is("sounds")) {

@@ -39,7 +39,6 @@
 #include "npc.h"
 #include "overlay.h"
 #include "player.h"
-#include "reader.h"
 #include "tile.h"
 #include "viewport.h"
 #include "window.h"

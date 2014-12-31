@@ -33,11 +33,13 @@
 #include <vector>
 
 #include "bitrecord.h"
-#include "viewport.h"
 #include "window.h" // for KeyboardKey
+#include "vec.h"
 
 class Area;
+class Image;
 class Player;
+class Viewport;
 
 /**
  * Top class holding all data necessary to create a game. Such a collection of

@@ -31,6 +31,7 @@
 #include "music.h"
 #include "player.h"
 #include "reader.h"
+#include "viewport.h"
 #include "window.h"
 #include "world.h"
 

@@ -42,6 +42,7 @@
 #include "player.h"
 #include "reader.h"
 #include "tile.h"
+#include "viewport.h"
 #include "window.h"
 #include "world.h"
 

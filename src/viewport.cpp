@@ -25,6 +25,7 @@
 // **********
 
 #include "area.h"
+#include "entity.h"
 #include "math.h"
 #include "vec.h"
 #include "viewport.h"

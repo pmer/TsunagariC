@@ -27,9 +27,8 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
-#include "entity.h"
-
 class Area;
+class Entity;
 
 //! General control over where and how the map is rendered.
 /*!

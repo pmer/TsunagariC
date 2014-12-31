@@ -26,7 +26,6 @@
 
 #include <algorithm>
 #include <math.h>
-#include <stdlib.h> // for exit(1) on fatal
 
 #include "algorithm.h"
 #include "area.h"
@@ -507,7 +506,6 @@ int Area::depthIndex(double depth) const
 	if (it == depth2idx.end()) {
 		Log::fatal(descriptor, Formatter(
 			"attempt to access invalid layer: %") % depth);
-		exit(-1);
 	}
 	return it->second;
 }

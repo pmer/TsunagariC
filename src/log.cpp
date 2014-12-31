@@ -83,7 +83,6 @@ void Log::err(std::string domain, std::string msg)
 {
 	if (conf.halting == HALT_ERROR) {
 		Log::fatal(domain, msg);
-		exit(1);
 	}
 	std::string str = ts() + "Error [" + domain + "] - " + chomp(msg);
 	if (verb > V_QUIET) {
@@ -107,6 +106,7 @@ void Log::fatal(std::string domain, std::string msg)
 	#ifdef __APPLE__
 		macMessageBox("Tsunagari - Fatal", str.c_str());
 	#endif
+	exit(1);
 }
 
 void Log::reportVerbosityOnStartup()

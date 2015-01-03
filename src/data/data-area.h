@@ -56,6 +56,10 @@ public:
 	virtual void onTurn();
 
 	// For scripts
+
+	//! Play a sound with a 10% speed variation applied to it.
+	void playSoundEffect(std::string sound);
+
 	void playSoundAndThen(std::string sound, ThenFn then);
 	void timerProgress(time_t duration, ProgressFn progress);
 	void timerThen(time_t duration, ThenFn then);

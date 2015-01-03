@@ -25,6 +25,8 @@
 // **********
 
 #include "../algorithm.h"
+#include "../random.h"
+#include "../sound.h"
 
 #include "data-area.h"
 #include "inprogress.h"
@@ -48,6 +50,11 @@ void DataArea::tick(time_t dt)
 void DataArea::turn()
 {
 	onTurn();
+}
+
+void DataArea::playSoundEffect(std::string sound)
+{
+	Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.1, 0.1));
 }
 
 void DataArea::playSoundAndThen(std::string sound, ThenFn then)

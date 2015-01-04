@@ -52,12 +52,12 @@ void DataArea::turn()
 	onTurn();
 }
 
-void DataArea::playSoundEffect(std::string sound)
+void DataArea::playSoundEffect(const std::string& sound)
 {
 	Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.1, 0.1));
 }
 
-void DataArea::playSoundAndThen(std::string sound, ThenFn then)
+void DataArea::playSoundAndThen(const std::string& sound, ThenFn then)
 {
 	inProgresses.emplace_back(
 		new InProgressSound(sound, then)

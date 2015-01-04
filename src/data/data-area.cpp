@@ -26,7 +26,7 @@
 
 #include "../algorithm.h"
 #include "../random.h"
-#include "../sound.h"
+#include "../sounds.h"
 
 #include "data-area.h"
 #include "inprogress.h"

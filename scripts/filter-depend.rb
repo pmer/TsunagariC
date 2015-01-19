@@ -30,10 +30,16 @@ end
 
 
 def main
-	# Same order as bash's filename matches from Makefile
-	expected_files = (Dir['*.cpp'] + Dir['**/*.cpp']).uniq.map { |file|
+	# Same files as listed in 'make depend'
+	targets = `echo *.cpp */*.cpp`.split.map { |file|
 		file.sub /\.cpp$/, '.o'
 	}.to_enum
+
+	# The compiler performs a `dirname` on any target it processes. We want the
+	# original file paths, though.
+	target_filename_remaps = Hash[targets.map { |file|
+		[`basename #{file}`.chomp, file]
+	}]
 
 	# Get dependencies input from compiler
 	raw_lines = $stdin.readlines.map { |line| line.chomp }
@@ -61,20 +67,10 @@ def main
 		words = line.split
 
 		target, deps = words.shift, words
-		expected_target = expected_files.next
 
-		# `target` is a file basename and has its path stripped. Add it back.
-		target_basename = target.sub /:$/, ''
-		expected_basename = `basename #{expected_target}`.chomp
-
-		# We assume this is good enough.
-		if target_basename != expected_basename
-			$stderr.puts "expected #{expected_basename}, got #{target}"
-			exit -1
-		end
-
-		# Set target (which is just a basename) to the full path
-		target = expected_target + ':'
+		# Restore the path of the target (because it has been stripped to just a
+		# basename by the compiler)
+		target = target_filename_remaps[target.sub(/:$/, '')] + ':'
 
 		# Clean up dependencies to not include system files.
 		deps = deps.find_all { |dep| dep.start_with?('/') == false }

@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** image.h                            **
-** Copyright 2011-2013 PariahSoft LLC **
+** images.h                           **
+** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -24,18 +24,18 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef IMAGES_H
+#define IMAGES_H
 
-#include <cstring> // for size_t
+#include <memory>
+#include <string>
 
 class Image
 {
 public:
-	static Image* create(void* data, size_t length);
-	virtual ~Image() = 0;
+	virtual ~Image() = default;
 
-	virtual void draw(double dstX, double dstY, double z) const = 0;
+	virtual void draw(double dstX, double dstY, double z) = 0;
 	virtual void drawSubrect(double dstX, double dstY, double z,
 	                 double srcX, double srcY,
 	                 double srcW, double srcH) = 0;
@@ -43,11 +43,58 @@ public:
 	virtual unsigned width() const = 0;
 	virtual unsigned height() const = 0;
 
-private:
-	Image();
+protected:
+	Image() = default;
 
-	friend class ImageImpl;
+private:
+	Image(const Image&) = delete;
+	Image& operator=(const Image&) = delete;
+};
+
+
+class TiledImage
+{
+public:
+	virtual ~TiledImage() = default;
+
+	virtual size_t size() const = 0;
+
+	virtual const std::shared_ptr<Image>& operator[](size_t n) const = 0;
+
+protected:
+	TiledImage() = default;
+
+private:
+	TiledImage(const TiledImage&) = delete;
+	TiledImage& operator=(const TiledImage&) = delete;
+};
+
+
+class Images
+{
+public:
+	//! Acquire the global Images object.
+	static Images& instance();
+
+	virtual ~Images() = default;
+
+	//! Load an image from the file at the given path.
+	virtual std::shared_ptr<Image> load(const std::string& path) = 0;
+
+	//! Load an image of tiles from the file at the given path. Each tile
+	//! with have width and heigh as specified.
+	virtual std::shared_ptr<TiledImage> loadTiles(const std::string& path,
+		unsigned tileW, unsigned tileH) = 0;
+
+	//! Free images not recently used.
+	virtual void garbageCollect() = 0;
+
+protected:
+	Images() = default;
+
+private:
+	Images(const Images&) = delete;
+	Images& operator=(const Images&) = delete;
 };
 
 #endif
-

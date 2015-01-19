@@ -30,12 +30,11 @@
 #include "area.h"
 #include "client-conf.h"
 #include "entity.h"
-#include "image.h"
+#include "images.h"
 #include "log.h"
 #include "math.h"
 #include "reader.h"
 #include "string.h"
-#include "tiledimage.h"
 #include "world.h"
 #include "xml.h"
 
@@ -359,7 +358,7 @@ bool Entity::processSprite(XMLNode node)
 			std::string imageSheet = node.content();
 			ASSERT(node.intAttr("tile_width",  &imgsz.x) &&
 			       node.intAttr("tile_height", &imgsz.y));
-			tiles = Reader::getTiledImage(imageSheet, imgsz.x, imgsz.y);
+			tiles = Images::instance().loadTiles(imageSheet, imgsz.x, imgsz.y);
 			ASSERT(tiles);
 		} else if (node.is("phases")) {
 			ASSERT(processPhases(node.childrenNode(), tiles));

@@ -32,11 +32,11 @@
 
 #include "area-tmx.h"
 #include "entity.h"
+#include "images.h"
 #include "log.h"
 #include "reader.h"
 #include "string.h"
 #include "tile.h"
-#include "tiledimage.h"
 #include "window.h"
 #include "world.h"
 
@@ -244,7 +244,7 @@ bool AreaTMX::processTileSet(XMLNode node)
 			set = &tileSets[imgSource];
 
 			// Load tileset image.
-			img = Reader::getTiledImage(imgSource, tilex, tiley);
+			img = Images::instance().loadTiles(imgSource, tilex, tiley);
 			if (!img) {
 				Log::err(descriptor, "tileset image not found");
 				return false;
@@ -747,9 +747,9 @@ bool AreaTMX::processObject(XMLNode node, int z)
 					int dx = X - x;
 					int dy = Y - y;
 					if (wwide[i])
-						tile.exits[i]->coords.x += (size_t)dx;
+						tile.exits[i]->coords.x += dx;
 					if (hwide[i])
-						tile.exits[i]->coords.y += (size_t)dy;
+						tile.exits[i]->coords.y += dy;
 				}
 			}
 			for (size_t i = 0; i < 5; i++)

@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** reader.cpp                         **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -36,12 +36,11 @@
 #include "client-conf.h"
 #include "dtds.h"
 #include "formatter.h"
-#include "image.h"
+#include "images.h"
 #include "log.h"
 #include "music.h"
 #include "reader.h"
 #include "sounds.h"
-#include "tiledimage.h"
 #include "window.h"
 #include "xml.h"
 
@@ -50,8 +49,6 @@
 #define ASSERT(x)  if (!(x)) { return false; }
 
 // Caches that store processed, game-ready objects. Garbage collected.
-static Cache<std::shared_ptr<Image>> images;
-static Cache<std::shared_ptr<TiledImage>> tiles;
 static Cache<std::shared_ptr<XMLDoc>> xmls;
 static Cache<std::shared_ptr<std::string>> texts;
 
@@ -239,50 +236,6 @@ std::string Reader::readString(const std::string& name)
 	return readFromDisk(name, str) ? str : "";
 }
 
-std::shared_ptr<Image> Reader::getImage(const std::string& name)
-{
-	std::shared_ptr<Image> existing = images.lifetimeRequest(name);
-	if (existing)
-		return existing;
-
-	std::unique_ptr<Gosu::Buffer> buffer(readBuffer(name));
-	if (!buffer)
-		return std::shared_ptr<Image>();
-
-	std::shared_ptr<Image> result(Image::create(buffer->data(),
-		buffer->size()));
-	if (!result)
-		return std::shared_ptr<Image>();
-
-	images.lifetimePut(name, result);
-	return result;
-}
-
-std::shared_ptr<TiledImage> Reader::getTiledImage(const std::string& name,
-		int w, int h)
-{
-	std::shared_ptr<TiledImage> existing = tiles.momentaryRequest(name);
-	if (existing)
-		return existing;
-
-	if (w <= 0 || h <= 0)
-		return std::shared_ptr<TiledImage>();
-
-	std::unique_ptr<Gosu::Buffer> buffer(readBuffer(name));
-	if (!buffer)
-		return std::shared_ptr<TiledImage>();
-
-	std::shared_ptr<TiledImage> result(
-		TiledImage::create(buffer->data(), buffer->size(),
-			(unsigned int)w, (unsigned int)h)
-	);
-	if (!result)
-		return std::shared_ptr<TiledImage>();
-
-	tiles.momentaryPut(name, result);
-	return result;
-}
-
 std::shared_ptr<XMLDoc> Reader::getXMLDoc(const std::string& name,
                             const std::string& dtdType)
 {
@@ -310,10 +263,9 @@ std::string Reader::getText(const std::string& name)
 
 void Reader::garbageCollect()
 {
-	images.garbageCollect();
-	tiles.garbageCollect();
-	Sounds::instance().garbageCollect();
+	Images::instance().garbageCollect();
 	Music::instance().garbageCollect();
+	Sounds::instance().garbageCollect();
 	xmls.garbageCollect();
 	texts.garbageCollect();
 }

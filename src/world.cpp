@@ -24,9 +24,11 @@
 // IN THE SOFTWARE.
 // **********
 
+#include <limits>
+
 #include "area-tmx.h"
 #include "client-conf.h"
-#include "image.h"
+#include "images.h"
 #include "log.h"
 #include "music.h"
 #include "player.h"
@@ -58,7 +60,7 @@ World::~World()
 
 bool World::init()
 {
-	ASSERT(pauseInfo = Reader::getImage("resource/pause_overlay.png"));
+	ASSERT(pauseInfo = Images::instance().load("resource/pause_overlay.png"));
 
 	auto& parameters = DataWorld::instance().parameters;
 	auto& gameStart = parameters.gameStart;

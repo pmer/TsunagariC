@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-image.h                       **
-** Copyright 2011-2013 PariahSoft LLC **
+** gosu-images.h                      **
+** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -24,25 +24,25 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_IMAGE_H
-#define GOSU_IMAGE_H
+#ifndef GOSU_IMAGES_H
+#define GOSU_IMAGES_H
 
-#include "../image.h"
+#include <memory>
+#include <vector>
 
-namespace Gosu { class Bitmap; }
+#include "../cache-template.cpp"
+#include "../images.h"
+#include "../readercache.h"
+
 namespace Gosu { class Image; }
 
-class ImageImpl : public Image
+class GosuImage : public Image
 {
 public:
-	ImageImpl();
-	~ImageImpl();
+	GosuImage(Gosu::Image&& image);
+	~GosuImage() = default;
 
-	bool init(void* data, size_t length);
-	bool init(Gosu::Bitmap& bitmap, unsigned x, unsigned y,
-	                                unsigned w, unsigned h);
-
-	void draw(double dstX, double dstY, double z) const;
+	void draw(double dstX, double dstY, double z);
 	void drawSubrect(double dstX, double dstY, double z,
 	                 double srcX, double srcY,
 	                 double srcW, double srcH);
@@ -51,8 +51,47 @@ public:
 	unsigned height() const;
 
 private:
-	Gosu::Image* img;
+	Gosu::Image image;
+};
+
+
+class GosuTiledImage: public TiledImage
+{
+public:
+	GosuTiledImage(std::vector<std::shared_ptr<Image>>&& images);
+	~GosuTiledImage() = default;
+
+	size_t size() const;
+
+	const std::shared_ptr<Image>& operator[](size_t n) const;
+
+private:
+	std::vector<std::shared_ptr<Image>> images;
+};
+
+
+class GosuImages : public Images
+{
+public:
+	GosuImages();
+	~GosuImages() = default;
+
+	std::shared_ptr<Image> load(const std::string& path);
+
+	std::shared_ptr<TiledImage> loadTiles(const std::string& path,
+		unsigned tileW, unsigned tileH);
+
+	void garbageCollect();
+
+private:
+	GosuImages(const GosuImages&) = delete;
+	GosuImages& operator=(const GosuImages&) = delete;
+
+	ReaderCache<std::shared_ptr<Image>> images;
+	// We can't use a ReaderCache here because TiledImages are constructed
+	// with three arguments, but a ReaderCache only supports the use of
+	// one.
+	Cache<std::shared_ptr<TiledImage>> tiledImages;
 };
 
 #endif
-

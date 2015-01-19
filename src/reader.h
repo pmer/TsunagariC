@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** reader.h                           **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -27,10 +27,9 @@
 #ifndef READER_H
 #define READER_H
 
+#include <memory>
 #include <string>
 
-class Image;
-class TiledImage;
 class XMLDoc;
 
 namespace Gosu {
@@ -59,14 +58,6 @@ public:
 
 	static Gosu::Buffer* readBuffer(const std::string& name);
 	static std::string readString(const std::string& name);
-
-	//! Request an image from the World.
-	static std::shared_ptr<Image> getImage(const std::string& name);
-
-	//! Request an image resource from the World and splits it into a
-	//! number of tiles that each have width and height w by h.
-	static std::shared_ptr<TiledImage> getTiledImage(
-		const std::string& name, int w, int h);
 
 	//! Request an XML document from the World.
 	static std::shared_ptr<XMLDoc> getXMLDoc(const std::string& name,

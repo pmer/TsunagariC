@@ -25,6 +25,7 @@
 // **********
 
 #include <ctype.h>
+#include <limits.h>
 #include <sstream>
 #include <stdlib.h>
 

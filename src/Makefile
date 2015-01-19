@@ -8,13 +8,11 @@
 include Makefile.common
 
 OBJECTS = animation.o area.o area-tmx.o bitrecord.o \
-character.o client-conf.o cooldown.o dtds.o entity.o formatter.o image.o log.o \
-main.o music.o npc.o os-windows.o overlay.o player.o random.o reader.o \
-sounds.o string.o tile.o tiledimage.o timer.o viewport.o window.o world.o \
-xml.o \
-backend-gosu/gosu-cbuffer.o backend-gosu/gosu-image.o \
-backend-gosu/gosu-music.o backend-gosu/gosu-sounds.o \
-backend-gosu/gosu-tiledimage.o backend-gosu/gosu-window.o \
+character.o client-conf.o cooldown.o dtds.o entity.o formatter.o images.o \
+log.o main.o music.o npc.o os-windows.o overlay.o player.o random.o reader.o \
+sounds.o string.o tile.o timer.o viewport.o window.o world.o xml.o \
+backend-gosu/gosu-images.o backend-gosu/gosu-music.o \
+backend-gosu/gosu-sounds.o backend-gosu/gosu-window.o \
 data/data-area.o data/data-world.o data/inprogress.o \
 nbcl/nbcl.o
 
@@ -64,12 +62,12 @@ clean:
 
 animation.o: animation.cpp animation.h
 area-tmx.o: area-tmx.cpp area-tmx.h area.h entity.h vec.h xml.h tile.h \
- animation.h data/data-area.h window.h bitrecord.h log.h reader.h string.h \
- tiledimage.h world.h
+ animation.h data/data-area.h window.h bitrecord.h images.h log.h reader.h \
+ string.h world.h
 area.o: area.cpp algorithm.h area.h entity.h vec.h xml.h tile.h animation.h \
  data/data-area.h window.h bitrecord.h client-conf.h log.h formatter.h \
- image.h math.h music.h npc.h character.h overlay.h player.h viewport.h \
- world.h data/data-world.h
+ images.h math.h music.h npc.h character.h overlay.h player.h viewport.h \
+ world.h data/data-world.h data/../client-conf.h
 bitrecord.o: bitrecord.cpp bitrecord.h
 cache-template.o: cache-template.cpp cache.h client-conf.h log.h vec.h \
  world.h bitrecord.h window.h
@@ -81,13 +79,13 @@ client-conf.o: client-conf.cpp client-conf.h log.h vec.h nbcl/nbcl.h \
 cooldown.o: cooldown.cpp cooldown.h log.h
 dtds.o: dtds.cpp dtds.h
 entity.o: entity.cpp area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h client-conf.h log.h image.h math.h \
- reader.h string.h tiledimage.h world.h
+ data/data-area.h window.h bitrecord.h client-conf.h log.h images.h math.h \
+ reader.h string.h world.h
 formatter.o: formatter.cpp formatter.h
-image.o: image.cpp image.h
-log.o: log.cpp client-conf.h log.h vec.h window.h bitrecord.h os-mac.h
+images.o: images.cpp images.h
+log.o: log.cpp client-conf.h log.h vec.h window.h bitrecord.h
 main.o: main.cpp client-conf.h log.h vec.h formatter.h reader.h window.h \
- bitrecord.h world.h data/data-world.h os-mac.h
+ bitrecord.h world.h data/data-world.h data/../client-conf.h
 music.o: music.cpp client-conf.h log.h vec.h formatter.h math.h music.h
 npc.o: npc.cpp npc.h character.h entity.h vec.h xml.h
 os-windows.o: os-windows.cpp
@@ -98,52 +96,50 @@ player.o: player.cpp area.h entity.h vec.h xml.h tile.h animation.h \
  character.h world.h
 random.o: random.cpp random.h
 reader.o: reader.cpp cache.h cache-template.cpp client-conf.h log.h vec.h \
- world.h bitrecord.h window.h dtds.h formatter.h image.h music.h reader.h \
- sounds.h tiledimage.h xml.h data/data-world.h
+ world.h bitrecord.h window.h dtds.h formatter.h images.h music.h reader.h \
+ sounds.h xml.h data/data-world.h data/../client-conf.h
 sounds.o: sounds.cpp sounds.h
 string.o: string.cpp log.h string.h
 tile.o: tile.cpp area.h entity.h vec.h xml.h tile.h animation.h \
  data/data-area.h window.h bitrecord.h formatter.h log.h string.h world.h
-tiledimage.o: tiledimage.cpp tiledimage.h
 timer.o: timer.cpp formatter.h timer.h world.h bitrecord.h window.h vec.h
 viewport.o: viewport.cpp area.h entity.h vec.h xml.h tile.h animation.h \
  data/data-area.h window.h bitrecord.h math.h viewport.h
 window.o: window.cpp window.h bitrecord.h world.h vec.h
 world.o: world.cpp area-tmx.h area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h client-conf.h log.h image.h music.h \
- player.h character.h reader.h viewport.h world.h data/data-world.h
+ data/data-area.h window.h bitrecord.h client-conf.h log.h images.h music.h \
+ player.h character.h reader.h viewport.h world.h data/data-world.h \
+ data/../client-conf.h
 xml.o: xml.cpp log.h string.h xml.h
-backend-gosu/gosu-cbuffer.o: backend-gosu/gosu-cbuffer.cpp \
- backend-gosu/gosu-cbuffer.h
-backend-gosu/gosu-image.o: backend-gosu/gosu-image.cpp \
- backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.h \
- backend-gosu/../image.h backend-gosu/gosu-window.h backend-gosu/../window.h \
- backend-gosu/../bitrecord.h
+backend-gosu/gosu-images.o: backend-gosu/gosu-images.cpp \
+ backend-gosu/gosu-images.h backend-gosu/../cache-template.cpp \
+ backend-gosu/../cache.h backend-gosu/../client-conf.h backend-gosu/../log.h \
+ backend-gosu/../vec.h backend-gosu/../world.h backend-gosu/../bitrecord.h \
+ backend-gosu/../window.h backend-gosu/../images.h \
+ backend-gosu/../readercache.h backend-gosu/gosu-window.h \
+ backend-gosu/../window.h backend-gosu/../reader.h
 backend-gosu/gosu-music.o: backend-gosu/gosu-music.cpp \
  backend-gosu/../client-conf.h backend-gosu/../log.h backend-gosu/../vec.h \
  backend-gosu/gosu-music.h backend-gosu/../cache-template.cpp \
- backend-gosu/../cache.h backend-gosu/../world.h backend-gosu/../bitrecord.h \
+ backend-gosu/../cache.h backend-gosu/../client-conf.h \
+ backend-gosu/../world.h backend-gosu/../bitrecord.h \
  backend-gosu/../window.h backend-gosu/../music.h \
  backend-gosu/../readercache.h backend-gosu/../reader.h
 backend-gosu/gosu-sounds.o: backend-gosu/gosu-sounds.cpp \
  backend-gosu/../client-conf.h backend-gosu/../log.h backend-gosu/../vec.h \
  backend-gosu/../formatter.h backend-gosu/../math.h backend-gosu/../reader.h \
  backend-gosu/gosu-sounds.h backend-gosu/../cache-template.cpp \
- backend-gosu/../cache.h backend-gosu/../world.h backend-gosu/../bitrecord.h \
+ backend-gosu/../cache.h backend-gosu/../client-conf.h \
+ backend-gosu/../world.h backend-gosu/../bitrecord.h \
  backend-gosu/../window.h backend-gosu/../sounds.h \
  backend-gosu/../readercache.h
-backend-gosu/gosu-tiledimage.o: backend-gosu/gosu-tiledimage.cpp \
- backend-gosu/gosu-cbuffer.h backend-gosu/gosu-image.h \
- backend-gosu/../image.h backend-gosu/gosu-tiledimage.h \
- backend-gosu/../tiledimage.h backend-gosu/../window.h \
- backend-gosu/../bitrecord.h
 backend-gosu/gosu-window.o: backend-gosu/gosu-window.cpp \
  backend-gosu/gosu-window.h backend-gosu/../window.h \
  backend-gosu/../bitrecord.h backend-gosu/../client-conf.h \
  backend-gosu/../log.h backend-gosu/../vec.h backend-gosu/../reader.h \
- backend-gosu/../world.h
-data/data-area.o: data/data-area.cpp data/../algorithm.h data/data-area.h \
- data/inprogress.h data/../sounds.h
+ backend-gosu/../world.h backend-gosu/../window.h
+data/data-area.o: data/data-area.cpp data/../algorithm.h data/../random.h \
+ data/../sounds.h data/data-area.h data/inprogress.h
 data/data-world.o: data/data-world.cpp data/data-world.h \
  data/../client-conf.h data/../log.h data/../vec.h
 data/inprogress.o: data/inprogress.cpp data/../log.h data/inprogress.h \

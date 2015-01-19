@@ -247,7 +247,7 @@ class TileType : public TileBase
 {
 public:
 	TileType();
-	TileType(std::shared_ptr<Image>& img);
+	TileType(const std::shared_ptr<Image>& img);
 
 	//! Returns true if onscreen and we need to update our animation.
 	bool needsRedraw() const;

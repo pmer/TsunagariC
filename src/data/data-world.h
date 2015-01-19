@@ -28,6 +28,7 @@
 #define DATAWORLD_H
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "../client-conf.h"

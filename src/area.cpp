@@ -33,7 +33,7 @@
 #include "entity.h"
 #include "formatter.h"
 #include "log.h"
-#include "image.h"
+#include "images.h"
 #include "math.h"
 #include "music.h"
 #include "npc.h"
@@ -538,7 +538,7 @@ void Area::drawTile(Tile& tile, int x, int y, double depth)
 	TileType* type = (TileType*)tile.parent;
 	if (type) {
 		time_t now = World::instance().time();
-		const Image* img = type->anim.frame(now);
+		Image* img = type->anim.frame(now);
 		if (img) {
 			rvec2 drawPos(
 				double(x * (int)img->width()),

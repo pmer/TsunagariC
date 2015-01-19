@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** tiledimage.h                       **
-** Copyright 2011-2013 PariahSoft LLC **
+** images.cpp                         **
+** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -24,30 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef TILEDIMAGE_H
-#define TILEDIMAGE_H
+#include "images.h"
 
-#include <memory>
-
-class Image;
-
-class TiledImage
-{
-public:
-	static TiledImage* create(void* data, size_t length,
-			unsigned tileW, unsigned tileH);
-	virtual ~TiledImage();
-
-	virtual size_t size() const = 0;
-
-	virtual std::shared_ptr<Image>& operator[](size_t n) = 0;
-	virtual const std::shared_ptr<Image>& operator[](size_t n) const = 0;
-
-private:
-	TiledImage();
-
-	friend class TiledImageImpl;
-};
-
-#endif
-
+//Image::~Image() { }
+//TiledImage::~TiledImage() { }
+//Images::~Images() { }

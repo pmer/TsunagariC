@@ -97,10 +97,21 @@ void Entity::draw()
 	);
 }
 
-bool Entity::needsRedraw() const
+bool Entity::needsRedraw(const icube& visiblePixels) const
 {
 	time_t now = World::instance().time();
-	return redraw || (phase && phase->needsRedraw(now));
+
+	// Don't need to redraw
+	if (!redraw && (!phase || !phase->needsRedraw(now)))
+		return false;
+
+	// Aren't on-screen
+	if (visiblePixels.x2 < r.x || r.x + imgsz.x < visiblePixels.x1)
+		return false;
+	if (visiblePixels.y2 < r.y || r.y + imgsz.y < visiblePixels.y1)
+		return false;
+
+	return true;
 }
 
 bool Entity::isDead() const

@@ -73,7 +73,7 @@ public:
 	virtual void destroy();
 
 	void draw();
-	bool needsRedraw() const;
+	bool needsRedraw(const icube& visiblePixels) const;
 	bool isDead() const;
 
 	virtual void tick(time_t dt);

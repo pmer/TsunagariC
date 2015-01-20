@@ -152,18 +152,27 @@ bool Area::needsRedraw() const
 {
 	if (redraw)
 		return true;
-	if (player->needsRedraw())
-		return true;
 
-	for (auto& character : characters)
-		if (character->needsRedraw())
+	const icube tiles = visibleTiles();
+	const icube pixels = {
+		tiles.x1 * tileDim.x,
+		tiles.y1 * tileDim.y,
+		tiles.z1,
+		tiles.x2 * tileDim.x,
+		tiles.y2 * tileDim.y,
+		tiles.z2,
+	};
+
+	if (player->needsRedraw(pixels))
+		return true;
+	for (const auto& character : characters)
+		if (character->needsRedraw(pixels))
 			return true;
-	for (auto& overlay : overlays)
-		if (overlay->needsRedraw())
+	for (const auto& overlay : overlays)
+		if (overlay->needsRedraw(pixels))
 			return true;
 
 	// Do any on-screen tile types need to update their animations?
-	const icube tiles = visibleTiles();
 	for (int z = tiles.z1; z < tiles.z2; z++) {
 		for (int y = tiles.y1; y < tiles.y2; y++) {
 			for (int x = tiles.x1; x < tiles.x2; x++) {

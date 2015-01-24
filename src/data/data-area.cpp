@@ -40,7 +40,12 @@ void DataArea::onTurn() {}
 
 void DataArea::tick(time_t dt)
 {
-	for (auto& inProgress : inProgresses) {
+	// Only iterate over inProgresses that existed at the time of the
+	// beginning of the loop.  Also, iterate by index instead of by
+	// iterator because iterators are invalidated if the vector is
+	// pushed_back.
+	for (size_t i = 0, len = inProgresses.size(); i < len; i++) {
+		auto& inProgress = inProgresses[i];
 		inProgress->tick(dt);
 	}
 	erase_if(inProgresses, [] (std::unique_ptr<InProgress>& ip) { return ip->isOver(); });

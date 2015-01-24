@@ -46,7 +46,6 @@ class Character;
 class NPC;
 class Overlay;
 class Player;
-class Viewport;
 
 //! An Area represents one map, or screen, in a World.
 /*!
@@ -62,7 +61,7 @@ class Viewport;
 class Area
 {
 public:
-	Area(Viewport* view, Player* player, const std::string& filename);
+	Area(Player* player, const std::string& filename);
 	virtual ~Area();
 
 	//! Parse the file specified in the constructor, generating a full Area
@@ -180,7 +179,6 @@ protected:
 protected:
 	DataArea* dataArea;
 
-	Viewport* view;
 	Player* player;
 	uint32_t colorOverlayARGB;
 

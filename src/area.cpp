@@ -54,11 +54,9 @@
          account.
 */
 
-Area::Area(Viewport* view,
-           Player* player,
+Area::Area(Player* player,
            const std::string& descriptor)
 	: dataArea(DataWorld::instance().area(descriptor)),
-	  view(view),
 	  player(player),
 	  colorOverlayARGB(0),
 	  dim(0, 0, 0),
@@ -218,7 +216,7 @@ void Area::tick(time_t dt)
 		});
 	}
 
-	view->tick(dt);
+	Viewport::instance().tick(dt);
 	Music::instance().tick();
 }
 
@@ -238,7 +236,7 @@ void Area::turn()
 		return dead;
 	});
 
-	view->turn();
+	Viewport::instance().turn();
 }
 
 void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
@@ -343,8 +341,8 @@ double Area::isometricZOff(rvec2 pos) const
 
 icube Area::visibleTileBounds() const
 {
-	rvec2 screen = view->getVirtRes();
-	rvec2 off = view->getMapOffset();
+	rvec2 screen = Viewport::instance().getVirtRes();
+	rvec2 off = Viewport::instance().getMapOffset();
 
 	int x1 = (int)floor(off.x / tileDim.x);
 	int y1 = (int)floor(off.y / tileDim.y);

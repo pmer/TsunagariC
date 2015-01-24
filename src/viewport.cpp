@@ -31,21 +31,33 @@
 #include "viewport.h"
 #include "window.h"
 
-Viewport::Viewport(icoord vsize)
+static Viewport globalViewport;
+
+Viewport& Viewport::instance()
+{
+	return globalViewport;
+}
+
+Viewport::Viewport()
 	: off(0, 0),
-	  virtRes(vsize.x, vsize.y),
 	  mode(TM_MANUAL),
 	  area(NULL)
 {
-	double width = (double)GameWindow::instance().width();
-	double height = (double)GameWindow::instance().height();
-	aspectRatio = width / height;
 }
 
 Viewport::~Viewport()
 {
 }
 
+void Viewport::setSize(rvec2 virtRes)
+{
+	this->virtRes = virtRes;
+
+	// Calculate or recalculate the aspect ratio.
+	double width = (double)GameWindow::instance().width();
+	double height = (double)GameWindow::instance().height();
+	aspectRatio = width / height;
+}
 
 void Viewport::tick(time_t)
 {

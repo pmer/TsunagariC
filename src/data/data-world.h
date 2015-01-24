@@ -53,7 +53,7 @@ public:
 	} about;
 	struct {
 		enum movement_mode_t moveMode;
-		icoord viewportSize;
+		rvec2 viewportResolution;
 		struct {
 			struct {
 				int initial, consecutive;

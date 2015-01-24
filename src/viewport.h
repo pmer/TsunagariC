@@ -37,8 +37,12 @@ class Entity;
 class Viewport
 {
 public:
-	Viewport(icoord vsize);
+	static Viewport& instance();
+
+	Viewport();
 	~Viewport();
+
+	void setSize(rvec2 virtRes);
 
 	void tick(time_t dt);
 	void turn();

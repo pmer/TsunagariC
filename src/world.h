@@ -39,7 +39,6 @@
 class Area;
 class Image;
 class Player;
-class Viewport;
 
 /**
  * Top class holding all data necessary to create a game. Such a collection of
@@ -157,7 +156,6 @@ protected:
 	AreaMap areas;
 	Area* area;
 	std::unique_ptr<Player> player;
-	std::shared_ptr<Viewport> view;
 
 	/**
 	 * Last time engine state was updated. See World::update().

@@ -33,13 +33,12 @@
 #include "tile.h"
 #include "xml.h"
 
-class Viewport;
 class Player;
 
 class AreaTMX : public Area
 {
 public:
-	AreaTMX(Viewport* view, Player* player, const std::string& filename);
+	AreaTMX(Player* player, const std::string& filename);
 	virtual ~AreaTMX();
 
 	//! Parse the file specified in the constructor, generating a full Area

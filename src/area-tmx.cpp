@@ -52,10 +52,9 @@
          account.
 */
 
-AreaTMX::AreaTMX(Viewport* view,
-           Player* player,
+AreaTMX::AreaTMX(Player* player,
            const std::string& descriptor)
-	: Area(view, player, descriptor)
+	: Area(player, descriptor)
 {
 	// Add TileType #0. Not used, but Tiled's gids start from 1.
 	gids.push_back(NULL);

@@ -69,8 +69,8 @@ bool World::init()
 
 	ASSERT(player->init(gameStart.player.file, gameStart.player.phase));
 
-	view.reset(new Viewport(parameters.viewportSize));
-	view->trackEntity(player.get());
+	Viewport::instance().setSize(parameters.viewportResolution);
+	Viewport::instance().trackEntity(player.get());
 
 	Area* area = getArea(gameStart.area);
 	if (area == NULL) {
@@ -144,14 +144,16 @@ void World::draw()
 
 	pushLetterbox();
 
+	Viewport& view = Viewport::instance();
+
 	// Zoom and pan the Area to fit on-screen.
-	rvec2 padding = view->getLetterboxOffset();
+	rvec2 padding = view.getLetterboxOffset();
 	window.translate(-padding.x, -padding.y);
 
-	rvec2 scale = view->getScale();
+	rvec2 scale = view.getScale();
 	window.scale(scale.x, scale.y);
 
-	rvec2 scroll = view->getMapOffset();
+	rvec2 scroll = view.getMapOffset();
 	window.translate(-scroll.x, -scroll.y);
 
 	area->draw();
@@ -199,7 +201,7 @@ Area* World::getArea(const std::string& filename)
 	if (entry != areas.end())
 		return entry->second;
 
-	Area* newArea = new AreaTMX(view.get(), player.get(), filename);
+	Area* newArea = new AreaTMX(player.get(), filename);
 
 	if (!newArea->init())
 		newArea = NULL;
@@ -228,7 +230,7 @@ void World::focusArea(Area* area, vicoord playerPos)
 	this->area = area;
 	player->setArea(area);
 	player->setTileCoords(playerPos);
-	view->setArea(area);
+	Viewport::instance().setArea(area);
 	area->focus();
 }
 
@@ -288,18 +290,19 @@ time_t World::calculateDt(time_t now)
 void World::pushLetterbox()
 {
 	GameWindow& window = GameWindow::instance();
+	Viewport& view = Viewport::instance();
 
 	// Aspect ratio correction.
-	rvec2 sz = view->getPhysRes();
-	rvec2 lb = -1 * view->getLetterboxOffset();
+	rvec2 sz = view.getPhysRes();
+	rvec2 lb = -1 * view.getLetterboxOffset();
 
 	window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y);
 	int clips = 1;
 
 	// Map bounds.
-	rvec2 scale = view->getScale();
-	rvec2 virtScroll = view->getMapOffset();
-	rvec2 padding = view->getLetterboxOffset();
+	rvec2 scale = view.getScale();
+	rvec2 virtScroll = view.getMapOffset();
+	rvec2 padding = view.getLetterboxOffset();
 
 	rvec2 physScroll = -1 * virtScroll * scale + padding;
 

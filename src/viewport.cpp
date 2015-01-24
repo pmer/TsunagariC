@@ -132,6 +132,7 @@ void Viewport::trackEntity(const Entity* e)
 {
 	mode = TM_FOLLOW_ENTITY;
 	targete = e;
+	update();
 }
 
 

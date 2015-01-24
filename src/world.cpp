@@ -69,15 +69,15 @@ bool World::init()
 
 	ASSERT(player->init(gameStart.player.file, gameStart.player.phase));
 
-	Viewport::instance().setSize(parameters.viewportResolution);
-	Viewport::instance().trackEntity(player.get());
-
 	Area* area = getArea(gameStart.area);
 	if (area == NULL) {
 		Log::fatal("World", "failed to load initial Area");
 		return false;
 	}
 	focusArea(area, gameStart.coords);
+
+	Viewport::instance().setSize(parameters.viewportResolution);
+	Viewport::instance().trackEntity(player.get());
 
 	// Apply client.ini music volume now that client.ini is loaded.
 	Music::instance().setVolume(1.0);

@@ -24,6 +24,9 @@
 // IN THE SOFTWARE.
 // **********
 
+#ifndef CACHE_TEMPLATE_CPP
+#define CACHE_TEMPLATE_CPP
+
 #include <vector>
 
 #include "cache.h"
@@ -116,3 +119,5 @@ void Cache<T>::garbageCollect()
 	for (StringVector::iterator it = dead.begin(); it != dead.end(); it++)
 		map.erase(*it);
 }
+
+#endif

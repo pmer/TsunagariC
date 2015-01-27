@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** xml.cpp                            **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -27,13 +27,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "dtds.h"
 #include "log.h"
+#include "reader.h"
 #include "string.h"
-#include "xml.h"
+#include "xmls.h"
 
 #ifdef _WIN32
 	#include "os-windows.h"
 #endif
+
+#define ASSERT(x)  if (!(x)) { return false; }
+
 
 XMLNode::XMLNode()
 {
@@ -209,5 +214,82 @@ bool XMLDoc::unique() const
 long XMLDoc::use_count() const
 {
 	return doc.use_count();
+}
+
+
+
+static std::map<std::string, std::shared_ptr<xmlDtd>> dtds;
+
+static std::shared_ptr<xmlDtd> parseDTD(const std::string& dtdContent)
+{
+	xmlCharEncoding enc = XML_CHAR_ENCODING_NONE;
+
+	xmlParserInputBuffer* input = xmlParserInputBufferCreateMem(
+			dtdContent.c_str(), (int)dtdContent.size(), enc);
+	if (!input)
+		return std::shared_ptr<xmlDtd>();
+
+	xmlDtd* dtd = xmlIOParseDTD(NULL, input, enc);
+	if (!dtd)
+		return std::shared_ptr<xmlDtd>();
+
+	return std::shared_ptr<xmlDtd>(dtd, xmlFreeDtd);
+}
+
+static bool preloadDTDs()
+{
+	ASSERT(dtds["area"] = parseDTD(CONTENT_OF_AREA_DTD()));
+	ASSERT(dtds["entity"] = parseDTD(CONTENT_OF_ENTITY_DTD()));
+	ASSERT(dtds["tsx"] = parseDTD(CONTENT_OF_TSX_DTD()));
+	return true;
+}
+
+static xmlDtd* getDTD(const std::string& type)
+{
+	auto it = dtds.find(type);
+	return it == dtds.end() ? NULL : it->second.get();
+}
+
+
+static XMLs globalXMLs;
+
+XMLs& XMLs::instance()
+{
+	return globalXMLs;
+}
+
+XMLs::XMLs()
+{
+	preloadDTDs();
+}
+
+static std::shared_ptr<XMLDoc> genXML(const std::string& path,
+	const std::string& dtdType)
+{
+	std::string data = Reader::readString(path);
+	xmlDtd* dtd = getDTD(dtdType);
+
+	if (!dtd || data.empty())
+		return NULL;
+	auto doc = std::make_shared<XMLDoc>();
+	if (!doc->init(path, data, dtd))
+		doc.reset();
+	return doc;
+}
+
+std::shared_ptr<XMLDoc> XMLs::load(const std::string& path,
+	const std::string& dtdType)
+{
+	auto doc = documents.lifetimeRequest(path);
+	if (!doc) {
+		doc = genXML(path, dtdType);
+		documents.lifetimePut(path, doc);
+	}
+	return doc;
+}
+
+void XMLs::garbageCollect()
+{
+	documents.garbageCollect();
 }
 

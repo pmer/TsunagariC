@@ -10,7 +10,7 @@ include Makefile.common
 OBJECTS = animation.o area.o area-tmx.o bitrecord.o \
 character.o client-conf.o cooldown.o dtds.o entity.o formatter.o images.o \
 log.o main.o music.o npc.o os-windows.o overlay.o player.o random.o reader.o \
-sounds.o string.o tile.o timer.o viewport.o window.o world.o xml.o \
+sounds.o string.o tile.o timer.o viewport.o window.o world.o xmls.o \
 backend-gosu/gosu-images.o backend-gosu/gosu-music.o \
 backend-gosu/gosu-sounds.o backend-gosu/gosu-window.o \
 data/data-area.o data/data-world.o data/inprogress.o \
@@ -61,56 +61,61 @@ clean:
 ### --- DO NOT DELETE THIS LINE --- ###
 
 animation.o: animation.cpp animation.h
-area-tmx.o: area-tmx.cpp area-tmx.h area.h entity.h vec.h xml.h tile.h \
- animation.h data/data-area.h window.h bitrecord.h images.h log.h reader.h \
- string.h world.h
-area.o: area.cpp algorithm.h area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h client-conf.h log.h formatter.h \
- images.h math.h music.h npc.h character.h overlay.h player.h viewport.h \
- world.h data/data-world.h data/../client-conf.h
+area-tmx.o: area-tmx.cpp area-tmx.h area.h entity.h vec.h xmls.h \
+ cache-template.cpp cache.h client-conf.h log.h world.h bitrecord.h window.h \
+ tile.h animation.h data/data-area.h images.h reader.h string.h
+area.o: area.cpp algorithm.h area.h entity.h vec.h xmls.h cache-template.cpp \
+ cache.h client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
+ data/data-area.h formatter.h images.h math.h music.h npc.h character.h \
+ overlay.h player.h viewport.h data/data-world.h data/../client-conf.h
 bitrecord.o: bitrecord.cpp bitrecord.h
 cache-template.o: cache-template.cpp cache.h client-conf.h log.h vec.h \
  world.h bitrecord.h window.h
-character.o: character.cpp area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h character.h client-conf.h log.h \
- sounds.h
+character.o: character.cpp area.h entity.h vec.h xmls.h cache-template.cpp \
+ cache.h client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
+ data/data-area.h character.h sounds.h
 client-conf.o: client-conf.cpp client-conf.h log.h vec.h nbcl/nbcl.h \
  string.h
 cooldown.o: cooldown.cpp cooldown.h log.h
 dtds.o: dtds.cpp dtds.h
-entity.o: entity.cpp area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h client-conf.h log.h images.h math.h \
- reader.h string.h world.h
+entity.o: entity.cpp area.h entity.h vec.h xmls.h cache-template.cpp cache.h \
+ client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
+ data/data-area.h images.h math.h reader.h string.h
 formatter.o: formatter.cpp formatter.h
 images.o: images.cpp images.h
 log.o: log.cpp client-conf.h log.h vec.h window.h bitrecord.h
 main.o: main.cpp client-conf.h log.h vec.h formatter.h reader.h window.h \
  bitrecord.h world.h data/data-world.h data/../client-conf.h
 music.o: music.cpp client-conf.h log.h vec.h formatter.h math.h music.h
-npc.o: npc.cpp npc.h character.h entity.h vec.h xml.h
+npc.o: npc.cpp npc.h character.h entity.h vec.h xmls.h cache-template.cpp \
+ cache.h client-conf.h log.h world.h bitrecord.h window.h
 os-windows.o: os-windows.cpp
-overlay.o: overlay.cpp area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h client-conf.h log.h overlay.h
-player.o: player.cpp area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h client-conf.h log.h player.h \
- character.h world.h
+overlay.o: overlay.cpp area.h entity.h vec.h xmls.h cache-template.cpp \
+ cache.h client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
+ data/data-area.h overlay.h
+player.o: player.cpp area.h entity.h vec.h xmls.h cache-template.cpp cache.h \
+ client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
+ data/data-area.h player.h character.h
 random.o: random.cpp random.h
 reader.o: reader.cpp cache.h cache-template.cpp client-conf.h log.h vec.h \
- world.h bitrecord.h window.h dtds.h formatter.h images.h music.h reader.h \
- sounds.h xml.h data/data-world.h data/../client-conf.h
+ world.h bitrecord.h window.h formatter.h images.h music.h reader.h sounds.h \
+ xmls.h data/data-world.h data/../client-conf.h
 sounds.o: sounds.cpp sounds.h
 string.o: string.cpp log.h string.h
-tile.o: tile.cpp area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h formatter.h log.h string.h world.h
+tile.o: tile.cpp area.h entity.h vec.h xmls.h cache-template.cpp cache.h \
+ client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
+ data/data-area.h formatter.h string.h
 timer.o: timer.cpp formatter.h timer.h world.h bitrecord.h window.h vec.h
-viewport.o: viewport.cpp area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h math.h viewport.h
+viewport.o: viewport.cpp area.h entity.h vec.h xmls.h cache-template.cpp \
+ cache.h client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
+ data/data-area.h math.h viewport.h
 window.o: window.cpp window.h bitrecord.h world.h vec.h
-world.o: world.cpp area-tmx.h area.h entity.h vec.h xml.h tile.h animation.h \
- data/data-area.h window.h bitrecord.h client-conf.h log.h images.h music.h \
- player.h character.h reader.h viewport.h world.h data/data-world.h \
- data/../client-conf.h
-xml.o: xml.cpp log.h string.h xml.h
+world.o: world.cpp area-tmx.h area.h entity.h vec.h xmls.h \
+ cache-template.cpp cache.h client-conf.h log.h world.h bitrecord.h window.h \
+ tile.h animation.h data/data-area.h images.h music.h player.h character.h \
+ reader.h viewport.h data/data-world.h data/../client-conf.h
+xmls.o: xmls.cpp dtds.h log.h reader.h string.h xmls.h cache-template.cpp \
+ cache.h client-conf.h vec.h world.h bitrecord.h window.h
 backend-gosu/gosu-images.o: backend-gosu/gosu-images.cpp \
  backend-gosu/gosu-images.h backend-gosu/../cache-template.cpp \
  backend-gosu/../cache.h backend-gosu/../client-conf.h backend-gosu/../log.h \

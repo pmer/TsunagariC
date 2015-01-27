@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** xml.h                              **
-** Copyright 2011-2013 PariahSoft LLC **
+** xmls.h                              **
+** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
 // **********
@@ -31,6 +31,8 @@
 #include <string>
 
 #include <libxml/tree.h>
+
+#include "cache-template.cpp"
 
 #ifndef LIBXML_TREE_ENABLED
 	#error Tree must be enabled in libxml2
@@ -89,6 +91,33 @@ public:
 private:
 	std::shared_ptr<xmlDoc> doc;
 	std::string path_;
+};
+
+class XMLs {
+public:
+	//! Acquire the global XMLs object.
+	static XMLs& instance();
+
+	XMLs();
+	~XMLs() = default;
+
+	//! Load an XML document.
+	std::shared_ptr<XMLDoc> load(const std::string& path,
+		const std::string& dtdType);
+
+	//! Free XML documents not recently used.
+	void garbageCollect();
+
+private:
+	XMLs(const XMLs&) = delete;
+	XMLs(XMLs&&) = delete;
+	XMLs& operator=(const XMLs&) = delete;
+	XMLs& operator=(XMLs&&) = delete;
+
+	// We can't use a ReaderCache here because XMLDocs are constructed
+	// with two arguments, but a ReaderCache only supports the use of
+	// one.
+	Cache<std::shared_ptr<XMLDoc>> documents;
 };
 
 #endif

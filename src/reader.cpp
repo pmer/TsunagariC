@@ -34,7 +34,6 @@
 #include "cache.h"
 #include "cache-template.cpp"
 #include "client-conf.h"
-#include "dtds.h"
 #include "formatter.h"
 #include "images.h"
 #include "log.h"
@@ -42,18 +41,14 @@
 #include "reader.h"
 #include "sounds.h"
 #include "window.h"
-#include "xml.h"
+#include "xmls.h"
 
 #include "data/data-world.h"
 
 #define ASSERT(x)  if (!(x)) { return false; }
 
 // Caches that store processed, game-ready objects. Garbage collected.
-static Cache<std::shared_ptr<XMLDoc>> xmls;
 static Cache<std::shared_ptr<std::string>> texts;
-
-// DTDs don't expire. No garbage collection.
-static std::map<std::string, std::shared_ptr<xmlDtd>> dtds;
 
 
 static std::string path(const std::string& entryName)
@@ -121,72 +116,12 @@ static bool readFromDisk(const std::string& name, T& buf)
 	return true;
 }
 
-// FIXME: Should be moved to xml.cpp!!!!!!
-static std::shared_ptr<xmlDtd> parseDTD(const std::string& dtdContent)
-{
-	xmlCharEncoding enc = XML_CHAR_ENCODING_NONE;
-
-	xmlParserInputBuffer* input = xmlParserInputBufferCreateMem(
-			dtdContent.c_str(), (int)dtdContent.size(), enc);
-	if (!input)
-		return std::shared_ptr<xmlDtd>();
-
-	xmlDtd* dtd = xmlIOParseDTD(NULL, input, enc);
-	if (!dtd)
-		return std::shared_ptr<xmlDtd>();
-
-	return std::shared_ptr<xmlDtd>(dtd, xmlFreeDtd);
-}
-
-// FIXME: Should be moved to xml.cpp!!!!!!
-static bool preloadDTDs()
-{
-	ASSERT(dtds["area"] = parseDTD(CONTENT_OF_AREA_DTD()));
-	ASSERT(dtds["entity"] = parseDTD(CONTENT_OF_ENTITY_DTD()));
-	ASSERT(dtds["tsx"] = parseDTD(CONTENT_OF_TSX_DTD()));
-	return true;
-}
-
-static xmlDtd* getDTD(const std::string& type)
-{
-	auto it = dtds.find(type);
-	return it == dtds.end() ? NULL : it->second.get();
-}
-
-static XMLDoc* readXMLDoc(const std::string& name,
-                          const std::string& dtdType)
-{
-	std::string p = path(name);
-	std::string data = Reader::readString(name);
-	xmlDtd* dtd = getDTD(dtdType);
-
-	if (!dtd || data.empty())
-		return NULL;
-	XMLDoc* doc = new XMLDoc;
-	if (!doc->init(p, data, dtd)) {
-		delete doc;
-		return NULL;
-	}
-	return doc;
-}
-
-
-
-
-
-
 
 
 bool Reader::init()
 {
 	ASSERT(prependPath(BASE_ZIP_PATH));
-
-	// DTDs must be loaded from BASE_ZIP. They cannot be allowed to be
-	// loaded from the world.
-	ASSERT(preloadDTDs());
-
 	ASSERT(prependPath(DataWorld::instance().datafile));
-
 	return true;
 }
 
@@ -236,19 +171,6 @@ std::string Reader::readString(const std::string& name)
 	return readFromDisk(name, str) ? str : "";
 }
 
-std::shared_ptr<XMLDoc> Reader::getXMLDoc(const std::string& name,
-                            const std::string& dtdType)
-{
-	std::shared_ptr<XMLDoc> existing = xmls.momentaryRequest(name);
-	if (existing)
-		return existing;
-
-	std::shared_ptr<XMLDoc> result(readXMLDoc(name, dtdType));
-
-	xmls.momentaryPut(name, result);
-	return result;
-}
-
 std::string Reader::getText(const std::string& name)
 {
 	std::shared_ptr<std::string> existing = texts.momentaryRequest(name);
@@ -266,7 +188,7 @@ void Reader::garbageCollect()
 	Images::instance().garbageCollect();
 	Music::instance().garbageCollect();
 	Sounds::instance().garbageCollect();
-	xmls.garbageCollect();
+	XMLs::instance().garbageCollect();
 	texts.garbageCollect();
 }
 

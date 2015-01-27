@@ -31,7 +31,7 @@
 
 #include "area.h"
 #include "tile.h"
-#include "xml.h"
+#include "xmls.h"
 
 class Player;
 

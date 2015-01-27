@@ -30,8 +30,6 @@
 #include <memory>
 #include <string>
 
-class XMLDoc;
-
 namespace Gosu {
 	class Buffer;
 }
@@ -58,10 +56,6 @@ public:
 
 	static Gosu::Buffer* readBuffer(const std::string& name);
 	static std::string readString(const std::string& name);
-
-	//! Request an XML document from the World.
-	static std::shared_ptr<XMLDoc> getXMLDoc(const std::string& name,
-		const std::string& dtdType);
 
 	//! Request a text file from the World.
 	static std::string getText(const std::string& name);

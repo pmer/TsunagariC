@@ -93,7 +93,7 @@ bool AreaTMX::processDescriptor()
 	std::shared_ptr<XMLDoc> doc;
 	XMLNode root;
 
-	ASSERT(doc = Reader::getXMLDoc(descriptor, "area"));
+	ASSERT(doc = XMLs::instance().load(descriptor, "area"));
 	ASSERT(root = doc->root()); // <map>
 
 	ASSERT(root.intAttr("width", &dim.x));
@@ -209,7 +209,7 @@ bool AreaTMX::processTileSet(XMLNode node)
 	source = node.attr("source");
 	if (source.size()) {
 		source = dirname(descriptor) + source;
-		if (!(doc = Reader::getXMLDoc(source, "tsx"))) {
+		if (!(doc = XMLs::instance().load(source, "tsx"))) {
 			Log::err(descriptor, source + ": failed to load valid TSX file");
 			return false;
 		}

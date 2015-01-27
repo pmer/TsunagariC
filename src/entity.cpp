@@ -36,7 +36,7 @@
 #include "reader.h"
 #include "string.h"
 #include "world.h"
-#include "xml.h"
+#include "xmls.h"
 
 #define ASSERT(x)  if (!(x)) { return false; }
 
@@ -339,7 +339,7 @@ void Entity::arrived()
 
 bool Entity::processDescriptor()
 {
-	auto doc = Reader::getXMLDoc(descriptor, "entity");
+	auto doc = XMLs::instance().load(descriptor, "entity");
 	if (!doc)
 		return false;
 	const XMLNode root = doc->root(); // <entity>

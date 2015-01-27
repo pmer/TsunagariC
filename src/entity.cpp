@@ -33,7 +33,7 @@
 #include "images.h"
 #include "log.h"
 #include "math.h"
-#include "reader.h"
+#include "resources.h"
 #include "string.h"
 #include "world.h"
 #include "xmls.h"

@@ -29,7 +29,7 @@
 
 #include "dtds.h"
 #include "log.h"
-#include "reader.h"
+#include "resources.h"
 #include "string.h"
 #include "xmls.h"
 
@@ -266,7 +266,11 @@ XMLs::XMLs()
 static std::shared_ptr<XMLDoc> genXML(const std::string& path,
 	const std::string& dtdType)
 {
-	std::string data = Reader::readString(path);
+	std::unique_ptr<Resource> r = Resources::instance().load(path);
+	if (!r)
+		return NULL;
+
+	std::string data = std::move(r->asString());
 	xmlDtd* dtd = getDTD(dtdType);
 
 	if (!dtd || data.empty())

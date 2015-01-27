@@ -29,9 +29,10 @@
 #include <Gosu/Image.hpp>
 #include <Gosu/IO.hpp>
 
+#include "gosu-cbuffer.h"
 #include "gosu-images.h"
 #include "gosu-window.h"
-#include "../reader.h"
+#include "../resources.h"
 #include "../window.h"
 
 static Gosu::Graphics& graphics()
@@ -99,26 +100,28 @@ Images& Images::instance()
 static std::shared_ptr<Image> genImage(const std::string& path)
 {
 	static Gosu::Graphics& g = graphics();
-	std::unique_ptr<Gosu::Buffer> buffer(Reader::readBuffer(path));
-	if (!buffer) {
+	std::unique_ptr<Resource> r = Resources::instance().load(path);
+	if (!r) {
 		// Error logged.
 		return std::shared_ptr<Image>();
 	}
+	GosuCBuffer buffer(r->data(), r->size());
 	Gosu::Bitmap bitmap;
-	Gosu::loadImageFile(bitmap, buffer->frontReader());
+	Gosu::loadImageFile(bitmap, buffer.frontReader());
 	return std::make_shared<GosuImage>(std::move(Gosu::Image(g, bitmap, false)));
 }
 
 static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
 	unsigned tileW, unsigned tileH)
 {
-	std::shared_ptr<Gosu::Buffer> buffer(Reader::readBuffer(path));
-	if (!buffer) {
+	std::unique_ptr<Resource> r = Resources::instance().load(path);
+	if (!r) {
 		// Error logged.
 		return std::shared_ptr<TiledImage>();
 	}
+	GosuCBuffer buffer(r->data(), r->size());
 	Gosu::Bitmap bitmap;
-	Gosu::loadImageFile(bitmap, buffer->frontReader());
+	Gosu::loadImageFile(bitmap, buffer.frontReader());
 	std::vector<std::shared_ptr<Image>> images;
 	for (unsigned y = 0; y < bitmap.height(); y += tileH) {
 		for (unsigned x = 0; x < bitmap.width(); x += tileW) {

@@ -34,7 +34,7 @@
 #include "entity.h"
 #include "images.h"
 #include "log.h"
-#include "reader.h"
+#include "resources.h"
 #include "string.h"
 #include "tile.h"
 #include "window.h"

@@ -27,16 +27,21 @@
 #include <Gosu/Audio.hpp>
 
 #include "../client-conf.h"
+#include "../resources.h"
+
+#include "gosu-cbuffer.h"
 #include "gosu-music.h"
-#include "../reader.h"
 
 static std::shared_ptr<Gosu::Song> genSong(const std::string& name)
 {
-	std::unique_ptr<Gosu::Buffer> buffer(Reader::readBuffer(name));
-	if (!buffer)
+	std::unique_ptr<Resource> r = Resources::instance().load(name);
+	if (!r) {
+		// Error logged.
 		return std::shared_ptr<Gosu::Song>();
+	}
+	GosuCBuffer buffer(r->data(), r->size());
 	return std::shared_ptr<Gosu::Song>(
-		new Gosu::Song(buffer->frontReader())
+		new Gosu::Song(buffer.frontReader())
 	);
 }
 

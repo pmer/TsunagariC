@@ -30,8 +30,9 @@
 #include "../client-conf.h"
 #include "../formatter.h"
 #include "../math.h"
-#include "../reader.h"
+#include "../resources.h"
 
+#include "gosu-cbuffer.h"
 #include "gosu-sounds.h"
 
 GosuSoundInstance::GosuSoundInstance(Gosu::SampleInstance instance)
@@ -109,12 +110,13 @@ void GosuSoundInstance::speed(double attemptedSpeed)
 
 static std::shared_ptr<Gosu::Sample> genSample(const std::string& path)
 {
-	std::unique_ptr<Gosu::Buffer> buffer(Reader::readBuffer(path));
-	if (!buffer) {
+	std::unique_ptr<Resource> r = Resources::instance().load(path);
+	if (!r) {
 		// Error logged.
 		return std::shared_ptr<Gosu::Sample>();
 	}
-	return std::make_shared<Gosu::Sample>(buffer->frontReader());
+	GosuCBuffer buffer(r->data(), r->size());
+	return std::make_shared<Gosu::Sample>(buffer.frontReader());
 }
 
 static GosuSounds globalSounds;

@@ -33,7 +33,7 @@
 #include "client-conf.h"
 #include "formatter.h"
 #include "log.h"
-#include "reader.h"
+#include "resources.h"
 #include "window.h"
 #include "world.h"
 
@@ -87,16 +87,6 @@ int main(int argc, char** argv)
 	 * the actual shared library used.
 	 */
 	LIBXML_TEST_VERSION
-
-	if (!PHYSFS_init(argv[0])) {
-		Log::fatal("Main", "PHYSFS_init");
-		return 1;
-	}
-
-	if (!Reader::init()) {
-		Log::fatal("Main", "Reader::init");
-		return 1;
-	}
 
 	GameWindow* window = GameWindow::create();
 	World& world = World::instance();

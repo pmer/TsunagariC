@@ -32,7 +32,8 @@
 #include "log.h"
 #include "music.h"
 #include "player.h"
-#include "reader.h"
+#include "resources.h"
+#include "sounds.h"
 #include "viewport.h"
 #include "window.h"
 #include "world.h"
@@ -278,6 +279,14 @@ void World::restoreKeys()
 		else
 			buttonUp(key);
 	}
+}
+
+void World::garbageCollect()
+{
+	Images::instance().garbageCollect();
+	Music::instance().garbageCollect();
+	Sounds::instance().garbageCollect();
+	XMLs::instance().garbageCollect();
 }
 
 time_t World::calculateDt(time_t now)

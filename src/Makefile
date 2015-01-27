@@ -7,14 +7,20 @@
 
 include Makefile.common
 
-OBJECTS = animation.o area.o area-tmx.o bitrecord.o \
-character.o client-conf.o cooldown.o dtds.o entity.o formatter.o images.o \
-log.o main.o music.o npc.o os-windows.o overlay.o player.o random.o reader.o \
-sounds.o string.o tile.o timer.o viewport.o window.o world.o xmls.o \
-backend-gosu/gosu-images.o backend-gosu/gosu-music.o \
-backend-gosu/gosu-sounds.o backend-gosu/gosu-window.o \
-data/data-area.o data/data-world.o data/inprogress.o \
-nbcl/nbcl.o
+OBJECTS = \
+	animation.o area.o area-tmx.o bitrecord.o character.o client-conf.o \
+	cooldown.o dtds.o entity.o formatter.o images.o log.o main.o music.o \
+	npc.o os-windows.o overlay.o player.o random.o resources.o sounds.o \
+	string.o tile.o timer.o \
+	viewport.o window.o world.o xmls.o \
+	backend-gosu/gosu-cbuffer.o \
+	backend-gosu/gosu-images.o \
+	backend-gosu/gosu-music.o \
+	backend-gosu/gosu-sounds.o \
+	backend-gosu/gosu-window.o \
+	data/data-area.o data/data-world.o data/inprogress.o \
+	nbcl/nbcl.o \
+	resources/resources-physfs.o
 
 ifeq ($(shell uname -s),Darwin)
 	OBJECTS := $(OBJECTS) os-mac.o
@@ -54,7 +60,7 @@ clean:
 animation.o: animation.cpp animation.h
 area-tmx.o: area-tmx.cpp area-tmx.h area.h entity.h vec.h xmls.h \
  cache-template.cpp cache.h client-conf.h log.h world.h bitrecord.h window.h \
- tile.h animation.h data/data-area.h images.h reader.h string.h
+ tile.h animation.h data/data-area.h images.h resources.h string.h
 area.o: area.cpp algorithm.h area.h entity.h vec.h xmls.h cache-template.cpp \
  cache.h client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
  data/data-area.h formatter.h images.h math.h music.h npc.h character.h \
@@ -71,11 +77,11 @@ cooldown.o: cooldown.cpp cooldown.h log.h
 dtds.o: dtds.cpp dtds.h
 entity.o: entity.cpp area.h entity.h vec.h xmls.h cache-template.cpp cache.h \
  client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
- data/data-area.h images.h math.h reader.h string.h
+ data/data-area.h images.h math.h resources.h string.h
 formatter.o: formatter.cpp formatter.h
 images.o: images.cpp images.h
 log.o: log.cpp client-conf.h log.h vec.h window.h bitrecord.h
-main.o: main.cpp client-conf.h log.h vec.h formatter.h reader.h window.h \
+main.o: main.cpp client-conf.h log.h vec.h formatter.h resources.h window.h \
  bitrecord.h world.h data/data-world.h data/../client-conf.h
 music.o: music.cpp client-conf.h log.h vec.h formatter.h math.h music.h
 npc.o: npc.cpp npc.h character.h entity.h vec.h xmls.h cache-template.cpp \
@@ -88,9 +94,7 @@ player.o: player.cpp area.h entity.h vec.h xmls.h cache-template.cpp cache.h \
  client-conf.h log.h world.h bitrecord.h window.h tile.h animation.h \
  data/data-area.h player.h character.h
 random.o: random.cpp random.h
-reader.o: reader.cpp cache.h cache-template.cpp client-conf.h log.h vec.h \
- world.h bitrecord.h window.h formatter.h images.h music.h reader.h sounds.h \
- xmls.h data/data-world.h data/../client-conf.h
+resources.o: resources.cpp resources.h
 sounds.o: sounds.cpp sounds.h
 string.o: string.cpp log.h string.h
 tile.o: tile.cpp area.h entity.h vec.h xmls.h cache-template.cpp cache.h \
@@ -104,26 +108,31 @@ window.o: window.cpp window.h bitrecord.h world.h vec.h
 world.o: world.cpp area-tmx.h area.h entity.h vec.h xmls.h \
  cache-template.cpp cache.h client-conf.h log.h world.h bitrecord.h window.h \
  tile.h animation.h data/data-area.h images.h music.h player.h character.h \
- reader.h viewport.h data/data-world.h data/../client-conf.h
-xmls.o: xmls.cpp dtds.h log.h reader.h string.h xmls.h cache-template.cpp \
+ resources.h sounds.h viewport.h data/data-world.h data/../client-conf.h
+xmls.o: xmls.cpp dtds.h log.h resources.h string.h xmls.h cache-template.cpp \
  cache.h client-conf.h vec.h world.h bitrecord.h window.h
+backend-gosu/gosu-cbuffer.o: backend-gosu/gosu-cbuffer.cpp \
+ backend-gosu/gosu-cbuffer.h
 backend-gosu/gosu-images.o: backend-gosu/gosu-images.cpp \
- backend-gosu/gosu-images.h backend-gosu/../cache-template.cpp \
- backend-gosu/../cache.h backend-gosu/../client-conf.h backend-gosu/../log.h \
- backend-gosu/../vec.h backend-gosu/../world.h backend-gosu/../bitrecord.h \
+ backend-gosu/gosu-cbuffer.h backend-gosu/gosu-images.h \
+ backend-gosu/../cache-template.cpp backend-gosu/../cache.h \
+ backend-gosu/../client-conf.h backend-gosu/../log.h backend-gosu/../vec.h \
+ backend-gosu/../world.h backend-gosu/../bitrecord.h \
  backend-gosu/../window.h backend-gosu/../images.h \
  backend-gosu/../readercache.h backend-gosu/gosu-window.h \
- backend-gosu/../window.h backend-gosu/../reader.h
+ backend-gosu/../window.h backend-gosu/../resources.h
 backend-gosu/gosu-music.o: backend-gosu/gosu-music.cpp \
  backend-gosu/../client-conf.h backend-gosu/../log.h backend-gosu/../vec.h \
+ backend-gosu/../resources.h backend-gosu/gosu-cbuffer.h \
  backend-gosu/gosu-music.h backend-gosu/../cache-template.cpp \
  backend-gosu/../cache.h backend-gosu/../client-conf.h \
  backend-gosu/../world.h backend-gosu/../bitrecord.h \
  backend-gosu/../window.h backend-gosu/../music.h \
- backend-gosu/../readercache.h backend-gosu/../reader.h
+ backend-gosu/../readercache.h
 backend-gosu/gosu-sounds.o: backend-gosu/gosu-sounds.cpp \
  backend-gosu/../client-conf.h backend-gosu/../log.h backend-gosu/../vec.h \
- backend-gosu/../formatter.h backend-gosu/../math.h backend-gosu/../reader.h \
+ backend-gosu/../formatter.h backend-gosu/../math.h \
+ backend-gosu/../resources.h backend-gosu/gosu-cbuffer.h \
  backend-gosu/gosu-sounds.h backend-gosu/../cache-template.cpp \
  backend-gosu/../cache.h backend-gosu/../client-conf.h \
  backend-gosu/../world.h backend-gosu/../bitrecord.h \
@@ -132,8 +141,8 @@ backend-gosu/gosu-sounds.o: backend-gosu/gosu-sounds.cpp \
 backend-gosu/gosu-window.o: backend-gosu/gosu-window.cpp \
  backend-gosu/gosu-window.h backend-gosu/../window.h \
  backend-gosu/../bitrecord.h backend-gosu/../client-conf.h \
- backend-gosu/../log.h backend-gosu/../vec.h backend-gosu/../reader.h \
- backend-gosu/../world.h backend-gosu/../window.h
+ backend-gosu/../log.h backend-gosu/../vec.h backend-gosu/../world.h \
+ backend-gosu/../window.h
 data/data-area.o: data/data-area.cpp data/../algorithm.h data/../random.h \
  data/../sounds.h data/data-area.h data/inprogress.h
 data/data-world.o: data/data-world.cpp data/data-world.h \
@@ -141,3 +150,8 @@ data/data-world.o: data/data-world.cpp data/data-world.h \
 data/inprogress.o: data/inprogress.cpp data/../log.h data/inprogress.h \
  data/../sounds.h
 nbcl/nbcl.o: nbcl/nbcl.cpp nbcl/nbcl.h
+resources/resources-physfs.o: resources/resources-physfs.cpp \
+ resources/../formatter.h resources/../log.h resources/../data/data-world.h \
+ resources/../data/../client-conf.h resources/../data/../log.h \
+ resources/../data/../vec.h resources/resources-physfs.h \
+ resources/../resources.h

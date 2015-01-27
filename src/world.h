@@ -133,6 +133,10 @@ public:
 
 	void runAreaLoadScript(Area* area);
 
+	//! Expunge old resources cached in memory. Decisions on which are
+	//! removed and which are kept are based on the global Conf struct.
+	void garbageCollect();
+
 	// ScriptRef keydownScript, keyupScript;
 
 protected:

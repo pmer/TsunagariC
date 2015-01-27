@@ -31,7 +31,6 @@
 #include "gosu-window.h"
 
 #include "../client-conf.h"
-#include "../reader.h"
 #include "../world.h"
 
 #define ASSERT(x)  if (!(x)) { return false; }
@@ -171,7 +170,7 @@ void GosuGameWindow::update()
 
 	if (now > lastGCtime + GC_CALL_PERIOD) {
 		lastGCtime = now;
-		Reader::garbageCollect();
+		World::instance().garbageCollect();
 	}
 }
 

@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** reader.h                           **
+** gosu-cbuffer.h                     **
 ** Copyright 2011-2015 PariahSoft LLC **
 ***************************************/
 
@@ -24,44 +24,34 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef READER_H
-#define READER_H
+#ifndef GOSU_CBUFFER_H
+#define GOSU_CBUFFER_H
 
-#include <memory>
-#include <string>
-
-namespace Gosu {
-	class Buffer;
-}
+#include <Gosu/IO.hpp>
 
 /**
- * FIXME
- * Provides data and resource extraction for a World.
- * Each World comes bundled with associated data in the form of a Zip file.
- * A Reader object knows how to navigate the data, extract individual
- * requested files, and process the files into data structures. The final data
- * structures are kept in memory for future requests.
+ * Similar to Gosu::Buffer, but can be constructed around pre-existing C void*.
+ * The memory is not copied. Also, this is a read-only implementation. If you
+ * attempt to create a Gosu::Writer around this, it will fail.
+ *
+ * See Gosu/IO.hpp and GosuImpl/IO.cpp from Gosu
+ * See http://www.libgosu.org/cpp/class_gosu_1_1_buffer.html
+ * See http://www.libgosu.org/cpp/class_gosu_1_1_resource.html
  */
-class Reader
+class GosuCBuffer : public Gosu::Resource
 {
 public:
-	static bool init();
+	GosuCBuffer(const void* data, size_t size);
+	~GosuCBuffer() = default;
 
-	//! Returns true if the World contains a resource by that name.
-	static bool resourceExists(const std::string& name);
-	static bool directoryExists(const std::string& name);
-	static bool fileExists(const std::string& name);
+	size_t size() const;
+	void resize(size_t); // NOOP
+	void read(size_t offset, size_t length, void* destBuffer) const;
+	void write(size_t, size_t, const void*); // NOOP
 
-	static Gosu::Buffer* readBuffer(const std::string& name);
-	static std::string readString(const std::string& name);
-
-	//! Request a text file from the World.
-	static std::string getText(const std::string& name);
-
-	//! Expunge old resources cached in memory. Decisions on which are
-	//! removed and which are kept are based on the global Conf struct.
-	static void garbageCollect();
+private:
+	const void* _data;
+	size_t _size;
 };
 
 #endif
-

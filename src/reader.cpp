@@ -120,19 +120,13 @@ static bool readFromDisk(const std::string& name, T& buf)
 
 bool Reader::init()
 {
-	ASSERT(prependPath(DataWorld::instance().datafile));
-	return true;
-}
-
-bool Reader::prependPath(const std::string& path)
-{
+	const std::string& path = DataWorld::instance().datafile;
 	int err = PHYSFS_mount(path.c_str(), NULL, 0);
 	if (err == 0) {
 		Log::fatal("Reader", Formatter("%: could not open archive: %")
 				% path % PHYSFS_getLastError());
 		return false;
 	}
-
 	return true;
 }
 

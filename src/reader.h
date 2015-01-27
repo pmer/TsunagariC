@@ -47,8 +47,6 @@ class Reader
 public:
 	static bool init();
 
-	static bool prependPath(const std::string& path);
-
 	//! Returns true if the World contains a resource by that name.
 	static bool resourceExists(const std::string& name);
 	static bool directoryExists(const std::string& name);

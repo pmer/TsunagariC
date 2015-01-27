@@ -11,7 +11,7 @@ OBJECTS = \
 	animation.o area.o area-tmx.o bitrecord.o character.o client-conf.o \
 	cooldown.o dtds.o entity.o formatter.o images.o log.o main.o music.o \
 	npc.o os-windows.o overlay.o player.o random.o resources.o sounds.o \
-	string.o tile.o timer.o \
+	string.o tile.o \
 	viewport.o window.o world.o xmls.o \
 	backend-gosu/gosu-cbuffer.o \
 	backend-gosu/gosu-images.o \

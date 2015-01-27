@@ -16,8 +16,6 @@ backend-gosu/gosu-sounds.o backend-gosu/gosu-window.o \
 data/data-area.o data/data-world.o data/inprogress.o \
 nbcl/nbcl.o
 
-BASEDATA = ../data/base.zip
-
 ifeq ($(shell uname -s),Darwin)
 	OBJECTS := $(OBJECTS) os-mac.o
 	LDFLAGS := $(LDFLAGS) -framework Foundation -framework AppKit
@@ -26,7 +24,7 @@ endif
 
 ### --- RULES --- ###
 
-all: tsunagari $(BASEDATA)
+all: tsunagari
 
 depend:
 	sed "/^### --- DO NOT DELETE THIS LINE --- ###/,$$$$d" Makefile > Mf
@@ -38,15 +36,8 @@ depend:
 tsunagari: $(OBJECTS) $(WORLDOBJECTS)
 	$(CXX) -o tsunagari $(OBJECTS) $(WORLDOBJECTS) $(LDFLAGS)
 
-data:
-	$(RM) $(BASEDATA)
-	$(MAKE) $(BASEDATA)
-
-%.zip:
-	cd $(basename $@) && zip --symlinks -r -0 ../$@ *
-
 clean:
-	$(RM) tsunagari *.o */*.o $(BASEDATA)
+	$(RM) tsunagari *.o */*.o
 
 .PHONY: data
 

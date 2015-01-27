@@ -55,8 +55,6 @@ static void defaultsQuery()
 {
 	std::cerr << "CLIENT_CONF_PATH:                    "
 		<< CLIENT_CONF_PATH << std::endl;
-	std::cerr << "BASE_ZIP_PATH:                       "
-		<< BASE_ZIP_PATH << std::endl;
 	std::cerr << "DEF_ENGINE_VERBOSITY:                "
 		<< DEF_ENGINE_VERBOSITY << std::endl;
 	std::cerr << "DEF_ENGINE_HALTING:                  "

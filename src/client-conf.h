@@ -37,9 +37,6 @@
 // === Required Data Paths ===
 	/* Tsunagari config file. */
 	#define CLIENT_CONF_PATH "./client.ini"
-
-	/* Base data file. */
-	#define BASE_ZIP_PATH "./base.zip"
 // ===
 
 // === Client.ini Default Values ===

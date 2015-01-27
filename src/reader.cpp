@@ -120,7 +120,6 @@ static bool readFromDisk(const std::string& name, T& buf)
 
 bool Reader::init()
 {
-	ASSERT(prependPath(BASE_ZIP_PATH));
 	ASSERT(prependPath(DataWorld::instance().datafile));
 	return true;
 }

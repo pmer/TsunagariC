@@ -4,7 +4,7 @@
 #   by Paul Merrill <pdm@pdm.me>
 #
 # Read a list of GNU make dependencies from stdin.
-# 1) Remove dependencies not matching a WHITELIST pattern.
+# 1) Remove dependencies that use absolute paths. (System-specific deps.)
 # 2) Replace basename'd targets with full paths.
 # Print to stdout.
 #

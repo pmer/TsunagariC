@@ -24,7 +24,12 @@ OBJECTS = \
 
 ifeq ($(shell uname -s),Darwin)
 	OBJECTS := $(OBJECTS) os-mac.o
-	LDFLAGS := $(LDFLAGS) -framework Foundation -framework AppKit
+	CXXFLAGS := $(CXXFLAGS) -I$(HOME)/Library/Homebrew/include
+	LDFLAGS := $(LDFLAGS) -framework Foundation \
+		   -framework AppKit \
+		   -framework OpenAL \
+		   -framework AudioToolbox \
+		   -framework OpenGL
 endif
 
 

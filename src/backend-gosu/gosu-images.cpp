@@ -99,7 +99,6 @@ Images& Images::instance()
 
 static std::shared_ptr<Image> genImage(const std::string& path)
 {
-	static Gosu::Graphics& g = graphics();
 	std::unique_ptr<Resource> r = Resources::instance().load(path);
 	if (!r) {
 		// Error logged.
@@ -108,7 +107,7 @@ static std::shared_ptr<Image> genImage(const std::string& path)
 	GosuCBuffer buffer(r->data(), r->size());
 	Gosu::Bitmap bitmap;
 	Gosu::loadImageFile(bitmap, buffer.frontReader());
-	return std::make_shared<GosuImage>(std::move(Gosu::Image(g, bitmap, false)));
+	return std::make_shared<GosuImage>(std::move(Gosu::Image(bitmap, Gosu::ifTileable)));
 }
 
 static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
@@ -127,7 +126,7 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
 		for (unsigned x = 0; x < bitmap.width(); x += tileW) {
 			images.emplace_back(std::make_shared<GosuImage>(
 				std::move(Gosu::Image(
-					graphics(), bitmap, x, y, tileW, tileH, false
+					bitmap, x, y, tileW, tileH, Gosu::ifTileable
 				))
 			));
 		}

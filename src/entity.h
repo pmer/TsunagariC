@@ -79,6 +79,10 @@ public:
 	virtual void tick(time_t dt);
 	virtual void turn();
 
+	//! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
+	//! to 'facing'.
+	ivec2 setFacing(ivec2 facing);
+
 	const std::string getFacing() const;
 
 	//! Change the graphic. Returns true if it was changed to something
@@ -139,10 +143,6 @@ public:
 protected:
 	//! Precalculate various drawing measurements.
 	void calcDraw();
-
-	//! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
-	//! to 'facing'.
-	ivec2 setFacing(ivec2 facing);
 
 	//! Gets a string describing a direction.
 	const std::string& directionStr(ivec2 facing) const;

@@ -351,9 +351,21 @@ bool operator==(const vec2<T>& a, const vec2<T>& b)
 }
 
 template<class T>
+bool operator!=(const vec2<T>& a, const vec2<T>& b)
+{
+	return a.x != b.x || a.y != b.y;
+}
+
+template<class T>
 bool operator==(const vec3<T>& a, const vec3<T>& b)
 {
 	return a.x == b.x && a.y == b.y && a.z == b.z;
+}
+
+template<class T>
+bool operator!=(const vec3<T>& a, const vec3<T>& b)
+{
+	return a.x != b.x || a.y != b.y || a.z != b.z;
 }
 
 //! Integer vector.

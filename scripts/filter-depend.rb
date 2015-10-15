@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
 #
-# filter-depend.pl
+# filter-depend.rb
 #   by Paul Merrill <pdm@pdm.me>
 #
 # Read a list of GNU make dependencies from stdin.
 # 1) Remove dependencies that use absolute paths. (System-specific deps.)
-# 2) Replace basename'd targets with full paths.
+# 2) Remove ugly "dir/../" in paths.
+# 3) Replace basename'd targets with full relative paths.
 # Print to stdout.
 #
 
@@ -29,22 +30,31 @@ def wrap space, token, rest
 end
 
 
+# Fixed point combinator.
+def ycombinator x, &f
+	y = f.call x
+	x == y ? x : ycombinator(y, &f)
+end
+
+
 def main
-	# Same files as listed in 'make depend'
-	targets = `echo *.cpp */*.cpp`.split.map { |file|
-		file.sub /\.cpp$/, '.o'
+	# Grab all files in the current directory. We will only use those files
+	# listed by 'make depends' so we are capturing extra files.
+	targets = `find * -type f`.split.map { |file|
+		file.sub /\.\w+$/, '.o'
 	}.to_enum
 
 	# The compiler performs a `dirname` on any target it processes. We want the
 	# original file paths, though.
 	target_filename_remaps = Hash[targets.map { |file|
-		[`basename #{file}`.chomp, file]
+		basename = file.sub /^.*\//, ''
+		[basename, file]
 	}]
 
-	# Get dependencies input from compiler
+	# Get dependencies input from compiler>
 	raw_lines = $stdin.readlines.map { |line| line.chomp }
 
-	# Join lines that the compiler has wrapped with "\" at end
+	# Join lines that the compiler has wrapped with "\" at end.
 	lines = []
 	while raw_lines.empty? == false
 		# Take all lines in a row ending with '\'
@@ -69,15 +79,19 @@ def main
 		target, deps = words.shift, words
 
 		# Restore the path of the target (because it has been stripped to just a
-		# basename by the compiler)
+		# basename by the compiler).
 		target = target_filename_remaps[target.sub(/:$/, '')] + ':'
 
 		# Clean up dependencies to not include system files.
 		deps = deps.find_all { |dep| dep.start_with?('/') == false }
 
-		# Re-wrap to fixed width with "\" at line end as necessary
+		# Remove ugly "dir/../" in paths.
+		deps = deps.map { |dep| ycombinator(dep) { |dep| dep.sub /[a-zA-Z0-9\-_.]+\/\.\.\//, '' } }
+
+		# Re-wrap to fixed width with "\" at line end as necessary.
 		puts wrap(WIDTH, target, deps)
 	end
 end
+
 
 main

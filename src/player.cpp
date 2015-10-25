@@ -103,15 +103,9 @@ void Player::moveByTile(ivec2 delta)
 
 	setFacing(delta);
 
-	// Left CTRL allows changing facing, but disallows movement.
-	//
-	// FIXME: This may not be the best keybinding because on Mac >= 10.7,
-	// Ctrl-Left and Ctrl-Right are bound by default to switch desktop
-	// space and do not reach Tsunagari's window.  This leaves the hero in
-	// an awkward position of being able to switch directions to up or
-	// down but not to left or right.
-	// --pdm Dec 6, 2014
-	if (GameWindow::instance().isKeyDown(KBLeftControl)) {
+	// Left SHIFT allows changing facing, but disallows movement.
+	if (GameWindow::instance().isKeyDown(KBLeftShift) ||
+	    GameWindow::instance().isKeyDown(KBRightShift)) {
 		setAnimationStanding();
 		redraw = true;
 		return;

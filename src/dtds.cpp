@@ -335,20 +335,23 @@ R"(<?xml version="1.0" encoding="utf-8"?>
   Modified by Paul Merrill on August 18th, 2012 for TSX format.
   Modified by Paul Merrill on August 18th, 2012. Removed <image> subelement of
     <tile>. Removed <data> subelement of <image>.
+  Modified by Paul Merrill on October 25th, 2015. Added nextobjectid to <map>.
+    Added id to <object>.
 -->
 
 <!ELEMENT map (properties?, tileset*, (layer | objectgroup)*)>
 <!ATTLIST map
-  xmlns       CDATA   #IMPLIED
-  xmlns:xsi   CDATA   #IMPLIED
+  xmlns         CDATA   #IMPLIED
+  xmlns:xsi     CDATA   #IMPLIED
   xsi:schemaLocation  CDATA #IMPLIED
-  version     CDATA   #REQUIRED
-  orientation (orthogonal | isometric | hexagonal | shifted)  #REQUIRED
-  renderorder CDATA   #IMPLIED
-  width       CDATA   #REQUIRED
-  height      CDATA   #REQUIRED
-  tilewidth   CDATA   #REQUIRED
-  tileheight  CDATA   #REQUIRED
+  version       CDATA   #REQUIRED
+  orientation   (orthogonal | isometric | hexagonal | shifted)  #REQUIRED
+  renderorder   CDATA   #IMPLIED
+  width         CDATA   #REQUIRED
+  height        CDATA   #REQUIRED
+  tilewidth     CDATA   #REQUIRED
+  tileheight    CDATA   #REQUIRED
+  nextobjectid  CDATA   #IMPLIED
 >
 
 <!ELEMENT properties (property*)>
@@ -427,6 +430,7 @@ R"(<?xml version="1.0" encoding="utf-8"?>
 
 <!ELEMENT object (properties?)>
 <!ATTLIST object
+  id          CDATA   #IMPLIED
   name        CDATA   #IMPLIED
   type        CDATA   #IMPLIED
   x           CDATA   #REQUIRED

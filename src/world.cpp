@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** world.cpp                          **
-** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2011-2015 Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
 ***************************************/
 
 // **********
@@ -141,6 +142,13 @@ void World::draw()
 			double top = std::numeric_limits<double>::max();
 			pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
 		}
+	}
+
+	uint32_t colorOverlayARGB = area->getColorOverlay();
+	if ((colorOverlayARGB & 0xFF000000) != 0) {
+		unsigned ww = window.width();
+		unsigned wh = window.height();
+		window.drawRect(0, ww, 0, wh, colorOverlayARGB);
 	}
 
 	pushLetterbox();

@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** window.h                           **
-** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2011-2015 Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
 ***************************************/
 
 // **********
@@ -79,7 +80,7 @@ public:
 
 	/**
 	 * Draws a rectangle on the screen of the specified color. Coordinates
-	 * are in pixels.
+	 * are in virtual pixels.
 	 */
 	virtual void drawRect(double x1, double x2, double y1, double y2,
 		uint32_t argb) = 0;

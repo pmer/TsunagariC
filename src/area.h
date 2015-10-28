@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** area.h                             **
-** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2011-2015 Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
 ***************************************/
 
 // **********
@@ -97,6 +98,7 @@ public:
 	 */
 	void turn();
 
+	uint32_t getColorOverlay();
 	void setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 
 	const Tile* getTile(int x, int y, int z) const; /* phys */
@@ -174,7 +176,6 @@ protected:
 	void drawTiles();
 	void drawTile(Tile& tile, int x, int y, double depth);
 	void drawEntities();
-	void drawColorOverlay();
 
 protected:
 	DataArea* dataArea;

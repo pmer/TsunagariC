@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** area.cpp                           **
-** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2011-2015 Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
 ***************************************/
 
 // **********
@@ -142,7 +143,6 @@ void Area::draw()
 {
 	drawTiles();
 	drawEntities();
-	drawColorOverlay();
 	redraw = false;
 }
 
@@ -239,13 +239,18 @@ void Area::turn()
 	Viewport::instance().turn();
 }
 
+
+uint32_t Area::getColorOverlay()
+{
+	return colorOverlayARGB;
+}
+
 void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
 {
 	colorOverlayARGB = (uint32_t)(a << 24) + (uint32_t)(r << 16) +
 		(uint32_t)(g << 8) + (uint32_t)b;
 	redraw = true;
 }
-
 
 
 const Tile* Area::getTile(int x, int y, int z) const
@@ -565,14 +570,3 @@ void Area::drawEntities()
 		overlay->draw();
 	player->draw();
 }
-
-void Area::drawColorOverlay()
-{
-	if ((colorOverlayARGB & 0xFF000000) != 0) {
-		GameWindow& window = GameWindow::instance();
-		unsigned x = window.width();
-		unsigned y = window.height();
-		GameWindow::instance().drawRect(0, x, 0, y, colorOverlayARGB);
-	}
-}
-

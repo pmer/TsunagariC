@@ -29,7 +29,7 @@
 #include "inprogress.h"
 
 InProgress::InProgress()
-	: over(false)
+    : over(false)
 {
 }
 
@@ -38,67 +38,67 @@ void InProgress::tick(time_t) {}
 
 bool InProgress::isOver()
 {
-	return over;
+    return over;
 }
 
 
 InProgressSound::InProgressSound(const std::string& sound, ThenFn then)
-	: sound(Sounds::instance().play(sound)), then(then)
+    : sound(Sounds::instance().play(sound)), then(then)
 {
-	if (!then)
-		Log::err("InProgressSound", "invalid 'then'");
+    if (!then)
+        Log::err("InProgressSound", "invalid 'then'");
 }
 
 void InProgressSound::tick(time_t)
 {
-	if (over)
-		return;
+    if (over)
+        return;
 
-	if (!sound->playing()) {
-		over = true;
-		then();
-	}
+    if (!sound->playing()) {
+        over = true;
+        then();
+    }
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress)
-	: duration(duration), passed(0), progress(progress)
+    : duration(duration), passed(0), progress(progress)
 {
-	if (!progress)
-		Log::err("InProgressTimer", "invalid 'progress'");
+    if (!progress)
+        Log::err("InProgressTimer", "invalid 'progress'");
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ThenFn then)
-	: duration(duration), passed(0), then(then)
+    : duration(duration), passed(0), then(then)
 {
-	if (!then)
-		Log::err("InProgressTimer", "invalid 'then'");
+    if (!then)
+        Log::err("InProgressTimer", "invalid 'then'");
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress,
-		ThenFn then)
-	: duration(duration), passed(0), progress(progress), then(then)
+        ThenFn then)
+    : duration(duration), passed(0), progress(progress), then(then)
 {
-	if (!progress)
-		Log::err("InProgressTimer", "invalid 'progress'");
-	if (!then)
-		Log::err("InProgressTimer", "invalid 'then'");
+    if (!progress)
+        Log::err("InProgressTimer", "invalid 'progress'");
+    if (!then)
+        Log::err("InProgressTimer", "invalid 'then'");
 }
 
 void InProgressTimer::tick(time_t dt)
 {
-	if (over)
-		return;
+    if (over)
+        return;
 
-	passed += dt;
+    passed += dt;
 
-	if (passed < duration) {
-		if (progress)
-			// Range is [0.0, 1.0)
-			progress((double)passed / (double)duration);
-	}
-	else {
-		over = true;
-		if (then)
-			then();
-	}
+    if (passed < duration) {
+        if (progress)
+            // Range is [0.0, 1.0)
+            progress((double)passed / (double)duration);
+    }
+    else {
+        over = true;
+        if (then)
+            then();
+    }
 }

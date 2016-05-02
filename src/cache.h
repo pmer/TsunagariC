@@ -34,27 +34,27 @@ template<class T>
 class Cache
 {
 public:
-	T momentaryRequest(const std::string& name);
+    T momentaryRequest(const std::string& name);
 
-	T lifetimeRequest(const std::string& name);
+    T lifetimeRequest(const std::string& name);
 
-	void momentaryPut(const std::string& name, T data);
+    void momentaryPut(const std::string& name, T data);
 
-	void lifetimePut(const std::string& name, T data);
+    void lifetimePut(const std::string& name, T data);
 
-	void garbageCollect();
+    void garbageCollect();
 
 private:
-	struct CacheEntry
-	{
-		T resource;
-		time_t lastUsed; // time in milliseconds
-		size_t memoryUsed;
-	};
+    struct CacheEntry
+    {
+        T resource;
+        time_t lastUsed; // time in milliseconds
+        size_t memoryUsed;
+    };
 
-	typedef std::map<const std::string, CacheEntry> CacheMap;
-	typedef typename CacheMap::iterator CacheMapIter;
-	CacheMap map;
+    typedef std::map<const std::string, CacheEntry> CacheMap;
+    typedef typename CacheMap::iterator CacheMapIter;
+    CacheMap map;
 };
 
 #endif

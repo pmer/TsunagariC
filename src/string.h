@@ -51,7 +51,7 @@ int parseInt100(const std::string& s);
 
 //! Split a string by a delimiter.
 std::vector<std::string> splitStr(const std::string& str,
-	const std::string& delimiter);
+    const std::string& delimiter);
 
 /**
  * Parse ranges of integers separated by commas.

@@ -29,26 +29,26 @@
 #include "gosu-cbuffer.h"
 
 GosuCBuffer::GosuCBuffer(const void* data, size_t size)
-	: _data(data), _size(size)
+    : _data(data), _size(size)
 {
 }
 
 size_t GosuCBuffer::size() const
 {
-	return _size;
+    return _size;
 }
 
 void GosuCBuffer::resize(size_t)
 {
-	// NOOP
+    // NOOP
 }
 
 void GosuCBuffer::read(size_t offset, size_t length, void* destBuffer) const
 {
-	memcpy(destBuffer, (const char*)_data + offset, length);
+    memcpy(destBuffer, (const char*)_data + offset, length);
 }
 
 void GosuCBuffer::write(size_t, size_t, const void*)
 {
-	// NOOP
+    // NOOP
 }

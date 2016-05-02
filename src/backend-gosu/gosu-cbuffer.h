@@ -41,17 +41,17 @@
 class GosuCBuffer : public Gosu::Resource
 {
 public:
-	GosuCBuffer(const void* data, size_t size);
-	~GosuCBuffer() = default;
+    GosuCBuffer(const void* data, size_t size);
+    ~GosuCBuffer() = default;
 
-	size_t size() const;
-	void resize(size_t); // NOOP
-	void read(size_t offset, size_t length, void* destBuffer) const;
-	void write(size_t, size_t, const void*); // NOOP
+    size_t size() const;
+    void resize(size_t); // NOOP
+    void read(size_t offset, size_t length, void* destBuffer) const;
+    void write(size_t, size_t, const void*); // NOOP
 
 private:
-	const void* _data;
-	size_t _size;
+    const void* _data;
+    size_t _size;
 };
 
 #endif

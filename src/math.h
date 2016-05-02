@@ -30,19 +30,19 @@
 template<class T>
 static T bound(T value, T min, T max)
 {
-	if (value < min)
-		return min;
-	if (value > max)
-		return max;
-	return value;
+    if (value < min)
+        return min;
+    if (value > max)
+        return max;
+    return value;
 }
 
 template<class T>
 static T wrap(T min, T value, T max)
 {
-	while (value < min)
-		value += max;
-	return value % max;
+    while (value < min)
+        value += max;
+    return value % max;
 }
 
 #endif

@@ -36,46 +36,46 @@
 class GosuSoundInstance : public SoundInstance
 {
 public:
-	GosuSoundInstance(Gosu::SampleInstance instance);
+    GosuSoundInstance(Gosu::SampleInstance instance);
 
-	~GosuSoundInstance() = default;
+    ~GosuSoundInstance() = default;
 
-	bool playing();
-	void stop();
+    bool playing();
+    void stop();
 
-	bool paused();
-	void pause();
-	void resume();
+    bool paused();
+    void pause();
+    void resume();
 
-	void volume(double volume);
-	void pan(double pan);
-	void speed(double speed);
+    void volume(double volume);
+    void pan(double pan);
+    void speed(double speed);
 
 private:
-	GosuSoundInstance() = delete;
-	GosuSoundInstance(const GosuSoundInstance&) = delete;
-	GosuSoundInstance& operator=(const GosuSoundInstance&) = delete;
+    GosuSoundInstance() = delete;
+    GosuSoundInstance(const GosuSoundInstance&) = delete;
+    GosuSoundInstance& operator=(const GosuSoundInstance&) = delete;
 
-	Gosu::SampleInstance instance;
+    Gosu::SampleInstance instance;
 };
 
 
 class GosuSounds : public Sounds
 {
 public:
-	GosuSounds();
+    GosuSounds();
 
-	~GosuSounds() = default;
+    ~GosuSounds() = default;
 
-	std::shared_ptr<SoundInstance> play(const std::string& path);
+    std::shared_ptr<SoundInstance> play(const std::string& path);
 
-	void garbageCollect();
+    void garbageCollect();
 
 private:
-	GosuSounds(const GosuSounds&) = delete;
-	GosuSounds& operator=(const GosuSounds&) = delete;
+    GosuSounds(const GosuSounds&) = delete;
+    GosuSounds& operator=(const GosuSounds&) = delete;
 
-	ReaderCache<std::shared_ptr<Gosu::Sample>> samples;
+    ReaderCache<std::shared_ptr<Gosu::Sample>> samples;
 };
 
 #endif

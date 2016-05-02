@@ -56,19 +56,19 @@
 class InProgress
 {
 public:
-	virtual ~InProgress();
+    virtual ~InProgress();
 
-	virtual void tick(time_t dt);
-	bool isOver();
+    virtual void tick(time_t dt);
+    bool isOver();
 
 protected:
-	InProgress();
+    InProgress();
 
-	bool over;
+    bool over;
 
 private:
-	InProgress(const InProgress&);
-	InProgress& operator=(const InProgress&);
+    InProgress(const InProgress&);
+    InProgress& operator=(const InProgress&);
 };
 
 /**
@@ -80,15 +80,15 @@ private:
 class InProgressSound : public InProgress
 {
 public:
-	typedef std::function<void ()> ThenFn;
+    typedef std::function<void ()> ThenFn;
 
-	InProgressSound(const std::string& sound, ThenFn then);
+    InProgressSound(const std::string& sound, ThenFn then);
 
-	void tick(time_t dt);
+    void tick(time_t dt);
 
 private:
-	std::shared_ptr<SoundInstance> sound;
-	ThenFn then;
+    std::shared_ptr<SoundInstance> sound;
+    ThenFn then;
 };
 
 /**
@@ -104,20 +104,20 @@ private:
 class InProgressTimer : public InProgress
 {
 public:
-	typedef std::function<void (double)> ProgressFn;
-	typedef std::function<void ()> ThenFn;
+    typedef std::function<void (double)> ProgressFn;
+    typedef std::function<void ()> ThenFn;
 
-	InProgressTimer(time_t duration, ProgressFn progress);
-	InProgressTimer(time_t duration, ThenFn then);
-	InProgressTimer(time_t duration, ProgressFn progress,
-		ThenFn then);
+    InProgressTimer(time_t duration, ProgressFn progress);
+    InProgressTimer(time_t duration, ThenFn then);
+    InProgressTimer(time_t duration, ProgressFn progress,
+        ThenFn then);
 
-	void tick(time_t dt);
+    void tick(time_t dt);
 
 private:
-	time_t duration, passed;
-	ProgressFn progress;
-	ThenFn then;
+    time_t duration, passed;
+    ProgressFn progress;
+    ThenFn then;
 };
 
 #endif

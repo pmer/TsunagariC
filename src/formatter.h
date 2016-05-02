@@ -38,30 +38,30 @@
  */
 class Formatter {
 public:
-	Formatter(std::string format);
-	~Formatter();
+    Formatter(std::string format);
+    ~Formatter();
 
-	template<class T>
-	Formatter& operator %(T data)
-	{
-		assert(pos < result.size());
-		
-		size_t markerSize = 1;
-		result.replace(pos, markerSize, format(data));
-		findNextPlaceholder();
-		return *this;
-	}
+    template<class T>
+    Formatter& operator %(T data)
+    {
+        assert(pos < result.size());
+        
+        size_t markerSize = 1;
+        result.replace(pos, markerSize, format(data));
+        findNextPlaceholder();
+        return *this;
+    }
 
-	operator const std::string&();
-	
+    operator const std::string&();
+    
 private:
-	template<class T>
-	std::string format(const T data);
+    template<class T>
+    std::string format(const T data);
 
-	void findNextPlaceholder();
-	
-	std::string result;
-	size_t pos;
+    void findNextPlaceholder();
+    
+    std::string result;
+    size_t pos;
 };
 
 #endif

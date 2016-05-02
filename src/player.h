@@ -37,36 +37,36 @@ class Exit;
 class Player : public Character
 {
 public:
-	static Player& instance();
+    static Player& instance();
 
-	Player();
-	void destroy();
+    Player();
+    void destroy();
 
-	//! Smooth continuous movement.
-	void startMovement(ivec2 delta);
-	void stopMovement(ivec2 delta);
+    //! Smooth continuous movement.
+    void startMovement(ivec2 delta);
+    void stopMovement(ivec2 delta);
 
-	//! Move the player by dx, dy. Not guaranteed to be smooth if called
-	//! on each update().
-	void moveByTile(ivec2 delta);
+    //! Move the player by dx, dy. Not guaranteed to be smooth if called
+    //! on each update().
+    void moveByTile(ivec2 delta);
 
-	//! Try to use an object in front of the player.
-	void useTile();
+    //! Try to use an object in front of the player.
+    void useTile();
 
-	void setFrozen(bool b);
+    void setFrozen(bool b);
 
 protected:
-	void arrived();
+    void arrived();
 
-	void takeExit(Exit* exit);
+    void takeExit(Exit* exit);
 
 private:
-	//! Stores intent to move continuously in some direction.
-	ivec2 velocity;
+    //! Stores intent to move continuously in some direction.
+    ivec2 velocity;
 
-	//! Stack storing depressed keyboard keys in the form of movement
-	//! vectors.
-	std::vector<ivec2> movements;
+    //! Stack storing depressed keyboard keys in the form of movement
+    //! vectors.
+    std::vector<ivec2> movements;
 };
 
 #endif

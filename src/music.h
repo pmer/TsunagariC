@@ -49,60 +49,60 @@
 class Music
 {
 public:
-	//! Acquire the global Music object.
-	static Music& instance();
+    //! Acquire the global Music object.
+    static Music& instance();
 
-	virtual ~Music();
+    virtual ~Music();
 
-	//! If the intro filepath has changed, start playing it.
-	virtual bool setIntro(const std::string& filepath);
-	//! If the loop filepath has changed, then play the loop either now,
-	//! or after an also-new intro music has played.
-	virtual bool setLoop(const std::string& filepath);
+    //! If the intro filepath has changed, start playing it.
+    virtual bool setIntro(const std::string& filepath);
+    //! If the loop filepath has changed, then play the loop either now,
+    //! or after an also-new intro music has played.
+    virtual bool setLoop(const std::string& filepath);
 
-	//! Whether music is currently playing.
-	virtual bool playing() = 0;
-	//! Stop playing music.  To begin again, set a new intro or loop.
-	virtual void stop();
+    //! Whether music is currently playing.
+    virtual bool playing() = 0;
+    //! Stop playing music.  To begin again, set a new intro or loop.
+    virtual void stop();
 
-	//! Whether music is paused.
-	virtual bool paused();
-	//! Pause playback of music.
-	virtual void pause();
-	//! Resume playback of music.
-	virtual void resume();
+    //! Whether music is paused.
+    virtual bool paused();
+    //! Pause playback of music.
+    virtual void pause();
+    //! Resume playback of music.
+    virtual void resume();
 
-	//! Between 0.0 (silence) and 1.0 (full).
-	double getVolume();
-	//! Between 0.0 (silence) and 1.0 (full).
-	virtual void setVolume(double volume);
+    //! Between 0.0 (silence) and 1.0 (full).
+    double getVolume();
+    //! Between 0.0 (silence) and 1.0 (full).
+    virtual void setVolume(double volume);
 
-	//! Perform per-tick maintenance of the music subsystem.
-	virtual void tick() = 0;
+    //! Perform per-tick maintenance of the music subsystem.
+    virtual void tick() = 0;
 
-	//! Free music not recently played.
-	virtual void garbageCollect() = 0;
+    //! Free music not recently played.
+    virtual void garbageCollect() = 0;
 
 protected:
-	Music();
+    Music();
 
-	void playIntro();
-	void playLoop();
+    void playIntro();
+    void playLoop();
 
-	enum MUSIC_STATE
-	{
-		NOT_PLAYING,
-		PLAYING_INTRO,
-		PLAYING_LOOP,
-		CHANGED_INTRO,
-		CHANGED_LOOP
-	} state;
+    enum MUSIC_STATE
+    {
+        NOT_PLAYING,
+        PLAYING_INTRO,
+        PLAYING_LOOP,
+        CHANGED_INTRO,
+        CHANGED_LOOP
+    } state;
 
-	double volume;
-	int pausedCount;
+    double volume;
+    int pausedCount;
 
-	std::string curIntro, newIntro;
-	std::string curLoop, newLoop;
+    std::string curIntro, newIntro;
+    std::string curLoop, newLoop;
 };
 
 #endif

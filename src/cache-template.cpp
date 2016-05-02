@@ -39,85 +39,85 @@
 template<class T>
 T Cache<T>::momentaryRequest(const std::string& name)
 {
-	if (conf.cacheEnabled) {
-		CacheMapIter it = map.find(name);
-		if (it != map.end()) {
-//			Log::info("Cache", name + ": requested (cached)");
-			CacheEntry& entry = it->second;
-			// Set lastUsed to now because it won't be used
-			// by the time garbageCollect() gets to it.
-			entry.lastUsed = World::instance().time();
-			return entry.resource;
-		}
-	}
-	Log::info("Cache", name + ": requested");
-	return T();
+    if (conf.cacheEnabled) {
+        CacheMapIter it = map.find(name);
+        if (it != map.end()) {
+//            Log::info("Cache", name + ": requested (cached)");
+            CacheEntry& entry = it->second;
+            // Set lastUsed to now because it won't be used
+            // by the time garbageCollect() gets to it.
+            entry.lastUsed = World::instance().time();
+            return entry.resource;
+        }
+    }
+    Log::info("Cache", name + ": requested");
+    return T();
 }
 
 template<class T>
 T Cache<T>::lifetimeRequest(const std::string& name)
 {
-	if (conf.cacheEnabled) {
-		typename CacheMap::iterator it = map.find(name);
-		if (it != map.end()) {
-//			Log::info("Cache", name + ": requested (cached)");
-			CacheEntry& entry = it->second;
-			entry.lastUsed = IN_USE_NOW;
-			return entry.resource;
-		}
-	}
-	Log::info("Cache", name + ": requested");
-	return T();
+    if (conf.cacheEnabled) {
+        typename CacheMap::iterator it = map.find(name);
+        if (it != map.end()) {
+//            Log::info("Cache", name + ": requested (cached)");
+            CacheEntry& entry = it->second;
+            entry.lastUsed = IN_USE_NOW;
+            return entry.resource;
+        }
+    }
+    Log::info("Cache", name + ": requested");
+    return T();
 }
 
 template<class T>
 void Cache<T>::momentaryPut(const std::string& name, T data)
 {
-	if (!conf.cacheEnabled)
-		return;
-	CacheEntry entry;
-	entry.resource = data;
-	time_t now = World::instance().time();
-	entry.lastUsed = now;
-	map[name] = entry;
+    if (!conf.cacheEnabled)
+        return;
+    CacheEntry entry;
+    entry.resource = data;
+    time_t now = World::instance().time();
+    entry.lastUsed = now;
+    map[name] = entry;
 }
 
 template<class T>
 void Cache<T>::lifetimePut(const std::string& name, T data)
 {
-	if (!conf.cacheEnabled)
-		return;
-	CacheEntry entry;
-	entry.resource = data;
-	entry.lastUsed = IN_USE_NOW;
-	map[name] = entry;
+    if (!conf.cacheEnabled)
+        return;
+    CacheEntry entry;
+    entry.resource = data;
+    entry.lastUsed = IN_USE_NOW;
+    map[name] = entry;
 }
 
 template<class T>
 void Cache<T>::garbageCollect()
 {
-	if (!conf.cacheEnabled)
-		return;
-	time_t now = World::instance().time();
-	typedef std::vector<std::string> StringVector;
-	StringVector dead;
-	for (CacheMapIter it = map.begin(); it != map.end(); it++) {
-		const std::string& name = it->first;
-		CacheEntry& cache = it->second;
-		bool unused = !cache.resource || cache.resource.unique();
-		if (!unused)
-			continue;
-		if (cache.lastUsed == IN_USE_NOW) {
-			cache.lastUsed = now;
-//			Log::info("Cache", name + ": unused");
-		}
-		else if (now > cache.lastUsed + conf.cacheTTL*1000) {
-			dead.push_back(name);
-			Log::info("Cache", name + ": purged");
-		}
-	}
-	for (StringVector::iterator it = dead.begin(); it != dead.end(); it++)
-		map.erase(*it);
+    if (!conf.cacheEnabled)
+        return;
+    time_t now = World::instance().time();
+    typedef std::vector<std::string> StringVector;
+    StringVector dead;
+    for (CacheMapIter it = map.begin(); it != map.end(); it++) {
+        const std::string& name = it->first;
+        CacheEntry& cache = it->second;
+        bool unused = !cache.resource || cache.resource.unique();
+        if (!unused)
+            continue;
+        if (cache.lastUsed == IN_USE_NOW) {
+            cache.lastUsed = now;
+//            Log::info("Cache", name + ": unused");
+        }
+        else if (now > cache.lastUsed + conf.cacheTTL*1000) {
+            dead.push_back(name);
+            Log::info("Cache", name + ": purged");
+        }
+    }
+    for (StringVector::iterator it = dead.begin(); it != dead.end(); it++)
+        map.erase(*it);
 }
 
 #endif

@@ -29,9 +29,9 @@
 
 
 Formatter::Formatter(std::string format)
-	: result(format), pos(0)
+    : result(format), pos(0)
 {
-	findNextPlaceholder();
+    findNextPlaceholder();
 }
 
 
@@ -42,102 +42,102 @@ Formatter::~Formatter()
 
 Formatter::operator const std::string&()
 {
-	assert(pos == result.size());
+    assert(pos == result.size());
 
-	return result;
+    return result;
 }
 
 
 void Formatter::findNextPlaceholder()
 {
-	assert(pos <= result.size());
+    assert(pos <= result.size());
 
-	size_t next = result.find("%", pos);
-	if (next != std::string::npos)
-		pos = next;
-	else
-		pos = result.size();
+    size_t next = result.find("%", pos);
+    if (next != std::string::npos)
+        pos = next;
+    else
+        pos = result.size();
 }
 
 
 template<>
 std::string Formatter::format(bool data)
 {
-	return std::string(data ? "true" : "false");
+    return std::string(data ? "true" : "false");
 }
 
 
 template<>
 std::string Formatter::format(int data)
 {
-	char buf[512];
-	sprintf(buf, "%d", data);
-	return std::string(buf);
+    char buf[512];
+    sprintf(buf, "%d", data);
+    return std::string(buf);
 }
 
 
 template<>
 std::string Formatter::format(unsigned int data)
 {
-	char buf[512];
-	sprintf(buf, "%u", data);
-	return std::string(buf);
+    char buf[512];
+    sprintf(buf, "%u", data);
+    return std::string(buf);
 }
 
 
 template<>
 std::string Formatter::format(long data)
 {
-	char buf[512];
-	sprintf(buf, "%ld", data);
-	return std::string(buf);
+    char buf[512];
+    sprintf(buf, "%ld", data);
+    return std::string(buf);
 }
 
 
 template<>
 std::string Formatter::format(unsigned long data)
 {
-	char buf[512];
-	sprintf(buf, "%lu", data);
-	return std::string(buf);
+    char buf[512];
+    sprintf(buf, "%lu", data);
+    return std::string(buf);
 }
 
 
 template<>
 std::string Formatter::format(double data)
 {
-	char buf[512];
-	sprintf(buf, "%f", data);
-	return std::string(buf);
+    char buf[512];
+    sprintf(buf, "%f", data);
+    return std::string(buf);
 }
 
 
 template<>
 std::string Formatter::format(const char* data)
 {
-	return std::string(data);
+    return std::string(data);
 }
 
 
 template<>
 std::string Formatter::format(const std::string& data)
 {
-	return data;
+    return data;
 }
 
 
 template<>
 std::string Formatter::format(const std::string data)
 {
-	return data;
+    return data;
 }
 
 
 template<>
 std::string Formatter::format(void* data)
 {
-	char buf[512];
-	sprintf(buf, "%p", data);
-	return std::string(buf);
+    char buf[512];
+    sprintf(buf, "%p", data);
+    return std::string(buf);
 }
 

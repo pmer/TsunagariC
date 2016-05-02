@@ -35,26 +35,26 @@
 
 static int ivec2_to_dir(ivec2 v)
 {
-	switch (v.x) {
-	case -1:
-		return v.y == 0 ? EXIT_LEFT : -1;
-	case 0:
-		switch (v.y) {
-		case -1:
-			return EXIT_UP;
-		case 0:
-			return EXIT_NORMAL;
-		case 1:
-			return EXIT_DOWN;
-		default:
-			return -1;
-		}
-		break;
-	case 1:
-		return v.y == 0 ? EXIT_RIGHT : -1;
-	default:
-		return -1;
-	}
+    switch (v.x) {
+    case -1:
+        return v.y == 0 ? EXIT_LEFT : -1;
+    case 0:
+        switch (v.y) {
+        case -1:
+            return EXIT_UP;
+        case 0:
+            return EXIT_NORMAL;
+        case 1:
+            return EXIT_DOWN;
+        default:
+            return -1;
+        }
+        break;
+    case 1:
+        return v.y == 0 ? EXIT_RIGHT : -1;
+    default:
+        return -1;
+    }
 }
 
 
@@ -62,63 +62,63 @@ static int ivec2_to_dir(ivec2 v)
  * FLAGMANIP
  */
 FlagManip::FlagManip(unsigned* flags)
-	: flags(flags)
+    : flags(flags)
 {
 }
 
 bool FlagManip::isNowalk() const
 {
-	return (*flags & TILE_NOWALK) != 0;
+    return (*flags & TILE_NOWALK) != 0;
 }
 
 bool FlagManip::isNowalkPlayer() const
 {
-	return (*flags & TILE_NOWALK_PLAYER) != 0;
+    return (*flags & TILE_NOWALK_PLAYER) != 0;
 }
 
 bool FlagManip::isNowalkNPC() const
 {
-	return (*flags & TILE_NOWALK_NPC) != 0;
+    return (*flags & TILE_NOWALK_NPC) != 0;
 }
 
 bool FlagManip::isNowalkExit() const
 {
-	return (*flags & TILE_NOWALK_EXIT) != 0;
+    return (*flags & TILE_NOWALK_EXIT) != 0;
 }
 
 bool FlagManip::isNowalkAreaBound() const
 {
-	return (*flags & TILE_NOWALK_AREA_BOUND) != 0;
+    return (*flags & TILE_NOWALK_AREA_BOUND) != 0;
 }
 
 void FlagManip::setNowalk(bool nowalk)
 {
-	*flags &= ~TILE_NOWALK;
-	*flags |= TILE_NOWALK * nowalk;
+    *flags &= ~TILE_NOWALK;
+    *flags |= TILE_NOWALK * nowalk;
 }
 
 void FlagManip::setNowalkPlayer(bool nowalk)
 {
-	*flags &= ~TILE_NOWALK_PLAYER;
-	*flags |= TILE_NOWALK_PLAYER * nowalk;
+    *flags &= ~TILE_NOWALK_PLAYER;
+    *flags |= TILE_NOWALK_PLAYER * nowalk;
 }
 
 void FlagManip::setNowalkNPC(bool nowalk)
 {
-	*flags &= ~TILE_NOWALK_NPC;
-	*flags |= TILE_NOWALK_NPC * nowalk;
+    *flags &= ~TILE_NOWALK_NPC;
+    *flags |= TILE_NOWALK_NPC * nowalk;
 }
 
 void FlagManip::setNowalkExit(bool nowalk)
 {
-	*flags &= ~TILE_NOWALK_EXIT;
-	*flags |= TILE_NOWALK_EXIT * nowalk;
+    *flags &= ~TILE_NOWALK_EXIT;
+    *flags |= TILE_NOWALK_EXIT * nowalk;
 }
 
 void FlagManip::setNowalkAreaBound(bool nowalk)
 {
-	*flags &= ~TILE_NOWALK_AREA_BOUND;
-	*flags |= TILE_NOWALK_AREA_BOUND * nowalk;
+    *flags &= ~TILE_NOWALK_AREA_BOUND;
+    *flags |= TILE_NOWALK_AREA_BOUND * nowalk;
 }
 
 
@@ -127,7 +127,7 @@ Exit::Exit()
 }
 
 Exit::Exit(const std::string area, int x, int y, double z)
-	: area(area), coords(x, y, z)
+    : area(area), coords(x, y, z)
 {
 }
 
@@ -136,29 +136,29 @@ Exit::Exit(const std::string area, int x, int y, double z)
  * TILEBASE
  */
 TileBase::TileBase()
-	: parent(NULL), flags(0x0),
-	  enterScript(NULL), leaveScript(NULL), useScript(NULL)
+    : parent(NULL), flags(0x0),
+      enterScript(NULL), leaveScript(NULL), useScript(NULL)
 {
 }
 
 FlagManip TileBase::flagManip()
 {
-	return FlagManip(&flags);
+    return FlagManip(&flags);
 }
 
 bool TileBase::hasFlag(unsigned flag) const
 {
-	return flags & flag || (parent && parent->hasFlag(flag));
+    return flags & flag || (parent && parent->hasFlag(flag));
 }
 
 TileType* TileBase::getType() const
 {
-	return (TileType*)parent;
+    return (TileType*)parent;
 }
 
 void TileBase::setType(TileType* type)
 {
-	parent = type;
+    parent = type;
 }
 
 
@@ -166,91 +166,91 @@ void TileBase::setType(TileType* type)
  * TILE
  */
 Tile::Tile()
-	: entCnt(0)
+    : entCnt(0)
 {
 }
 
 Tile::Tile(Area* area, int x, int y, int z)
-	: TileBase(), area(area), x(x), y(y), z(z), entCnt(0)
+    : TileBase(), area(area), x(x), y(y), z(z), entCnt(0)
 {
-	memset(exits, 0, sizeof(exits));
-	memset(layermods, 0, sizeof(layermods));
+    memset(exits, 0, sizeof(exits));
+    memset(layermods, 0, sizeof(layermods));
 }
 
 icoord Tile::moveDest(icoord here, ivec2 facing) const
 {
-	icoord dest = here + icoord(facing.x, facing.y, 0);
+    icoord dest = here + icoord(facing.x, facing.y, 0);
 
-	double* layermod = layermodAt(facing);
-	if (layermod)
-		dest = area->virt2phys(vicoord(dest.x, dest.y, *layermod));
-	return dest;
+    double* layermod = layermodAt(facing);
+    if (layermod)
+        dest = area->virt2phys(vicoord(dest.x, dest.y, *layermod));
+    return dest;
 }
 
 Tile* Tile::offset(int x, int y) const
 {
-	return area->getTile(this->x + x, this->y + y, z);
+    return area->getTile(this->x + x, this->y + y, z);
 }
 
 double Tile::getZ() const
 {
-	vicoord vi = area->phys2virt_vi(icoord(x, y, z));
-	return vi.z;
+    vicoord vi = area->phys2virt_vi(icoord(x, y, z));
+    return vi.z;
 }
 
 Exit* Tile::getNormalExit() const
 {
-	return exits[EXIT_NORMAL];
+    return exits[EXIT_NORMAL];
 }
 
 void Tile::setNormalExit(Exit exit)
 {
-	Exit** norm = &exits[EXIT_NORMAL];
-	if (*norm)
-		delete *norm;
-	*norm = new Exit(exit);
+    Exit** norm = &exits[EXIT_NORMAL];
+    if (*norm)
+        delete *norm;
+    *norm = new Exit(exit);
 }
 
 Exit* Tile::exitAt(ivec2 dir) const
 {
-	int idx = ivec2_to_dir(dir);
-	return idx == -1 ? NULL : exits[idx];
+    int idx = ivec2_to_dir(dir);
+    return idx == -1 ? NULL : exits[idx];
 }
 
 double* Tile::layermodAt(ivec2 dir) const
 {
-	int idx = ivec2_to_dir(dir);
-	return idx == -1 ? NULL : layermods[idx];
+    int idx = ivec2_to_dir(dir);
+    return idx == -1 ? NULL : layermods[idx];
 }
 
 void Tile::runEnterScript(Entity* triggeredBy)
 {
-	DataArea* dataArea = area->getDataArea();
-	for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
-		DataArea::TileScript script = scripted->enterScript;
-		if (script)
-			(dataArea->*script)(*triggeredBy, *this);
-	}
+    DataArea* dataArea = area->getDataArea();
+    for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
+        DataArea::TileScript script = scripted->enterScript;
+        if (script)
+            (dataArea->*script)(*triggeredBy, *this);
+    }
 }
 
 void Tile::runLeaveScript(Entity* triggeredBy)
 {
-	DataArea* dataArea = area->getDataArea();
-	for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
-		DataArea::TileScript script = scripted->leaveScript;
-		if (script)
-			(dataArea->*script)(*triggeredBy, *this);
-	}
+    DataArea* dataArea = area->getDataArea();
+    for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
+        DataArea::TileScript script = scripted->leaveScript;
+        if (script)
+            (dataArea->*script)(*triggeredBy, *this);
+    }
 }
 
 void Tile::runUseScript(Entity* triggeredBy)
 {
-	DataArea* dataArea = area->getDataArea();
-	for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
-		DataArea::TileScript script = scripted->useScript;
-		if (script)
-			(dataArea->*script)(*triggeredBy, *this);
-	}
+    DataArea* dataArea = area->getDataArea();
+    for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
+        DataArea::TileScript script = scripted->useScript;
+        if (script)
+            (dataArea->*script)(*triggeredBy, *this);
+    }
 }
 
 
@@ -258,20 +258,20 @@ void Tile::runUseScript(Entity* triggeredBy)
  * TILETYPE
  */
 TileType::TileType()
-	: TileBase()
+    : TileBase()
 {
 }
 
 TileType::TileType(const std::shared_ptr<Image>& img)
-	: TileBase()
+    : TileBase()
 {
-	anim = Animation(img);
+    anim = Animation(img);
 }
 
 bool TileType::needsRedraw() const
 {
-	time_t now = World::instance().time();
-	return anim.needsRedraw(now);
+    time_t now = World::instance().time();
+    return anim.needsRedraw(now);
 }
 
 /*
@@ -282,43 +282,43 @@ TileSet::TileSet()
 }
 
 TileSet::TileSet(size_t width, size_t height)
-	: width(width), height(height)
+    : width(width), height(height)
 {
 }
 
 void TileSet::add(TileType* type)
 {
-	types.push_back(type);
+    types.push_back(type);
 }
 
 void TileSet::set(size_t idx, TileType* type)
 {
-	types[idx] = type;
+    types[idx] = type;
 }
 
 TileType* TileSet::at(size_t x, size_t y)
 {
-	size_t i = idx(x, y);
-	if (i > types.size()) {
-		Log::err("TileSet",
-			Formatter("get(%, %): out of bounds") % x % y);
-		return NULL;
-	}
-	return types[i];
+    size_t i = idx(x, y);
+    if (i > types.size()) {
+        Log::err("TileSet",
+            Formatter("get(%, %): out of bounds") % x % y);
+        return NULL;
+    }
+    return types[i];
 }
 
 size_t TileSet::getWidth() const
 {
-	return height;
+    return height;
 }
 
 size_t TileSet::getHeight() const
 {
-	return width;
+    return width;
 }
 
 size_t TileSet::idx(size_t x, size_t y) const
 {
-	return y * width + x;
+    return y * width + x;
 }
 

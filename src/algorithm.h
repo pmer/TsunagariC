@@ -30,12 +30,12 @@
 template <class Container, class Predicate>
 void erase_if(Container& container, Predicate pred)
 {
-	for (auto it = container.begin(); it != container.end(); ) {
-		if (pred(*it))
-			it = container.erase(it);
-		else
-			++it;
-	}
+    for (auto it = container.begin(); it != container.end(); ) {
+        if (pred(*it))
+            it = container.erase(it);
+        else
+            ++it;
+    }
 }
 
 #endif

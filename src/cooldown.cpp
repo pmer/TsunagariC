@@ -28,37 +28,37 @@
 #include "log.h"
 
 Cooldown::Cooldown()
-	: duration(0), passed(0)
+    : duration(0), passed(0)
 {
 }
 
 Cooldown::Cooldown(time_t duration)
-	: duration(duration), passed(0)
+    : duration(duration), passed(0)
 {
 }
 
 void Cooldown::setDuration(time_t duration)
 {
-	this->duration = duration;
-	passed = 0;
+    this->duration = duration;
+    passed = 0;
 }
 
 void Cooldown::advance(time_t dt)
 {
-	passed += dt;
+    passed += dt;
 }
 
 bool Cooldown::hasExpired()
 {
-	return passed > duration;
+    return passed > duration;
 }
 
 void Cooldown::wrap()
 {
-	if (hasExpired()) {
-		passed -= duration;
-	}
-	else {
-		Log::err("Cooldown", "wrapping when not expired");
-	}
+    if (hasExpired()) {
+        passed -= duration;
+    }
+    else {
+        Log::err("Cooldown", "wrapping when not expired");
+    }
 }

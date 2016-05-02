@@ -47,12 +47,12 @@ static World globalWorld;
 
 World& World::instance()
 {
-	return globalWorld;
+    return globalWorld;
 }
 
 World::World()
-	: player(new Player),
-	  lastTime(0), total(0), redraw(false), userPaused(false), paused(0)
+    : player(new Player),
+      lastTime(0), total(0), redraw(false), userPaused(false), paused(0)
 {
 }
 
@@ -62,279 +62,279 @@ World::~World()
 
 bool World::init()
 {
-	ASSERT(pauseInfo = Images::instance().load("resource/pause_overlay.png"));
+    ASSERT(pauseInfo = Images::instance().load("resource/pause_overlay.png"));
 
-	auto& parameters = DataWorld::instance().parameters;
-	auto& gameStart = parameters.gameStart;
+    auto& parameters = DataWorld::instance().parameters;
+    auto& gameStart = parameters.gameStart;
 
-	conf.moveMode = parameters.moveMode;
+    conf.moveMode = parameters.moveMode;
 
-	ASSERT(player->init(gameStart.player.file, gameStart.player.phase));
+    ASSERT(player->init(gameStart.player.file, gameStart.player.phase));
 
-	Area* area = getArea(gameStart.area);
-	if (area == NULL) {
-		Log::fatal("World", "failed to load initial Area");
-		return false;
-	}
-	focusArea(area, gameStart.coords);
+    Area* area = getArea(gameStart.area);
+    if (area == NULL) {
+        Log::fatal("World", "failed to load initial Area");
+        return false;
+    }
+    focusArea(area, gameStart.coords);
 
-	Viewport::instance().setSize(parameters.viewportResolution);
-	Viewport::instance().trackEntity(player.get());
+    Viewport::instance().setSize(parameters.viewportResolution);
+    Viewport::instance().trackEntity(player.get());
 
-	// Apply client.ini music volume now that client.ini is loaded.
-	Music::instance().setVolume(1.0);
+    // Apply client.ini music volume now that client.ini is loaded.
+    Music::instance().setVolume(1.0);
 
-	return true;
+    return true;
 }
 
 time_t World::time() const
 {
-	return total;
+    return total;
 }
 
 void World::buttonDown(KeyboardKey key)
 {
-	switch (key) {
-	case KBEscape:
-		userPaused = !userPaused;
-		setPaused(userPaused);
-		redraw = true;
-		break;
-	default:
-		if (!paused && keyStates.empty()) {
-			area->buttonDown(key);
-			// if (keydownScript)
-			// 	keydownScript->invoke();
-		}
-		break;
-	}
+    switch (key) {
+    case KBEscape:
+        userPaused = !userPaused;
+        setPaused(userPaused);
+        redraw = true;
+        break;
+    default:
+        if (!paused && keyStates.empty()) {
+            area->buttonDown(key);
+            // if (keydownScript)
+            //     keydownScript->invoke();
+        }
+        break;
+    }
 }
 
 void World::buttonUp(KeyboardKey key)
 {
-	switch (key) {
-	case KBEscape:
-		break;
-	default:
-		if (!paused && keyStates.empty()) {
-			area->buttonUp(key);
-			// if (keyupScript)
-			// 	keyupScript->invoke();
-		}
-		break;
-	}
+    switch (key) {
+    case KBEscape:
+        break;
+    default:
+        if (!paused && keyStates.empty()) {
+            area->buttonUp(key);
+            // if (keyupScript)
+            //     keyupScript->invoke();
+        }
+        break;
+    }
 }
 
 void World::draw()
 {
-	redraw = false;
+    redraw = false;
 
-	GameWindow& window = GameWindow::instance();
+    GameWindow& window = GameWindow::instance();
 
-	if (paused) {
-		unsigned ww = window.width();
-		unsigned wh = window.height();
-		window.drawRect(0, ww, 0, wh, 0x7F000000);
+    if (paused) {
+        unsigned ww = window.width();
+        unsigned wh = window.height();
+        window.drawRect(0, ww, 0, wh, 0x7F000000);
 
-		if (userPaused) {
-			unsigned iw = pauseInfo->width();
-			unsigned ih = pauseInfo->height();
-			double top = std::numeric_limits<double>::max();
-			pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
-		}
-	}
+        if (userPaused) {
+            unsigned iw = pauseInfo->width();
+            unsigned ih = pauseInfo->height();
+            double top = std::numeric_limits<double>::max();
+            pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
+        }
+    }
 
-	uint32_t colorOverlayARGB = area->getColorOverlay();
-	if ((colorOverlayARGB & 0xFF000000) != 0) {
-		unsigned ww = window.width();
-		unsigned wh = window.height();
-		window.drawRect(0, ww, 0, wh, colorOverlayARGB);
-	}
+    uint32_t colorOverlayARGB = area->getColorOverlay();
+    if ((colorOverlayARGB & 0xFF000000) != 0) {
+        unsigned ww = window.width();
+        unsigned wh = window.height();
+        window.drawRect(0, ww, 0, wh, colorOverlayARGB);
+    }
 
-	pushLetterbox();
+    pushLetterbox();
 
-	Viewport& view = Viewport::instance();
+    Viewport& view = Viewport::instance();
 
-	// Zoom and pan the Area to fit on-screen.
-	rvec2 padding = view.getLetterboxOffset();
-	window.translate(-padding.x, -padding.y);
+    // Zoom and pan the Area to fit on-screen.
+    rvec2 padding = view.getLetterboxOffset();
+    window.translate(-padding.x, -padding.y);
 
-	rvec2 scale = view.getScale();
-	window.scale(scale.x, scale.y);
+    rvec2 scale = view.getScale();
+    window.scale(scale.x, scale.y);
 
-	rvec2 scroll = view.getMapOffset();
-	window.translate(-scroll.x, -scroll.y);
+    rvec2 scroll = view.getMapOffset();
+    window.translate(-scroll.x, -scroll.y);
 
-	area->draw();
+    area->draw();
 }
 
 bool World::needsRedraw() const
 {
-	if (redraw)
-		return true;
-	if (!paused && area->needsRedraw())
-		return true;
-	return false;
+    if (redraw)
+        return true;
+    if (!paused && area->needsRedraw())
+        return true;
+    return false;
 }
 
 void World::update(time_t now)
 {
-	if (lastTime == 0) {
-		// There is no dt on the first update().  Don't tick.
-		lastTime = now;
-	}
-	else {
-		time_t dt = calculateDt(now);
-		if (!paused) {
-			total += dt;
-			tick(dt);
-		}
-	}
+    if (lastTime == 0) {
+        // There is no dt on the first update().  Don't tick.
+        lastTime = now;
+    }
+    else {
+        time_t dt = calculateDt(now);
+        if (!paused) {
+            total += dt;
+            tick(dt);
+        }
+    }
 }
 
 void World::tick(time_t dt)
 {
-	area->tick(dt);
+    area->tick(dt);
 }
 
 void World::turn()
 {
-	if (conf.moveMode == TURN) {
-		area->turn();
-	}
+    if (conf.moveMode == TURN) {
+        area->turn();
+    }
 }
 
 Area* World::getArea(const std::string& filename)
 {
-	AreaMap::iterator entry = areas.find(filename);
-	if (entry != areas.end())
-		return entry->second;
+    AreaMap::iterator entry = areas.find(filename);
+    if (entry != areas.end())
+        return entry->second;
 
-	Area* newArea = new AreaTMX(player.get(), filename);
+    Area* newArea = new AreaTMX(player.get(), filename);
 
-	if (!newArea->init())
-		newArea = NULL;
+    if (!newArea->init())
+        newArea = NULL;
 
-	areas[filename] = newArea;
+    areas[filename] = newArea;
 
-	DataArea* dataArea = DataWorld::instance().area(filename);
-	if (dataArea)
-		dataArea->area = newArea;
+    DataArea* dataArea = DataWorld::instance().area(filename);
+    if (dataArea)
+        dataArea->area = newArea;
 
-	return newArea;
+    return newArea;
 }
 
 Area* World::getFocusedArea()
 {
-	return area;
+    return area;
 }
 
 void World::focusArea(Area* area, int x, int y, double z)
 {
-	focusArea(area, vicoord(x, y, z));
+    focusArea(area, vicoord(x, y, z));
 }
 
 void World::focusArea(Area* area, vicoord playerPos)
 {
-	this->area = area;
-	player->setArea(area);
-	player->setTileCoords(playerPos);
-	Viewport::instance().setArea(area);
-	area->focus();
+    this->area = area;
+    player->setArea(area);
+    player->setTileCoords(playerPos);
+    Viewport::instance().setArea(area);
+    area->focus();
 }
 
 void World::setPaused(bool b)
 {
-	if (!paused && !b) {
-		Log::err("World", "trying to unpause, but not paused");
-		return;
-	}
+    if (!paused && !b) {
+        Log::err("World", "trying to unpause, but not paused");
+        return;
+    }
 
-	// If just pausing.
-	if (!paused)
-		storeKeys();
+    // If just pausing.
+    if (!paused)
+        storeKeys();
 
-	paused += b ? 1 : -1;
+    paused += b ? 1 : -1;
 
-	if (paused)
-		Music::instance().pause();
-	else
-		Music::instance().resume();
+    if (paused)
+        Music::instance().pause();
+    else
+        Music::instance().resume();
 
-	// If finally unpausing.
-	if (!paused)
-		restoreKeys();
+    // If finally unpausing.
+    if (!paused)
+        restoreKeys();
 }
 
 void World::storeKeys()
 {
-	keyStates.push(GameWindow::instance().getKeysDown());
+    keyStates.push(GameWindow::instance().getKeysDown());
 }
 
 void World::restoreKeys()
 {
-	BitRecord now = GameWindow::instance().getKeysDown();
-	BitRecord then = keyStates.top();
-	typedef std::vector<size_t> Size_tVector;
-	Size_tVector diffs = now.diff(then);
+    BitRecord now = GameWindow::instance().getKeysDown();
+    BitRecord then = keyStates.top();
+    typedef std::vector<size_t> Size_tVector;
+    Size_tVector diffs = now.diff(then);
 
-	keyStates.pop();
+    keyStates.pop();
 
-	for (Size_tVector::iterator it = diffs.begin(); it != diffs.end(); it++) {
-		KeyboardKey key = (KeyboardKey)*it;
-		if (now[key])
-			buttonDown(key);
-		else
-			buttonUp(key);
-	}
+    for (Size_tVector::iterator it = diffs.begin(); it != diffs.end(); it++) {
+        KeyboardKey key = (KeyboardKey)*it;
+        if (now[key])
+            buttonDown(key);
+        else
+            buttonUp(key);
+    }
 }
 
 void World::garbageCollect()
 {
-	Images::instance().garbageCollect();
-	Music::instance().garbageCollect();
-	Sounds::instance().garbageCollect();
-	XMLs::instance().garbageCollect();
+    Images::instance().garbageCollect();
+    Music::instance().garbageCollect();
+    Sounds::instance().garbageCollect();
+    XMLs::instance().garbageCollect();
 }
 
 time_t World::calculateDt(time_t now)
 {
-	time_t dt = now - lastTime;
-	lastTime = now;
-	return dt;
+    time_t dt = now - lastTime;
+    lastTime = now;
+    return dt;
 }
 
 void World::pushLetterbox()
 {
-	GameWindow& window = GameWindow::instance();
-	Viewport& view = Viewport::instance();
+    GameWindow& window = GameWindow::instance();
+    Viewport& view = Viewport::instance();
 
-	// Aspect ratio correction.
-	rvec2 sz = view.getPhysRes();
-	rvec2 lb = -1 * view.getLetterboxOffset();
+    // Aspect ratio correction.
+    rvec2 sz = view.getPhysRes();
+    rvec2 lb = -1 * view.getLetterboxOffset();
 
-	window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y);
-	int clips = 1;
+    window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y);
+    int clips = 1;
 
-	// Map bounds.
-	rvec2 scale = view.getScale();
-	rvec2 virtScroll = view.getMapOffset();
-	rvec2 padding = view.getLetterboxOffset();
+    // Map bounds.
+    rvec2 scale = view.getScale();
+    rvec2 virtScroll = view.getMapOffset();
+    rvec2 padding = view.getLetterboxOffset();
 
-	rvec2 physScroll = -1 * virtScroll * scale + padding;
+    rvec2 physScroll = -1 * virtScroll * scale + padding;
 
-	bool loopX = area->loopsInX();
-	bool loopY = area->loopsInY();
+    bool loopX = area->loopsInX();
+    bool loopY = area->loopsInY();
 
-	if (!loopX && physScroll.x > 0) {
-		// Boxes on left-right.
-		window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x);
-		clips++;
-	}
-	if (!loopY && physScroll.y > 0) {
-		// Boxes on top-bottom.
-		window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y);
-		clips++;
-	}
+    if (!loopX && physScroll.x > 0) {
+        // Boxes on left-right.
+        window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x);
+        clips++;
+    }
+    if (!loopY && physScroll.y > 0) {
+        // Boxes on top-bottom.
+        window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y);
+        clips++;
+    }
 }
 

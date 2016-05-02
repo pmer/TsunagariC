@@ -41,121 +41,121 @@ static Player* globalPlayer = NULL;
 
 Player& Player::instance()
 {
-	return *globalPlayer;
+    return *globalPlayer;
 }
 
 
 Player::Player()
-	: Character(), velocity(0, 0)
+    : Character(), velocity(0, 0)
 {
-	globalPlayer = this;
-	nowalkFlags = TILE_NOWALK | TILE_NOWALK_PLAYER;
-	nowalkExempt = TILE_NOWALK_EXIT;
+    globalPlayer = this;
+    nowalkFlags = TILE_NOWALK | TILE_NOWALK_PLAYER;
+    nowalkExempt = TILE_NOWALK_EXIT;
 }
 
 void Player::destroy()
 {
-	Log::fatal("Player", "destroy(): Player should not be destroyed");
+    Log::fatal("Player", "destroy(): Player should not be destroyed");
 }
 
 void Player::startMovement(ivec2 delta)
 {
-	switch (conf.moveMode) {
-	case TURN:
-		moveByTile(delta);
-		break;
-	case TILE:
-		movements.push_back(delta);
-		velocity = delta;
-		moveByTile(velocity);
-		break;
-	case NOTILE:
-		// TODO
-		break;
-	}
+    switch (conf.moveMode) {
+    case TURN:
+        moveByTile(delta);
+        break;
+    case TILE:
+        movements.push_back(delta);
+        velocity = delta;
+        moveByTile(velocity);
+        break;
+    case NOTILE:
+        // TODO
+        break;
+    }
 }
 
 void Player::stopMovement(ivec2 delta)
 {
-	switch (conf.moveMode) {
-	case TURN:
-		break;
-	case TILE:
-		movements.erase(std::find(movements.begin(), movements.end(), delta));
-		velocity = movements.size() ?
-		           movements.back() :
-			   ivec2(0, 0);
-		if (velocity)
-			moveByTile(velocity);
-		break;
-	case NOTILE:
-		// TODO
-		break;
-	}
+    switch (conf.moveMode) {
+    case TURN:
+        break;
+    case TILE:
+        movements.erase(std::find(movements.begin(), movements.end(), delta));
+        velocity = movements.size() ?
+                   movements.back() :
+               ivec2(0, 0);
+        if (velocity)
+            moveByTile(velocity);
+        break;
+    case NOTILE:
+        // TODO
+        break;
+    }
 }
 
 void Player::moveByTile(ivec2 delta)
 {
-	if (frozen)
-		return;
-	if (moving)
-		return;
+    if (frozen)
+        return;
+    if (moving)
+        return;
 
-	setFacing(delta);
+    setFacing(delta);
 
-	// Left SHIFT allows changing facing, but disallows movement.
-	if (GameWindow::instance().isKeyDown(KBLeftShift) ||
-	    GameWindow::instance().isKeyDown(KBRightShift)) {
-		setAnimationStanding();
-		redraw = true;
-		return;
-	}
+    // Left SHIFT allows changing facing, but disallows movement.
+    if (GameWindow::instance().isKeyDown(KBLeftShift) ||
+        GameWindow::instance().isKeyDown(KBRightShift)) {
+        setAnimationStanding();
+        redraw = true;
+        return;
+    }
 
-	Character::moveByTile(delta);
+    Character::moveByTile(delta);
 
-	World::instance().turn();
+    World::instance().turn();
 }
 
 void Player::useTile()
 {
-	Tile* t = area->getTile(moveDest(facing));
-	if (t)
-		t->runUseScript(this);
+    Tile* t = area->getTile(moveDest(facing));
+    if (t)
+        t->runUseScript(this);
 }
 
 void Player::setFrozen(bool b)
 {
-	World& world = World::instance();
+    World& world = World::instance();
 
-	b ?  world.storeKeys() : world.restoreKeys();
-	Entity::setFrozen(b);
-	if (!frozen && velocity)
-		moveByTile(velocity);
+    b ?  world.storeKeys() : world.restoreKeys();
+    Entity::setFrozen(b);
+    if (!frozen && velocity)
+        moveByTile(velocity);
 }
 
 void Player::arrived()
 {
-	Entity::arrived();
+    Entity::arrived();
 
-	if (destExit)
-		takeExit(destExit);
+    if (destExit)
+        takeExit(destExit);
 
-	// If we have a velocity, keep moving.
-	if (conf.moveMode == TILE && velocity)
-		moveByTile(velocity);
+    // If we have a velocity, keep moving.
+    if (conf.moveMode == TILE && velocity)
+        moveByTile(velocity);
 }
 
 void Player::takeExit(Exit* exit)
 {
-	World& world = World::instance();
-	Area* newArea = world.getArea(exit->area);
-	if (newArea) {
-		world.focusArea(newArea, exit->coords);
-	}
-	else {
-		// Roll back movement if exit failed to open.
-		setTileCoords(fromCoord);
-		Log::err("Exit", exit->area + ": failed to load properly");
-	}
+    World& world = World::instance();
+    Area* newArea = world.getArea(exit->area);
+    if (newArea) {
+        world.focusArea(newArea, exit->coords);
+    }
+    else {
+        // Roll back movement if exit failed to open.
+        setTileCoords(fromCoord);
+        Log::err("Exit", exit->area + ": failed to load properly");
+    }
 }
 

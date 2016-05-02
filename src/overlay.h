@@ -32,18 +32,18 @@
 class Overlay : public Entity
 {
 public:
-	Overlay();
-	virtual ~Overlay();
+    Overlay();
+    virtual ~Overlay();
 
-	void tick(time_t dt);
+    void tick(time_t dt);
 
-	void teleport(vicoord coord);
+    void teleport(vicoord coord);
 
-	void drift(ivec2 xy);
-	void driftTo(ivec2 xy);
+    void drift(ivec2 xy);
+    void driftTo(ivec2 xy);
 
 protected:
-	void pickFacingForAngle();
+    void pickFacingForAngle();
 };
 
 #endif

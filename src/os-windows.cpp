@@ -35,35 +35,35 @@
 
 void wFixConsole()
 {
-	if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-		freopen("CONOUT$","wb",stdout); // Attach STDOUT.
-		freopen("CONOUT$","wb",stderr); // Attach STDERR.
-	}
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+        freopen("CONOUT$","wb",stdout); // Attach STDOUT.
+        freopen("CONOUT$","wb",stderr); // Attach STDERR.
+    }
 }
 
 /* From gosu/src/Utility.cpp by Julian Raschke in 2007 */
 wstring widen(const string& s)
 {                   
-	size_t wideLen = std::mbstowcs(0, s.c_str(), 0);
-	if (wideLen == static_cast<size_t>(-1))
-		throw std::runtime_error("Could not convert from string to wstring: " + s); 
+    size_t wideLen = std::mbstowcs(0, s.c_str(), 0);
+    if (wideLen == static_cast<size_t>(-1))
+        throw std::runtime_error("Could not convert from string to wstring: " + s); 
 
-	vector<wchar_t> buf(wideLen + 1);
-	mbstowcs(&buf.front(), s.c_str(), buf.size());
+    vector<wchar_t> buf(wideLen + 1);
+    mbstowcs(&buf.front(), s.c_str(), buf.size());
 
-	return wstring(buf.begin(), buf.end() - 1);
+    return wstring(buf.begin(), buf.end() - 1);
 }
 
 
 void wMessageBox(const std::string& title, const std::string& text)
 {
-	World::instance().setPaused(true);
-	MessageBox(GameWindow::instance().handle(),
-		widen(text).c_str(),
-		widen(title).c_str(),
-		MB_OK
-	);
-	World::instance().setPaused(false);
+    World::instance().setPaused(true);
+    MessageBox(GameWindow::instance().handle(),
+        widen(text).c_str(),
+        widen(title).c_str(),
+        MB_OK
+    );
+    World::instance().setPaused(false);
 }
 
 #endif

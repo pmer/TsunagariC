@@ -319,7 +319,7 @@
 
 const std::string& CONTENT_OF_AREA_DTD()
 {
-	static std::string dtd(
+    static std::string dtd(
 R"(<?xml version="1.0" encoding="utf-8"?>
 
 <!--
@@ -440,13 +440,13 @@ R"(<?xml version="1.0" encoding="utf-8"?>
   gid         CDATA   #IMPLIED
 >
 )"
-	);
-	return dtd;
+    );
+    return dtd;
 }
 
 const std::string& CONTENT_OF_ENTITY_DTD()
 {
-	static std::string dtd(
+    static std::string dtd(
 R"(<!ELEMENT entity (speed, sprite, sounds?, scripts?)>
 
 <!ELEMENT speed (#PCDATA)>
@@ -474,13 +474,13 @@ R"(<!ELEMENT entity (speed, sprite, sounds?, scripts?)>
 <!ELEMENT script (#PCDATA)>
 <!ATTLIST script trigger CDATA #REQUIRED>
 )"
-	);
-	return dtd;
+    );
+    return dtd;
 }
 
 const std::string& CONTENT_OF_TSX_DTD()
 {
-	static std::string dtd(
+    static std::string dtd(
 R"(<?xml version="1.0" encoding="utf-8"?>
 
 <!--
@@ -546,6 +546,6 @@ R"(<?xml version="1.0" encoding="utf-8"?>
   value       CDATA   #REQUIRED
 >
 )"
-	);
-	return dtd;
+    );
+    return dtd;
 }

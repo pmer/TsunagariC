@@ -56,65 +56,65 @@
 int main(int argc, char** argv)
 {
 #ifdef _WIN32
-	wFixConsole();
+    wFixConsole();
 #endif
 
-	srand((unsigned)time(NULL));
+    srand((unsigned)time(NULL));
 
-	if (!Log::init())
-		return 1;
+    if (!Log::init())
+        return 1;
 
 #ifdef __APPLE__
-	macSetWorkingDirectory();
+    macSetWorkingDirectory();
 #endif
 
-	parseConfig(CLIENT_CONF_PATH);
-	if (!parseCommandLine(argc, argv)) {
-		Log::fatal("Main", "parseCommandLine");
-		return 1;
-	}
-	if (!conf.validate(CLIENT_CONF_PATH)) {
-		Log::fatal("Main", "Conf::validate");
-		return 1;
-	}
+    parseConfig(CLIENT_CONF_PATH);
+    if (!parseCommandLine(argc, argv)) {
+        Log::fatal("Main", "parseCommandLine");
+        return 1;
+    }
+    if (!conf.validate(CLIENT_CONF_PATH)) {
+        Log::fatal("Main", "Conf::validate");
+        return 1;
+    }
 
-	Log::setVerbosity(conf.verbosity);
-	Log::info("Main", Formatter("Starting %") % TSUNAGARI_RELEASE_VERSION);
-	Log::reportVerbosityOnStartup();
+    Log::setVerbosity(conf.verbosity);
+    Log::info("Main", Formatter("Starting %") % TSUNAGARI_RELEASE_VERSION);
+    Log::reportVerbosityOnStartup();
 
-	/* This initializes the XML library and checks for potential
-	 * ABI mismatches between the version it was compiled for and
-	 * the actual shared library used.
-	 */
-	LIBXML_TEST_VERSION
+    /* This initializes the XML library and checks for potential
+     * ABI mismatches between the version it was compiled for and
+     * the actual shared library used.
+     */
+    LIBXML_TEST_VERSION
 
-	GameWindow* window = GameWindow::create();
-	World& world = World::instance();
-	DataWorld& dataWorld = DataWorld::instance();
+    GameWindow* window = GameWindow::create();
+    World& world = World::instance();
+    DataWorld& dataWorld = DataWorld::instance();
 
-	if (!window->init()) {
-		Log::fatal("Main", "GameWindow::init");
-		return 1;
-	}
-	if (!world.init()) {
-		Log::fatal("Main", "World::init");
-		return 1;
-	}
-	if (!dataWorld.init()) {
-		Log::fatal("Main", "WorldWorld::init");
-		return 1;
-	}
+    if (!window->init()) {
+        Log::fatal("Main", "GameWindow::init");
+        return 1;
+    }
+    if (!world.init()) {
+        Log::fatal("Main", "World::init");
+        return 1;
+    }
+    if (!dataWorld.init()) {
+        Log::fatal("Main", "WorldWorld::init");
+        return 1;
+    }
 
-	window->setCaption(dataWorld.about.name);
+    window->setCaption(dataWorld.about.name);
 
-	window->mainLoop();
+    window->mainLoop();
 
-	// Cleanup
-	delete window;
+    // Cleanup
+    delete window;
 
-	PHYSFS_deinit();
+    PHYSFS_deinit();
 
-	xmlCleanupParser();
+    xmlCleanupParser();
 
-	return 0;
+    return 0;
 }

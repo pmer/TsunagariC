@@ -28,5 +28,5 @@
 
 const std::string Resource::asString()
 {
-	return std::string((char*)data(), size());
+    return std::string((char*)data(), size());
 }

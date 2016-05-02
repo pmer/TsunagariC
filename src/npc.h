@@ -32,10 +32,10 @@
 class NPC : public Character
 {
 public:
-	NPC();
+    NPC();
 
 protected:
-	void arrived();
+    void arrived();
 };
 
 #endif

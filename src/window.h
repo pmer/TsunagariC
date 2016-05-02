@@ -34,70 +34,70 @@
 #include "bitrecord.h"
 
 enum KeyboardKey {
-	KBEscape = 1,
-	KBLeftControl,
-	KBRightControl,
-	KBLeftShift,
-	KBRightShift,
-	KBSpace,
-	KBLeftArrow,
-	KBRightArrow,
-	KBUpArrow,
-	KBDownArrow,
-	KB_SIZE,
+    KBEscape = 1,
+    KBLeftControl,
+    KBRightControl,
+    KBLeftShift,
+    KBRightShift,
+    KBSpace,
+    KBLeftArrow,
+    KBRightArrow,
+    KBUpArrow,
+    KBDownArrow,
+    KB_SIZE,
 };
 
 //! GameWindow Class
 /*!
-	This class is structurally the main class of the Tsunagari Tile Engine.
-	It handles input and drawing.
+    This class is structurally the main class of the Tsunagari Tile Engine.
+    It handles input and drawing.
 */
 class GameWindow
 {
 public:
-	static GameWindow* create();
-	static GameWindow& instance();
+    static GameWindow* create();
+    static GameWindow& instance();
 
-	//! Time since epoch.
-	static time_t time();
+    //! Time since epoch.
+    static time_t time();
 
-	virtual ~GameWindow();
+    virtual ~GameWindow();
 
-	//! GameWindow Initializer
-	virtual bool init() = 0;
+    //! GameWindow Initializer
+    virtual bool init() = 0;
 
-	//! Width of the window in pixels.
-	virtual unsigned width() const = 0;
+    //! Width of the window in pixels.
+    virtual unsigned width() const = 0;
 
-	//! Height of the window in pixels.
-	virtual unsigned height() const = 0;
+    //! Height of the window in pixels.
+    virtual unsigned height() const = 0;
 
-	//! Set window manager caption.
-	virtual void setCaption(const std::string& caption) = 0;
+    //! Set window manager caption.
+    virtual void setCaption(const std::string& caption) = 0;
 
-	//! Show the window and start the main loop.
-	virtual void mainLoop() = 0;
+    //! Show the window and start the main loop.
+    virtual void mainLoop() = 0;
 
-	/**
-	 * Draws a rectangle on the screen of the specified color. Coordinates
-	 * are in virtual pixels.
-	 */
-	virtual void drawRect(double x1, double x2, double y1, double y2,
-		uint32_t argb) = 0;
+    /**
+     * Draws a rectangle on the screen of the specified color. Coordinates
+     * are in virtual pixels.
+     */
+    virtual void drawRect(double x1, double x2, double y1, double y2,
+        uint32_t argb) = 0;
 
-	virtual void scale(double x, double y) = 0;
-	virtual void translate(double x, double y) = 0;
-	virtual void clip(double x, double y, double width, double height) = 0;
+    virtual void scale(double x, double y) = 0;
+    virtual void translate(double x, double y) = 0;
+    virtual void clip(double x, double y, double width, double height) = 0;
 
-	void emitKeyDown(KeyboardKey key);
-	void emitKeyUp(KeyboardKey key);
-	bool isKeyDown(KeyboardKey key);
-	BitRecord getKeysDown();
+    void emitKeyDown(KeyboardKey key);
+    void emitKeyUp(KeyboardKey key);
+    bool isKeyDown(KeyboardKey key);
+    BitRecord getKeysDown();
 
 protected:
-	GameWindow();
+    GameWindow();
 
-	BitRecord keysDown;
+    BitRecord keysDown;
 };
 
 #endif

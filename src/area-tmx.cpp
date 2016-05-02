@@ -41,7 +41,7 @@
 #include "world.h"
 
 #ifdef _WIN32
-	#include "os-windows.h"
+    #include "os-windows.h"
 #endif
 
 #define ASSERT(x)  if (!(x)) { return false; }
@@ -54,10 +54,10 @@
 
 AreaTMX::AreaTMX(Player* player,
            const std::string& descriptor)
-	: Area(player, descriptor)
+    : Area(player, descriptor)
 {
-	// Add TileType #0. Not used, but Tiled's gids start from 1.
-	gids.push_back(NULL);
+    // Add TileType #0. Not used, but Tiled's gids start from 1.
+    gids.push_back(NULL);
 }
 
 AreaTMX::~AreaTMX()
@@ -66,56 +66,56 @@ AreaTMX::~AreaTMX()
 
 bool AreaTMX::init()
 {
-	return processDescriptor();
+    return processDescriptor();
 }
 
 
 void AreaTMX::allocateMapLayer()
 {
-	assert(0 <= dim.y && dim.y <= std::numeric_limits<int>::max());
-	assert(0 <= dim.x && dim.x <= std::numeric_limits<int>::max());
-	assert(0 <= dim.z && dim.z + 1 <= std::numeric_limits<int>::max());
+    assert(0 <= dim.y && dim.y <= std::numeric_limits<int>::max());
+    assert(0 <= dim.x && dim.x <= std::numeric_limits<int>::max());
+    assert(0 <= dim.z && dim.z + 1 <= std::numeric_limits<int>::max());
 
-	map.push_back(grid_t((size_t)dim.y, row_t((size_t)dim.x)));
-	grid_t& grid = map[(size_t)dim.z];
-	for (int y = 0; y < dim.y; y++) {
-		row_t& row = grid[(size_t)y];
-		for (int x = 0; x < dim.x; x++) {
-			Tile& tile = row[(size_t)x];
-			new (&tile) Tile(this, x, y, dim.z);
-		}
-	}
-	dim.z++;
+    map.push_back(grid_t((size_t)dim.y, row_t((size_t)dim.x)));
+    grid_t& grid = map[(size_t)dim.z];
+    for (int y = 0; y < dim.y; y++) {
+        row_t& row = grid[(size_t)y];
+        for (int x = 0; x < dim.x; x++) {
+            Tile& tile = row[(size_t)x];
+            new (&tile) Tile(this, x, y, dim.z);
+        }
+    }
+    dim.z++;
 }
 
 bool AreaTMX::processDescriptor()
 {
-	std::shared_ptr<XMLDoc> doc;
-	XMLNode root;
+    std::shared_ptr<XMLDoc> doc;
+    XMLNode root;
 
-	ASSERT(doc = XMLs::instance().load(descriptor, "area"));
-	ASSERT(root = doc->root()); // <map>
+    ASSERT(doc = XMLs::instance().load(descriptor, "area"));
+    ASSERT(root = doc->root()); // <map>
 
-	ASSERT(root.intAttr("width", &dim.x));
-	ASSERT(root.intAttr("height", &dim.y));
-	dim.z = 0;
+    ASSERT(root.intAttr("width", &dim.x));
+    ASSERT(root.intAttr("height", &dim.y));
+    dim.z = 0;
 
-	for (XMLNode child = root.childrenNode(); child; child = child.next()) {
-		if (child.is("properties")) {
-			ASSERT(processMapProperties(child));
-		}
-		else if (child.is("tileset")) {
-			ASSERT(processTileSet(child));
-		}
-		else if (child.is("layer")) {
-			ASSERT(processLayer(child));
-		}
-		else if (child.is("objectgroup")) {
-			ASSERT(processObjectGroup(child));
-		}
-	}
+    for (XMLNode child = root.childrenNode(); child; child = child.next()) {
+        if (child.is("properties")) {
+            ASSERT(processMapProperties(child));
+        }
+        else if (child.is("tileset")) {
+            ASSERT(processTileSet(child));
+        }
+        else if (child.is("layer")) {
+            ASSERT(processLayer(child));
+        }
+        else if (child.is("objectgroup")) {
+            ASSERT(processObjectGroup(child));
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::processMapProperties(XMLNode node)
@@ -131,36 +131,36 @@ bool AreaTMX::processMapProperties(XMLNode node)
  </properties>
 */
 
-	musicIntroSet = false;
-	musicLoopSet = false;
+    musicIntroSet = false;
+    musicLoopSet = false;
 
-	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
-		std::string name = child.attr("name");
-		std::string value = child.attr("value");
-		if (name == "name")
-			this->name = value;
-		else if (name == "intro_music") {
-			musicIntro = value;
-			musicIntroSet = true;
-		}
-		else if (name == "main_music") {
-			musicLoop = value;
-			musicLoopSet = true;
-		}
-		else if (name == "loop") {
-			loopX = value.find('x') != std::string::npos;
-			loopY = value.find('y') != std::string::npos;
-		}
-		else if (name == "color_overlay") {
-			unsigned char a, r, g, b;
-			ASSERT(parseARGB(value, a, r, g, b));
-			colorOverlayARGB =
-				(uint32_t)(a << 24) + (uint32_t)(r << 16) +
-				(uint32_t)(g <<  8) + (uint32_t)b;
-		}
-	}
+    for (XMLNode child = node.childrenNode(); child; child = child.next()) {
+        std::string name = child.attr("name");
+        std::string value = child.attr("value");
+        if (name == "name")
+            this->name = value;
+        else if (name == "intro_music") {
+            musicIntro = value;
+            musicIntroSet = true;
+        }
+        else if (name == "main_music") {
+            musicLoop = value;
+            musicLoopSet = true;
+        }
+        else if (name == "loop") {
+            loopX = value.find('x') != std::string::npos;
+            loopY = value.find('y') != std::string::npos;
+        }
+        else if (name == "color_overlay") {
+            unsigned char a, r, g, b;
+            ASSERT(parseARGB(value, a, r, g, b));
+            colorOverlayARGB =
+                (uint32_t)(a << 24) + (uint32_t)(r << 16) +
+                (uint32_t)(g <<  8) + (uint32_t)b;
+        }
+    }
 
-	return true;
+    return true;
 }
 
 /**
@@ -171,8 +171,8 @@ bool AreaTMX::processMapProperties(XMLNode node)
  */
 static std::string dirname(const std::string& path)
 {
-	size_t slash = path.rfind('/');
-	return slash == std::string::npos ? "" : path.substr(0, slash + 1);
+    size_t slash = path.rfind('/');
+    return slash == std::string::npos ? "" : path.substr(0, slash + 1);
 }
 
 bool AreaTMX::processTileSet(XMLNode node)
@@ -187,111 +187,111 @@ bool AreaTMX::processTileSet(XMLNode node)
  </tileset>
 */
 
-	std::shared_ptr<XMLDoc> doc;
-	std::string source;
+    std::shared_ptr<XMLDoc> doc;
+    std::string source;
 
-	TileSet* set = NULL;
-	std::shared_ptr<TiledImage> img;
-	int tilex, tiley;
-	int firstGid;
+    TileSet* set = NULL;
+    std::shared_ptr<TiledImage> img;
+    int tilex, tiley;
+    int firstGid;
 
-	// Read firstgid from original node.
-	ASSERT(node.intAttr("firstgid", &firstGid));
+    // Read firstgid from original node.
+    ASSERT(node.intAttr("firstgid", &firstGid));
 
-	if (firstGid < 0) {
-		Log::err(descriptor, "first gid is invalid");
-		return false;
-	}
+    if (firstGid < 0) {
+        Log::err(descriptor, "first gid is invalid");
+        return false;
+    }
 
 
-	// If this node is just a reference to an external TSX file, load it
-	// and process the root tileset element of the TSX, instead.
-	source = node.attr("source");
-	if (source.size()) {
-		source = dirname(descriptor) + source;
-		if (!(doc = XMLs::instance().load(source, "tsx"))) {
-			Log::err(descriptor, source + ": failed to load valid TSX file");
-			return false;
-		}
-		ASSERT(node = doc->root()); // <tileset>
-	}
+    // If this node is just a reference to an external TSX file, load it
+    // and process the root tileset element of the TSX, instead.
+    source = node.attr("source");
+    if (source.size()) {
+        source = dirname(descriptor) + source;
+        if (!(doc = XMLs::instance().load(source, "tsx"))) {
+            Log::err(descriptor, source + ": failed to load valid TSX file");
+            return false;
+        }
+        ASSERT(node = doc->root()); // <tileset>
+    }
 
-	ASSERT(node.intAttr("tilewidth", &tilex));
-	ASSERT(node.intAttr("tileheight", &tiley));
+    ASSERT(node.intAttr("tilewidth", &tilex));
+    ASSERT(node.intAttr("tileheight", &tiley));
 
-	if (tileDim && tileDim != ivec2(tilex, tiley)) {
-		Log::err(descriptor,
-			"<tileset>'s width/height contradict earlier <layer>");
-		return false;
-	}
-	tileDim = ivec2(tilex, tiley);
+    if (tileDim && tileDim != ivec2(tilex, tiley)) {
+        Log::err(descriptor,
+            "<tileset>'s width/height contradict earlier <layer>");
+        return false;
+    }
+    tileDim = ivec2(tilex, tiley);
 
-	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
-		if (child.is("image")) {
-			int pixelw, pixelh;
-			ASSERT(child.intAttr("width", &pixelw) &&
-			       child.intAttr("height", &pixelh));
-			int width = pixelw / tileDim.x;
-			int height = pixelh / tileDim.y;
+    for (XMLNode child = node.childrenNode(); child; child = child.next()) {
+        if (child.is("image")) {
+            int pixelw, pixelh;
+            ASSERT(child.intAttr("width", &pixelw) &&
+                   child.intAttr("height", &pixelh));
+            int width = pixelw / tileDim.x;
+            int height = pixelh / tileDim.y;
 
-			assert(0 <= width);
-			assert(0 <= height);
+            assert(0 <= width);
+            assert(0 <= height);
 
-			std::string imgSource = dirname(source) + child.attr("source");
-			tileSets[imgSource] = TileSet((size_t)width,
-				(size_t)height);
-			set = &tileSets[imgSource];
+            std::string imgSource = dirname(source) + child.attr("source");
+            tileSets[imgSource] = TileSet((size_t)width,
+                (size_t)height);
+            set = &tileSets[imgSource];
 
-			// Load tileset image.
-			img = Images::instance().loadTiles(imgSource, tilex, tiley);
-			if (!img) {
-				Log::err(descriptor, "tileset image not found");
-				return false;
-			}
+            // Load tileset image.
+            img = Images::instance().loadTiles(imgSource, tilex, tiley);
+            if (!img) {
+                Log::err(descriptor, "tileset image not found");
+                return false;
+            }
 
-			// Initialize "vanilla" tile type array.
-			for (size_t i = 0; i < img->size(); i++) {
-				auto& tileImg = (*img.get())[i];
-				TileType* type = new TileType(tileImg);
-				set->add(type);
-				gids.push_back(type);
-			}
-		}
-		else if (child.is("tile")) {
-			// Handle an explicitly declared "non-vanilla" type.
+            // Initialize "vanilla" tile type array.
+            for (size_t i = 0; i < img->size(); i++) {
+                auto& tileImg = (*img.get())[i];
+                TileType* type = new TileType(tileImg);
+                set->add(type);
+                gids.push_back(type);
+            }
+        }
+        else if (child.is("tile")) {
+            // Handle an explicitly declared "non-vanilla" type.
 
-			if (!img) {
-				Log::err(descriptor,
-				  "Tile type processed before tileset image loaded");
-				return false;
-			}
+            if (!img) {
+                Log::err(descriptor,
+                  "Tile type processed before tileset image loaded");
+                return false;
+            }
 
-			// "id" is 0-based index of a tile in the current
-			// tileset, if the tileset were a flat array.
-			int id;
-			ASSERT(child.intAttr("id", &id));
+            // "id" is 0-based index of a tile in the current
+            // tileset, if the tileset were a flat array.
+            int id;
+            ASSERT(child.intAttr("id", &id));
 
-			if (id < 0 || (int)img->size() <= id) {
-				Log::err(descriptor, "tile type id is invalid");
-				return false;
-			}
+            if (id < 0 || (int)img->size() <= id) {
+                Log::err(descriptor, "tile type id is invalid");
+                return false;
+            }
 
-			// Initialize a default TileType, we'll build on that.
-			TileType* type = new TileType((*img.get())[(size_t)id]);
-			ASSERT(processTileType(child, *type, img, id));
-			// "gid" is the global area-wide id of the tile.
-			size_t gid = (size_t)id + (size_t)firstGid;
-			delete gids[gid]; // "vanilla" type
-			gids[gid] = type;
-			set->set((size_t)id, type);
-		}
-	}
+            // Initialize a default TileType, we'll build on that.
+            TileType* type = new TileType((*img.get())[(size_t)id]);
+            ASSERT(processTileType(child, *type, img, id));
+            // "gid" is the global area-wide id of the tile.
+            size_t gid = (size_t)id + (size_t)firstGid;
+            delete gids[gid]; // "vanilla" type
+            gids[gid] = type;
+            set->set((size_t)id, type);
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::processTileType(XMLNode node, TileType& type,
-		std::shared_ptr<TiledImage>& img, int id)
+        std::shared_ptr<TiledImage>& img, int id)
 {
 
 /*
@@ -311,84 +311,84 @@ bool AreaTMX::processTileType(XMLNode node, TileType& type,
   </tile>
 */
 
-	// The id has already been handled by processTileSet, so we don't have
-	// to worry about it.
+    // The id has already been handled by processTileSet, so we don't have
+    // to worry about it.
 
-	// If a Tile is animated, it needs both member frames and a speed.
-	std::vector<std::shared_ptr<Image>> framesvec;
-	int cycles = ANIM_INFINITE_CYCLES;
-	int frameLen = -1;
+    // If a Tile is animated, it needs both member frames and a speed.
+    std::vector<std::shared_ptr<Image>> framesvec;
+    int cycles = ANIM_INFINITE_CYCLES;
+    int frameLen = -1;
 
-	XMLNode child = node.childrenNode(); // <properties>
-	for (child = child.childrenNode(); child; child = child.next()) {
-		// Each <property>...
-		std::string name = child.attr("name");
-		std::string value = child.attr("value");
-		if (name == "flags") {
-			ASSERT(splitTileFlags(value, &type.flags));
-		}
-		else if (name == "on_enter") {
-			std::string scriptName = value;
-			type.enterScript = dataArea->script(scriptName);
-		}
-		else if (name == "on_leave") {
-			std::string scriptName = value;
-			type.leaveScript = dataArea->script(scriptName);
-		}
-		else if (name == "on_use") {
-			std::string scriptName = value;
-			type.useScript = dataArea->script(scriptName);
-		}
-		else if (name == "frames") {
-			std::string memtemp;
-			std::vector<std::string> frames;
-			std::vector<std::string>::iterator it;
-			memtemp = value;
-			frames = splitStr(memtemp, ",");
+    XMLNode child = node.childrenNode(); // <properties>
+    for (child = child.childrenNode(); child; child = child.next()) {
+        // Each <property>...
+        std::string name = child.attr("name");
+        std::string value = child.attr("value");
+        if (name == "flags") {
+            ASSERT(splitTileFlags(value, &type.flags));
+        }
+        else if (name == "on_enter") {
+            std::string scriptName = value;
+            type.enterScript = dataArea->script(scriptName);
+        }
+        else if (name == "on_leave") {
+            std::string scriptName = value;
+            type.leaveScript = dataArea->script(scriptName);
+        }
+        else if (name == "on_use") {
+            std::string scriptName = value;
+            type.useScript = dataArea->script(scriptName);
+        }
+        else if (name == "frames") {
+            std::string memtemp;
+            std::vector<std::string> frames;
+            std::vector<std::string>::iterator it;
+            memtemp = value;
+            frames = splitStr(memtemp, ",");
 
-			// Make sure the first member is this tile.
-			if (atoi(frames[0].c_str()) != id) {
-				Log::err(descriptor, "first member of tile"
-					" id " + itostr(id) +
-					" animation must be itself.");
-				return false;
-			}
+            // Make sure the first member is this tile.
+            if (atoi(frames[0].c_str()) != id) {
+                Log::err(descriptor, "first member of tile"
+                    " id " + itostr(id) +
+                    " animation must be itself.");
+                return false;
+            }
 
-			// Add frames to our animation.
-			// We already have one from TileType's constructor.
-			for (it = frames.begin(); it < frames.end(); it++) {
-				int idx = atoi(it->c_str());
-				if (idx < 0 || (int)img->size() <= idx) {
-					Log::err(descriptor, "frame index out "
-						"of range for animated tile");
-					return false;
-				}
-				framesvec.push_back((*img.get())[(size_t)idx]);
-			}
-		}
-		else if (name == "speed") {
-			double hertz;
-			ASSERT(child.doubleAttr("value", &hertz));
-			frameLen = (int)(1000.0/hertz);
-		}
-		else if (name == "cycles") {
-			ASSERT(child.intAttr("value", &cycles));
-		}
-	}
+            // Add frames to our animation.
+            // We already have one from TileType's constructor.
+            for (it = frames.begin(); it < frames.end(); it++) {
+                int idx = atoi(it->c_str());
+                if (idx < 0 || (int)img->size() <= idx) {
+                    Log::err(descriptor, "frame index out "
+                        "of range for animated tile");
+                    return false;
+                }
+                framesvec.push_back((*img.get())[(size_t)idx]);
+            }
+        }
+        else if (name == "speed") {
+            double hertz;
+            ASSERT(child.doubleAttr("value", &hertz));
+            frameLen = (int)(1000.0/hertz);
+        }
+        else if (name == "cycles") {
+            ASSERT(child.intAttr("value", &cycles));
+        }
+    }
 
-	if (framesvec.size() || frameLen != -1) {
-		if (framesvec.empty() || frameLen == -1) {
-			Log::err(descriptor, "tile type must either have both "
-				"frames and speed or none");
-			return false;
-		}
-		// Add 'now' to Animation constructor??
-		time_t now = World::instance().time();
-		type.anim = Animation(framesvec, frameLen);
-		type.anim.startOver(now, cycles);
-	}
+    if (framesvec.size() || frameLen != -1) {
+        if (framesvec.empty() || frameLen == -1) {
+            Log::err(descriptor, "tile type must either have both "
+                "frames and speed or none");
+            return false;
+        }
+        // Add 'now' to Animation constructor??
+        time_t now = World::instance().time();
+        type.anim = Animation(framesvec, frameLen);
+        type.anim.startOver(now, cycles);
+    }
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::processLayer(XMLNode node)
@@ -411,28 +411,28 @@ bool AreaTMX::processLayer(XMLNode node)
  </layer>
 */
 
-	int x, y;
-	double depth;
-	ASSERT(node.intAttr("width", &x));
-	ASSERT(node.intAttr("height", &y));
+    int x, y;
+    double depth;
+    ASSERT(node.intAttr("width", &x));
+    ASSERT(node.intAttr("height", &y));
 
-	if (dim.x != x || dim.y != y) {
-		Log::err(descriptor, "layer x,y size != map x,y size");
-		return false;
-	}
+    if (dim.x != x || dim.y != y) {
+        Log::err(descriptor, "layer x,y size != map x,y size");
+        return false;
+    }
 
-	allocateMapLayer();
+    allocateMapLayer();
 
-	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
-		if (child.is("properties")) {
-			ASSERT(processLayerProperties(child, &depth));
-		}
-		else if (child.is("data")) {
-			ASSERT(processLayerData(child, dim.z - 1));
-		}
-	}
+    for (XMLNode child = node.childrenNode(); child; child = child.next()) {
+        if (child.is("properties")) {
+            ASSERT(processLayerProperties(child, &depth));
+        }
+        else if (child.is("data")) {
+            ASSERT(processLayerData(child, dim.z - 1));
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::processLayerProperties(XMLNode node, double* depth)
@@ -444,29 +444,29 @@ bool AreaTMX::processLayerProperties(XMLNode node, double* depth)
   </properties>
 */
 
-	bool layerFound = false;
+    bool layerFound = false;
 
-	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
-		std::string name  = child.attr("name");
-		std::string value = child.attr("value");
-		if (name == "layer") {
-			layerFound = true;
-			ASSERT(child.doubleAttr("value", depth));
-			if (depth2idx.find(*depth) != depth2idx.end()) {
-				Log::err(descriptor,
-				         "depth used multiple times");
-				return false;
-			}
+    for (XMLNode child = node.childrenNode(); child; child = child.next()) {
+        std::string name  = child.attr("name");
+        std::string value = child.attr("value");
+        if (name == "layer") {
+            layerFound = true;
+            ASSERT(child.doubleAttr("value", depth));
+            if (depth2idx.find(*depth) != depth2idx.end()) {
+                Log::err(descriptor,
+                         "depth used multiple times");
+                return false;
+            }
 
-			depth2idx[*depth] = dim.z - 1;
-			idx2depth.push_back(*depth);
-			// Effectively idx2depth[dim.z - 1] = depth;
-		}
-	}
+            depth2idx[*depth] = dim.z - 1;
+            idx2depth.push_back(*depth);
+            // Effectively idx2depth[dim.z - 1] = depth;
+        }
+    }
 
-	if (!layerFound)
-		Log::err(descriptor, "<layer> must have layer property");
-	return layerFound;
+    if (!layerFound)
+        Log::err(descriptor, "<layer> must have layer property");
+    return layerFound;
 }
 
 bool AreaTMX::processLayerData(XMLNode node, int z)
@@ -484,37 +484,37 @@ bool AreaTMX::processLayerData(XMLNode node, int z)
   </data>
 */
 
-	assert(0 <= z && z < dim.z);
+    assert(0 <= z && z < dim.z);
 
-	size_t x = 0, y = 0;
+    size_t x = 0, y = 0;
 
-	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
-		if (child.is("tile")) {
-			int gid;
-			ASSERT(child.intAttr("gid", &gid));
+    for (XMLNode child = node.childrenNode(); child; child = child.next()) {
+        if (child.is("tile")) {
+            int gid;
+            ASSERT(child.intAttr("gid", &gid));
 
-			if (gid < 0 || (int)gids.size() <= gid) {
-				Log::err(descriptor, "invalid tile gid");
-				return false;
-			}
+            if (gid < 0 || (int)gids.size() <= gid) {
+                Log::err(descriptor, "invalid tile gid");
+                return false;
+            }
 
-			// A gid of zero means there is no tile at this
-			// position on this layer.
-			if (gid > 0) {
-				TileType* type = gids[(size_t)gid];
-				Tile& tile = map[(size_t)z][y][x];
-				type->allOfType.push_back(&tile);
-				tile.parent = type;
-			}
+            // A gid of zero means there is no tile at this
+            // position on this layer.
+            if (gid > 0) {
+                TileType* type = gids[(size_t)gid];
+                Tile& tile = map[(size_t)z][y][x];
+                type->allOfType.push_back(&tile);
+                tile.parent = type;
+            }
 
-			if (++x == (size_t)dim.x) {
-				x = 0;
-				y++;
-			}
-		}
-	}
+            if (++x == (size_t)dim.x) {
+                x = 0;
+                y++;
+            }
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::processObjectGroup(XMLNode node)
@@ -537,30 +537,30 @@ bool AreaTMX::processObjectGroup(XMLNode node)
  </objectgroup>
 */
 
-	double invalid = (double)NAN; // Not a number.
-	int x = 0, y = 0;
-	ASSERT(node.intAttr("width", &x));
-	ASSERT(node.intAttr("height", &y));
+    double invalid = (double)NAN; // Not a number.
+    int x = 0, y = 0;
+    ASSERT(node.intAttr("width", &x));
+    ASSERT(node.intAttr("height", &y));
 
-	double depth = invalid;
+    double depth = invalid;
 
-	if (x && y && (dim.x != x || dim.y != y)) {
-		Log::err(descriptor, "objectgroup x,y size != map x,y size");
-		return false;
-	}
+    if (x && y && (dim.x != x || dim.y != y)) {
+        Log::err(descriptor, "objectgroup x,y size != map x,y size");
+        return false;
+    }
 
-	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
-		if (child.is("properties")) {
-			ASSERT(processObjectGroupProperties(child, &depth));
-		}
-		else if (child.is("object")) {
-			ASSERT(depth != invalid);
-			int z = depth2idx[depth];
-			ASSERT(processObject(child, z));
-		}
-	}
+    for (XMLNode child = node.childrenNode(); child; child = child.next()) {
+        if (child.is("properties")) {
+            ASSERT(processObjectGroupProperties(child, &depth));
+        }
+        else if (child.is("object")) {
+            ASSERT(depth != invalid);
+            int z = depth2idx[depth];
+            ASSERT(processObject(child, z));
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::processObjectGroupProperties(XMLNode node, double* depth)
@@ -571,26 +571,26 @@ bool AreaTMX::processObjectGroupProperties(XMLNode node, double* depth)
    <property name="layer" value="0.0"/>
   </properties>
 */
-	bool layerFound = false;
+    bool layerFound = false;
 
-	for (XMLNode child = node.childrenNode(); child; child = child.next()) {
-		std::string name = child.attr("name");
-		std::string value = child.attr("value");
-		if (name == "layer") {
-			layerFound = true;
-			ASSERT(child.doubleAttr("value", depth));
-			if (depth2idx.find(*depth) == depth2idx.end()) {
-				allocateMapLayer();
-				depth2idx[*depth] = dim.z - 1;
-				idx2depth.push_back(*depth);
-				// Effectively idx2depth[dim.z - 1] = depth;
-			}
-		}
-	}
+    for (XMLNode child = node.childrenNode(); child; child = child.next()) {
+        std::string name = child.attr("name");
+        std::string value = child.attr("value");
+        if (name == "layer") {
+            layerFound = true;
+            ASSERT(child.doubleAttr("value", depth));
+            if (depth2idx.find(*depth) == depth2idx.end()) {
+                allocateMapLayer();
+                depth2idx[*depth] = dim.z - 1;
+                idx2depth.push_back(*depth);
+                // Effectively idx2depth[dim.z - 1] = depth;
+            }
+        }
+    }
 
-	if (!layerFound)
-		Log::err(descriptor, "<objectgroup> must have layer property");
-	return layerFound;
+    if (!layerFound)
+        Log::err(descriptor, "<objectgroup> must have layer property");
+    return layerFound;
 }
 
 bool AreaTMX::processObject(XMLNode node, int z)
@@ -611,176 +611,176 @@ bool AreaTMX::processObject(XMLNode node, int z)
   </object>
 */
 
-	assert(0 <= z && z < dim.z);
+    assert(0 <= z && z < dim.z);
 
-	// Gather object properties now. Assign them to tiles later.
-	bool wwide[5], hwide[5]; /* wide exit in dimensions: width, height */
+    // Gather object properties now. Assign them to tiles later.
+    bool wwide[5], hwide[5]; /* wide exit in dimensions: width, height */
 
-	DataArea::TileScript enterScript = NULL, leaveScript = NULL,
-		useScript = NULL;
-	std::unique_ptr<Exit> exit[5];
-	std::unique_ptr<double> layermods[5];
-	unsigned flags = 0x0;
+    DataArea::TileScript enterScript = NULL, leaveScript = NULL,
+        useScript = NULL;
+    std::unique_ptr<Exit> exit[5];
+    std::unique_ptr<double> layermods[5];
+    unsigned flags = 0x0;
 
-	XMLNode child = node.childrenNode(); // <properties>
-	if (!child) {
-		// Empty <object> element. Odd, but acceptable.
-		return true;
-	}
-	for (child = child.childrenNode(); child; child = child.next()) {
-		// Each <property>...
-		std::string name = child.attr("name");
-		std::string value = child.attr("value");
-		if (name == "flags") {
-			ASSERT(splitTileFlags(value, &flags));
-		}
-		else if (name == "on_enter") {
-			std::string scriptName = value;
-			enterScript = dataArea->script(scriptName);
-		}
-		else if (name == "on_leave") {
-			std::string scriptName = value;
-			leaveScript = dataArea->script(scriptName);
-		}
-		else if (name == "on_use") {
-			std::string scriptName = value;
-			useScript = dataArea->script(scriptName);
-		}
-		else if (name == "exit") {
-			exit[EXIT_NORMAL].reset(new Exit);
-			ASSERT(parseExit(value, exit[EXIT_NORMAL].get(), &wwide[EXIT_NORMAL], &hwide[EXIT_NORMAL]));
-			flags |= TILE_NOWALK_NPC;
-		}
-		else if (name == "exit:up") {
-			exit[EXIT_UP].reset(new Exit);
-			ASSERT(parseExit(value, exit[EXIT_UP].get(), &wwide[EXIT_UP], &hwide[EXIT_UP]));
-		}
-		else if (name == "exit:down") {
-			exit[EXIT_DOWN].reset(new Exit);
-			ASSERT(parseExit(value, exit[EXIT_DOWN].get(), &wwide[EXIT_DOWN], &hwide[EXIT_DOWN]));
-		}
-		else if (name == "exit:left") {
-			exit[EXIT_LEFT].reset(new Exit);
-			ASSERT(parseExit(value, exit[EXIT_LEFT].get(), &wwide[EXIT_LEFT], &hwide[EXIT_LEFT]));
-		}
-		else if (name == "exit:right") {
-			exit[EXIT_RIGHT].reset(new Exit);
-			ASSERT(parseExit(value, exit[EXIT_RIGHT].get(), &wwide[EXIT_RIGHT], &hwide[EXIT_RIGHT]));
-		}
-		else if (name == "layermod") {
-			double mod;
-			ASSERT(child.doubleAttr("value", &mod));
-			layermods[EXIT_NORMAL].reset(new double(mod));
-			flags |= TILE_NOWALK_NPC;
-		}
-		else if (name == "layermod:up") {
-			double mod;
-			ASSERT(child.doubleAttr("value", &mod));
-			layermods[EXIT_UP].reset(new double(mod));
-		}
-		else if (name == "layermod:down") {
-			double mod;
-			ASSERT(child.doubleAttr("value", &mod));
-			layermods[EXIT_DOWN].reset(new double(mod));
-		}
-		else if (name == "layermod:left") {
-			double mod;
-			ASSERT(child.doubleAttr("value", &mod));
-			layermods[EXIT_LEFT].reset(new double(mod));
-		}
-		else if (name == "layermod:right") {
-			double mod;
-			ASSERT(child.doubleAttr("value", &mod));
-			layermods[EXIT_RIGHT].reset(new double(mod));
-		}
-	}
+    XMLNode child = node.childrenNode(); // <properties>
+    if (!child) {
+        // Empty <object> element. Odd, but acceptable.
+        return true;
+    }
+    for (child = child.childrenNode(); child; child = child.next()) {
+        // Each <property>...
+        std::string name = child.attr("name");
+        std::string value = child.attr("value");
+        if (name == "flags") {
+            ASSERT(splitTileFlags(value, &flags));
+        }
+        else if (name == "on_enter") {
+            std::string scriptName = value;
+            enterScript = dataArea->script(scriptName);
+        }
+        else if (name == "on_leave") {
+            std::string scriptName = value;
+            leaveScript = dataArea->script(scriptName);
+        }
+        else if (name == "on_use") {
+            std::string scriptName = value;
+            useScript = dataArea->script(scriptName);
+        }
+        else if (name == "exit") {
+            exit[EXIT_NORMAL].reset(new Exit);
+            ASSERT(parseExit(value, exit[EXIT_NORMAL].get(), &wwide[EXIT_NORMAL], &hwide[EXIT_NORMAL]));
+            flags |= TILE_NOWALK_NPC;
+        }
+        else if (name == "exit:up") {
+            exit[EXIT_UP].reset(new Exit);
+            ASSERT(parseExit(value, exit[EXIT_UP].get(), &wwide[EXIT_UP], &hwide[EXIT_UP]));
+        }
+        else if (name == "exit:down") {
+            exit[EXIT_DOWN].reset(new Exit);
+            ASSERT(parseExit(value, exit[EXIT_DOWN].get(), &wwide[EXIT_DOWN], &hwide[EXIT_DOWN]));
+        }
+        else if (name == "exit:left") {
+            exit[EXIT_LEFT].reset(new Exit);
+            ASSERT(parseExit(value, exit[EXIT_LEFT].get(), &wwide[EXIT_LEFT], &hwide[EXIT_LEFT]));
+        }
+        else if (name == "exit:right") {
+            exit[EXIT_RIGHT].reset(new Exit);
+            ASSERT(parseExit(value, exit[EXIT_RIGHT].get(), &wwide[EXIT_RIGHT], &hwide[EXIT_RIGHT]));
+        }
+        else if (name == "layermod") {
+            double mod;
+            ASSERT(child.doubleAttr("value", &mod));
+            layermods[EXIT_NORMAL].reset(new double(mod));
+            flags |= TILE_NOWALK_NPC;
+        }
+        else if (name == "layermod:up") {
+            double mod;
+            ASSERT(child.doubleAttr("value", &mod));
+            layermods[EXIT_UP].reset(new double(mod));
+        }
+        else if (name == "layermod:down") {
+            double mod;
+            ASSERT(child.doubleAttr("value", &mod));
+            layermods[EXIT_DOWN].reset(new double(mod));
+        }
+        else if (name == "layermod:left") {
+            double mod;
+            ASSERT(child.doubleAttr("value", &mod));
+            layermods[EXIT_LEFT].reset(new double(mod));
+        }
+        else if (name == "layermod:right") {
+            double mod;
+            ASSERT(child.doubleAttr("value", &mod));
+            layermods[EXIT_RIGHT].reset(new double(mod));
+        }
+    }
 
-	// Apply these properties directly to one or more tiles in a rectangle
-	// of the map. We don't keep an intermediary "object" object lying
-	// around.
-	int x, y, w, h;
-	ASSERT(node.intAttr("x", &x));
-	ASSERT(node.intAttr("y", &y));
+    // Apply these properties directly to one or more tiles in a rectangle
+    // of the map. We don't keep an intermediary "object" object lying
+    // around.
+    int x, y, w, h;
+    ASSERT(node.intAttr("x", &x));
+    ASSERT(node.intAttr("y", &y));
 
-	x /= tileDim.x;
-	y /= tileDim.y;
+    x /= tileDim.x;
+    y /= tileDim.y;
 
-	assert(0 <= x && x < dim.x);
-	assert(0 <= y && y < dim.y);
+    assert(0 <= x && x < dim.x);
+    assert(0 <= y && y < dim.y);
 
-	if (node.hasAttr("gid")) {
-		// This is one of Tiled's "Tile Objects". It is one tile wide
-		// and high.
+    if (node.hasAttr("gid")) {
+        // This is one of Tiled's "Tile Objects". It is one tile wide
+        // and high.
 
-		// Bug in tiled. The y is off by one. The author of the format
-		// knows about this, but it will not change.
-		y = y - 1;
-		w = 1;
-		h = 1;
+        // Bug in tiled. The y is off by one. The author of the format
+        // knows about this, but it will not change.
+        y = y - 1;
+        w = 1;
+        h = 1;
 
-		// We don't actually use the object gid. It is supposed to
-		// indicate which tile our object is rendered as, but for
-		// Tsunagari, tile objects are always transparent and reveal
-		// the tile below.
-	}
-	else {
-		// This is one of Tiled's "Objects". It has a width and height.
-		ASSERT(node.intAttr("width", &w));
-		ASSERT(node.intAttr("height", &h));
-		w /= tileDim.x;
-		h /= tileDim.y;
+        // We don't actually use the object gid. It is supposed to
+        // indicate which tile our object is rendered as, but for
+        // Tsunagari, tile objects are always transparent and reveal
+        // the tile below.
+    }
+    else {
+        // This is one of Tiled's "Objects". It has a width and height.
+        ASSERT(node.intAttr("width", &w));
+        ASSERT(node.intAttr("height", &h));
+        w /= tileDim.x;
+        h /= tileDim.y;
 
-		assert(0 < w && w <= dim.x);
-		assert(0 < h && h <= dim.y);
-	}
+        assert(0 < w && w <= dim.x);
+        assert(0 < h && h <= dim.y);
+    }
 
-	// We know which Tiles are being talked about now... yay
-	for (int Y = y; Y < y + h; Y++) {
-		for (int X = x; X < x + w; X++) {
-			Tile& tile = map[(size_t)z][(size_t)Y][(size_t)X];
+    // We know which Tiles are being talked about now... yay
+    for (int Y = y; Y < y + h; Y++) {
+        for (int X = x; X < x + w; X++) {
+            Tile& tile = map[(size_t)z][(size_t)Y][(size_t)X];
 
-			tile.flags |= flags;
-			for (size_t i = 0; i < 5; i++) {
-				if (exit[i]) {
-					tile.exits[i] = new Exit(*exit[i].get());
-					int dx = X - x;
-					int dy = Y - y;
-					if (wwide[i])
-						tile.exits[i]->coords.x += dx;
-					if (hwide[i])
-						tile.exits[i]->coords.y += dy;
-				}
-			}
-			for (size_t i = 0; i < 5; i++)
-				tile.layermods[i] = layermods[i] ? new double(*layermods[i].get()) : NULL;
-			tile.enterScript = enterScript;
-			tile.leaveScript = leaveScript;
-			tile.useScript = useScript;
-		}
-	}
+            tile.flags |= flags;
+            for (size_t i = 0; i < 5; i++) {
+                if (exit[i]) {
+                    tile.exits[i] = new Exit(*exit[i].get());
+                    int dx = X - x;
+                    int dy = Y - y;
+                    if (wwide[i])
+                        tile.exits[i]->coords.x += dx;
+                    if (hwide[i])
+                        tile.exits[i]->coords.y += dy;
+                }
+            }
+            for (size_t i = 0; i < 5; i++)
+                tile.layermods[i] = layermods[i] ? new double(*layermods[i].get()) : NULL;
+            tile.enterScript = enterScript;
+            tile.leaveScript = leaveScript;
+            tile.useScript = useScript;
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::splitTileFlags(const std::string& strOfFlags, unsigned* flags)
 {
-	typedef std::vector<std::string> StringVector;
-	StringVector strs = splitStr(strOfFlags, ",");
+    typedef std::vector<std::string> StringVector;
+    StringVector strs = splitStr(strOfFlags, ",");
 
-	for (StringVector::const_iterator it = strs.begin(); it != strs.end(); it++) {
-		const std::string& str = *it;
-		if (str == "nowalk")
-			*flags |= TILE_NOWALK;
-		else if (str == "nowalk_player")
-			*flags |= TILE_NOWALK_PLAYER;
-		else if (str == "nowalk_npc")
-			*flags |= TILE_NOWALK_NPC;
-		else {
-			Log::err(descriptor, "invalid tile flag: " + str);
-			return false;
-		}
-	}
-	return true;
+    for (StringVector::const_iterator it = strs.begin(); it != strs.end(); it++) {
+        const std::string& str = *it;
+        if (str == "nowalk")
+            *flags |= TILE_NOWALK;
+        else if (str == "nowalk_player")
+            *flags |= TILE_NOWALK_PLAYER;
+        else if (str == "nowalk_npc")
+            *flags |= TILE_NOWALK_NPC;
+        else {
+            Log::err(descriptor, "invalid tile flag: " + str);
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
@@ -788,32 +788,32 @@ bool AreaTMX::splitTileFlags(const std::string& strOfFlags, unsigned* flags)
  */
 static bool isIntegerOrPlus(const std::string& s)
 {
-	const int space = 0;
-	const int digit = 1;
-	const int sign = 2;
+    const int space = 0;
+    const int digit = 1;
+    const int sign = 2;
 
-	int state = space;
+    int state = space;
 
-	for (size_t i = 0; i < s.size(); i++) {
-		char c = s[i];
-		if (state == space) {
-		       if (isspace(c)) continue;
-		       else state++;
-		}
-		if (state == digit) {
-			if (isdigit(c)) continue;
-			else state++;
-		}
-		if (state == sign) {
-			if (c == '+') return true;
-			else return false;
-		}
-	}
-	return true;
+    for (size_t i = 0; i < s.size(); i++) {
+        char c = s[i];
+        if (state == space) {
+               if (isspace(c)) continue;
+               else state++;
+        }
+        if (state == digit) {
+            if (isdigit(c)) continue;
+            else state++;
+        }
+        if (state == sign) {
+            if (c == '+') return true;
+            else return false;
+        }
+    }
+    return true;
 }
 
 bool AreaTMX::parseExit(const std::string& dest, Exit* exit,
-	bool* wwide, bool* hwide)
+    bool* wwide, bool* hwide)
 {
 
 /*
@@ -821,64 +821,64 @@ bool AreaTMX::parseExit(const std::string& dest, Exit* exit,
   E.g.:   "babysfirst.area,1,3,0"
 */
 
-	std::vector<std::string> strs = splitStr(dest, ",");
+    std::vector<std::string> strs = splitStr(dest, ",");
 
-	if (strs.size() != 4) {
-		Log::err(descriptor, "<exit />: invalid format");
-		return false;
-	}
+    if (strs.size() != 4) {
+        Log::err(descriptor, "<exit />: invalid format");
+        return false;
+    }
 
-	std::string area = strs[0],
-	            xstr = strs[1],
-	            ystr = strs[2],
-		    zstr = strs[3];
+    std::string area = strs[0],
+                xstr = strs[1],
+                ystr = strs[2],
+            zstr = strs[3];
 
-	if (!isIntegerOrPlus(xstr) ||
-	    !isIntegerOrPlus(ystr) ||
-	    !isIntegerOrPlus(zstr)) {
-		Log::err(descriptor, "<exit />: invalid format");
-		return false;
-	}
+    if (!isIntegerOrPlus(xstr) ||
+        !isIntegerOrPlus(ystr) ||
+        !isIntegerOrPlus(zstr)) {
+        Log::err(descriptor, "<exit />: invalid format");
+        return false;
+    }
 
-	exit->area = area;
-	exit->coords.x = atoi(xstr.c_str());
-	exit->coords.y = atoi(ystr.c_str());
-	exit->coords.z = atof(zstr.c_str());
+    exit->area = area;
+    exit->coords.x = atoi(xstr.c_str());
+    exit->coords.y = atoi(ystr.c_str());
+    exit->coords.z = atof(zstr.c_str());
 
-	*wwide = xstr.find('+') != std::string::npos;
-	*hwide = ystr.find('+') != std::string::npos;
+    *wwide = xstr.find('+') != std::string::npos;
+    *hwide = ystr.find('+') != std::string::npos;
 
-	return true;
+    return true;
 }
 
 bool AreaTMX::parseARGB(const std::string& str,
-	unsigned char& a, unsigned char& r,
-	unsigned char& g, unsigned char& b)
+    unsigned char& a, unsigned char& r,
+    unsigned char& g, unsigned char& b)
 {
-	std::vector<std::string> strs = splitStr(str, ",");
+    std::vector<std::string> strs = splitStr(str, ",");
 
-	if (strs.size() != 4) {
-		Log::err(descriptor, "invalid ARGB format");
-		return false;
-	}
+    if (strs.size() != 4) {
+        Log::err(descriptor, "invalid ARGB format");
+        return false;
+    }
 
-	unsigned char* channels[] = { &a, &r, &g, &b };
+    unsigned char* channels[] = { &a, &r, &g, &b };
 
-	for (size_t i = 0; i < 4; i++) {
-		std::string s = strs[i];
-		if (!isInteger(s)) {
-			Log::err(descriptor, "invalid ARGB format");
-			return false;
-		}
-		int v = atoi(s.c_str());
-		if (!(0 <= v && v < 256)) {
-			Log::err(descriptor,
-				"ARGB values must be between 0 and 255");
-			return false;
-		}
-		*channels[i] = (unsigned char)v;
-	}
+    for (size_t i = 0; i < 4; i++) {
+        std::string s = strs[i];
+        if (!isInteger(s)) {
+            Log::err(descriptor, "invalid ARGB format");
+            return false;
+        }
+        int v = atoi(s.c_str());
+        if (!(0 <= v && v < 256)) {
+            Log::err(descriptor,
+                "ARGB values must be between 0 and 255");
+            return false;
+        }
+        *channels[i] = (unsigned char)v;
+    }
 
-	return true;
+    return true;
 }
 

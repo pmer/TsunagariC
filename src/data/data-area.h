@@ -42,47 +42,47 @@ class Tile;
 class DataArea
 {
 public:
-	typedef void (DataArea::* TileScript)(Entity& triggeredBy, Tile& tile);
-	typedef std::function<void (double)> ProgressFn;
-	typedef std::function<void ()> ThenFn;
+    typedef void (DataArea::* TileScript)(Entity& triggeredBy, Tile& tile);
+    typedef std::function<void (double)> ProgressFn;
+    typedef std::function<void ()> ThenFn;
 
-	virtual ~DataArea();
+    virtual ~DataArea();
 
-	Area* area; // borrowed reference
+    Area* area; // borrowed reference
 
-	virtual void onLoad();
-	virtual void onFocus();
-	virtual void onTick(time_t dt);
-	virtual void onTurn();
+    virtual void onLoad();
+    virtual void onFocus();
+    virtual void onTick(time_t dt);
+    virtual void onTurn();
 
-	// For scripts
+    // For scripts
 
-	//! Play a sound with a 10% speed variation applied to it.
-	void playSoundEffect(const std::string& sound);
+    //! Play a sound with a 10% speed variation applied to it.
+    void playSoundEffect(const std::string& sound);
 
-	void playSoundAndThen(const std::string& sound, ThenFn then);
-	void timerProgress(time_t duration, ProgressFn progress);
-	void timerThen(time_t duration, ThenFn then);
-	void timerProgressAndThen(time_t duration, ProgressFn progress,
-		ThenFn then);
+    void playSoundAndThen(const std::string& sound, ThenFn then);
+    void timerProgress(time_t duration, ProgressFn progress);
+    void timerThen(time_t duration, ThenFn then);
+    void timerProgressAndThen(time_t duration, ProgressFn progress,
+        ThenFn then);
 
-	// For engine
-	void tick(time_t dt);
-	void turn();
-	TileScript script(const std::string& scriptName);
+    // For engine
+    void tick(time_t dt);
+    void turn();
+    TileScript script(const std::string& scriptName);
 
 protected:
-	DataArea();
+    DataArea();
 
-	std::map<std::string,TileScript> scripts;
+    std::map<std::string,TileScript> scripts;
 
 private:
-	DataArea(const DataArea&) = delete;
-	DataArea(DataArea&&) = delete;
-	DataArea& operator=(const DataArea&) = delete;
-	DataArea& operator=(DataArea&&) = delete;
+    DataArea(const DataArea&) = delete;
+    DataArea(DataArea&&) = delete;
+    DataArea& operator=(const DataArea&) = delete;
+    DataArea& operator=(DataArea&&) = delete;
 
-	std::vector<std::unique_ptr<InProgress>> inProgresses;
+    std::vector<std::unique_ptr<InProgress>> inProgresses;
 };
 
 #endif

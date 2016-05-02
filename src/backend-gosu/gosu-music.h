@@ -32,37 +32,37 @@
 #include "../readercache.h"
 
 namespace Gosu {
-	class Song;
+    class Song;
 }
 
 class GosuMusic : public Music
 {
 public:
-	GosuMusic();
-	~GosuMusic();
+    GosuMusic();
+    ~GosuMusic();
 
-	bool setIntro(const std::string& filename);
-	bool setLoop(const std::string& filename);
+    bool setIntro(const std::string& filename);
+    bool setLoop(const std::string& filename);
 
-	bool playing();
-	void stop();
+    bool playing();
+    void stop();
 
-	void pause();
-	void resume();
+    void pause();
+    void resume();
 
-	void setVolume(double volume);
+    void setVolume(double volume);
 
-	void tick();
+    void tick();
 
-	void garbageCollect();
+    void garbageCollect();
 
 private:
-	void playIntro();
-	void playLoop();
+    void playIntro();
+    void playLoop();
 
-	std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
+    std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
 
-	ReaderCache<std::shared_ptr<Gosu::Song>> songs;
+    ReaderCache<std::shared_ptr<Gosu::Song>> songs;
 };
 
 #endif

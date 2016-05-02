@@ -30,12 +30,12 @@ NPC::NPC() {}
 
 void NPC::arrived()
 {
-	Entity::arrived();
+    Entity::arrived();
 
-	if (destExit) {
-		moving = false; // Prevent time rollover check in
-		                // Entity::moveTowardDestination().
-		destroy();
-	}
+    if (destExit) {
+        moving = false; // Prevent time rollover check in
+                        // Entity::moveTowardDestination().
+        destroy();
+    }
 }
 

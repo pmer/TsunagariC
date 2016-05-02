@@ -38,33 +38,33 @@ Overlay::~Overlay()
 
 void Overlay::tick(time_t dt)
 {
-	Entity::tick(dt);
-	moveTowardDestination(dt);
+    Entity::tick(dt);
+    moveTowardDestination(dt);
 }
 
 void Overlay::teleport(vicoord coord)
 {
-	r = area->virt2virt(coord);
-	redraw = true;
+    r = area->virt2virt(coord);
+    redraw = true;
 }
 
 void Overlay::drift(ivec2 xy)
 {
-	driftTo(ivec2((int)r.x + xy.x, (int)r.y + xy.y));
+    driftTo(ivec2((int)r.x + xy.x, (int)r.y + xy.y));
 }
 
 void Overlay::driftTo(ivec2 xy)
 {
-	setDestinationCoordinate(rcoord(xy.x, xy.y, r.z));
-	pickFacingForAngle();
-	moving = true;
-	setAnimationMoving();
+    setDestinationCoordinate(rcoord(xy.x, xy.y, r.z));
+    pickFacingForAngle();
+    moving = true;
+    setAnimationMoving();
 
-	// Movement happens in Entity::moveTowardDestination() during tick().
+    // Movement happens in Entity::moveTowardDestination() during tick().
 }
 
 void Overlay::pickFacingForAngle()
 {
-	// TODO
+    // TODO
 }
 

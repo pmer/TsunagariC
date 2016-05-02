@@ -33,19 +33,19 @@
 class Resource
 {
 public:
-	virtual ~Resource() = default;
+    virtual ~Resource() = default;
 
-	virtual const void* data() = 0;
-	virtual size_t size() = 0;
+    virtual const void* data() = 0;
+    virtual size_t size() = 0;
 
-	const std::string asString();
+    const std::string asString();
 
 protected:
-	Resource() = default;
+    Resource() = default;
 
 private:
-	Resource(const Resource&) = delete;
-	Resource& operator=(const Resource&) = delete;
+    Resource(const Resource&) = delete;
+    Resource& operator=(const Resource&) = delete;
 };
 
 
@@ -56,23 +56,23 @@ private:
 class Resources
 {
 public:
-	//! Acquire the global Resources object.
-	static Resources& instance();
+    //! Acquire the global Resources object.
+    static Resources& instance();
 
-	virtual ~Resources() = default;
+    virtual ~Resources() = default;
 
-	//! Load a resource from the file at the given path.
-	//! Returns NULL if the resource does not exist.
-	virtual std::unique_ptr<Resource> load(const std::string& path) = 0;
+    //! Load a resource from the file at the given path.
+    //! Returns NULL if the resource does not exist.
+    virtual std::unique_ptr<Resource> load(const std::string& path) = 0;
 
 protected:
-	Resources() = default;
+    Resources() = default;
 
 private:
-	Resources(const Resources&) = delete;
-	Resources(Resources&&) = delete;
-	Resources& operator=(const Resources&) = delete;
-	Resources& operator=(Resources&&) = delete;
+    Resources(const Resources&) = delete;
+    Resources(Resources&&) = delete;
+    Resources& operator=(const Resources&) = delete;
+    Resources& operator=(Resources&&) = delete;
 };
 
 #endif

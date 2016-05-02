@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** gosu-music.cpp                     **
 ** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2015 Paul Merrill        **
 ***************************************/
 
 // **********
@@ -28,30 +29,35 @@
 
 #include "../client-conf.h"
 #include "../resources.h"
+#include "../time.h"
 
 #include "gosu-cbuffer.h"
 #include "gosu-music.h"
 
-static std::shared_ptr<Gosu::Song> genSong(const std::string& name)
-{
-	std::unique_ptr<Resource> r = Resources::instance().load(name);
-	if (!r) {
-		// Error logged.
-		return std::shared_ptr<Gosu::Song>();
-	}
-	GosuCBuffer buffer(r->data(), r->size());
-	return std::shared_ptr<Gosu::Song>(
-		new Gosu::Song(buffer.frontReader())
-	);
-}
-
-
+#ifdef BACKEND_GOSU
 static GosuMusic globalMusic;
 
 Music& Music::instance()
 {
-	return globalMusic;
+    return globalMusic;
 }
+#endif
+
+static std::shared_ptr<Gosu::Song> genSong(const std::string& name)
+{
+    std::unique_ptr<Resource> r = Resources::instance().load(name);
+    if (!r) {
+        // Error logged.
+        return std::shared_ptr<Gosu::Song>();
+    }
+    GosuCBuffer buffer(r->data(), r->size());
+
+    TimeMeasure m("Constructed " + name + " as music");
+    return std::shared_ptr<Gosu::Song>(
+        new Gosu::Song(buffer.frontReader())
+    );
+}
+
 
 
 GosuMusic::GosuMusic() : songs(genSong)
@@ -60,129 +66,131 @@ GosuMusic::GosuMusic() : songs(genSong)
 
 GosuMusic::~GosuMusic()
 {
-	if (musicInst && musicInst->playing())
-		musicInst->stop();
+    if (musicInst && musicInst->playing())
+        musicInst->stop();
 }
 
 bool GosuMusic::setIntro(const std::string& filepath)
 {
-	if (Music::setIntro(filepath)) {
-		// Optimize XXX: Don't load until played.
-		introMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
-			std::shared_ptr<Gosu::Song>();
-		return true;
-	}
-	else
-		return false;
+    if (Music::setIntro(filepath)) {
+        // Optimize XXX: Don't load until played.
+        introMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
+            std::shared_ptr<Gosu::Song>();
+        return true;
+    }
+    else
+        return false;
 }
 
 bool GosuMusic::setLoop(const std::string& filepath)
 {
-	if (Music::setLoop(filepath)) {
-		// Optimize XXX: Don't load until played.
-		loopMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
-			std::shared_ptr<Gosu::Song>();
-		return true;
-	}
-	else
-		return false;
+    if (Music::setLoop(filepath)) {
+        // Optimize XXX: Don't load until played.
+        loopMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
+            std::shared_ptr<Gosu::Song>();
+        return true;
+    }
+    else
+        return false;
 }
 
 bool GosuMusic::playing()
 {
-	if (musicInst)
-		return musicInst->playing();
-	else
-		return false;
+    if (musicInst)
+        return musicInst->playing();
+    else
+        return false;
 }
 
 void GosuMusic::stop()
 {
-	Music::stop();
-	if (musicInst)
-		musicInst->stop();
-	musicInst = introMusic = loopMusic = std::shared_ptr<Gosu::Song>();
+    Music::stop();
+    if (musicInst)
+        musicInst->stop();
+    musicInst = introMusic = loopMusic = std::shared_ptr<Gosu::Song>();
 }
 
 void GosuMusic::pause()
 {
-	Music::pause();
-	if (pausedCount == 1 && musicInst)
-		musicInst->pause();
+    Music::pause();
+    if (pausedCount == 1 && musicInst)
+        musicInst->pause();
 }
 
 void GosuMusic::resume()
 {
-	Music::resume();
-	if (pausedCount == 0 && musicInst)
-		musicInst->play();
+    Music::resume();
+    if (pausedCount == 0 && musicInst)
+        musicInst->play();
 }
 
 void GosuMusic::setVolume(double level)
 {
-	if (musicInst)
-		musicInst->changeVolume(level);
+    if (musicInst)
+        musicInst->changeVolume(level);
 }
 
 void GosuMusic::tick()
 {
-	switch (state) {
-	case NOT_PLAYING:
-		if (musicInst && musicInst->playing())
-			musicInst->stop();
-		break;
-	case PLAYING_INTRO:
-		if (!musicInst->playing()) {
-			if (newLoop.size() && loopMusic)
-				playLoop();
-			else
-				state = NOT_PLAYING;
-		}
-		break;
-	case PLAYING_LOOP:
-		break;
-	case CHANGED_INTRO:
-		if (newIntro.size() && introMusic)
-			playIntro();
-		else if (newLoop.size() && newLoop != curLoop)
-			state = CHANGED_LOOP;
-		else if (newLoop.size())
-			state = PLAYING_LOOP;
-		else
-			state = NOT_PLAYING;
-		break;
-	case CHANGED_LOOP:
-		if (newIntro.size() && loopMusic)
-			playIntro();
-		else if (newLoop.size() && loopMusic)
-			playLoop();
-		else
-			state = NOT_PLAYING;
-		break;
-	}
+    switch (state) {
+    case NOT_PLAYING:
+        if (musicInst && musicInst->playing())
+            musicInst->stop();
+        break;
+    case PLAYING_INTRO:
+        if (!musicInst->playing()) {
+            if (newLoop.size() && loopMusic)
+                playLoop();
+            else
+                state = NOT_PLAYING;
+        }
+        break;
+    case PLAYING_LOOP:
+        break;
+    case CHANGED_INTRO:
+        if (newIntro.size() && introMusic)
+            playIntro();
+        else if (newLoop.size() && newLoop != curLoop)
+            state = CHANGED_LOOP;
+        else if (newLoop.size())
+            state = PLAYING_LOOP;
+        else
+            state = NOT_PLAYING;
+        break;
+    case CHANGED_LOOP:
+        if (newIntro.size() && loopMusic)
+            playIntro();
+        else if (newLoop.size() && loopMusic)
+            playLoop();
+        else
+            state = NOT_PLAYING;
+        break;
+    }
 }
 
 void GosuMusic::playIntro()
 {
-	Music::playIntro();
-	if (musicInst && musicInst->playing())
-		musicInst->stop();
-	introMusic->play(false);
-	introMusic->changeVolume(volume);
-	musicInst = introMusic;
+    TimeMeasure m("Playing " + newIntro + " as intro");
+    Music::playIntro();
+    if (musicInst && musicInst->playing())
+        musicInst->stop();
+    introMusic->play(false);
+    introMusic->changeVolume(volume);
+    musicInst = introMusic;
 }
 
 void GosuMusic::playLoop()
 {
-	Music::playLoop();
-	if (musicInst && musicInst->playing())
-		musicInst->stop();
-	loopMusic->play(true);
-	loopMusic->changeVolume(volume);
-	musicInst = loopMusic;
+    TimeMeasure m("Playing " + newLoop + " as loop");
+    Music::playLoop();
+    if (musicInst && musicInst->playing())
+        musicInst->stop();
+    loopMusic->play(true);
+    loopMusic->changeVolume(volume);
+    musicInst = loopMusic;
 }
 
 void GosuMusic::garbageCollect()
 {
-	songs.garbageCollect();
+    songs.garbageCollect();
 }

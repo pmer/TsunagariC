@@ -31,5 +31,5 @@ DataWorld::~DataWorld() {}
 
 DataArea* DataWorld::area(const std::string& areaName)
 {
-	return &*areas[areaName];
+    return &*areas[areaName];
 }

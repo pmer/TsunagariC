@@ -49,133 +49,133 @@ class Player;
 class World
 {
 public:
-	/**
-	 * Get the currently open World.
-	 */
-	static World& instance();
+    /**
+     * Get the currently open World.
+     */
+    static World& instance();
 
-	World();
-	~World();
+    World();
+    ~World();
 
-	/**
-	 * Initialize the world for use.
-	 */
-	bool init();
+    /**
+     * Initialize the world for use.
+     */
+    bool init();
 
-	/**
-	 * Syncronized time value used throughout the engine.
-	 */
-	time_t time() const;
+    /**
+     * Syncronized time value used throughout the engine.
+     */
+    time_t time() const;
 
-	/**
-	 * Process key presses.
-	 */
-	void buttonDown(KeyboardKey btn);
-	void buttonUp(KeyboardKey btn);
+    /**
+     * Process key presses.
+     */
+    void buttonDown(KeyboardKey btn);
+    void buttonUp(KeyboardKey btn);
 
-	/**
-	 * Draw game state to the screen.
-	 */
-	void draw();
+    /**
+     * Draw game state to the screen.
+     */
+    void draw();
 
-	/**
-	 * Do we need to redraw the screen?
-	 */
-	bool needsRedraw() const;
+    /**
+     * Do we need to redraw the screen?
+     */
+    bool needsRedraw() const;
 
-	void update(time_t now);
+    void update(time_t now);
 
-	/**
-	 * Updates the game state within this World as if dt milliseconds had
-	 * passed since the last call.
-	 *
-	 *                       MOVE MODE
-	 *                 TURN     TILE     NOTILE
-	 * Area	           yes      yes      yes
-	 * Character       no       yes      yes
-	 * Overlay         yes      yes      yes
-	 */
-	void tick(time_t dt);
+    /**
+     * Updates the game state within this World as if dt milliseconds had
+     * passed since the last call.
+     *
+     *                       MOVE MODE
+     *                 TURN     TILE     NOTILE
+     * Area               yes      yes      yes
+     * Character       no       yes      yes
+     * Overlay         yes      yes      yes
+     */
+    void tick(time_t dt);
 
-	/**
-	 * Update the game world when the turn is over (Player moves).
-	 *
-	 *                       MOVE MODE
-	 *                 TURN     TILE     NOTILE
-	 * Area	           yes      no       no
-	 * Character       yes      no       no
-	 * Overlay         yes      no       no
-	 */
-	void turn();
+    /**
+     * Update the game world when the turn is over (Player moves).
+     *
+     *                       MOVE MODE
+     *                 TURN     TILE     NOTILE
+     * Area               yes      no       no
+     * Character       yes      no       no
+     * Overlay         yes      no       no
+     */
+    void turn();
 
-	/**
-	 * Create a new Area object, loading from the appropriate files. If
-	 * the Area has already been loaded previously, return that instance.
-	 */
-	Area* getArea(const std::string& filename);
+    /**
+     * Create a new Area object, loading from the appropriate files. If
+     * the Area has already been loaded previously, return that instance.
+     */
+    Area* getArea(const std::string& filename);
 
-	/**
-	 * Returns the currently focused Area.
-	 */
-	Area* getFocusedArea();
+    /**
+     * Returns the currently focused Area.
+     */
+    Area* getFocusedArea();
 
-	/**
-	 * Switch the game to a new Area, moving the player to the specified
-	 * position in the Area.
-	 */
-	void focusArea(Area* area, int x, int y, double z);
-	void focusArea(Area* area, vicoord playerPos);
+    /**
+     * Switch the game to a new Area, moving the player to the specified
+     * position in the Area.
+     */
+    void focusArea(Area* area, int x, int y, double z);
+    void focusArea(Area* area, vicoord playerPos);
 
-	void setPaused(bool b);
+    void setPaused(bool b);
 
-	void storeKeys();
-	void restoreKeys();
+    void storeKeys();
+    void restoreKeys();
 
-	void runAreaLoadScript(Area* area);
+    void runAreaLoadScript(Area* area);
 
-	//! Expunge old resources cached in memory. Decisions on which are
-	//! removed and which are kept are based on the global Conf struct.
-	void garbageCollect();
+    //! Expunge old resources cached in memory. Decisions on which are
+    //! removed and which are kept are based on the global Conf struct.
+    void garbageCollect();
 
-	// ScriptRef keydownScript, keyupScript;
-
-protected:
-	/**
-	 * Calculate time passed since engine state was last updated.
-	 */
-	time_t calculateDt(time_t now);
-
-	/**
-	 * Draws black borders around the screen. Used to correct the aspect
-	 * ratio and optimize drawing if the Area doesn't fit into the
-	 * Viewport.
-	 */
-	void pushLetterbox();
+    // ScriptRef keydownScript, keyupScript;
 
 protected:
-	typedef std::map<std::string, Area*> AreaMap;
+    /**
+     * Calculate time passed since engine state was last updated.
+     */
+    time_t calculateDt(time_t now);
 
-	std::shared_ptr<Image> pauseInfo;
+    /**
+     * Draws black borders around the screen. Used to correct the aspect
+     * ratio and optimize drawing if the Area doesn't fit into the
+     * Viewport.
+     */
+    void pushLetterbox();
 
-	AreaMap areas;
-	Area* area;
-	std::unique_ptr<Player> player;
+protected:
+    typedef std::map<std::string, Area*> AreaMap;
 
-	/**
-	 * Last time engine state was updated. See World::update().
-	 */
-	time_t lastTime;
+    std::shared_ptr<Image> pauseInfo;
 
-	/**
-	 * Total unpaused game run time.
-	 */
-	time_t total;
+    AreaMap areas;
+    Area* area;
+    std::unique_ptr<Player> player;
 
-	bool redraw;
-	bool userPaused;
-	int paused;
+    /**
+     * Last time engine state was updated. See World::update().
+     */
+    time_t lastTime;
 
-	std::stack<BitRecord> keyStates;
+    /**
+     * Total unpaused game run time.
+     */
+    time_t total;
+
+    bool redraw;
+    bool userPaused;
+    int paused;
+
+    std::stack<BitRecord> keyStates;
 };
 
 #endif

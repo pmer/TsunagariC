@@ -38,65 +38,65 @@
 // Garbage collection called every X milliseconds
 #define GC_CALL_PERIOD 10 * 1000
 
-namespace Gosu {
-	/**
-	 * Enable 1980s-style graphics scaling: nearest-neighbor filtering.
-	 * Call this function before creating any Gosu::Image.
-	 */
-	void enableUndocumentedRetrofication() {
-		extern bool undocumentedRetrofication;
-		undocumentedRetrofication = true;
-	}
-}
-
+#ifdef BACKEND_GOSU
+static GosuGameWindow* globalWindow = NULL;
 
 GameWindow* GameWindow::create()
 {
-	return new GosuGameWindow();
+    globalWindow = new GosuGameWindow();
+    return globalWindow;
 }
-
-static GosuGameWindow* globalWindow = NULL;
 
 GameWindow& GameWindow::instance()
 {
-	return *globalWindow;
+    return *globalWindow;
 }
 
 time_t GameWindow::time()
 {
-	return (time_t)Gosu::milliseconds();
+    return (time_t)Gosu::milliseconds();
+}
+#endif
+
+namespace Gosu {
+    /**
+     * Enable 1980s-style graphics scaling: nearest-neighbor filtering.
+     * Call this function before creating any Gosu::Image.
+     */
+    void enableUndocumentedRetrofication() {
+        extern bool undocumentedRetrofication;
+        undocumentedRetrofication = true;
+    }
 }
 
-
 GosuGameWindow::GosuGameWindow()
-	// Gosu emulates the requested screen resolution on fullscreen,
-	// but this breaks our aspect ratio-correcting letterbox.
-	// Ergo we just make a window the size of the screen.
-	: Gosu::Window(
-	    conf.fullscreen ? Gosu::screenWidth() :
-	                      (unsigned)conf.windowSize.x,
-	    conf.fullscreen ? Gosu::screenHeight() :
-	                      (unsigned)conf.windowSize.y,
-	    conf.fullscreen
-	  ),
-	  now(this->time()),
-	  lastGCtime(0)
+    // Gosu emulates the requested screen resolution on fullscreen,
+    // but this breaks our aspect ratio-correcting letterbox.
+    // Ergo we just make a window the size of the screen.
+    : Gosu::Window(
+        conf.fullscreen ? Gosu::screenWidth() :
+                          (unsigned)conf.windowSize.x,
+        conf.fullscreen ? Gosu::screenHeight() :
+                          (unsigned)conf.windowSize.y,
+        conf.fullscreen
+      ),
+      now(this->time()),
+      lastGCtime(0)
 {
-	globalWindow = this;
-	Gosu::enableUndocumentedRetrofication();
+    Gosu::enableUndocumentedRetrofication();
 
-	gosuToTsunagariKey.resize(Gosu::ButtonName::numButtons);
-	auto& keys = gosuToTsunagariKey;
-	keys[Gosu::ButtonName::kbEscape] = KBEscape;
-	keys[Gosu::ButtonName::kbLeftShift] = KBLeftShift;
-	keys[Gosu::ButtonName::kbRightShift] = KBRightShift;
-	keys[Gosu::ButtonName::kbLeftControl] = KBLeftControl;
-	keys[Gosu::ButtonName::kbRightControl] = KBRightControl;
-	keys[Gosu::ButtonName::kbSpace] = KBSpace;
-	keys[Gosu::ButtonName::kbLeft] = KBLeftArrow;
-	keys[Gosu::ButtonName::kbRight] = KBRightArrow;
-	keys[Gosu::ButtonName::kbUp] = KBUpArrow;
-	keys[Gosu::ButtonName::kbDown] = KBDownArrow;
+    gosuToTsunagariKey.resize(Gosu::ButtonName::numButtons);
+    auto& keys = gosuToTsunagariKey;
+    keys[Gosu::ButtonName::kbEscape] = KBEscape;
+    keys[Gosu::ButtonName::kbLeftShift] = KBLeftShift;
+    keys[Gosu::ButtonName::kbRightShift] = KBRightShift;
+    keys[Gosu::ButtonName::kbLeftControl] = KBLeftControl;
+    keys[Gosu::ButtonName::kbRightControl] = KBRightControl;
+    keys[Gosu::ButtonName::kbSpace] = KBSpace;
+    keys[Gosu::ButtonName::kbLeft] = KBLeftArrow;
+    keys[Gosu::ButtonName::kbRight] = KBRightArrow;
+    keys[Gosu::ButtonName::kbUp] = KBUpArrow;
+    keys[Gosu::ButtonName::kbDown] = KBDownArrow;
 }
 
 GosuGameWindow::~GosuGameWindow()
@@ -105,138 +105,138 @@ GosuGameWindow::~GosuGameWindow()
 
 bool GosuGameWindow::init()
 {
-	return true;
+    return true;
 }
 
 unsigned GosuGameWindow::width() const
 {
-	return graphics().width();
+    return graphics().width();
 }
 
 unsigned GosuGameWindow::height() const
 {
-	return graphics().height();
+    return graphics().height();
 }
 
 void GosuGameWindow::setCaption(const std::string& caption)
 {
-	Gosu::Window::setCaption(Gosu::widen(caption));
+    Gosu::Window::setCaption(Gosu::widen(caption));
 }
 
 void GosuGameWindow::buttonDown(const Gosu::Button btn)
 {
-	now = this->time();
-	if (keystates.find(btn) == keystates.end()) {
-		keystate& state = keystates[btn];
-		state.since = now;
-		state.initiallyResolved = false;
-		state.consecutive = false;
-	}
+    now = this->time();
+    if (keystates.find(btn) == keystates.end()) {
+        keystate& state = keystates[btn];
+        state.since = now;
+        state.initiallyResolved = false;
+        state.consecutive = false;
+    }
 
-	// We process the initial buttonDown here so that it
-	// gets handled even if we receive a buttonUp before an
-	// update.
-	auto mapped = gosuToTsunagariKey[btn.id()];
-	if (mapped)
-		emitKeyDown(mapped);
+    // We process the initial buttonDown here so that it
+    // gets handled even if we receive a buttonUp before an
+    // update.
+    auto mapped = gosuToTsunagariKey[btn.id()];
+    if (mapped)
+        emitKeyDown(mapped);
 }
 
 void GosuGameWindow::buttonUp(const Gosu::Button btn)
 {
-	keystates.erase(btn);
+    keystates.erase(btn);
 
-	auto mapped = gosuToTsunagariKey[btn.id()];
-	if (mapped)
-		emitKeyUp(mapped);
+    auto mapped = gosuToTsunagariKey[btn.id()];
+    if (mapped)
+        emitKeyUp(mapped);
 }
 
 void GosuGameWindow::draw()
 {
-	World::instance().draw();
+    World::instance().draw();
 }
 
 bool GosuGameWindow::needsRedraw() const
 {
-	return World::instance().needsRedraw();
+    return World::instance().needsRedraw();
 }
 
 void GosuGameWindow::update()
 {
-	now = this->time();
+    now = this->time();
 
-	if (conf.moveMode == TURN)
-		handleKeyboardInput(now);
-	World::instance().update(now);
+    if (conf.moveMode == TURN)
+        handleKeyboardInput(now);
+    World::instance().update(now);
 
-	if (now > lastGCtime + GC_CALL_PERIOD) {
-		lastGCtime = now;
-		World::instance().garbageCollect();
-	}
+    if (now > lastGCtime + GC_CALL_PERIOD) {
+        lastGCtime = now;
+        World::instance().garbageCollect();
+    }
 }
 
 void GosuGameWindow::mainLoop()
 {
-	show();
+    show();
 }
 
 void GosuGameWindow::drawRect(double x1, double x2, double y1, double y2,
-		uint32_t argb)
+        uint32_t argb)
 {
-	Gosu::Color c(argb);
-	double top = std::numeric_limits<double>::max();
-	graphics().drawQuad(
-		x1, y1, c,
-		x2, y1, c,
-		x2, y2, c,
-		x1, y2, c,
-		top
-	);
+    Gosu::Color c(argb);
+    double top = std::numeric_limits<double>::max();
+    graphics().drawQuad(
+        x1, y1, c,
+        x2, y1, c,
+        x2, y2, c,
+        x1, y2, c,
+        top
+    );
 }
 
 void GosuGameWindow::scale(double x, double y)
 {
-	graphics().pushTransform(Gosu::scale(x, y));
+    graphics().pushTransform(Gosu::scale(x, y));
 }
 
 void GosuGameWindow::translate(double x, double y)
 {
-	graphics().pushTransform(Gosu::translate(x, y));
+    graphics().pushTransform(Gosu::translate(x, y));
 }
 
 void GosuGameWindow::clip(double x, double y, double width, double height)
 {
-	graphics().beginClipping(x, y, width, height);
+    graphics().beginClipping(x, y, width, height);
 }
 
 
 void GosuGameWindow::handleKeyboardInput(time_t now)
 {
-	std::map<Gosu::Button, keystate>::iterator it;
+    std::map<Gosu::Button, keystate>::iterator it;
 
-	// Persistent input handling code
-	for (it = keystates.begin(); it != keystates.end(); it++) {
-		Gosu::Button btn = it->first;
-		auto mapped = gosuToTsunagariKey[btn.id()];
-		keystate& state = it->second;
+    // Persistent input handling code
+    for (it = keystates.begin(); it != keystates.end(); it++) {
+        Gosu::Button btn = it->first;
+        auto mapped = gosuToTsunagariKey[btn.id()];
+        keystate& state = it->second;
 
-		// If there is persistCons milliseconds of latency
-		// between when a button is depressed and when we first look at
-		// it here, we'll incorrectly try to fire off a second round of
-		// input.
-		// This can happen if an intermediary function blocks the thread
-		// for a while.
-		if (!state.initiallyResolved) {
-			state.initiallyResolved = true;
-			continue;
-		}
+        // If there is persistCons milliseconds of latency
+        // between when a button is depressed and when we first look at
+        // it here, we'll incorrectly try to fire off a second round of
+        // input.
+        // This can happen if an intermediary function blocks the thread
+        // for a while.
+        if (!state.initiallyResolved) {
+            state.initiallyResolved = true;
+            continue;
+        }
 
-		time_t delay = state.consecutive ?
-		    conf.persistCons : conf.persistInit;
-		if (now >= state.since + delay) {
-			state.since += delay;
-			World::instance().buttonDown(mapped);
-			state.consecutive = true;
-		}
-	}
+        time_t delay = state.consecutive ?
+            conf.persistCons : conf.persistInit;
+        if (now >= state.since + delay) {
+            state.since += delay;
+            World::instance().buttonDown(mapped);
+            state.consecutive = true;
+        }
+    }
 }
 

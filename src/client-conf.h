@@ -35,54 +35,54 @@
 #define TSUNAGARI_RELEASE_VERSION "Tsunagari Tile Engine AlphaP4 Revision 4"
 
 // === Required Data Paths ===
-	/* Tsunagari config file. */
-	#define CLIENT_CONF_PATH "./client.ini"
+    /* Tsunagari config file. */
+    #define CLIENT_CONF_PATH "./client.ini"
 // ===
 
 // === Client.ini Default Values ===
-	#define DEF_ENGINE_VERBOSITY  "verbose"
-	#define DEF_ENGINE_HALTING    "fatal"
-	#define DEF_WINDOW_WIDTH      640
-	#define DEF_WINDOW_HEIGHT     480
-	#define DEF_WINDOW_FULLSCREEN false
-	#define DEF_CACHE_ENABLED     true
-	#define DEF_CACHE_TTL         300
+    #define DEF_ENGINE_VERBOSITY  "verbose"
+    #define DEF_ENGINE_HALTING    "fatal"
+    #define DEF_WINDOW_WIDTH      640
+    #define DEF_WINDOW_HEIGHT     480
+    #define DEF_WINDOW_FULLSCREEN false
+    #define DEF_CACHE_ENABLED     true
+    #define DEF_CACHE_TTL         300
 // ===
 
 //! Game Movement Mode
 enum movement_mode_t {
-	TURN,
-	TILE,
-	NOTILE
+    TURN,
+    TILE,
+    NOTILE
 };
 
 //! Halting Mode
 enum halting_mode_t {
-	HALT_FATAL,
-	HALT_SCRIPT,
-	HALT_ERROR
+    HALT_FATAL,
+    HALT_SCRIPT,
+    HALT_ERROR
 };
 
 //! Engine-wide user-confurable values.
 struct Conf {
-	Conf();
+    Conf();
 
-	/**
-	 * Check for missing required configuration variables.
-	 */
-	bool validate(const std::string& filename);
+    /**
+     * Check for missing required configuration variables.
+     */
+    bool validate(const std::string& filename);
 
-	verbosity_t verbosity;
-	movement_mode_t moveMode;
-	halting_mode_t halting;
-	icoord windowSize;
-	bool fullscreen;
-	int musicVolume;
-	int soundVolume;
-	bool cacheEnabled;
-	int cacheTTL;
-	int persistInit;
-	int persistCons;
+    verbosity_t verbosity;
+    movement_mode_t moveMode;
+    halting_mode_t halting;
+    icoord windowSize;
+    bool fullscreen;
+    int musicVolume;
+    int soundVolume;
+    bool cacheEnabled;
+    int cacheTTL;
+    int persistInit;
+    int persistCons;
 };
 extern Conf conf;
 

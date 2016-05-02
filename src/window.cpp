@@ -30,7 +30,7 @@
 #include "world.h"
 
 GameWindow::GameWindow()
-	: keysDown(KB_SIZE)
+    : keysDown(KB_SIZE)
 {
 }
 
@@ -40,31 +40,31 @@ GameWindow::~GameWindow()
 
 void GameWindow::emitKeyDown(KeyboardKey key)
 {
-	keysDown[key]++;
+    keysDown[key]++;
 
-	if (keysDown[KBEscape] &&
-			(keysDown[KBLeftShift] || keysDown[KBRightShift])) {
-		exit(0);
-	}
+    if (keysDown[KBEscape] &&
+            (keysDown[KBLeftShift] || keysDown[KBRightShift])) {
+        exit(0);
+    }
 
-	if (keysDown[key])
-		World::instance().buttonDown(key);
+    if (keysDown[key])
+        World::instance().buttonDown(key);
 }
 
 void GameWindow::emitKeyUp(KeyboardKey key)
 {
-	keysDown[key]--;
+    keysDown[key]--;
 
-	if (!keysDown[key])
-		World::instance().buttonUp(key);
+    if (!keysDown[key])
+        World::instance().buttonUp(key);
 }
 
 bool GameWindow::isKeyDown(KeyboardKey key)
 {
-	return keysDown[key] != false;
+    return keysDown[key] != false;
 }
 
 BitRecord GameWindow::getKeysDown()
 {
-	return keysDown;
+    return keysDown;
 }

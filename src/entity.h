@@ -42,183 +42,183 @@ class Tile;
 class TiledImage;
 
 enum SetPhaseResult {
-	PHASE_NOTFOUND,
-	PHASE_NOTCHANGED,
-	PHASE_CHANGED
+    PHASE_NOTFOUND,
+    PHASE_NOTCHANGED,
+    PHASE_CHANGED
 };
 
 //! An Entity represents one 'thing' that will be rendered to the screen.
 /*!
-	An Entity might be a dynamic game object such as a monster, NPC, or
-	item.  Entity can handle animated images that cycle through their
-	frames over time. It also has the capacity to switch between a couple
-	different images on demand.
+    An Entity might be a dynamic game object such as a monster, NPC, or
+    item.  Entity can handle animated images that cycle through their
+    frames over time. It also has the capacity to switch between a couple
+    different images on demand.
 
-	For example, you might have a Entity for a player character with
-	animated models for walking in each possible movement direction (up,
-	down, left, right) along with static standing-still images for each
-	direction.
+    For example, you might have a Entity for a player character with
+    animated models for walking in each possible movement direction (up,
+    down, left, right) along with static standing-still images for each
+    direction.
 */
 class Entity
 {
 public:
-	Entity();
-	virtual ~Entity();
+    Entity();
+    virtual ~Entity();
 
-	//! Entity initializer
-	virtual bool init(const std::string& descriptor,
-		const std::string& initialPhase);
+    //! Entity initializer
+    virtual bool init(const std::string& descriptor,
+        const std::string& initialPhase);
 
-	//! Entity destroyer.
-	virtual void destroy();
+    //! Entity destroyer.
+    virtual void destroy();
 
-	void draw();
-	bool needsRedraw(const icube& visiblePixels) const;
-	bool isDead() const;
+    void draw();
+    bool needsRedraw(const icube& visiblePixels) const;
+    bool isDead() const;
 
-	virtual void tick(time_t dt);
-	virtual void turn();
+    virtual void tick(time_t dt);
+    virtual void turn();
 
-	//! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
-	//! to 'facing'.
-	ivec2 setFacing(ivec2 facing);
+    //! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
+    //! to 'facing'.
+    ivec2 setFacing(ivec2 facing);
 
-	const std::string getFacing() const;
+    const std::string getFacing() const;
 
-	//! Change the graphic. Returns true if it was changed to something
-	//! different.
-	bool setPhase(const std::string& name);
+    //! Change the graphic. Returns true if it was changed to something
+    //! different.
+    bool setPhase(const std::string& name);
 
-	std::string getPhase() const;
+    std::string getPhase() const;
 
-	ivec2 getImageSize() const;
+    ivec2 getImageSize() const;
 
-	void setAnimationStanding();
-	void setAnimationMoving();
-
-
-	//! The offset from the upper-left of the Area to the upper-left of the
-	//! Tile the Entity is standing on.
-	rcoord getPixelCoord() const;
-
-	//! Indicates whether we are in the middle of transitioning between
-	//! tiles.
-	bool isMoving() const;
+    void setAnimationStanding();
+    void setAnimationMoving();
 
 
-	//! Gets the Entity's current Area.
-	Area* getArea();
+    //! The offset from the upper-left of the Area to the upper-left of the
+    //! Tile the Entity is standing on.
+    rcoord getPixelCoord() const;
 
-	//! Specifies the Area object this entity will ask when looking for
-	//! nearby Tiles. Doesn't change x,y,z position.
-	virtual void setArea(Area* area);
-
-
-	//! Gets speed in pixels per second.
-	double getSpeedInPixels() const;
-	//! Gets speed in tiles per second.
-	double getSpeedInTiles() const;
-
-	//! Gets speed multiplier.
-	double getSpeedMultiplier() const;
-	//! Sets speed multiplier.
-	void setSpeedMultiplier(double multiplier);
+    //! Indicates whether we are in the middle of transitioning between
+    //! tiles.
+    bool isMoving() const;
 
 
-	virtual void setFrozen(bool b);
-	bool getFrozen();
+    //! Gets the Entity's current Area.
+    Area* getArea();
+
+    //! Specifies the Area object this entity will ask when looking for
+    //! nearby Tiles. Doesn't change x,y,z position.
+    virtual void setArea(Area* area);
 
 
-	typedef std::function<void (time_t)> OnTickFn;
-	typedef std::function<void ()> OnTurnFn;
+    //! Gets speed in pixels per second.
+    double getSpeedInPixels() const;
+    //! Gets speed in tiles per second.
+    double getSpeedInTiles() const;
 
-	void attach(OnTickFn fn);
-	void attach(OnTurnFn fn);
-
-	//! Script hooks.
-	// ScriptRef tickScript, turnScript, tileEntryScript,
-	//            tileExitScript;
+    //! Gets speed multiplier.
+    double getSpeedMultiplier() const;
+    //! Sets speed multiplier.
+    void setSpeedMultiplier(double multiplier);
 
 
-protected:
-	//! Precalculate various drawing measurements.
-	void calcDraw();
+    virtual void setFrozen(bool b);
+    bool getFrozen();
 
-	//! Gets a string describing a direction.
-	const std::string& directionStr(ivec2 facing) const;
 
-	enum SetPhaseResult _setPhase(const std::string& name);
+    typedef std::function<void (time_t)> OnTickFn;
+    typedef std::function<void ()> OnTurnFn;
 
-	void setDestinationCoordinate(rcoord destCoord);
+    void attach(OnTickFn fn);
+    void attach(OnTurnFn fn);
 
-	void moveTowardDestination(time_t dt);
-
-	//! arrived() is called when an Entity arrives at its destination.  If
-	//! it is ordered to begin moving again from within arrived(), then the
-	//! Entity’s graphics will appear as if it never stopped moving.
-	virtual void arrived();
-
-	// XML parsing functions used in constructing an Entity
-	bool processDescriptor();
-	bool processSprite(XMLNode node);
-	bool processPhases(XMLNode node,
-		const std::shared_ptr<TiledImage>& tiles);
-	bool processPhase(const XMLNode node,
-		const std::shared_ptr<TiledImage>& tiles);
-	bool processMembers(XMLNode node,
-		std::vector<std::shared_ptr<Image>>& frames,
-		const TiledImage& tiles);
-	bool processMember(const XMLNode node,
-		std::vector<std::shared_ptr<Image>>& frames,
-		const TiledImage& tiles);
-	bool processSounds(XMLNode node);
-	bool processSound(const XMLNode node);
-	bool processScripts(XMLNode node);
-	bool processScript(const XMLNode node);
-	// bool setScript(const std::string& trigger, ScriptRef& script);
+    //! Script hooks.
+    // ScriptRef tickScript, turnScript, tileEntryScript,
+    //            tileExitScript;
 
 
 protected:
-	typedef std::map<std::string, Animation> AnimationMap;
+    //! Precalculate various drawing measurements.
+    void calcDraw();
+
+    //! Gets a string describing a direction.
+    const std::string& directionStr(ivec2 facing) const;
+
+    enum SetPhaseResult _setPhase(const std::string& name);
+
+    void setDestinationCoordinate(rcoord destCoord);
+
+    void moveTowardDestination(time_t dt);
+
+    //! arrived() is called when an Entity arrives at its destination.  If
+    //! it is ordered to begin moving again from within arrived(), then the
+    //! Entity’s graphics will appear as if it never stopped moving.
+    virtual void arrived();
+
+    // XML parsing functions used in constructing an Entity
+    bool processDescriptor();
+    bool processSprite(XMLNode node);
+    bool processPhases(XMLNode node,
+        const std::shared_ptr<TiledImage>& tiles);
+    bool processPhase(const XMLNode node,
+        const std::shared_ptr<TiledImage>& tiles);
+    bool processMembers(XMLNode node,
+        std::vector<std::shared_ptr<Image>>& frames,
+        const TiledImage& tiles);
+    bool processMember(const XMLNode node,
+        std::vector<std::shared_ptr<Image>>& frames,
+        const TiledImage& tiles);
+    bool processSounds(XMLNode node);
+    bool processSound(const XMLNode node);
+    bool processScripts(XMLNode node);
+    bool processScript(const XMLNode node);
+    // bool setScript(const std::string& trigger, ScriptRef& script);
 
 
-	//! Set to true if the Entity was destroyed this tick.
-	bool dead;
+protected:
+    typedef std::map<std::string, Animation> AnimationMap;
 
-	//! Set to true if the Entity wants the screen to be redrawn.
-	bool redraw;
 
-	//! Pointer to Area this Entity is located on.
-	Area* area;
-	rcoord r; //!< real x,y position: hold partial pixel transversal
-	rcoord doff; //!< Drawing offset to center entity on tile.
+    //! Set to true if the Entity was destroyed this tick.
+    bool dead;
 
-	std::string descriptor;
+    //! Set to true if the Entity wants the screen to be redrawn.
+    bool redraw;
 
-	bool frozen;
+    //! Pointer to Area this Entity is located on.
+    Area* area;
+    rcoord r; //!< real x,y position: hold partial pixel transversal
+    rcoord doff; //!< Drawing offset to center entity on tile.
 
-	double baseSpeed; //!< Original speed, specified in descriptor.
-	double speedMul;  //!< Speed multiplier.
-	double speed;     //!< Effective speed = original speed * multiplier
+    std::string descriptor;
 
-	//! True if currently moving to a new coordinate in an Area.
-	bool moving;
+    bool frozen;
 
-	rcoord destCoord;
-	double angleToDest;
+    double baseSpeed; //!< Original speed, specified in descriptor.
+    double speedMul;  //!< Speed multiplier.
+    double speed;     //!< Effective speed = original speed * multiplier
 
-	ivec2 imgsz;
-	AnimationMap phases;
-	Animation* phase;
-	std::string phaseName;
-	ivec2 facing;
+    //! True if currently moving to a new coordinate in an Area.
+    bool moving;
 
-	//! Map from effect name to filenames.
-	//!  e.g.: ["step"] = "sounds/player_step.oga"
-	std::map<std::string, std::string> soundPaths;
+    rcoord destCoord;
+    double angleToDest;
 
-	std::vector<OnTickFn> onTickFns;
-	std::vector<OnTurnFn> onTurnFns;
+    ivec2 imgsz;
+    AnimationMap phases;
+    Animation* phase;
+    std::string phaseName;
+    ivec2 facing;
+
+    //! Map from effect name to filenames.
+    //!  e.g.: ["step"] = "sounds/player_step.oga"
+    std::map<std::string, std::string> soundPaths;
+
+    std::vector<OnTickFn> onTickFns;
+    std::vector<OnTurnFn> onTurnFns;
 };
 
 #endif

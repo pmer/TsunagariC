@@ -37,41 +37,41 @@ template<class T>
 class ReaderCache
 {
 public:
-	typedef T (*GenFn)(const std::string& name);
+    typedef T (*GenFn)(const std::string& name);
 
-	ReaderCache(GenFn fn) : fn(fn) {}
+    ReaderCache(GenFn fn) : fn(fn) {}
 
-	T momentaryRequest(const std::string& name)
-	{
-		T t = cache.momentaryRequest(name);
-		if (t)
-			return t;
+    T momentaryRequest(const std::string& name)
+    {
+        T t = cache.momentaryRequest(name);
+        if (t)
+            return t;
 
-		t = fn(name);
-		cache.momentaryPut(name, t);
-		return t;
-	}
+        t = fn(name);
+        cache.momentaryPut(name, t);
+        return t;
+    }
 
-	T lifetimeRequest(const std::string& name)
-	{
-		T t = cache.lifetimeRequest(name);
-		if (t)
-			return t;
+    T lifetimeRequest(const std::string& name)
+    {
+        T t = cache.lifetimeRequest(name);
+        if (t)
+            return t;
 
-		t = fn(name);
-		cache.lifetimePut(name, t);
-		return t;
-	}
+        t = fn(name);
+        cache.lifetimePut(name, t);
+        return t;
+    }
 
-	void garbageCollect()
-	{
-		cache.garbageCollect();
-	}
+    void garbageCollect()
+    {
+        cache.garbageCollect();
+    }
 
 private:
-	GenFn fn;
+    GenFn fn;
 
-	Cache<T> cache;
+    Cache<T> cache;
 };
 
 #endif

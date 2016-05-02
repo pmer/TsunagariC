@@ -45,10 +45,10 @@ class TileType;
 
 //! List of possible flags that can be attached to a tile.
 /*!
-	Flags are attached to tiles and denote special behavior for
-	the tile they are bound to.
+    Flags are attached to tiles and denote special behavior for
+    the tile they are bound to.
 
-	see AreaTMX::splitTileFlags().
+    see AreaTMX::splitTileFlags().
 */
 
 /**
@@ -97,31 +97,31 @@ class TileType;
  * Types of exits.
  */
 enum ExitDirection {
-	/**
-	 * An Exit that is taken upon arriving at the Tile.
-	 */
-	EXIT_NORMAL,
-	/**
-	 * An Exit that is taken when leaving in the upwards
-	 * direction from a Tile.
-	 */
-	EXIT_UP,
-	/**
-	 * An Exit that is taken when leaving in the downwards
-	 * direction from a Tile.
-	 */
-	EXIT_DOWN,
-	/**
-	 * An Exit that is taken when leaving to the left from
-	 * a Tile.
-	 */
-	EXIT_LEFT,
-	/**
-	 * An Exit that is taken when leaving to the right from
-	 * a Tile.
-	 */
-	EXIT_RIGHT,
-	EXITS_LENGTH
+    /**
+     * An Exit that is taken upon arriving at the Tile.
+     */
+    EXIT_NORMAL,
+    /**
+     * An Exit that is taken when leaving in the upwards
+     * direction from a Tile.
+     */
+    EXIT_UP,
+    /**
+     * An Exit that is taken when leaving in the downwards
+     * direction from a Tile.
+     */
+    EXIT_DOWN,
+    /**
+     * An Exit that is taken when leaving to the left from
+     * a Tile.
+     */
+    EXIT_LEFT,
+    /**
+     * An Exit that is taken when leaving to the right from
+     * a Tile.
+     */
+    EXIT_RIGHT,
+    EXITS_LENGTH
 };
 
 /**
@@ -130,150 +130,150 @@ enum ExitDirection {
 class FlagManip
 {
 public:
-	FlagManip(unsigned* flags);
+    FlagManip(unsigned* flags);
 
-	bool isNowalk() const;
-	bool isNowalkPlayer() const;
-	bool isNowalkNPC() const;
-	bool isNowalkExit() const;
-	bool isNowalkAreaBound() const;
+    bool isNowalk() const;
+    bool isNowalkPlayer() const;
+    bool isNowalkNPC() const;
+    bool isNowalkExit() const;
+    bool isNowalkAreaBound() const;
 
-	void setNowalk(bool nowalk);
-	void setNowalkPlayer(bool nowalk);
-	void setNowalkNPC(bool nowalk);
-	void setNowalkExit(bool nowalk);
-	void setNowalkAreaBound(bool nowalk);
+    void setNowalk(bool nowalk);
+    void setNowalkPlayer(bool nowalk);
+    void setNowalkNPC(bool nowalk);
+    void setNowalkExit(bool nowalk);
+    void setNowalkAreaBound(bool nowalk);
 
 private:
-	unsigned* flags;
+    unsigned* flags;
 };
 
 //! Convenience trigger for inter-area teleportation.
 /*!
-	Tiles with a exit trigger attached can teleport the player to a
-	new area in the World. The Exit struct contains the destination
-	area and coordinates.
+    Tiles with a exit trigger attached can teleport the player to a
+    new area in the World. The Exit struct contains the destination
+    area and coordinates.
 */
 class Exit {
 public:
-	Exit();
-	Exit(const std::string area, int x, int y, double z);
+    Exit();
+    Exit(const std::string area, int x, int y, double z);
 
 public:
-	std::string area;
-	vicoord coords;
+    std::string area;
+    vicoord coords;
 };
 
 class TileBase
 {
 public:
-	TileBase();
+    TileBase();
 
-	FlagManip flagManip();
+    FlagManip flagManip();
 
-	//! Determines whether this tile or one of its parent types embodies a
-	//! flag.
-	bool hasFlag(unsigned flag) const;
+    //! Determines whether this tile or one of its parent types embodies a
+    //! flag.
+    bool hasFlag(unsigned flag) const;
 
-	TileType* getType() const;
-	void setType(TileType* type);
+    TileType* getType() const;
+    void setType(TileType* type);
 
 public:
-	TileBase* parent;
-	unsigned flags;
-	DataArea::TileScript enterScript, leaveScript, useScript;
+    TileBase* parent;
+    unsigned flags;
+    DataArea::TileScript enterScript, leaveScript, useScript;
 };
 
 //! Contains properties unique to this tile.
 /*!
-	This struct contains local tile properties for a single tile in
-	the area. As opposed to global properties which apply to all
-	tiles of the same type, these properties will only apply to one
-	tile.
+    This struct contains local tile properties for a single tile in
+    the area. As opposed to global properties which apply to all
+    tiles of the same type, these properties will only apply to one
+    tile.
 */
 class Tile : public TileBase
 {
 public:
-	Tile(); // Should not be used. Wanted by std::containers.
-	Tile(Area* area, int x, int y, int z);
+    Tile(); // Should not be used. Wanted by std::containers.
+    Tile(Area* area, int x, int y, int z);
 
-	/**
-	 * Gets the correct destination for an Entity wanting to
-	 * move off of this tile in <code>facing</code>
-	 * direction.
-	 *
-	 * This call is necessary to handle layermod.
-	 *
-	 * @param here    area-space coordinate for this Tile
-	 * @param facing  facing vector
-	 */
-	icoord moveDest(icoord here, ivec2 facing) const;
-	Tile* offset(int x, int y) const;
+    /**
+     * Gets the correct destination for an Entity wanting to
+     * move off of this tile in <code>facing</code>
+     * direction.
+     *
+     * This call is necessary to handle layermod.
+     *
+     * @param here    area-space coordinate for this Tile
+     * @param facing  facing vector
+     */
+    icoord moveDest(icoord here, ivec2 facing) const;
+    Tile* offset(int x, int y) const;
 
-	double getZ() const;
+    double getZ() const;
 
-	Exit* getNormalExit() const;
-	void setNormalExit(Exit exit);
+    Exit* getNormalExit() const;
+    void setNormalExit(Exit exit);
 
-	Exit* exitAt(ivec2 dir) const;
-	double* layermodAt(ivec2 dir) const;
+    Exit* exitAt(ivec2 dir) const;
+    double* layermodAt(ivec2 dir) const;
 
-	void runEnterScript(Entity* triggeredBy);
-	void runLeaveScript(Entity* triggeredBy);
-	void runUseScript(Entity* triggeredBy);
+    void runEnterScript(Entity* triggeredBy);
+    void runLeaveScript(Entity* triggeredBy);
+    void runUseScript(Entity* triggeredBy);
 
 public:
-	Area* area;
+    Area* area;
 
-	/*
-	 * The grid-space coordinates of this Tile.
-	 *
-	 * Looping Areas utilize area-space components. These
-	 * cannot be losslessly transformed into area-space.
-	 */
-	int x, y, z;
-	Exit* exits[EXITS_LENGTH];
-	double* layermods[EXITS_LENGTH];
-	int entCnt; //!< Number of entities on this Tile.
+    /*
+     * The grid-space coordinates of this Tile.
+     *
+     * Looping Areas utilize area-space components. These
+     * cannot be losslessly transformed into area-space.
+     */
+    int x, y, z;
+    Exit* exits[EXITS_LENGTH];
+    double* layermods[EXITS_LENGTH];
+    int entCnt; //!< Number of entities on this Tile.
 };
 
 //! Contains the properties shared by all tiles of a certain type.
 /*!
-	This struct contains global tile properties for a tile of a
-	certain type. As opposed to local properties for a single tile,
-	all tiles of this type will share the defined characteristics.
+    This struct contains global tile properties for a tile of a
+    certain type. As opposed to local properties for a single tile,
+    all tiles of this type will share the defined characteristics.
 */
 class TileType : public TileBase
 {
 public:
-	TileType();
-	TileType(const std::shared_ptr<Image>& img);
+    TileType();
+    TileType(const std::shared_ptr<Image>& img);
 
-	//! Returns true if onscreen and we need to update our animation.
-	bool needsRedraw() const;
+    //! Returns true if onscreen and we need to update our animation.
+    bool needsRedraw() const;
 
 public:
-	Animation anim; //! Graphics for tiles of this type.
-	std::vector<Tile*> allOfType;
+    Animation anim; //! Graphics for tiles of this type.
+    std::vector<Tile*> allOfType;
 };
 
 class TileSet
 {
 public:
-	TileSet();
-	TileSet(size_t width, size_t height);
+    TileSet();
+    TileSet(size_t width, size_t height);
 
-	void add(TileType* type);
-	void set(size_t idx, TileType* type);
-	TileType* at(size_t x, size_t y);
-	size_t getWidth() const;
-	size_t getHeight() const;
+    void add(TileType* type);
+    void set(size_t idx, TileType* type);
+    TileType* at(size_t x, size_t y);
+    size_t getWidth() const;
+    size_t getHeight() const;
 
 private:
-	size_t idx(size_t x, size_t y) const;
+    size_t idx(size_t x, size_t y) const;
 
-	std::vector<TileType*> types;
-	size_t width, height;
+    std::vector<TileType*> types;
+    size_t width, height;
 };
 
 #endif

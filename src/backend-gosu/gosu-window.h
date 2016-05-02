@@ -35,61 +35,61 @@
 #include "../window.h"
 
 namespace Gosu {
-	class Button;
+    class Button;
 }
 
 class GosuGameWindow : public GameWindow, public Gosu::Window
 {
 public:
-	GosuGameWindow();
-	virtual ~GosuGameWindow();
+    GosuGameWindow();
+    virtual ~GosuGameWindow();
 
-	bool init();
+    bool init();
 
-	unsigned width() const;
+    unsigned width() const;
 
-	unsigned height() const;
+    unsigned height() const;
 
-	void setCaption(const std::string& caption);
+    void setCaption(const std::string& caption);
 
-	//! Gosu Callback
-	void buttonDown(const Gosu::Button btn);
+    //! Gosu Callback
+    void buttonDown(const Gosu::Button btn);
 
-	//! Gosu Callback
-	void buttonUp(const Gosu::Button btn);
+    //! Gosu Callback
+    void buttonUp(const Gosu::Button btn);
 
-	//! Gosu Callback
-	void draw();
+    //! Gosu Callback
+    void draw();
 
-	//! Gosu Callback
-	bool needsRedraw() const;
+    //! Gosu Callback
+    bool needsRedraw() const;
 
-	//! Gosu Callback
-	void update();
+    //! Gosu Callback
+    void update();
 
-	void mainLoop();
+    void mainLoop();
 
         void drawRect(double x1, double x2, double y1, double y2,
                 uint32_t argb);
 
-	void scale(double x, double y);
-	void translate(double x, double y);
-	void clip(double x, double y, double width, double height);
+    void scale(double x, double y);
+    void translate(double x, double y);
+    void clip(double x, double y, double width, double height);
 
 protected:
-	//! Process persistent keyboard input
-	void handleKeyboardInput(time_t now);
+    //! Process persistent keyboard input
+    void handleKeyboardInput(time_t now);
 
-	time_t now;
-	time_t lastGCtime;
+    time_t now;
+    time_t lastGCtime;
 
-	struct keystate {
-		bool consecutive, initiallyResolved;
-		time_t since;
-	};
+    struct keystate {
+        bool consecutive, initiallyResolved;
+        time_t since;
+    };
 
-	std::map<Gosu::Button, keystate> keystates;
-	std::vector<KeyboardKey> gosuToTsunagariKey;
+    std::map<Gosu::Button, keystate> keystates;
+    std::vector<KeyboardKey> gosuToTsunagariKey;
 };
 
 #endif

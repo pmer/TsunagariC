@@ -32,32 +32,32 @@
 class PhysfsResource : public Resource
 {
 public:
-	PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-	~PhysfsResource() = default;
+    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
+    ~PhysfsResource() = default;
 
-	const void* data();
-	size_t size();
+    const void* data();
+    size_t size();
 
 private:
-	std::unique_ptr<const char[]> _data;
-	size_t _size;
+    std::unique_ptr<const char[]> _data;
+    size_t _size;
 };
 
 class PhysfsResources : public Resources
 {
 public:
-	PhysfsResources();
-	~PhysfsResources() = default;
+    PhysfsResources();
+    ~PhysfsResources() = default;
 
-	bool init();
+    bool init();
 
-	std::unique_ptr<Resource> load(const std::string& path);
+    std::unique_ptr<Resource> load(const std::string& path);
 
 private:
-	PhysfsResources(const PhysfsResources&) = delete;
-	PhysfsResources& operator=(const PhysfsResources&) = delete;
+    PhysfsResources(const PhysfsResources&) = delete;
+    PhysfsResources& operator=(const PhysfsResources&) = delete;
 
-	bool initialized;
+    bool initialized;
 };
 
 #endif

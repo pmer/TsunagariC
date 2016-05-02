@@ -38,47 +38,47 @@ class DataArea;
 class DataWorld
 {
 public:
-	static DataWorld& instance();
+    static DataWorld& instance();
 
-	virtual ~DataWorld();
+    virtual ~DataWorld();
 
-	//! After the engine has booted, initialize the world.
-	virtual bool init() = 0;
+    //! After the engine has booted, initialize the world.
+    virtual bool init() = 0;
 
-	DataArea* area(const std::string& areaName);
+    DataArea* area(const std::string& areaName);
 
-	// Miscellaneous engine parameters set by world's author.
-	struct {
-		std::string name, author, version;
-	} about;
-	struct {
-		enum movement_mode_t moveMode;
-		rvec2 viewportResolution;
-		struct {
-			struct {
-				int initial, consecutive;
-			} persistDelay;
-		} input;
-		struct {
-			struct {
-				std::string file, phase;
-			} player;
-			std::string area;
-			vicoord coords;
-		} gameStart;
-	} parameters;
-	std::string datafile;
+    // Miscellaneous engine parameters set by world's author.
+    struct {
+        std::string name, author, version;
+    } about;
+    struct {
+        enum movement_mode_t moveMode;
+        rvec2 viewportResolution;
+        struct {
+            struct {
+                int initial, consecutive;
+            } persistDelay;
+        } input;
+        struct {
+            struct {
+                std::string file, phase;
+            } player;
+            std::string area;
+            vicoord coords;
+        } gameStart;
+    } parameters;
+    std::string datafile;
 
 protected:
-	DataWorld();
+    DataWorld();
 
-	std::map<std::string,std::shared_ptr<DataArea>> areas;
+    std::map<std::string,std::shared_ptr<DataArea>> areas;
 
 private:
-	DataWorld(const DataWorld&) = delete;
-	DataWorld(DataWorld&&) = delete;
-	DataWorld& operator=(const DataWorld&) = delete;
-	DataWorld& operator=(DataWorld&&) = delete;
+    DataWorld(const DataWorld&) = delete;
+    DataWorld(DataWorld&&) = delete;
+    DataWorld& operator=(const DataWorld&) = delete;
+    DataWorld& operator=(DataWorld&&) = delete;
 };
 
 #endif

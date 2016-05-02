@@ -38,62 +38,62 @@ class Tile;
 class Character : public Entity
 {
 public:
-	Character();
-	virtual ~Character();
+    Character();
+    virtual ~Character();
 
-	virtual void tick(time_t dt);
-	virtual void turn();
+    virtual void tick(time_t dt);
+    virtual void turn();
 
-	virtual void destroy();
+    virtual void destroy();
 
-	//! Retrieve position within Area.
-	icoord getTileCoords_i() const;
-	vicoord getTileCoords_vi() const;
+    //! Retrieve position within Area.
+    icoord getTileCoords_i() const;
+    vicoord getTileCoords_vi() const;
 
-	//! Set location within Area.
-	void setTileCoords(int x, int y);
-	void setTileCoords(int x, int y, double z);
-	void setTileCoords(icoord phys);
-	void setTileCoords(vicoord virt);
-	void setTileCoords(rcoord virt);
+    //! Set location within Area.
+    void setTileCoords(int x, int y);
+    void setTileCoords(int x, int y, double z);
+    void setTileCoords(icoord phys);
+    void setTileCoords(vicoord virt);
+    void setTileCoords(rcoord virt);
 
-	//! Get the Tile that we are standing on.
-	const Tile* getTile() const;
-	Tile* getTile();
+    //! Get the Tile that we are standing on.
+    const Tile* getTile() const;
+    Tile* getTile();
 
-	void setArea(Area* area);
+    void setArea(Area* area);
 
-	//! Initiate a movement within the Area.
-	void moveByTile(ivec2 delta);
-
-protected:
-	//! Indicates which coordinate we will move into if we proceed in
-	//! direction specified.
-	icoord moveDest(ivec2 facing);
-
-	//! Returns true if we can move in the desired direction.
-	bool canMove(icoord dest);
-
-	bool nowalked(Tile& t);
-
-	void arrived();
-
-	void leaveTile();
-	void leaveTile(Tile* t);
-	void enterTile();
-	void enterTile(Tile* t);
-
-	void runTileExitScript();
-	void runTileEntryScript();
+    //! Initiate a movement within the Area.
+    void moveByTile(ivec2 delta);
 
 protected:
-	unsigned nowalkFlags;
-	unsigned nowalkExempt;
+    //! Indicates which coordinate we will move into if we proceed in
+    //! direction specified.
+    icoord moveDest(ivec2 facing);
 
-	rcoord fromCoord;
-	Tile* fromTile;
-	Tile* destTile;
-	Exit* destExit;
+    //! Returns true if we can move in the desired direction.
+    bool canMove(icoord dest);
+
+    bool nowalked(Tile& t);
+
+    void arrived();
+
+    void leaveTile();
+    void leaveTile(Tile* t);
+    void enterTile();
+    void enterTile(Tile* t);
+
+    void runTileExitScript();
+    void runTileEntryScript();
+
+protected:
+    unsigned nowalkFlags;
+    unsigned nowalkExempt;
+
+    rcoord fromCoord;
+    Tile* fromTile;
+    Tile* destTile;
+    Exit* destExit;
 };
 
 #endif

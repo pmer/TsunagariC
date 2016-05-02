@@ -32,13 +32,13 @@
 
 class BitRecord {
 public:
-	BitRecord(size_t length);
+    BitRecord(size_t length);
 
-	char& operator[] (size_t idx);
-	std::vector<size_t> diff(const BitRecord& other);
+    char& operator[] (size_t idx);
+    std::vector<size_t> diff(const BitRecord& other);
 
 private:
-	std::vector<char> states;
+    std::vector<char> states;
 };
 
 #endif

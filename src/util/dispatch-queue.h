@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** dispatch-queue.h            **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,29 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef DISPATCH_QUEUE_H
+#define DISPATCH_QUEUE_H
 
-#include "core/resources.h"
+typedef std::function<void()> Task;
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+class DispatchQueue {
+ public:
+    DispatchQueue();
+    ~DispatchQueue();
 
-    const void* data();
-    size_t size();
+    enum QualityOfService {
+        BACKGROUND,
+        UTILITY,
+        DEFAULT,
+        USER_INITIATED,
+        USER_INTERACTIVE
+    };
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
+    void async(Task task, QualityOfService qos = QualityOfService::DEFAULT);
+
+ private:
+    class DispatchQueueImpl;
+    DispatchQueueImpl* impl;
 };
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif
+#endif  // DISPATCH_QUEUE_H

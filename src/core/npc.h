@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** npc.h                              **
+** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,18 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef NPC_H
+#define NPC_H
 
-#include "core/resources.h"
+#include "core/character.h"
 
-class PhysfsResource : public Resource
+class NPC : public Character
 {
 public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    NPC();
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
+protected:
+    void arrived();
 };
 
 #endif

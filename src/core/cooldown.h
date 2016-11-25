@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** world.h                       **
+** cooldown.h                    **
 ** Copyright 2014 PariahSoft LLC **
 ** Copyright 2016 Paul Merrill   **
 **********************************/
@@ -25,61 +25,51 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DATAWORLD_H
-#define DATAWORLD_H
+#ifndef COOLDOWN_H
+#define COOLDOWN_H
 
-#include <map>
-#include <memory>
-#include <string>
+#include <time.h>
 
-#include "core/client-conf.h"
-
-class DataArea;
-
-class DataWorld
-{
+/**
+ * Cooldown is a timer that repeatedly expires after a specified number of
+ * milliseconds.  A cooldown may hold multiple expirations, and will keep track
+ * of all until told to wrap() each one.
+ */
+class Cooldown {
 public:
-    static DataWorld& instance();
+    Cooldown();
+    Cooldown(time_t duration);
 
-    virtual ~DataWorld();
+    /**
+     * Sets a new duration for the Cooldown and resets any current
+     * expirations.
+     */
+    void setDuration(time_t duration);
 
-    //! After the engine has booted, initialize the world.
-    virtual bool init() = 0;
+    /**
+     * Let the Cooldown know that the specified number of milliseconds have
+     * passed.
+     */
+    void advance(time_t dt);
 
-    DataArea* area(const std::string& areaName);
+    /**
+     * Whether enough time has passed that the Cooldown has expired at
+     * least once over.
+     */
+    bool hasExpired();
 
-    // Miscellaneous engine parameters set by world's author.
-    struct {
-        std::string name, author, version;
-    } about;
-    struct {
-        enum movement_mode_t moveMode;
-        rvec2 viewportResolution;
-        struct {
-            struct {
-                int initial, consecutive;
-            } persistDelay;
-        } input;
-        struct {
-            struct {
-                std::string file, phase;
-            } player;
-            std::string area;
-            vicoord coords;
-        } gameStart;
-    } parameters;
-    std::string datafile;
-
-protected:
-    DataWorld();
-
-    std::map<std::string,std::shared_ptr<DataArea>> areas;
+    /**
+     * Begin the next session, rolling over any time passed since the
+     * previous expiration.
+     *
+     * Advances only one expiration, even if enough time has passed that
+     * the cooldown has expired multiple times.  In that case, hasExpired()
+     * will still return true and you may wrap again.
+     */
+    void wrap();
 
 private:
-    DataWorld(const DataWorld&) = delete;
-    DataWorld(DataWorld&&) = delete;
-    DataWorld& operator=(const DataWorld&) = delete;
-    DataWorld& operator=(DataWorld&&) = delete;
+    time_t duration, passed;
 };
 
 #endif

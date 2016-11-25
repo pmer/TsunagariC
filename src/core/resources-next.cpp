@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** resources.cpp               **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
-
 #include "core/resources.h"
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+#include <string>
 
-    const void* data();
-    size_t size();
+#include "core/future-utils.cpp"
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif
+// Default implementation doesn't actually load asynchronously.
+std::future<Resource> Resources::loadAsync(ResourceLoadPriority /* unused */,
+                                           const std::string& path) {
+    return makeFuture(load(path));
+}

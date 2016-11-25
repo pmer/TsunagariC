@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** overlay.cpp                        **
+** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,46 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#include "core/area.h"
+#include "core/client-conf.h"
+#include "core/overlay.h"
 
-#include "core/resources.h"
-
-class PhysfsResource : public Resource
+Overlay::Overlay()
 {
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+}
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
+Overlay::~Overlay()
 {
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+}
 
-    bool init();
+void Overlay::tick(time_t dt)
+{
+    Entity::tick(dt);
+    moveTowardDestination(dt);
+}
 
-    std::unique_ptr<Resource> load(const std::string& path);
+void Overlay::teleport(vicoord coord)
+{
+    r = area->virt2virt(coord);
+    redraw = true;
+}
 
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
+void Overlay::drift(ivec2 xy)
+{
+    driftTo(ivec2((int)r.x + xy.x, (int)r.y + xy.y));
+}
 
-    bool initialized;
-};
+void Overlay::driftTo(ivec2 xy)
+{
+    setDestinationCoordinate(rcoord(xy.x, xy.y, r.z));
+    pickFacingForAngle();
+    moving = true;
+    setAnimationMoving();
 
-#endif
+    // Movement happens in Entity::moveTowardDestination() during tick().
+}
+
+void Overlay::pickFacingForAngle()
+{
+    // TODO
+}

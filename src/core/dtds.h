@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** world.h                       **
+** dtds.h                        **
 ** Copyright 2014 PariahSoft LLC **
 ** Copyright 2016 Paul Merrill   **
 **********************************/
@@ -25,61 +25,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DATAWORLD_H
-#define DATAWORLD_H
 
-#include <map>
-#include <memory>
+#ifndef DTDS_H
+#define DTDS_H
+
 #include <string>
 
-#include "core/client-conf.h"
-
-class DataArea;
-
-class DataWorld
-{
-public:
-    static DataWorld& instance();
-
-    virtual ~DataWorld();
-
-    //! After the engine has booted, initialize the world.
-    virtual bool init() = 0;
-
-    DataArea* area(const std::string& areaName);
-
-    // Miscellaneous engine parameters set by world's author.
-    struct {
-        std::string name, author, version;
-    } about;
-    struct {
-        enum movement_mode_t moveMode;
-        rvec2 viewportResolution;
-        struct {
-            struct {
-                int initial, consecutive;
-            } persistDelay;
-        } input;
-        struct {
-            struct {
-                std::string file, phase;
-            } player;
-            std::string area;
-            vicoord coords;
-        } gameStart;
-    } parameters;
-    std::string datafile;
-
-protected:
-    DataWorld();
-
-    std::map<std::string,std::shared_ptr<DataArea>> areas;
-
-private:
-    DataWorld(const DataWorld&) = delete;
-    DataWorld(DataWorld&&) = delete;
-    DataWorld& operator=(const DataWorld&) = delete;
-    DataWorld& operator=(DataWorld&&) = delete;
-};
+const std::string& CONTENT_OF_AREA_DTD();
+const std::string& CONTENT_OF_ENTITY_DTD();
+const std::string& CONTENT_OF_TSX_DTD();
 
 #endif

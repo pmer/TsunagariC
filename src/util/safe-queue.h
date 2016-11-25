@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** safe-heap.h                 **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,55 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef SAFE_HEAP_H
+#define SAFE_HEAP_H
 
-#include "core/resources.h"
+#include <condition_variable>
+#include <mutex>
+#include <queue>
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+template <class T>
+class SafeHeap {
+ public:
+    SafeHeap()
+        : q()
+        , m()
+        , c()
+        , alive(true) {}
 
-    const void* data();
-    size_t size();
+     ~SafeHeap() {
+     }
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
+     void push(T t) {
+         std::lock_guard<std::mutex> lock(m);
+         q.push(t);
+         c.notify_one();
+     }
+
+     Optional<T> pop() {
+         std::unique_lock<std::mutex> lock(m);
+         while (alive && q.empty()) {
+                 c.wait(lock);
+         }
+         if (!q.empty()) {
+             T val = q.top();
+             q.pop();
+             return Optional<T>(val);
+         } else {
+             return Optional<T>();
+         }
+     }
+
+     void end() {
+        alive = false;
+        c.notify_all();
+     }
+
+ private:
+     std::priority_queue<T> q;
+     std::mutex m;
+     std::condition_variable c;
+     bool alive;
 };
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif
+#endif  // SAFE_HEAP_H

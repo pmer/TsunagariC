@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine         **
 ** inprogress.h                  **
 ** Copyright 2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill   **
 **********************************/
 
 // **********
@@ -27,12 +28,13 @@
 #ifndef INPROGRESS_H
 #define INPROGRESS_H
 
+#include <time.h>
+
 #include <functional>
 #include <memory>
 #include <string>
-#include <time.h>
 
-#include "../sounds.h"
+#include "core/sounds.h"
 
 /**
  * InProgress objects contain logic that is to be evaluated over time from

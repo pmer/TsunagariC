@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** random.h                           **
+** Copyright 2011-2013 PariahSoft LLC **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,24 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef RANDOM_H
+#define RANDOM_H
 
-#include "core/resources.h"
+    //! Produce a random integer.
+    /*!
+        @param min Minimum value.
+        @param max Maximum value.
+        @return random integer between min and max.
+    */
+int randInt(int min, int max);
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
-
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
+    //! Produce a random double floating point number.
+    /*!
+        @param min Minimum value.
+        @param max Maximum value.
+        @return random floating point number between min and max.
+    */
+double randFloat(double min, double max);
 
 #endif
+

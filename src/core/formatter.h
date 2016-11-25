@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***********************************
+** Tsunagari Tile Engine          **
+** formatter.h                    **
+** Copyright 2013 PariahSoft LLC  **
+** Copyright 2016 Paul Merrill    **
+***********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,46 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef FORMATTER_H
+#define FORMATTER_H
 
-#include "core/resources.h"
+#include <assert.h>
+#include <string.h>
 
-class PhysfsResource : public Resource
-{
+#include <string>
+
+/**
+ * Formatter
+ *
+ * Sample usage:
+ *   Log::info(Formatter("coordinates are: % %") % x % y);
+ */
+class Formatter {
 public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    Formatter(std::string format);
+    ~Formatter();
 
-    const void* data();
-    size_t size();
+    template<class T>
+    Formatter& operator %(T data)
+    {
+        assert(pos < result.size());
+
+        size_t markerSize = 1;
+        result.replace(pos, markerSize, format(data));
+        findNextPlaceholder();
+        return *this;
+    }
+
+    operator const std::string&();
 
 private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
+    template<class T>
+    std::string format(const T data);
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
+    void findNextPlaceholder();
+    
+    std::string result;
+    size_t pos;
 };
 
 #endif

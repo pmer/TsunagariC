@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** gosu-cbuffer.h                     **
+** Copyright 2011-2015 PariahSoft LLC **
+** Copyright 2016      Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,34 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef GOSU_CBUFFER_H
+#define GOSU_CBUFFER_H
 
-#include "core/resources.h"
+#include <Gosu/IO.hpp>
 
-class PhysfsResource : public Resource
+/**
+ * Similar to Gosu::Buffer, but can be constructed around pre-existing C void*.
+ * The memory is not copied. Also, this is a read-only implementation. If you
+ * attempt to create a Gosu::Writer around this, it will fail.
+ *
+ * See Gosu/IO.hpp and GosuImpl/IO.cpp from Gosu
+ * See http://www.libgosu.org/cpp/class_gosu_1_1_buffer.html
+ * See http://www.libgosu.org/cpp/class_gosu_1_1_resource.html
+ */
+class GosuCBuffer : public Gosu::Resource
 {
 public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    GosuCBuffer(const void* data, size_t size);
+    ~GosuCBuffer() = default;
 
-    const void* data();
-    size_t size();
+    size_t size() const;
+    void resize(size_t);  // NOOP
+    void read(size_t offset, size_t length, void* destBuffer) const;
+    void write(size_t, size_t, const void*);  // NOOP
 
 private:
-    std::unique_ptr<const char[]> _data;
+    const void* _data;
     size_t _size;
-};
-
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
 };
 
 #endif

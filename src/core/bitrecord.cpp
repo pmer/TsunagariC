@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** bitrecord.cpp                      **
+** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,26 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#include "core/bitrecord.h"
 
-#include "core/resources.h"
-
-class PhysfsResource : public Resource
+BitRecord::BitRecord(size_t length)
+    : states(length)
 {
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+}
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
+char& BitRecord::operator[] (size_t idx)
 {
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+    return states[idx];
+}
 
-    bool init();
+std::vector<size_t> BitRecord::diff(const BitRecord& other)
+{
+    std::vector<size_t> changes;
 
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif
+    for (size_t i = 0; i < states.size(); i++) {
+        if (states[i] != other.states[i]) {
+            changes.push_back(i);
+        }
+    }
+    return changes;
+}

@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** resources-physfs.cpp               **
+** physfs.cpp                         **
 ** Copyright 2011-2015 PariahSoft LLC **
 ** Copyright 2015-2016 Paul Merrill   **
 ***************************************/
@@ -25,48 +25,28 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "resources/physfs.h"
 #include "resources/resources-physfs.h"
 
 #include <physfs.h>
 
 #include <limits>
+#include <string>
 
 #include "core/formatter.h"
 #include "core/log.h"
 #include "core/measure.h"
-
 #include "data/data-world.h"
-
-PhysfsResource::PhysfsResource(std::unique_ptr<const char[]> data, size_t size)
-    : _data(std::move(data)), _size(size)
-{
-}
-
-const void* PhysfsResource::data()
-{
-    return _data.get();
-}
-
-size_t PhysfsResource::size()
-{
-    return _size;
-}
-
 
 static PhysfsResources globalResources;
 
-Resources& Resources::instance()
-{
+Resources& Resources::instance() {
     return globalResources;
 }
 
-PhysfsResources::PhysfsResources()
-    : initialized(false)
-{
-}
+PhysfsResources::PhysfsResources() : initialized(false) { }
 
-static void initialize()
-{
+static void initialize() {
     if (!PHYSFS_init(nullptr)) {
         Log::fatal("Resources", "PHYSFS_init");
     }
@@ -74,16 +54,13 @@ static void initialize()
     const std::string& path = DataWorld::instance().datafile;
 
     if (!PHYSFS_mount(path.c_str(), nullptr, 0)) {
-        Log::fatal(
-            "Resources",
-            Formatter("%: could not open archive: %")
-                % path % PHYSFS_getLastError()
-        );
+        Log::fatal("Resources",
+                   Formatter("%: could not open archive: %")
+                       % path % PHYSFS_getLastError());
     }
 }
 
-std::unique_ptr<Resource> PhysfsResources::load(const std::string& path)
-{
+std::unique_ptr<Resource> PhysfsResources::load(const std::string& path) {
     TimeMeasure m("Mapped " + path);
 
     if (!initialized) {
@@ -94,61 +71,43 @@ std::unique_ptr<Resource> PhysfsResources::load(const std::string& path)
     const std::string fullPath = DataWorld::instance().datafile + "/" + path;
 
     if (!PHYSFS_exists(path.c_str())) {
-        Log::err(
-            "Resources",
-            Formatter("%: file missing") % fullPath
-        );
+        Log::err("Resources", Formatter("%: file missing") % fullPath);
         return std::unique_ptr<Resource>();
     }
 
     PHYSFS_File* zf = PHYSFS_openRead(path.c_str());
     if (!zf) {
-        Log::err(
-            "Resources",
-            Formatter("%: error opening file: %")
-                % fullPath % PHYSFS_getLastError()
-        );
+        Log::err("Resources",
+                 Formatter("%: error opening file: %")
+                     % fullPath % PHYSFS_getLastError());
         return std::unique_ptr<Resource>();
     }
 
     PHYSFS_sint64 foundSize = PHYSFS_fileLength(zf);
 
     if (foundSize == -1) {
-        Log::err(
-            "Resources",
-            Formatter("%: could not determine file size: %")
-                % fullPath % PHYSFS_getLastError()
-        );
+        Log::err("Resources",
+                 Formatter("%: could not determine file size: %")
+                     % fullPath % PHYSFS_getLastError());
         PHYSFS_close(zf);
-        return std::unique_ptr<Resource>();;
-    }
-    else if ((size_t)foundSize > std::numeric_limits<size_t>::max()) {
+        return std::unique_ptr<Resource>();
+    } else if ((size_t)foundSize > std::numeric_limits<size_t>::max()) {
         // Won't fit in memory.
-        Log::err(
-            "Resources",
-            Formatter("%: file too large") % fullPath
-        );
+        Log::err("Resources", Formatter("%: file too large") % fullPath);
         PHYSFS_close(zf);
-        return std::unique_ptr<Resource>();;
-    }
-    else if (foundSize > std::numeric_limits<uint32_t>::max()) {
+        return std::unique_ptr<Resource>();
+    } else if (foundSize > std::numeric_limits<uint32_t>::max()) {
         // FIXME: Technically, we just need to issue multiple calls to
         // PHYSFS_read. Fix when needed.
-        Log::err(
-            "Resources",
-            Formatter("%: file too large") % fullPath
-        );
+        Log::err("Resources", Formatter("%: file too large") % fullPath);
         PHYSFS_close(zf);
-        return std::unique_ptr<Resource>();;
-    }
-    else if (foundSize < -1) {
-        Log::err(
-            "Resources",
-            Formatter("%: invalid file size: %")
-                % fullPath % PHYSFS_getLastError()
-        );
+        return std::unique_ptr<Resource>();
+    } else if (foundSize < -1) {
+        Log::err("Resources",
+                 Formatter("%: invalid file size: %")
+                     % fullPath % PHYSFS_getLastError());
         PHYSFS_close(zf);
-        return std::unique_ptr<Resource>();;
+        return std::unique_ptr<Resource>();
     }
 
     size_t size = (size_t)foundSize;
@@ -156,20 +115,18 @@ std::unique_ptr<Resource> PhysfsResources::load(const std::string& path)
     auto data = std::make_unique<char[]>(size);
     if (size == 0) {
         // Don't perform file read if file is zero bytes.
-        return std::make_unique<PhysfsResource>(std::move(data), size);
+        return std::unique_ptr<Resource>(new PhysfsResource{std::move(data), size, path});
     }
 
-    PHYSFS_sint64 err = PHYSFS_read(zf, (char*)data.get(),
-        (PHYSFS_uint32)size, 1);
+    PHYSFS_sint64 err = PHYSFS_read(zf, static_cast<char*>(data.get()),
+        static_cast<PHYSFS_uint32>(size), 1);
     if (err != 1) {
-        Log::err(
-            "Resources",
-            Formatter("%: error reading file: %")
-                % fullPath % PHYSFS_getLastError()
-        );
+        Log::err("Resources",
+                 Formatter("%: error reading file: %")
+                     % fullPath % PHYSFS_getLastError());
         PHYSFS_close(zf);
-        return std::unique_ptr<Resource>();;
+        return std::unique_ptr<Resource>();
     }
 
-    return std::make_unique<PhysfsResource>(std::move(data), size);
+    return std::unique_ptr<Resource>(new PhysfsResource{std::move(data), size, path});
 }

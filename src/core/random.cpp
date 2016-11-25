@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** random.cpp                         **
+** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,19 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#include "core/random.h"
 
-#include "core/resources.h"
+#include <stdlib.h>
 
-class PhysfsResource : public Resource
+int randInt(int min, int max)
 {
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    return rand() % ((max+1)-min) + min;
+}
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
+double randFloat(double min, double max)
 {
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+        int i = rand();
+        double d = (double)i / RAND_MAX;
+        return d * (max-min) + min;
+}
 
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif

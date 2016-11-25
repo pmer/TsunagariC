@@ -13,3 +13,5 @@ data/*.world
 # vim
 *.swp
 
+.idea
+cmake-build-debug

@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** readercache.h                      **
+** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,55 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef READERCACHE_H
+#define READERCACHE_H
 
-#include "core/resources.h"
+#include <string>
+#include <vector>
 
-class PhysfsResource : public Resource
+#include "cache/cache.h"
+#include "core/log.h"
+
+template<class T>
+class ReaderCache
 {
 public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    typedef T (*GenFn)(const std::string& name);
 
-    const void* data();
-    size_t size();
+    ReaderCache(GenFn fn) : fn(fn) {}
+
+    T momentaryRequest(const std::string& name)
+    {
+        T t = cache.momentaryRequest(name);
+        if (t)
+            return t;
+
+        t = fn(name);
+        cache.momentaryPut(name, t);
+        return t;
+    }
+
+    T lifetimeRequest(const std::string& name)
+    {
+        T t = cache.lifetimeRequest(name);
+        if (t)
+            return t;
+
+        t = fn(name);
+        cache.lifetimePut(name, t);
+        return t;
+    }
+
+    void garbageCollect()
+    {
+        cache.garbageCollect();
+    }
 
 private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
+    GenFn fn;
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
+    Cache<T> cache;
 };
 
 #endif
+

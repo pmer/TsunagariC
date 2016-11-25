@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** main.cpp                           **
 ** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
 ***************************************/
 
 // **********
@@ -30,21 +31,21 @@
 #include <libxml/parser.h>
 #include <physfs.h>
 
-#include "client-conf.h"
-#include "formatter.h"
-#include "log.h"
-#include "resources.h"
-#include "window.h"
-#include "world.h"
+#include "core/client-conf.h"
+#include "core/formatter.h"
+#include "core/log.h"
+#include "core/resources.h"
+#include "core/window.h"
+#include "core/world.h"
 
 #include "data/data-world.h"
 
 #ifdef _WIN32
-  #include "os-windows.h"
+  #include "os/os-windows.h"
 #endif
 
 #ifdef __APPLE__
-  #include "os-mac.h"
+  #include "os/mac.h"
 #endif
 
 /**
@@ -59,10 +60,11 @@ int main(int argc, char** argv)
     wFixConsole();
 #endif
 
-    srand((unsigned)time(NULL));
+    srand((unsigned)time(nullptr));
 
-    if (!Log::init())
+    if (!Log::init()) {
         return 1;
+    }
 
 #ifdef __APPLE__
     macSetWorkingDirectory();

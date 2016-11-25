@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** dispatch-queue-impl.cpp     **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,38 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#include "util/dispatch-queue-impl.h"
 
-#include "core/resources.h"
+bool operator<(const TaskContext& lhs, const TaskContext& rhs) {
+    return lhs.qualityOfService < rhs.qualityOfService;
+}
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+DispatchQueueImpl::DispatchQueue() {
+     unsigned n = std::thread::hardware_concurrency();
+     for (int i = 0; i < n; i++) {
+         std::thread thread(&DispatchQueueImpl::runTasks, this);
+         threads.emplace_back(std::move(thread));
+     }
+}
 
-    const void* data();
-    size_t size();
+DispatchQueueImpl::~DispatchQueue() {
+    tasks.end();
+    for (auto& thread : threads) {
+        thread.join();
+    }
+}
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
+void DispatchQueueImpl::async(Task task, QualityOfService qos) {
+     tasks.enqueue({task, qos});
+}
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif
+void DispatchQueueImpl::runTasks() {
+    while (true) {
+        Optional<TaskContext> context = tasks.dequeue();
+        if (context) {
+            context->task();
+        } else {
+            return;
+        }
+    }
+}

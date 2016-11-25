@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** window.cpp                         **
+** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,47 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#include <stdlib.h>
 
-#include "core/resources.h"
+#include "core/window.h"
+#include "core/world.h"
 
-class PhysfsResource : public Resource
+GameWindow::GameWindow()
+    : keysDown(KB_SIZE)
 {
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+}
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
+GameWindow::~GameWindow()
 {
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+}
 
-    bool init();
+void GameWindow::emitKeyDown(KeyboardKey key)
+{
+    keysDown[key]++;
 
-    std::unique_ptr<Resource> load(const std::string& path);
+    if (keysDown[KBEscape] &&
+            (keysDown[KBLeftShift] || keysDown[KBRightShift])) {
+        exit(0);
+    }
 
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
+    if (keysDown[key])
+        World::instance().buttonDown(key);
+}
 
-    bool initialized;
-};
+void GameWindow::emitKeyUp(KeyboardKey key)
+{
+    keysDown[key]--;
 
-#endif
+    if (!keysDown[key])
+        World::instance().buttonUp(key);
+}
+
+bool GameWindow::isKeyDown(KeyboardKey key)
+{
+    return keysDown[key] != false;
+}
+
+BitRecord GameWindow::getKeysDown()
+{
+    return keysDown;
+}

@@ -1,9 +1,9 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
+** math2.h                       **
+** Copyright 2014 PariahSoft LLC **
 ** Copyright 2016 Paul Merrill   **
-**********************************/
+***********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,28 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef MATH_H
+#define MATH_H
 
-#include "core/resources.h"
-
-class PhysfsResource : public Resource
+template<class T>
+static T bound(T value, T min, T max)
 {
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    if (value < min) {
+        return min;
+    }
+    if (value > max) {
+        return max;
+    }
+    return value;
+}
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
+template<class T>
+static T wrap(T min, T value, T max)
 {
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
+    while (value < min) {
+        value += max;
+    }
+    return value % max;
+}
 
 #endif

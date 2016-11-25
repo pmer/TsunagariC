@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine         **
 ** area.h                        **
 ** Copyright 2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
 **********************************/
 
 // **********
@@ -27,11 +28,12 @@
 #ifndef DATAAREA_H
 #define DATAAREA_H
 
+#include <time.h>
+
 #include <functional>
 #include <map>
 #include <memory>
 #include <string>
-#include <time.h>
 #include <vector>
 
 class Area;

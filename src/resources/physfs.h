@@ -1,7 +1,7 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** world.h                       **
-** Copyright 2014 PariahSoft LLC **
+** physfs.h                      **
+** Copyright 2015 PariahSoft LLC **
 ** Copyright 2016 Paul Merrill   **
 **********************************/
 
@@ -25,61 +25,28 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DATAWORLD_H
-#define DATAWORLD_H
+#ifndef SRC_RESOURCES_PHYSFS_H_
+#define SRC_RESOURCES_PHYSFS_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
-#include "core/client-conf.h"
+#include "core/resources.h"
 
-class DataArea;
+class PhysfsResources : public Resources {
+ public:
+    PhysfsResources();
+    ~PhysfsResources() = default;
 
-class DataWorld
-{
-public:
-    static DataWorld& instance();
+    bool init();
 
-    virtual ~DataWorld();
+    std::unique_ptr<Resource> load(const std::string& path);
 
-    //! After the engine has booted, initialize the world.
-    virtual bool init() = 0;
+ private:
+    PhysfsResources(const PhysfsResources&) = delete;
+    PhysfsResources& operator=(const PhysfsResources&) = delete;
 
-    DataArea* area(const std::string& areaName);
-
-    // Miscellaneous engine parameters set by world's author.
-    struct {
-        std::string name, author, version;
-    } about;
-    struct {
-        enum movement_mode_t moveMode;
-        rvec2 viewportResolution;
-        struct {
-            struct {
-                int initial, consecutive;
-            } persistDelay;
-        } input;
-        struct {
-            struct {
-                std::string file, phase;
-            } player;
-            std::string area;
-            vicoord coords;
-        } gameStart;
-    } parameters;
-    std::string datafile;
-
-protected:
-    DataWorld();
-
-    std::map<std::string,std::shared_ptr<DataArea>> areas;
-
-private:
-    DataWorld(const DataWorld&) = delete;
-    DataWorld(DataWorld&&) = delete;
-    DataWorld& operator=(const DataWorld&) = delete;
-    DataWorld& operator=(DataWorld&&) = delete;
+    bool initialized;
 };
 
-#endif
+#endif  // SRC_RESOURCES_PHYSFS_H_

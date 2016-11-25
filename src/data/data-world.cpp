@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine         **
 ** world.cpp                     **
 ** Copyright 2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill   **
 **********************************/
 
 // **********
@@ -24,7 +25,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "data-world.h"
+#include "data/data-world.h"
 
 DataWorld::DataWorld() {}
 DataWorld::~DataWorld() {}

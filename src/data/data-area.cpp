@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine         **
 ** area.cpp                      **
 ** Copyright 2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill   **
 **********************************/
 
 // **********
@@ -24,12 +25,13 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "../algorithm.h"
-#include "../random.h"
-#include "../sounds.h"
+#include "data/data-area.h"
 
-#include "data-area.h"
-#include "inprogress.h"
+#include "core/algorithm.h"
+#include "core/random.h"
+#include "core/sounds.h"
+
+#include "data/inprogress.h"
 
 DataArea::DataArea() {}
 DataArea::~DataArea() {}

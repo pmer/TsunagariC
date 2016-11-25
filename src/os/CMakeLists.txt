@@ -1,0 +1,7 @@
+if(APPLE)
+    set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
+        ${CMAKE_CURRENT_LIST_DIR}/mac.mm
+    )
+
+    set(GUI_TYPE MACOSX_BUNDLE)
+endif(APPLE)

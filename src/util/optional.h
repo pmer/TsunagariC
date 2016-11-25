@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** optional.h                  **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,32 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef OPTIONAL_H
+#define OPTIONAL_H
 
-#include "core/resources.h"
+#include <assert.h>
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+#include <memory>
 
-    const void* data();
-    size_t size();
+template<typename T>
+class Optional {
+    T x;
+    bool exists;
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
+ public:
+    explicit Optional() : x(), exists(false) {}
+    explicit Optional(T&& x) : x(std::move(x)), exists(true) {}
+    explicit Optional(const T& x) : x(x), exists(true) {}
+
+    Optional &operator=(const T &x) {
+        this->x = x;
+        exists = true;
+        return *this;
+    }
+
+    operator bool() const { return exists; }
+    const T* operator->() const { assert(exists); return &x; }
+    const T& operator*() const { assert(exists); return x; }
 };
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif
+#endif  // OPTIONAL_H

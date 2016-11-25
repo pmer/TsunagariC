@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** overlay.h                          **
+** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,26 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef OVERLAY_H
+#define OVERLAY_H
 
-#include "core/resources.h"
+#include "core/entity.h"
 
-class PhysfsResource : public Resource
+class Overlay : public Entity
 {
 public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    Overlay();
+    virtual ~Overlay();
 
-    const void* data();
-    size_t size();
+    void tick(time_t dt);
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
+    void teleport(vicoord coord);
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+    void drift(ivec2 xy);
+    void driftTo(ivec2 xy);
 
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
+protected:
+    void pickFacingForAngle();
 };
 
 #endif

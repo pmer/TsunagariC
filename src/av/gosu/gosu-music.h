@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** gosu-music.h                       **
+** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2016      Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,45 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef GOSU_MUSIC_H
+#define GOSU_MUSIC_H
 
-#include "core/resources.h"
+#include "cache/cache-template.cpp"
+#include "cache/readercache.h"
+#include "core/music.h"
 
-class PhysfsResource : public Resource
+namespace Gosu {
+    class Song;
+}
+
+class GosuMusic : public Music
 {
 public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+    GosuMusic();
+    ~GosuMusic();
 
-    const void* data();
-    size_t size();
+    bool setIntro(const std::string& filename);
+    bool setLoop(const std::string& filename);
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
+    bool playing();
+    void stop();
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+    void pause();
+    void resume();
 
-    bool init();
+    void setVolume(double volume);
 
-    std::unique_ptr<Resource> load(const std::string& path);
+    void tick();
+
+    void garbageCollect();
 
 private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
+    void playIntro();
+    void playLoop();
 
-    bool initialized;
+    std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
+
+    ReaderCache<std::shared_ptr<Gosu::Song>> songs;
 };
 
 #endif

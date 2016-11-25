@@ -2,6 +2,7 @@
 ** Tsunagari Tile Engine         **
 ** inprogress.cpp                **
 ** Copyright 2014 PariahSoft LLC **
+** Copyright 2016 Paul Merrill   **
 **********************************/
 
 // **********
@@ -24,9 +25,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "../log.h"
+#include "data/inprogress.h"
 
-#include "inprogress.h"
+#include "core/log.h"
+#include "core/sounds.h"
 
 InProgress::InProgress()
     : over(false)
@@ -45,14 +47,16 @@ bool InProgress::isOver()
 InProgressSound::InProgressSound(const std::string& sound, ThenFn then)
     : sound(Sounds::instance().play(sound)), then(then)
 {
-    if (!then)
+    if (!then) {
         Log::err("InProgressSound", "invalid 'then'");
+    }
 }
 
 void InProgressSound::tick(time_t)
 {
-    if (over)
+    if (over) {
         return;
+    }
 
     if (!sound->playing()) {
         over = true;
@@ -63,42 +67,49 @@ void InProgressSound::tick(time_t)
 InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress)
     : duration(duration), passed(0), progress(progress)
 {
-    if (!progress)
+    if (!progress) {
         Log::err("InProgressTimer", "invalid 'progress'");
+    }
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ThenFn then)
     : duration(duration), passed(0), then(then)
 {
-    if (!then)
+    if (!then) {
         Log::err("InProgressTimer", "invalid 'then'");
+    }
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress,
         ThenFn then)
     : duration(duration), passed(0), progress(progress), then(then)
 {
-    if (!progress)
+    if (!progress) {
         Log::err("InProgressTimer", "invalid 'progress'");
-    if (!then)
+    }
+    if (!then) {
         Log::err("InProgressTimer", "invalid 'then'");
+    }
 }
 
 void InProgressTimer::tick(time_t dt)
 {
-    if (over)
+    if (over) {
         return;
+    }
 
     passed += dt;
 
     if (passed < duration) {
-        if (progress)
+        if (progress) {
             // Range is [0.0, 1.0)
             progress((double)passed / (double)duration);
+        }
     }
     else {
         over = true;
-        if (then)
+        if (then) {
             then();
+        }
     }
 }

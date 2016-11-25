@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** dispatch-queue-impl.h       **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,32 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef DISPATCH_QUEUE_IMPL_H
+#define DISPATCH_QUEUE_IMPL_H
 
-#include "core/resources.h"
+#include <thread>
+#include <vector>
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+#include "util/dispatch-queue.h"
+#include "util/safe-heap.h"
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
+struct TaskContext {
+    Task task;
+    int qualityOfService;
 };
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+class DispatchQueueImpl {
+ public:
+    DispatchQueueImpl();
+    ~DispatchQueueImpl();
 
-    bool init();
+    void async(Task task, QualityOfService qos);
 
-    std::unique_ptr<Resource> load(const std::string& path);
+ private:
+    void runTasks();
 
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
+    SafeHeap<TaskContext> tasks;
+    std::vector<std::thread> threads;
 };
 
-#endif
+#endif  // DISPATCH_QUEUE_IMPL_H

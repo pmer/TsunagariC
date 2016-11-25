@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** os/windows.h                       **
+** Copyright 2011-2013 PariahSoft LLC **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +24,35 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#if defined _WIN32 && !defined OS_WINDOWS_H
+#define OS_WINDOWS_H
 
-#include "core/resources.h"
+#include <string>
 
-class PhysfsResource : public Resource
-{
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+// === Windows Fixes ===
+    // Fix snprintf for VisualC++.
+    #ifdef _MSC_VER
+        #define snprintf _snprintf
+    #endif
 
-    const void* data();
-    size_t size();
+    // Fix NAN constant for VisualC++.
+    #ifdef _MSC_VER
+        #ifndef NAN
+            static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+            #define NAN (*(const float *) __nan)
+        #endif
+    #endif
+// ===
 
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
+/* Visual C++ ignorantly assumes that all programs will use either a console OR
+ * a window. Our program needs a window and an optional console. When Tsunagari
+ * is run from the command line, this function forces Windows to reattach a
+ * console to its process. Otherwise it does nothing.
+ */
+void wFixConsole();
 
-class PhysfsResources : public Resources
-{
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
-
-    bool init();
-
-    std::unique_ptr<Resource> load(const std::string& path);
-
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
+// Simple wrapper to create a halting (modal) message box.
+void wMessageBox(const std::string& title, const std::string& text);
 
 #endif
+

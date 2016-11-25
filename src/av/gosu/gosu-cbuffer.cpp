@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** gosu-cbuffer.cpp                   **
+** Copyright 2011-2015 PariahSoft LLC **
+** Copyright 2016 Paul Merrill        **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,40 +25,31 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#include <string.h>
 
-#include "core/resources.h"
+#include "av/gosu/gosu-cbuffer.h"
 
-class PhysfsResource : public Resource
+GosuCBuffer::GosuCBuffer(const void* data, size_t size)
+    : _data(data), _size(size)
 {
-public:
-    PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
-    ~PhysfsResource() = default;
+}
 
-    const void* data();
-    size_t size();
-
-private:
-    std::unique_ptr<const char[]> _data;
-    size_t _size;
-};
-
-class PhysfsResources : public Resources
+size_t GosuCBuffer::size() const
 {
-public:
-    PhysfsResources();
-    ~PhysfsResources() = default;
+    return _size;
+}
 
-    bool init();
+void GosuCBuffer::resize(size_t)
+{
+    // NOOP
+}
 
-    std::unique_ptr<Resource> load(const std::string& path);
+void GosuCBuffer::read(size_t offset, size_t length, void* destBuffer) const
+{
+    memcpy(destBuffer, (const char*)_data + offset, length);
+}
 
-private:
-    PhysfsResources(const PhysfsResources&) = delete;
-    PhysfsResources& operator=(const PhysfsResources&) = delete;
-
-    bool initialized;
-};
-
-#endif
+void GosuCBuffer::write(size_t, size_t, const void*)
+{
+    // NOOP
+}

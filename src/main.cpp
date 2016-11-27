@@ -34,6 +34,7 @@
 #include "core/client-conf.h"
 #include "core/formatter.h"
 #include "core/log.h"
+#include "core/measure.h"
 #include "core/resources.h"
 #include "core/window.h"
 #include "core/world.h"
@@ -54,8 +55,7 @@
  * The client config tells us our window parameters along with which World
  * we're going to load. The GameWindow class then loads and plays the game.
  */
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 #ifdef _WIN32
     wFixConsole();
 #endif
@@ -90,7 +90,11 @@ int main(int argc, char** argv)
      */
     LIBXML_TEST_VERSION
 
-    GameWindow* window = GameWindow::create();
+    GameWindow* window;
+    {
+        TimeMeasure m("Constructed window");
+        window = GameWindow::create();
+    }
     World& world = World::instance();
     DataWorld& dataWorld = DataWorld::instance();
 
@@ -98,12 +102,15 @@ int main(int argc, char** argv)
         Log::fatal("Main", "GameWindow::init");
         return 1;
     }
-    if (!world.init()) {
-        Log::fatal("Main", "World::init");
-        return 1;
+    {
+        TimeMeasure m("Constructed world");
+        if (!world.init()) {
+            Log::fatal("Main", "World::init");
+            return 1;
+        }
     }
     if (!dataWorld.init()) {
-        Log::fatal("Main", "WorldWorld::init");
+        Log::fatal("Main", "DataWorld::init");
         return 1;
     }
 

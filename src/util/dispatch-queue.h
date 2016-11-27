@@ -27,7 +27,11 @@
 #ifndef DISPATCH_QUEUE_H
 #define DISPATCH_QUEUE_H
 
+#include <functional>
+
 typedef std::function<void()> Task;
+
+class DispatchQueueImpl;
 
 class DispatchQueue {
  public:
@@ -45,7 +49,6 @@ class DispatchQueue {
     void async(Task task, QualityOfService qos = QualityOfService::DEFAULT);
 
  private:
-    class DispatchQueueImpl;
     DispatchQueueImpl* impl;
 };
 

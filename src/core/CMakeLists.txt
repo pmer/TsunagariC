@@ -14,14 +14,15 @@ set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/images.cpp
     ${CMAKE_CURRENT_LIST_DIR}/log.cpp
     ${CMAKE_CURRENT_LIST_DIR}/measure.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/music.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/music-impl.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/music-worker.cpp
     ${CMAKE_CURRENT_LIST_DIR}/npc.cpp
     ${CMAKE_CURRENT_LIST_DIR}/overlay.cpp
     ${CMAKE_CURRENT_LIST_DIR}/player.cpp
     ${CMAKE_CURRENT_LIST_DIR}/random.cpp
     ${CMAKE_CURRENT_LIST_DIR}/resources.cpp
     ${CMAKE_CURRENT_LIST_DIR}/sounds.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/string2.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/string2.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/viewport.cpp
     ${CMAKE_CURRENT_LIST_DIR}/window.cpp

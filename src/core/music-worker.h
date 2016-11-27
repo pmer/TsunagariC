@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-music.h                       **
+** music-worker.h                     **
 ** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016      Paul Merrill   **
+** Copyright 2016 Paul Merrill        **
 ***************************************/
 
 // **********
@@ -25,45 +25,52 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_MUSIC_H
-#define GOSU_MUSIC_H
+#ifndef SRC_CORE_MUSIC_WORKER_H_
+#define SRC_CORE_MUSIC_WORKER_H_
 
-#include "cache/cache-template.cpp"
-#include "cache/readercache.h"
-#include "core/music-worker.h"
+#include <string>
 
-namespace Gosu {
-    class Song;
-}
+class MusicWorker {
+ public:
+    static MusicWorker& instance();
 
-class GosuMusic : public MusicWorker
-{
-public:
-    GosuMusic();
-    ~GosuMusic();
+    virtual ~MusicWorker() = default;
 
-    void setIntro(const std::string& filename);
-    void setLoop(const std::string& filename);
+    virtual void setIntro(const std::string& filepath);
+    virtual void setLoop(const std::string& filepath);
 
-    void stop();
+    virtual void stop();
 
-    bool playing();
-    void pause();
-    void resume();
+    virtual void pause();
+    virtual void resume();
 
-    void setVolume(double volume);
+    double getVolume();
+    virtual void setVolume(double volume);
 
-    void tick();
+    virtual void tick() = 0;
 
-    void garbageCollect();
+    virtual void garbageCollect() = 0;
 
-private:
+ protected:
+    MusicWorker();
+
     void playIntro();
     void playLoop();
 
-    std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
+    enum MUSIC_STATE
+    {
+        NOT_PLAYING,
+        PLAYING_INTRO,
+        PLAYING_LOOP,
+        CHANGED_INTRO,
+        CHANGED_LOOP
+    } state;
 
-    ReaderCache<std::shared_ptr<Gosu::Song>> songs;
+    double volume;
+    int pausedCount;
+
+    std::string curIntro, newIntro;
+    std::string curLoop, newLoop;
 };
 
-#endif
+#endif  // SRC_CORE_MUSIC_WORKER_H_

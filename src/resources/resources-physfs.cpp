@@ -30,6 +30,7 @@
 #include <physfs.h>
 
 #include <limits>
+#include <mutex>
 
 #include "core/formatter.h"
 #include "core/log.h"
@@ -54,6 +55,7 @@ size_t PhysfsResource::size()
 
 
 static PhysfsResources globalResources;
+static std::mutex globalPhysfsMutex;
 
 Resources& Resources::instance()
 {
@@ -84,6 +86,8 @@ static void initialize()
 
 std::unique_ptr<Resource> PhysfsResources::load(const std::string& path)
 {
+    std::lock_guard<std::mutex> lock(globalPhysfsMutex);
+
     TimeMeasure m("Mapped " + path);
 
     if (!initialized) {

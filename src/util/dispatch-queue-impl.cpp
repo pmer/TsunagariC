@@ -30,28 +30,29 @@ bool operator<(const TaskContext& lhs, const TaskContext& rhs) {
     return lhs.qualityOfService < rhs.qualityOfService;
 }
 
-DispatchQueueImpl::DispatchQueue() {
-     unsigned n = std::thread::hardware_concurrency();
-     for (int i = 0; i < n; i++) {
-         std::thread thread(&DispatchQueueImpl::runTasks, this);
-         threads.emplace_back(std::move(thread));
-     }
+DispatchQueueImpl::DispatchQueueImpl() {
+    unsigned n = std::thread::hardware_concurrency();
+    n = 1;  // debug, and to help with MusicWorker until better mechanism for series-of-tasks implemented
+    for (unsigned i = 0; i < n; i++) {
+        std::thread thread(&DispatchQueueImpl::runTasks, this);
+        threads.emplace_back(std::move(thread));
+    }
 }
 
-DispatchQueueImpl::~DispatchQueue() {
+DispatchQueueImpl::~DispatchQueueImpl() {
     tasks.end();
     for (auto& thread : threads) {
         thread.join();
     }
 }
 
-void DispatchQueueImpl::async(Task task, QualityOfService qos) {
-     tasks.enqueue({task, qos});
+void DispatchQueueImpl::async(Task task, DispatchQueue::QualityOfService qos) {
+     tasks.push({task, qos});
 }
 
 void DispatchQueueImpl::runTasks() {
     while (true) {
-        Optional<TaskContext> context = tasks.dequeue();
+        Optional<TaskContext> context = tasks.pop();
         if (context) {
             context->task();
         } else {

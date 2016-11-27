@@ -29,18 +29,17 @@
 
 #include <Gosu/Audio.hpp>
 
-#include "core/client-conf.h"
 #include "core/measure.h"
 #include "core/resources.h"
 
 #include "av/gosu/gosu-cbuffer.h"
 
 #ifdef BACKEND_GOSU
-static GosuMusic globalMusic;
+static GosuMusic globalMusicWorker;
 
-Music& Music::instance()
+MusicWorker& MusicWorker::instance()
 {
-    return globalMusic;
+    return globalMusicWorker;
 }
 #endif
 
@@ -72,30 +71,20 @@ GosuMusic::~GosuMusic()
     }
 }
 
-bool GosuMusic::setIntro(const std::string& filepath)
+void GosuMusic::setIntro(const std::string& filepath)
 {
-    if (Music::setIntro(filepath)) {
-        // Optimize XXX: Don't load until played.
-        introMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
-            std::shared_ptr<Gosu::Song>();
-        return true;
-    }
-    else {
-        return false;
-    }
+    MusicWorker::setIntro(filepath);
+    // Optimize XXX: Don't load until played.
+    introMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
+        std::shared_ptr<Gosu::Song>();
 }
 
-bool GosuMusic::setLoop(const std::string& filepath)
+void GosuMusic::setLoop(const std::string& filepath)
 {
-    if (Music::setLoop(filepath)) {
-        // Optimize XXX: Don't load until played.
-        loopMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
-            std::shared_ptr<Gosu::Song>();
-        return true;
-    }
-    else {
-        return false;
-    }
+    MusicWorker::setLoop(filepath);
+    // Optimize XXX: Don't load until played.
+    loopMusic = filepath.size() ? songs.lifetimeRequest(filepath) :
+        std::shared_ptr<Gosu::Song>();
 }
 
 bool GosuMusic::playing()
@@ -110,7 +99,7 @@ bool GosuMusic::playing()
 
 void GosuMusic::stop()
 {
-    Music::stop();
+    MusicWorker::stop();
     if (musicInst) {
         musicInst->stop();
     }
@@ -119,7 +108,7 @@ void GosuMusic::stop()
 
 void GosuMusic::pause()
 {
-    Music::pause();
+    MusicWorker::pause();
     if (pausedCount == 1 && musicInst) {
         musicInst->pause();
     }
@@ -127,7 +116,7 @@ void GosuMusic::pause()
 
 void GosuMusic::resume()
 {
-    Music::resume();
+    MusicWorker::resume();
     if (pausedCount == 0 && musicInst) {
         musicInst->play();
     }
@@ -191,7 +180,7 @@ void GosuMusic::tick()
 void GosuMusic::playIntro()
 {
     TimeMeasure m("Playing " + newIntro + " as intro");
-    Music::playIntro();
+    MusicWorker::playIntro();
     if (musicInst && musicInst->playing()) {
         musicInst->stop();
     }
@@ -203,7 +192,7 @@ void GosuMusic::playIntro()
 void GosuMusic::playLoop()
 {
     TimeMeasure m("Playing " + newLoop + " as loop");
-    Music::playLoop();
+    MusicWorker::playLoop();
     if (musicInst && musicInst->playing()) {
         musicInst->stop();
     }

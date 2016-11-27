@@ -43,7 +43,7 @@ class DispatchQueueImpl {
     DispatchQueueImpl();
     ~DispatchQueueImpl();
 
-    void async(Task task, QualityOfService qos);
+    void async(Task task, DispatchQueue::QualityOfService qos);
 
  private:
     void runTasks();

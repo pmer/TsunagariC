@@ -31,6 +31,8 @@
 #include <mutex>
 #include <queue>
 
+#include "util/optional.h"
+
 template <class T>
 class SafeHeap {
  public:

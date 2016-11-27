@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** music.cpp                          **
+** music-impl.cpp                     **
 ** Copyright 2011-2014 PariahSoft LLC **
 ** Copyright 2016 Paul Merrill        **
 ***************************************/
@@ -25,42 +25,35 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "core/music-worker.h"
+
 #include "core/client-conf.h"
 #include "core/formatter.h"
 #include "core/math2.h"
-#include "core/music.h"
 
-static void clientIniVolumeVerify()
-{
+static void clientIniVolumeVerify() {
     if (conf.musicVolume < 0 || 100 < conf.musicVolume) {
-        Log::err("Music", "Music volume not within bounds [0,100]");
+        Log::err("MusicWorker", "Music volume not within bounds [0,100]");
     }
 }
 
-static double clientIniVolumeApply(double volume)
-{
+static double clientIniVolumeApply(double volume) {
     clientIniVolumeVerify();
     return volume * conf.musicVolume / 100.0;
 }
 
-static double clientIniVolumeUnapply(double volume)
-{
+static double clientIniVolumeUnapply(double volume) {
     clientIniVolumeVerify();
     return volume / conf.musicVolume * 100.0;
 }
 
 
-Music::Music()
-    : state(NOT_PLAYING), volume(1.0), pausedCount(0)
-{
-}
+MusicWorker::MusicWorker()
+    : state(NOT_PLAYING), volume(1.0), pausedCount(0) {}
 
-Music::~Music() {}
-
-bool Music::setIntro(const std::string& filename)
-{
+void MusicWorker::setIntro(const std::string& filename) {
     if (newIntro == filename) {
-        return false;
+        return;
     }
 
     switch (state) {
@@ -68,17 +61,16 @@ bool Music::setIntro(const std::string& filename)
     case PLAYING_INTRO:
     case PLAYING_LOOP:
         state = CHANGED_INTRO;
-    default: break;
+    default:
+        break;
     }
 
     newIntro = filename;
-    return true;
 }
 
-bool Music::setLoop(const std::string& filename)
-{
+void MusicWorker::setLoop(const std::string& filename) {
     if (newLoop == filename) {
-        return false;
+        return;
     }
 
     switch (state) {
@@ -91,38 +83,28 @@ bool Music::setLoop(const std::string& filename)
     }
 
     newLoop = filename;
-    return true;
 }
 
-bool Music::paused()
-{
-    return pausedCount != 0;
-}
-
-void Music::pause()
-{
+void MusicWorker::pause() {
     pausedCount++;
 }
 
-void Music::resume()
-{
+void MusicWorker::resume() {
     if (pausedCount <= 0) {
-        Log::err("Music", "unpausing, but music not paused");
+        Log::err("MusicWorker", "unpausing, but music not paused");
         return;
     }
     pausedCount--;
 }
 
-double Music::getVolume()
-{
+double MusicWorker::getVolume() {
     return clientIniVolumeUnapply(volume);
 }
 
-void Music::setVolume(double attemptedVolume)
-{
+void MusicWorker::setVolume(double attemptedVolume) {
     double newVolume = bound(attemptedVolume, 0.0, 1.0);
     if (attemptedVolume != newVolume) {
-        Log::info("Music",
+        Log::info("MusicWorker",
             Formatter(
                 "Attempted to set volume to %, setting it to %"
             ) % attemptedVolume % newVolume
@@ -132,23 +114,20 @@ void Music::setVolume(double attemptedVolume)
     volume = clientIniVolumeApply(newVolume);
 }
 
-void Music::stop()
-{
+void MusicWorker::stop() {
     state = NOT_PLAYING;
     pausedCount = 0;
     curIntro = newIntro = "";
     curLoop = newLoop = "";
 }
 
-void Music::playIntro()
-{
+void MusicWorker::playIntro() {
     curIntro = newIntro;
     state = PLAYING_INTRO;
     pausedCount = 0;
 }
 
-void Music::playLoop()
-{
+void MusicWorker::playLoop() {
     curLoop = newLoop;
     state = PLAYING_LOOP;
     pausedCount = 0;

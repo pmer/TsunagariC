@@ -25,10 +25,9 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef MUSIC_H
-#define MUSIC_H
+#ifndef SRC_CORE_MUSIC_H_
+#define SRC_CORE_MUSIC_H_
 
-#include <memory>
 #include <string>
 
 /**
@@ -47,36 +46,29 @@
  * When a new music is played, the pause state of the previous music is
  * dropped.
  */
-class Music
-{
-public:
+class Music {
+ public:
     //! Acquire the global Music object.
     static Music& instance();
 
-    virtual ~Music();
+    virtual ~Music() = default;
 
     //! If the intro filepath has changed, start playing it.
-    virtual bool setIntro(const std::string& filepath);
+    virtual void setIntro(const std::string& filepath) = 0;
     //! If the loop filepath has changed, then play the loop either now,
     //! or after an also-new intro music has played.
-    virtual bool setLoop(const std::string& filepath);
+    virtual void setLoop(const std::string& filepath) = 0;
 
-    //! Whether music is currently playing.
-    virtual bool playing() = 0;
     //! Stop playing music.  To begin again, set a new intro or loop.
-    virtual void stop();
+    virtual void stop() = 0;
 
-    //! Whether music is paused.
-    virtual bool paused();
     //! Pause playback of music.
-    virtual void pause();
+    virtual void pause() = 0;
     //! Resume playback of music.
-    virtual void resume();
+    virtual void resume() = 0;
 
     //! Between 0.0 (silence) and 1.0 (full).
-    double getVolume();
-    //! Between 0.0 (silence) and 1.0 (full).
-    virtual void setVolume(double volume);
+    virtual void setVolume(double volume) = 0;
 
     //! Perform per-tick maintenance of the music subsystem.
     virtual void tick() = 0;
@@ -84,26 +76,8 @@ public:
     //! Free music not recently played.
     virtual void garbageCollect() = 0;
 
-protected:
-    Music();
-
-    void playIntro();
-    void playLoop();
-
-    enum MUSIC_STATE
-    {
-        NOT_PLAYING,
-        PLAYING_INTRO,
-        PLAYING_LOOP,
-        CHANGED_INTRO,
-        CHANGED_LOOP
-    } state;
-
-    double volume;
-    int pausedCount;
-
-    std::string curIntro, newIntro;
-    std::string curLoop, newLoop;
+ protected:
+    Music() = default;
 };
 
-#endif
+#endif  // SRC_CORE_MUSIC_H_

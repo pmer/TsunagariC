@@ -65,8 +65,6 @@ bool World::init()
 {
     alive = true;
 
-    ASSERT(pauseInfo = Images::instance().load("resource/pause_overlay.png"));
-
     auto& parameters = DataWorld::instance().parameters;
     auto& gameStart = parameters.gameStart;
 
@@ -140,10 +138,15 @@ void World::draw()
         window.drawRect(0, ww, 0, wh, 0x7F000000);
 
         if (userPaused) {
-            unsigned iw = pauseInfo->width();
-            unsigned ih = pauseInfo->height();
-            double top = std::numeric_limits<double>::max();
-            pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
+            if (!pauseInfo) {
+                pauseInfo = Images::instance().load("resource/pause_overlay.png");
+            }
+            if (pauseInfo) {
+                unsigned iw = pauseInfo->width();
+                unsigned ih = pauseInfo->height();
+                double top = std::numeric_limits<double>::max();
+                pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
+            }
         }
     }
 

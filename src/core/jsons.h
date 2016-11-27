@@ -29,28 +29,36 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 class JSONArray;
+class JSONObject;
+
+typedef std::unique_ptr<const JSONArray> JSONArrayPtr;
+typedef std::unique_ptr<const JSONObject> JSONObjectPtr;
+typedef std::shared_ptr<const JSONObject> JSONObjectRef;
 
 class JSONObject {
  public:
     virtual ~JSONObject() = default;
 
-    virtual bool hasBool(const std::string& key) const = 0;
-    virtual bool hasInt(const std::string& key) const = 0;
-    virtual bool hasUnsigned(const std::string& key) const = 0;
-    virtual bool hasDouble(const std::string& key) const = 0;
-    virtual bool hasString(const std::string& key) const = 0;
-    virtual bool hasObject(const std::string& key) const = 0;
-    virtual bool hasArray(const std::string& key) const = 0;
+    virtual std::vector<std::string> names() const = 0;
 
-    virtual bool boolAt(const std::string& key) const = 0;
-    virtual int intAt(const std::string& key) const = 0;
-    virtual unsigned unsignedAt(const std::string& key) const = 0;
-    virtual double doubleAt(const std::string& key) const = 0;
-    virtual std::string stringAt(const std::string& key) const = 0;
-    virtual std::unique_ptr<const JSONObject> objectAt(const std::string& key) const = 0;
-    virtual std::unique_ptr<const JSONArray> arrayAt(const std::string& key) const = 0;
+    virtual bool hasBool(const std::string& name) const = 0;
+    virtual bool hasInt(const std::string& name) const = 0;
+    virtual bool hasUnsigned(const std::string& name) const = 0;
+    virtual bool hasDouble(const std::string& name) const = 0;
+    virtual bool hasString(const std::string& name) const = 0;
+    virtual bool hasObject(const std::string& name) const = 0;
+    virtual bool hasArray(const std::string& name) const = 0;
+
+    virtual bool boolAt(const std::string& name) const = 0;
+    virtual int intAt(const std::string& name) const = 0;
+    virtual unsigned unsignedAt(const std::string& name) const = 0;
+    virtual double doubleAt(const std::string& name) const = 0;
+    virtual std::string stringAt(const std::string& name) const = 0;
+    virtual JSONObjectPtr objectAt(const std::string& name) const = 0;
+    virtual JSONArrayPtr arrayAt(const std::string& name) const = 0;
 
  protected:
     JSONObject() = default;
@@ -76,8 +84,8 @@ class JSONArray {
     virtual unsigned unsignedAt(size_t index) const = 0;
     virtual double doubleAt(size_t index) const = 0;
     virtual std::string stringAt(size_t index) const = 0;
-    virtual std::unique_ptr<const JSONObject> objectAt(size_t index) const = 0;
-    virtual std::unique_ptr<const JSONArray> arrayAt(size_t index) const = 0;
+    virtual JSONObjectPtr objectAt(size_t index) const = 0;
+    virtual JSONArrayPtr arrayAt(size_t index) const = 0;
 
  protected:
     JSONArray() = default;
@@ -91,8 +99,8 @@ class JSONs {
 
     virtual ~JSONs() = default;
 
-    //! Load an JSON document.
-    virtual std::shared_ptr<const JSONObject> load(const std::string& path) = 0;
+    //! Load a JSON document.
+    virtual JSONObjectRef load(const std::string& path) = 0;
 
     //! Free JSON documents not recently used.
     virtual void garbageCollect() = 0;

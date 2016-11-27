@@ -32,6 +32,7 @@
 #include <string>
 
 #include <rapidjson/document.h>
+#include <rapidjson/reader.h>
 
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
@@ -46,21 +47,23 @@ class JSONObjectImpl : public JSONObject {
  public:
     virtual ~JSONObjectImpl() = default;
 
-    bool hasBool(const std::string& key) const;
-    bool hasInt(const std::string& key) const;
-    bool hasUnsigned(const std::string& key) const;
-    bool hasDouble(const std::string& key) const;
-    bool hasString(const std::string& key) const;
-    bool hasObject(const std::string& key) const;
-    bool hasArray(const std::string& key) const;
+    std::vector<std::string> names() const;
 
-    bool boolAt(const std::string& key) const;
-    int intAt(const std::string& key) const;
-    unsigned unsignedAt(const std::string& key) const;
-    double doubleAt(const std::string& key) const;
-    std::string stringAt(const std::string& key) const;
-    std::unique_ptr<const JSONObject> objectAt(const std::string& key) const;
-    std::unique_ptr<const JSONArray> arrayAt(const std::string& key) const;
+    bool hasBool(const std::string& name) const;
+    bool hasInt(const std::string& name) const;
+    bool hasUnsigned(const std::string& name) const;
+    bool hasDouble(const std::string& name) const;
+    bool hasString(const std::string& name) const;
+    bool hasObject(const std::string& name) const;
+    bool hasArray(const std::string& name) const;
+
+    bool boolAt(const std::string& name) const;
+    int intAt(const std::string& name) const;
+    unsigned unsignedAt(const std::string& name) const;
+    double doubleAt(const std::string& name) const;
+    std::string stringAt(const std::string& name) const;
+    JSONObjectPtr objectAt(const std::string& name) const;
+    JSONArrayPtr arrayAt(const std::string& name) const;
 
  protected:
     JSONObjectImpl() = default;
@@ -98,8 +101,8 @@ class JSONArrayImpl : public JSONArray {
     unsigned unsignedAt(size_t index) const;
     double doubleAt(size_t index) const;
     std::string stringAt(size_t index) const;
-    std::unique_ptr<const JSONObject> objectAt(size_t index) const;
-    std::unique_ptr<const JSONArray> arrayAt(size_t index) const;
+    JSONObjectPtr objectAt(size_t index) const;
+    JSONArrayPtr arrayAt(size_t index) const;
 
  private:
     const RJArray::PlainType& at(size_t index) const;
@@ -129,12 +132,12 @@ class JSONsImpl : public JSONs {
  public:
     JSONsImpl();
 
-    std::shared_ptr<const JSONObject> load(const std::string& path);
+    JSONObjectRef load(const std::string& path);
 
     void garbageCollect();
 
  private:
-    ReaderCache<std::shared_ptr<JSONObject>> documents;
+    ReaderCache<JSONObjectRef> documents;
 };
 
 
@@ -145,21 +148,32 @@ JSONs& JSONs::instance() {
 }
 
 
-bool JSONObjectImpl::hasBool(const std::string& key) const { return get().HasMember(key) && get()[key].IsBool(); }
-bool JSONObjectImpl::hasInt(const std::string& key) const { return get().HasMember(key) && get()[key].IsInt(); }
-bool JSONObjectImpl::hasUnsigned(const std::string& key) const { return get().HasMember(key) && get()[key].IsUint(); }
-bool JSONObjectImpl::hasDouble(const std::string& key) const { return get().HasMember(key) && get()[key].IsDouble(); }
-bool JSONObjectImpl::hasString(const std::string& key) const { return get().HasMember(key) && get()[key].IsString(); }
-bool JSONObjectImpl::hasObject(const std::string& key) const { return get().HasMember(key) && get()[key].IsObject(); }
-bool JSONObjectImpl::hasArray(const std::string& key) const { return get().HasMember(key) && get()[key].IsArray(); }
+std::vector<std::string> JSONObjectImpl::names() const {
+    std::vector<std::string> names;
+    for (auto& property : get()) {
+        auto& name = property.name;
+        if (name.IsString()) {
+            names.push_back(name.GetString());
+        }
+    }
+    return names;
+}
 
-bool JSONObjectImpl::boolAt(const std::string& key) const { return get()[key].GetBool(); }
-int JSONObjectImpl::intAt(const std::string& key) const { return get()[key].GetInt(); }
-unsigned JSONObjectImpl::unsignedAt(const std::string& key) const { return get()[key].GetUint(); }
-double JSONObjectImpl::doubleAt(const std::string& key) const { return get()[key].GetDouble(); }
-std::string JSONObjectImpl::stringAt(const std::string& key) const { return get()[key].GetString(); }
-std::unique_ptr<const JSONObject> JSONObjectImpl::objectAt(const std::string& key) const { return std::unique_ptr<const JSONObject>(new JSONObjectReal(get()[key].GetObject())); }
-std::unique_ptr<const JSONArray> JSONObjectImpl::arrayAt(const std::string& key) const { return std::unique_ptr<const JSONArray>(new JSONArrayImpl(get()[key].GetArray())); }
+bool JSONObjectImpl::hasBool(const std::string& name) const { return get().HasMember(name) && get()[name].IsBool(); }
+bool JSONObjectImpl::hasInt(const std::string& name) const { return get().HasMember(name) && get()[name].IsInt(); }
+bool JSONObjectImpl::hasUnsigned(const std::string& name) const { return get().HasMember(name) && get()[name].IsUint(); }
+bool JSONObjectImpl::hasDouble(const std::string& name) const { return get().HasMember(name) && get()[name].IsDouble(); }
+bool JSONObjectImpl::hasString(const std::string& name) const { return get().HasMember(name) && get()[name].IsString(); }
+bool JSONObjectImpl::hasObject(const std::string& name) const { return get().HasMember(name) && get()[name].IsObject(); }
+bool JSONObjectImpl::hasArray(const std::string& name) const { return get().HasMember(name) && get()[name].IsArray(); }
+
+bool JSONObjectImpl::boolAt(const std::string& name) const { return get()[name].GetBool(); }
+int JSONObjectImpl::intAt(const std::string& name) const { return get()[name].GetInt(); }
+unsigned JSONObjectImpl::unsignedAt(const std::string& name) const { return get()[name].GetUint(); }
+double JSONObjectImpl::doubleAt(const std::string& name) const { return get()[name].GetDouble(); }
+std::string JSONObjectImpl::stringAt(const std::string& name) const { return get()[name].GetString(); }
+JSONObjectPtr JSONObjectImpl::objectAt(const std::string& name) const { return JSONObjectPtr(new JSONObjectReal(get()[name].GetObject())); }
+JSONArrayPtr JSONObjectImpl::arrayAt(const std::string& name) const { return JSONArrayPtr(new JSONArrayImpl(get()[name].GetArray())); }
 
 
 JSONObjectReal::JSONObjectReal(const RJObject object) : object(std::move(object)) {}
@@ -188,8 +202,8 @@ int JSONArrayImpl::intAt(size_t index) const { return at(index).GetInt(); }
 unsigned JSONArrayImpl::unsignedAt(size_t index) const { return at(index).GetUint(); }
 double JSONArrayImpl::doubleAt(size_t index) const { return at(index).GetDouble(); }
 std::string JSONArrayImpl::stringAt(size_t index) const { return at(index).GetString(); }
-std::unique_ptr<const JSONObject> JSONArrayImpl::objectAt(size_t index) const { return std::unique_ptr<const JSONObject>(new JSONObjectReal(at(index).GetObject())); }
-std::unique_ptr<const JSONArray> JSONArrayImpl::arrayAt(size_t index) const { return std::unique_ptr<const JSONArray>(new JSONArrayImpl(at(index).GetArray())); }
+JSONObjectPtr JSONArrayImpl::objectAt(size_t index) const { return JSONObjectPtr(new JSONObjectReal(at(index).GetObject())); }
+JSONArrayPtr JSONArrayImpl::arrayAt(size_t index) const { return JSONArrayPtr(new JSONArrayImpl(at(index).GetArray())); }
 
 const RJArray::PlainType& JSONArrayImpl::at(size_t index) const {
     return array[static_cast<unsigned>(index)];
@@ -198,9 +212,13 @@ const RJArray::PlainType& JSONArrayImpl::at(size_t index) const {
 
 JSONDocImpl::JSONDocImpl(std::string json)
         : json(std::move(json)) {
+    document.ParseInsitu<
+            rapidjson::kParseInsituFlag |
+            rapidjson::kParseCommentsFlag |
+            rapidjson::kParseTrailingCommasFlag>(
+                const_cast<char*>(this->json.c_str()));
     object = &document;
     objectAddr = &object;
-    document.ParseInsitu(const_cast<char*>(this->json.c_str()));
 }
 
 bool JSONDocImpl::isValid() const {
@@ -208,11 +226,11 @@ bool JSONDocImpl::isValid() const {
 }
 
 const RJObject& JSONDocImpl::get() const {
-    return (RJObject&)objectAddr;
+    return (RJObject&)object;
 }
 
 
-static std::shared_ptr<JSONObject> genJSON(const std::string& path) {
+static JSONObjectRef genJSON(const std::string& path) {
     std::unique_ptr<Resource> r = Resources::instance().load(path);
     if (!r) {
         return nullptr;
@@ -228,7 +246,7 @@ static std::shared_ptr<JSONObject> genJSON(const std::string& path) {
 
 JSONsImpl::JSONsImpl() : documents(genJSON) {}
 
-std::shared_ptr<const JSONObject> JSONsImpl::load(const std::string& path) {
+JSONObjectRef JSONsImpl::load(const std::string& path) {
     return documents.lifetimeRequest(path);
 }
 

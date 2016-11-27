@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 
+#include "core/jsons.h"
 #include "core/vec.h"
 #include "core/xmls.h"
 
@@ -158,6 +159,16 @@ protected:
     //! it is ordered to begin moving again from within arrived(), then the
     //! Entity’s graphics will appear as if it never stopped moving.
     virtual void arrived();
+
+    // JSON parsing functions used in constructing an Entity
+    bool processDescriptorJSON();
+    bool processSpriteJSON(JSONObjectPtr sprite);
+    bool processPhasesJSON(JSONObjectPtr phases, TiledImage& tiles);
+    bool processPhaseJSON(std::string& name, JSONObjectPtr phase, TiledImage& tiles);
+    bool processSoundsJSON(JSONObjectPtr sounds);
+    bool processSoundJSON(std::string& name, std::string path);
+    bool processScriptsJSON(JSONObjectPtr scripts);
+    bool processScriptJSON(std::string& name, std::string path);
 
     // XML parsing functions used in constructing an Entity
     bool processDescriptor();

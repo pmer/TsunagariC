@@ -32,6 +32,7 @@
 #include "core/client-conf.h"
 #include "core/entity.h"
 #include "core/images.h"
+#include "core/jsons.h"
 #include "core/log.h"
 #include "core/math2.h"
 #include "core/resources.h"
@@ -70,7 +71,12 @@ bool Entity::init(const std::string& descriptor,
         const std::string& initialPhase)
 {
     this->descriptor = descriptor;
-    ASSERT(processDescriptor());
+    if (descriptor.find(".json") != std::string::npos) {
+        ASSERT(processDescriptorJSON());
+    }
+    else {
+        ASSERT(processDescriptor());
+    }
     setPhase(initialPhase);
     return true;
 }
@@ -78,8 +84,9 @@ bool Entity::init(const std::string& descriptor,
 void Entity::destroy()
 {
     dead = true;
-    if (area)
+    if (area) {
         area->requestRedraw();
+    }
 }
 
 void Entity::draw()
@@ -103,14 +110,17 @@ bool Entity::needsRedraw(const icube& visiblePixels) const
     time_t now = World::instance().time();
 
     // Don't need to redraw
-    if (!redraw && (!phase || !phase->needsRedraw(now)))
+    if (!redraw && (!phase || !phase->needsRedraw(now))) {
         return false;
+    }
 
     // Aren't on-screen
-    if (visiblePixels.x2 < r.x || r.x + imgsz.x < visiblePixels.x1)
+    if (visiblePixels.x2 < r.x || r.x + imgsz.x < visiblePixels.x1) {
         return false;
-    if (visiblePixels.y2 < r.y || r.y + imgsz.y < visiblePixels.y1)
+    }
+    if (visiblePixels.y2 < r.y || r.y + imgsz.y < visiblePixels.y1) {
         return false;
+    }
 
     return true;
 }
@@ -123,14 +133,16 @@ bool Entity::isDead() const
 
 void Entity::tick(time_t dt)
 {
-    for (auto& fn : onTickFns)
+    for (auto& fn : onTickFns) {
         fn(dt);
+    }
 }
 
 void Entity::turn()
 {
-    for (auto& fn : onTurnFns)
+    for (auto& fn : onTurnFns) {
         fn();
+    }
 }
 
 const std::string Entity::getFacing() const
@@ -144,8 +156,9 @@ bool Entity::setPhase(const std::string& name)
     res = _setPhase(name);
     if (res == PHASE_NOTFOUND) {
         res = _setPhase("stance");
-        if (res == PHASE_NOTFOUND)
+        if (res == PHASE_NOTFOUND) {
             Log::err(descriptor, "phase '" + name + "' not found");
+        }
     }
     return res == PHASE_CHANGED;
 }
@@ -296,8 +309,9 @@ void Entity::setDestinationCoordinate(rcoord destCoord)
 
 void Entity::moveTowardDestination(time_t dt)
 {
-    if (!moving)
+    if (!moving) {
         return;
+    }
 
     redraw = true;
 
@@ -335,22 +349,181 @@ void Entity::arrived()
 
 
 /*
- * DESCRIPTOR CODE BELOW
+ * JSON DESCRIPTOR CODE BELOW
+ */
+
+bool Entity::processDescriptorJSON() {
+    JSONObjectRef doc = JSONs::instance().load(descriptor);
+    if (!doc) {
+        return false;
+    }
+
+    if (doc->hasDouble("speed")) {
+        baseSpeed = doc->doubleAt("speed");
+        setSpeedMultiplier(speedMul);  // Calculate speed from tile size.
+    }
+    if (doc->hasObject("sprite")) {
+        ASSERT(processSpriteJSON(doc->objectAt("sprite")));
+    }
+    if (doc->hasObject("sounds")) {
+        ASSERT(processSoundsJSON(doc->objectAt("sounds")));
+    }
+    if (doc->hasObject("scripts")) {
+        ASSERT(processScriptsJSON(doc->objectAt("scripts")));
+    }
+    return true;
+}
+
+bool Entity::processSpriteJSON(JSONObjectPtr sprite) {
+    std::shared_ptr<TiledImage> tiles;
+
+    ASSERT(sprite->hasObject("sheet"));
+    ASSERT(sprite->hasObject("phases"));
+
+    JSONObjectPtr sheet = sprite->objectAt("sheet");
+    ASSERT(sheet->hasUnsigned("tile_width"));
+    ASSERT(sheet->hasUnsigned("tile_height"));
+    ASSERT(sheet->hasString("path"));
+
+    imgsz.x = sheet->intAt("tile_width");
+    imgsz.y = sheet->intAt("tile_height");
+    std::string path = sheet->stringAt("path");
+    tiles = Images::instance().loadTiles(path,
+        static_cast<unsigned>(imgsz.x), static_cast<unsigned>(imgsz.y));
+
+    return processPhasesJSON(sprite->objectAt("phases"), *tiles);
+}
+
+bool Entity::processPhasesJSON(JSONObjectPtr phases, TiledImage& tiles) {
+    for (std::string& name : phases->names()) {
+        ASSERT(phases->hasObject(name));
+        ASSERT(processPhaseJSON(name, phases->objectAt(name), tiles));
+    }
+    return true;
+}
+
+std::vector<int> intArrayToVectorJSON(JSONArrayPtr array) {
+    std::vector<int> vector;
+    for (size_t i = 0; i < array->size(); i++) {
+        if (array->isUnsigned(i)) {
+            vector.push_back(array->intAt(i));
+        }
+    }
+    return vector;
+}
+
+bool Entity::processPhaseJSON(std::string& name, JSONObjectPtr phase, TiledImage& tiles) {
+    // Each phase requires a 'name' and a 'frame' or 'frames'. Additionally,
+    // 'speed' is required if 'frames' is found.
+    ASSERT(phase->hasUnsigned("frame") || phase->hasArray("frames"));
+
+    if (phase->hasUnsigned("frame")) {
+        unsigned frame = phase->unsignedAt("frame");
+        if (frame >= tiles.size()) {
+            Log::err(descriptor,
+                     "<phase> frame attribute index out of bounds");
+            return false;
+        }
+        const auto& image = tiles[(size_t)frame];
+        phases[name] = Animation(image);
+    }
+    else if (phase->hasArray("frames")) {
+        if (!phase->hasDouble("speed")) {
+            Log::err(descriptor,
+                     "<phase> speed attribute must be present and "
+                             "must be decimal");
+            return false;
+        }
+        double fps = phase->doubleAt("speed");
+
+        std::vector<int> frames = intArrayToVectorJSON(phase->arrayAt("frames"));
+        std::vector<std::shared_ptr<Image>> images;
+        for (auto it = frames.begin(); it != frames.end(); it++) {
+            int i = *it;
+            if (i < 0 || (int)tiles.size() < i) {
+                Log::err(descriptor,
+                         "<phase> frames attribute index out of bounds");
+                return false;
+            }
+            images.push_back(tiles[(size_t)i]);
+        }
+
+        phases[name] = Animation(images, (time_t)(1000.0 / fps));
+    }
+    else {
+        Log::err(descriptor,
+                 "<phase> frames attribute not an int or int ranges");
+        return false;
+    }
+
+    return true;
+}
+
+bool Entity::processSoundsJSON(JSONObjectPtr sounds) {
+    for (std::string& name : sounds->names()) {
+        ASSERT(sounds->hasString(name));
+        ASSERT(processSoundJSON(name, sounds->stringAt(name)));
+    }
+    return true;
+}
+
+bool Entity::processSoundJSON(std::string& name, std::string path) {
+    if (path.empty()) {
+        Log::err(descriptor, "sound path is empty");
+        return false;
+    }
+
+    soundPaths[name] = path;
+    return true;
+}
+
+bool Entity::processScriptsJSON(JSONObjectPtr scripts) {
+    for (std::string& name : scripts->names()) {
+        ASSERT(scripts->hasString(name));
+        ASSERT(processScriptJSON(name, scripts->stringAt(name)));
+    }
+    return true;
+}
+
+bool Entity::processScriptJSON(std::string& name, std::string path) {
+    if (path.empty()) {
+        Log::err(descriptor, "script path is empty");
+        return false;
+    }
+
+    // ScriptRef script = Script::create(filename);
+    // if (!script || !script->validate())
+    //     return false;
+
+    // if (!setScript(trigger, script)) {
+    //     Log::err(descriptor,
+    //         "unrecognized script trigger: " + trigger);
+    //     return false;
+    // }
+
+    return true;
+}
+
+
+/*
+ * XML DESCRIPTOR CODE BELOW
  */
 
 bool Entity::processDescriptor()
 {
     auto doc = XMLs::instance().load(descriptor, "entity");
-    if (!doc)
+    if (!doc) {
         return false;
-    const XMLNode root = doc->root(); // <entity>
-    if (!root)
+    }
+    const XMLNode root = doc->root();  // <entity>
+    if (!root) {
         return false;
+    }
 
     for (XMLNode node = root.childrenNode(); node; node = node.next()) {
         if (node.is("speed")) {
             ASSERT(node.doubleContent(&baseSpeed));
-            setSpeedMultiplier(speedMul); // Calculate speed from tile size.
+            setSpeedMultiplier(speedMul);  // Calculate speed from tile size.
         } else if (node.is("sprite")) {
             ASSERT(processSprite(node.childrenNode()));
         } else if (node.is("sounds")) {
@@ -378,6 +551,7 @@ bool Entity::processSprite(XMLNode node)
     }
     return true;
 }
+
 
 bool Entity::processPhases(XMLNode node,
         const std::shared_ptr<TiledImage>& tiles)

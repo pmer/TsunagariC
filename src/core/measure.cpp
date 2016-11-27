@@ -26,10 +26,22 @@
 
 #include "core/measure.h"
 
+#include <chrono>
 #include <string>
 
+#include "core/log.h"
+
 TimeMeasure::TimeMeasure(std::string description) {
+    this->description = description;
+    start = std::chrono::system_clock::now();
 }
 
 TimeMeasure::~TimeMeasure() {
+    std::chrono::time_point<std::chrono::system_clock> end;
+    end = std::chrono::system_clock::now();
+
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+    Log::info("Measure", description + " took " + std::to_string(elapsed_seconds.count()) + " seconds");
 }

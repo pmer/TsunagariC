@@ -27,12 +27,17 @@
 #ifndef MEASURE_H
 #define MEASURE_H
 
+#include <chrono>
 #include <string>
 
 class TimeMeasure {
  public:
     TimeMeasure(std::string description);
     ~TimeMeasure();
+
+ private:
+    std::string description;
+    std::chrono::time_point<std::chrono::system_clock> start;
 };
 
 #endif  // MEASURE_H

@@ -45,6 +45,7 @@ void GameWindow::emitKeyDown(KeyboardKey key)
 
     if (keysDown[KBEscape] &&
             (keysDown[KBLeftShift] || keysDown[KBRightShift])) {
+        close();
         exit(0);
     }
 

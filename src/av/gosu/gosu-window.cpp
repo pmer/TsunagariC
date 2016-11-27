@@ -212,6 +212,11 @@ void GosuGameWindow::clip(double x, double y, double width, double height)
     graphics().beginClipping(x, y, width, height);
 }
 
+void GosuGameWindow::close()
+{
+    Gosu::Window::close();
+}
+
 
 void GosuGameWindow::handleKeyboardInput(time_t now)
 {

@@ -77,6 +77,8 @@ public:
     void translate(double x, double y);
     void clip(double x, double y, double width, double height);
 
+    void close();
+
 protected:
     //! Process persistent keyboard input
     void handleKeyboardInput(time_t now);

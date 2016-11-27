@@ -97,7 +97,10 @@ class GameWindow
  protected:
     GameWindow();
 
+    virtual void close() = 0;
+
     BitRecord keysDown;
+
 };
 
 #endif

@@ -71,12 +71,7 @@ bool Entity::init(const std::string& descriptor,
         const std::string& initialPhase)
 {
     this->descriptor = descriptor;
-    if (descriptor.find(".json") != std::string::npos) {
-        ASSERT(processDescriptorJSON());
-    }
-    else {
-        ASSERT(processDescriptor());
-    }
+    ASSERT(processDescriptor());
     setPhase(initialPhase);
     return true;
 }
@@ -352,7 +347,7 @@ void Entity::arrived()
  * JSON DESCRIPTOR CODE BELOW
  */
 
-bool Entity::processDescriptorJSON() {
+bool Entity::processDescriptor() {
     JSONObjectRef doc = JSONs::instance().load(descriptor);
     if (!doc) {
         return false;
@@ -363,18 +358,18 @@ bool Entity::processDescriptorJSON() {
         setSpeedMultiplier(speedMul);  // Calculate speed from tile size.
     }
     if (doc->hasObject("sprite")) {
-        ASSERT(processSpriteJSON(doc->objectAt("sprite")));
+        ASSERT(processSprite(doc->objectAt("sprite")));
     }
     if (doc->hasObject("sounds")) {
-        ASSERT(processSoundsJSON(doc->objectAt("sounds")));
+        ASSERT(processSounds(doc->objectAt("sounds")));
     }
     if (doc->hasObject("scripts")) {
-        ASSERT(processScriptsJSON(doc->objectAt("scripts")));
+        ASSERT(processScripts(doc->objectAt("scripts")));
     }
     return true;
 }
 
-bool Entity::processSpriteJSON(JSONObjectPtr sprite) {
+bool Entity::processSprite(JSONObjectPtr sprite) {
     std::shared_ptr<TiledImage> tiles;
 
     ASSERT(sprite->hasObject("sheet"));
@@ -391,18 +386,18 @@ bool Entity::processSpriteJSON(JSONObjectPtr sprite) {
     tiles = Images::instance().loadTiles(path,
         static_cast<unsigned>(imgsz.x), static_cast<unsigned>(imgsz.y));
 
-    return processPhasesJSON(sprite->objectAt("phases"), *tiles);
+    return processPhases(sprite->objectAt("phases"), *tiles);
 }
 
-bool Entity::processPhasesJSON(JSONObjectPtr phases, TiledImage& tiles) {
+bool Entity::processPhases(JSONObjectPtr phases, TiledImage& tiles) {
     for (std::string& name : phases->names()) {
         ASSERT(phases->hasObject(name));
-        ASSERT(processPhaseJSON(name, phases->objectAt(name), tiles));
+        ASSERT(processPhase(name, phases->objectAt(name), tiles));
     }
     return true;
 }
 
-std::vector<int> intArrayToVectorJSON(JSONArrayPtr array) {
+std::vector<int> intArrayToVector(JSONArrayPtr array) {
     std::vector<int> vector;
     for (size_t i = 0; i < array->size(); i++) {
         if (array->isUnsigned(i)) {
@@ -412,7 +407,7 @@ std::vector<int> intArrayToVectorJSON(JSONArrayPtr array) {
     return vector;
 }
 
-bool Entity::processPhaseJSON(std::string& name, JSONObjectPtr phase, TiledImage& tiles) {
+bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& tiles) {
     // Each phase requires a 'name' and a 'frame' or 'frames'. Additionally,
     // 'speed' is required if 'frames' is found.
     ASSERT(phase->hasUnsigned("frame") || phase->hasArray("frames"));
@@ -436,7 +431,7 @@ bool Entity::processPhaseJSON(std::string& name, JSONObjectPtr phase, TiledImage
         }
         double fps = phase->doubleAt("speed");
 
-        std::vector<int> frames = intArrayToVectorJSON(phase->arrayAt("frames"));
+        std::vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
         std::vector<std::shared_ptr<Image>> images;
         for (auto it = frames.begin(); it != frames.end(); it++) {
             int i = *it;
@@ -459,15 +454,15 @@ bool Entity::processPhaseJSON(std::string& name, JSONObjectPtr phase, TiledImage
     return true;
 }
 
-bool Entity::processSoundsJSON(JSONObjectPtr sounds) {
+bool Entity::processSounds(JSONObjectPtr sounds) {
     for (std::string& name : sounds->names()) {
         ASSERT(sounds->hasString(name));
-        ASSERT(processSoundJSON(name, sounds->stringAt(name)));
+        ASSERT(processSound(name, sounds->stringAt(name)));
     }
     return true;
 }
 
-bool Entity::processSoundJSON(std::string& name, std::string path) {
+bool Entity::processSound(std::string& name, std::string path) {
     if (path.empty()) {
         Log::err(descriptor, "sound path is empty");
         return false;
@@ -477,194 +472,17 @@ bool Entity::processSoundJSON(std::string& name, std::string path) {
     return true;
 }
 
-bool Entity::processScriptsJSON(JSONObjectPtr scripts) {
+bool Entity::processScripts(JSONObjectPtr scripts) {
     for (std::string& name : scripts->names()) {
         ASSERT(scripts->hasString(name));
-        ASSERT(processScriptJSON(name, scripts->stringAt(name)));
+        ASSERT(processScript(name, scripts->stringAt(name)));
     }
     return true;
 }
 
-bool Entity::processScriptJSON(std::string& name, std::string path) {
+bool Entity::processScript(std::string& name, std::string path) {
     if (path.empty()) {
         Log::err(descriptor, "script path is empty");
-        return false;
-    }
-
-    // ScriptRef script = Script::create(filename);
-    // if (!script || !script->validate())
-    //     return false;
-
-    // if (!setScript(trigger, script)) {
-    //     Log::err(descriptor,
-    //         "unrecognized script trigger: " + trigger);
-    //     return false;
-    // }
-
-    return true;
-}
-
-
-/*
- * XML DESCRIPTOR CODE BELOW
- */
-
-bool Entity::processDescriptor()
-{
-    auto doc = XMLs::instance().load(descriptor, "entity");
-    if (!doc) {
-        return false;
-    }
-    const XMLNode root = doc->root();  // <entity>
-    if (!root) {
-        return false;
-    }
-
-    for (XMLNode node = root.childrenNode(); node; node = node.next()) {
-        if (node.is("speed")) {
-            ASSERT(node.doubleContent(&baseSpeed));
-            setSpeedMultiplier(speedMul);  // Calculate speed from tile size.
-        } else if (node.is("sprite")) {
-            ASSERT(processSprite(node.childrenNode()));
-        } else if (node.is("sounds")) {
-            ASSERT(processSounds(node.childrenNode()));
-        } else if (node.is("scripts")) {
-            ASSERT(processScripts(node.childrenNode()));
-        }
-    }
-    return true;
-}
-
-bool Entity::processSprite(XMLNode node)
-{
-    std::shared_ptr<TiledImage> tiles;
-    for (; node; node = node.next()) {
-        if (node.is("sheet")) {
-            std::string imageSheet = node.content();
-            ASSERT(node.intAttr("tile_width",  &imgsz.x) &&
-                   node.intAttr("tile_height", &imgsz.y));
-            tiles = Images::instance().loadTiles(imageSheet, imgsz.x, imgsz.y);
-            ASSERT(tiles);
-        } else if (node.is("phases")) {
-            ASSERT(processPhases(node.childrenNode(), tiles));
-        }
-    }
-    return true;
-}
-
-
-bool Entity::processPhases(XMLNode node,
-        const std::shared_ptr<TiledImage>& tiles)
-{
-    for (; node; node = node.next())
-        if (node.is("phase"))
-            ASSERT(processPhase(node, tiles));
-    return true;
-}
-
-bool Entity::processPhase(const XMLNode node,
-        const std::shared_ptr<TiledImage>& tiles)
-{
-    /* Each phase requires a 'name' and 'frames'. Additionally,
-     * 'speed' is required if 'frames' has more than one member.
-     */
-    const std::string name = node.attr("name");
-    if (name.empty()) {
-        Log::err(descriptor, "<phase> name attribute is empty");
-        return false;
-    }
-
-    const std::string framesStr = node.attr("frames");
-    const std::string speedStr = node.attr("speed");
-
-    if (framesStr.empty()) {
-        Log::err(descriptor, "<phase> frames attribute empty");
-        return false;
-    }
-
-    if (isInteger(framesStr)) {
-        int frame = atoi(framesStr.c_str());
-        if (frame < 0 || (int)tiles->size() < frame) {
-            Log::err(descriptor,
-                "<phase> frames attribute index out of bounds");
-            return false;
-        }
-        const auto& image = (*tiles.get())[(size_t)frame];
-        phases[name] = Animation(image);
-    }
-    else if (isRanges(framesStr)) {
-        if (!isDecimal(speedStr)) {
-            Log::err(descriptor,
-                "<phase> speed attribute must be present and "
-                "must be decimal");
-        }
-        double fps = atof(speedStr.c_str());
-
-        typedef std::vector<int> IntVector;
-        IntVector frames = parseRanges(framesStr);
-        std::vector<std::shared_ptr<Image>> images;
-        for (IntVector::iterator it = frames.begin(); it != frames.end(); it++) {
-            int i = *it;
-            if (i < 0 || (int)tiles->size() < i) {
-                Log::err(descriptor,
-                    "<phase> frames attribute index out of bounds");
-                return false;
-            }
-            images.push_back((*tiles.get())[(size_t)i]);
-        }
-
-        phases[name] = Animation(images, (time_t)(1000.0 / fps));
-    }
-    else {
-        Log::err(descriptor,
-            "<phase> frames attribute not an int or int ranges");
-        return false;
-    }
-
-    return true;
-}
-
-bool Entity::processSounds(XMLNode node)
-{
-    for (; node; node = node.next())
-        if (node.is("sound"))
-            ASSERT(processSound(node));
-    return true;
-}
-
-bool Entity::processSound(const XMLNode node)
-{
-    const std::string name = node.attr("name");
-    const std::string filename = node.content();
-    if (name.empty()) {
-        Log::err(descriptor, "<sound> name attribute is empty");
-        return false;
-    } else if (filename.empty()) {
-        Log::err(descriptor, "<sound></sound> is empty");
-        return false;
-    }
-
-    soundPaths[name] = filename;
-    return true;
-}
-
-bool Entity::processScripts(XMLNode node)
-{
-    for (; node; node = node.next())
-        if (node.is("script"))
-            ASSERT(processScript(node));
-    return true;
-}
-
-bool Entity::processScript(const XMLNode node)
-{
-    const std::string trigger = node.attr("trigger");
-    const std::string filename = node.content();
-    if (trigger.empty()) {
-        Log::err(descriptor, "<script> trigger attribute is empty");
-        return false;
-    } else if (filename.empty()) {
-        Log::err(descriptor, "<script></script> is empty");
         return false;
     }
 

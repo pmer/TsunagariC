@@ -161,32 +161,14 @@ protected:
     virtual void arrived();
 
     // JSON parsing functions used in constructing an Entity
-    bool processDescriptorJSON();
-    bool processSpriteJSON(JSONObjectPtr sprite);
-    bool processPhasesJSON(JSONObjectPtr phases, TiledImage& tiles);
-    bool processPhaseJSON(std::string& name, JSONObjectPtr phase, TiledImage& tiles);
-    bool processSoundsJSON(JSONObjectPtr sounds);
-    bool processSoundJSON(std::string& name, std::string path);
-    bool processScriptsJSON(JSONObjectPtr scripts);
-    bool processScriptJSON(std::string& name, std::string path);
-
-    // XML parsing functions used in constructing an Entity
     bool processDescriptor();
-    bool processSprite(XMLNode node);
-    bool processPhases(XMLNode node,
-        const std::shared_ptr<TiledImage>& tiles);
-    bool processPhase(const XMLNode node,
-        const std::shared_ptr<TiledImage>& tiles);
-    bool processMembers(XMLNode node,
-        std::vector<std::shared_ptr<Image>>& frames,
-        const TiledImage& tiles);
-    bool processMember(const XMLNode node,
-        std::vector<std::shared_ptr<Image>>& frames,
-        const TiledImage& tiles);
-    bool processSounds(XMLNode node);
-    bool processSound(const XMLNode node);
-    bool processScripts(XMLNode node);
-    bool processScript(const XMLNode node);
+    bool processSprite(JSONObjectPtr sprite);
+    bool processPhases(JSONObjectPtr phases, TiledImage& tiles);
+    bool processPhase(std::string& name, JSONObjectPtr phase, TiledImage& tiles);
+    bool processSounds(JSONObjectPtr sounds);
+    bool processSound(std::string& name, std::string path);
+    bool processScripts(JSONObjectPtr scripts);
+    bool processScript(std::string& name, std::string path);
     // bool setScript(const std::string& trigger, ScriptRef& script);
 
 

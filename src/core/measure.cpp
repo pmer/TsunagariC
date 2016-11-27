@@ -31,17 +31,24 @@
 
 #include "core/log.h"
 
+struct TimeMeasureImpl {
+    std::string description;
+    std::chrono::time_point<std::chrono::system_clock> start;
+};
+
 TimeMeasure::TimeMeasure(std::string description) {
-    this->description = description;
-    start = std::chrono::system_clock::now();
+    impl = new TimeMeasureImpl;
+    impl->description = description;
+    impl->start = std::chrono::system_clock::now();
 }
 
 TimeMeasure::~TimeMeasure() {
+    TimeMeasureImpl impl = *this->impl;
+    delete this->impl;
+
     std::chrono::time_point<std::chrono::system_clock> end;
     end = std::chrono::system_clock::now();
 
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-    Log::info("Measure", description + " took " + std::to_string(elapsed_seconds.count()) + " seconds");
+    std::chrono::duration<double> elapsed_seconds = end - impl.start;
+    Log::info("Measure", impl.description + " took " + std::to_string(elapsed_seconds.count()) + " seconds");
 }

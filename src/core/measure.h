@@ -24,11 +24,12 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef MEASURE_H
-#define MEASURE_H
+#ifndef SRC_CORE_MEASURE_H_
+#define SRC_CORE_MEASURE_H_
 
-#include <chrono>
 #include <string>
+
+struct TimeMeasureImpl;
 
 class TimeMeasure {
  public:
@@ -36,8 +37,7 @@ class TimeMeasure {
     ~TimeMeasure();
 
  private:
-    std::string description;
-    std::chrono::time_point<std::chrono::system_clock> start;
+    TimeMeasureImpl* impl;
 };
 
-#endif  // MEASURE_H
+#endif  // SRC_CORE_MEASURE_H_

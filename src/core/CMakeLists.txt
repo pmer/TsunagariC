@@ -12,6 +12,7 @@ set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/entity.cpp
     ${CMAKE_CURRENT_LIST_DIR}/formatter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/images.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/jsons.cpp
     ${CMAKE_CURRENT_LIST_DIR}/log.cpp
     ${CMAKE_CURRENT_LIST_DIR}/measure.cpp
     ${CMAKE_CURRENT_LIST_DIR}/music-impl.cpp

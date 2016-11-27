@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef XML_H
-#define XML_H
+#ifndef SRC_CORE_XML_H_
+#define SRC_CORE_XML_H_
 
 #include <memory>
 #include <string>
@@ -42,7 +42,7 @@
 class XMLDoc;
 
 class XMLNode {
-public:
+ public:
     XMLNode();
     XMLNode(XMLDoc* doc, xmlNode* node);
 
@@ -63,13 +63,13 @@ public:
     //! Whether this is a valid node (non-nullptr).
     operator bool() const;
 
-private:
+ private:
     XMLDoc* doc;
     xmlNode* node;
 };
 
 class XMLDoc {
-public:
+ public:
     XMLDoc();
     bool init(const std::string& path,
               const std::string& data,
@@ -89,13 +89,13 @@ public:
     //! correctly, and is valid.
     operator bool() const;
 
-private:
+ private:
     std::shared_ptr<xmlDoc> doc;
     std::string path_;
 };
 
 class XMLs {
-public:
+ public:
     //! Acquire the global XMLs object.
     static XMLs& instance();
 
@@ -109,7 +109,7 @@ public:
     //! Free XML documents not recently used.
     void garbageCollect();
 
-private:
+ private:
     XMLs(const XMLs&) = delete;
     XMLs(XMLs&&) = delete;
     XMLs& operator=(const XMLs&) = delete;
@@ -121,5 +121,4 @@ private:
     Cache<std::shared_ptr<XMLDoc>> documents;
 };
 
-#endif
-
+#endif  // SRC_CORE_XML_H_

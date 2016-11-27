@@ -25,55 +25,50 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef READERCACHE_H
-#define READERCACHE_H
+#ifndef SRC_CACHE_READERCACHE_H_
+#define SRC_CACHE_READERCACHE_H_
 
 #include <string>
-#include <vector>
 
 #include "cache/cache.h"
-#include "core/log.h"
 
 template<class T>
-class ReaderCache
-{
-public:
+class ReaderCache {
+ public:
     typedef T (*GenFn)(const std::string& name);
 
     ReaderCache(GenFn fn) : fn(fn) {}
 
-    T momentaryRequest(const std::string& name)
-    {
+    T momentaryRequest(const std::string& name) {
         T t = cache.momentaryRequest(name);
-        if (t)
+        if (t) {
             return t;
+        }
 
         t = fn(name);
         cache.momentaryPut(name, t);
         return t;
     }
 
-    T lifetimeRequest(const std::string& name)
-    {
+    T lifetimeRequest(const std::string& name) {
         T t = cache.lifetimeRequest(name);
-        if (t)
+        if (t) {
             return t;
+        }
 
         t = fn(name);
         cache.lifetimePut(name, t);
         return t;
     }
 
-    void garbageCollect()
-    {
+    void garbageCollect() {
         cache.garbageCollect();
     }
 
-private:
+ private:
     GenFn fn;
 
     Cache<T> cache;
 };
 
-#endif
-
+#endif  // SRC_CACHE_READERCACHE_H_

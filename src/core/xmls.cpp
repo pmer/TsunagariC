@@ -25,16 +25,17 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "core/xmls.h"
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "core/dtds.h"
 #include "core/log.h"
+#include "core/measure.h"
 #include "core/resources.h"
 #include "core/string2.h"
-#include "core/measure.h"
-#include "core/xmls.h"
 
 #ifdef _WIN32
     #include "os/windows.h"

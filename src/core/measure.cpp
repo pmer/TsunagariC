@@ -31,20 +31,51 @@
 
 #include "core/log.h"
 
+
+#ifdef __APPLE__
+#include <sys/kdebug_signpost.h>
+#include <unordered_map>
+
+static int nextSignpost = 0;
+static std::unordered_map<std::string,int> signposts;
+
+int getSignpost(std::string description) {
+    if (signposts.find(description) != signposts.end()) {
+        return signposts[description];
+    } else {
+        Log::info("Measure", description + " is signpost " + std::to_string(nextSignpost));
+        signposts[description] = nextSignpost;
+        return nextSignpost++;
+    }
+}
+#endif  // __APPLE__
+
+
 struct TimeMeasureImpl {
     std::string description;
     std::chrono::time_point<std::chrono::system_clock> start;
+#ifdef __APPLE__
+    int signpost;
+#endif
 };
 
 TimeMeasure::TimeMeasure(std::string description) {
     impl = new TimeMeasureImpl;
     impl->description = description;
     impl->start = std::chrono::system_clock::now();
+#ifdef __APPLE__
+    impl->signpost = getSignpost(description);
+    kdebug_signpost_start(impl->signpost, 0, 0, 0, 0);
+#endif
 }
 
 TimeMeasure::~TimeMeasure() {
     TimeMeasureImpl impl = *this->impl;
     delete this->impl;
+
+#ifdef __APPLE__
+    kdebug_signpost_end(impl.signpost, 0, 0, 0, 0);
+#endif
 
     std::chrono::time_point<std::chrono::system_clock> end;
     end = std::chrono::system_clock::now();

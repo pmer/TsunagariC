@@ -254,7 +254,10 @@ bool parseCommandLine(int argc, char* argv[])
     }
 
     if (cmd.check("--cache-ttl")) {
-        conf.cacheTTL = parseUInt(cmd.get("--cache-ttl"));
+        if (!parseUInt(cmd.get("--cache-ttl"), &conf.cacheTTL)) {
+            Log::fatal("cmdline", "invalid argument for --cache-ttl");
+            return false;
+        }
         if (conf.cacheTTL == 0) {
             conf.cacheEnabled = false;
         }
@@ -266,8 +269,14 @@ bool parseCommandLine(int argc, char* argv[])
             Log::fatal("cmdline", "invalid argument for -s/--size");
             return false;
         }
-        conf.windowSize.x = parseUInt(dim[0]);
-        conf.windowSize.y = parseUInt(dim[1]);
+        if (!parseUInt(dim[0], &conf.windowSize.x)) {
+            Log::fatal("cmdline", "invalid argument for -s/--size");
+            return false;
+        }
+        if (!parseUInt(dim[1], &conf.windowSize.y)) {
+            Log::fatal("cmdline", "invalid argument for -s/--size");
+            return false;
+        }
     }
 
     if (cmd.check("--fullscreen") && cmd.check("--window")) {

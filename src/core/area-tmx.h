@@ -31,6 +31,7 @@
 #include <string>
 
 #include "core/area.h"
+#include "core/jsons.h"
 #include "core/tile.h"
 #include "core/xmls.h"
 
@@ -40,7 +41,6 @@ class AreaTMX : public Area
 {
 public:
     AreaTMX(Player* player, const std::string& filename);
-    virtual ~AreaTMX();
 
     //! Parse the file specified in the constructor, generating a full Area
     //! object. Must be called before use.
@@ -54,8 +54,12 @@ private:
     bool processDescriptor();
     bool processMapProperties(XMLNode node);
     bool processTileSet(XMLNode node);
+    bool processTileSetJSON(JSONObjectRef obj, const std::string& source,
+                            int firstGid);
     bool processTileType(XMLNode node, TileType& type,
-            std::shared_ptr<TiledImage>& img, int id);
+                         std::shared_ptr<TiledImage>& img, int id);
+    bool processTileTypeJSON(JSONObjectPtr obj, TileType& type,
+                             std::shared_ptr<TiledImage>& img, int id);
     bool processLayer(XMLNode node);
     bool processLayerProperties(XMLNode node, double* depth);
     bool processLayerData(XMLNode node, int z);
@@ -64,10 +68,10 @@ private:
     bool processObject(XMLNode node, int z);
     bool splitTileFlags(const std::string& strOfFlags, unsigned* flags);
     bool parseExit(const std::string& dest, Exit* exit,
-        bool* wwide, bool* hwide);
+                   bool* wwide, bool* hwide);
     bool parseARGB(const std::string& str,
-        unsigned char& a, unsigned char& r,
-        unsigned char& g, unsigned char& b);
+                   unsigned char& a, unsigned char& r,
+                   unsigned char& g, unsigned char& b);
 
     std::vector<TileType*> gids;
 };

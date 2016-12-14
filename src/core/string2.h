@@ -47,7 +47,10 @@ bool iequals(const std::string& a, const std::string& b);
 //! Return a bool from a "true"/"false" string.
 bool parseBool(const std::string& s);
 
-int parseUInt(const std::string& s);
+bool parseUInt(const std::string& s, unsigned* n);
+bool parseUInt(const std::string& s, int* n);
+bool parseDouble(const std::string& s, double* n);
+
 int parseInt100(const std::string& s);
 
 //! Split a string by a delimiter.

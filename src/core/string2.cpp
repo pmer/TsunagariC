@@ -31,6 +31,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#include <limits>
 #include <sstream>
 
 #include "core/log.h"
@@ -181,10 +182,39 @@ bool parseBool(const std::string& s)
         s == "1";
 }
 
-int parseUInt(const std::string& s)
+bool parseUInt(const std::string& s, unsigned* n)
 {
-    int i = atoi(s.c_str());
-    return bound(i, 0, INT_MAX);
+    size_t pos = std::numeric_limits<size_t>::max();
+    unsigned long i = std::stoul(s, &pos, 10);
+    if (pos < s.size()) {
+        return false;
+    }
+    if (i > std::numeric_limits<unsigned>::max()) {
+        return false;
+    }
+    *n = static_cast<unsigned>(i);
+    return true;
+}
+
+bool parseUInt(const std::string& s, int* n)
+{
+    size_t pos = std::numeric_limits<size_t>::max();
+    unsigned long i = std::stoul(s, &pos, 10);
+    if (pos < s.size()) {
+        return false;
+    }
+    if (i > std::numeric_limits<int>::max()) {
+        return false;
+    }
+    *n = static_cast<int>(i);
+    return true;
+}
+
+bool parseDouble(const std::string& s, double* n)
+{
+    size_t pos = std::numeric_limits<size_t>::max();
+    *n = std::stod(s, &pos);
+    return pos >= s.size();
 }
 
 int parseInt100(const std::string& s)

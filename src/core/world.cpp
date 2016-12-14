@@ -176,7 +176,7 @@ void World::draw()
 
 bool World::needsRedraw() const
 {
-    return redraw || !paused && area->needsRedraw();
+    return redraw || (!paused && area->needsRedraw());
 }
 
 void World::update(time_t now)

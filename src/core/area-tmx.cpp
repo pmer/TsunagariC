@@ -32,6 +32,7 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "core/entity.h"
@@ -40,6 +41,7 @@
 #include "core/resources.h"
 #include "core/string2.h"
 #include "core/tile.h"
+#include "core/string2.h"
 #include "core/window.h"
 #include "core/world.h"
 
@@ -55,26 +57,18 @@
          account.
 */
 
-AreaTMX::AreaTMX(Player* player,
-           const std::string& descriptor)
-    : Area(player, descriptor)
-{
+AreaTMX::AreaTMX(Player* player, const std::string& descriptor)
+        : Area(player, descriptor) {
     // Add TileType #0. Not used, but Tiled's gids start from 1.
     gids.push_back(nullptr);
 }
 
-AreaTMX::~AreaTMX()
-{
-}
-
-bool AreaTMX::init()
-{
+bool AreaTMX::init() {
     return processDescriptor();
 }
 
 
-void AreaTMX::allocateMapLayer()
-{
+void AreaTMX::allocateMapLayer() {
     assert(0 <= dim.y && dim.y <= std::numeric_limits<int>::max());
     assert(0 <= dim.x && dim.x <= std::numeric_limits<int>::max());
     assert(0 <= dim.z && dim.z + 1 <= std::numeric_limits<int>::max());
@@ -91,8 +85,7 @@ void AreaTMX::allocateMapLayer()
     dim.z++;
 }
 
-bool AreaTMX::processDescriptor()
-{
+bool AreaTMX::processDescriptor() {
     std::shared_ptr<XMLDoc> doc;
     XMLNode root;
 
@@ -121,8 +114,7 @@ bool AreaTMX::processDescriptor()
     return true;
 }
 
-bool AreaTMX::processMapProperties(XMLNode node)
-{
+bool AreaTMX::processMapProperties(XMLNode node) {
 
 /*
  <properties>
@@ -173,14 +165,12 @@ bool AreaTMX::processMapProperties(XMLNode node)
  * Returns the directory component of a path, including trailing slash.  If
  * there is no directory component, return an empty string.
  */
-static std::string dirname(const std::string& path)
-{
+static std::string dirname(const std::string& path) {
     size_t slash = path.rfind('/');
     return slash == std::string::npos ? "" : path.substr(0, slash + 1);
 }
 
-bool AreaTMX::processTileSet(XMLNode node)
-{
+bool AreaTMX::processTileSet(XMLNode node) {
 
 /*
  <tileset firstgid="1" name="tiles.sheet" tilewidth="64" tileheight="64">
@@ -191,7 +181,7 @@ bool AreaTMX::processTileSet(XMLNode node)
  </tileset>
 */
 
-    std::shared_ptr<XMLDoc> doc;
+    JSONObjectRef doc;
     std::string source;
 
     TileSet* set = nullptr;
@@ -202,22 +192,20 @@ bool AreaTMX::processTileSet(XMLNode node)
     // Read firstgid from original node.
     ASSERT(node.intAttr("firstgid", &firstGid));
 
-    if (firstGid < 0) {
-        Log::err(descriptor, "first gid is invalid");
-        return false;
-    }
-
-
-    // If this node is just a reference to an external TSX file, load it
-    // and process the root tileset element of the TSX, instead.
+    // If this node is just a reference to an external JSON file, load it
+    // and process the tileset of the JSON, instead.
     source = node.attr("source");
     if (source.size()) {
         source = dirname(descriptor) + source;
-        if (!(doc = XMLs::instance().load(source, "tsx"))) {
-            Log::err(descriptor, source + ": failed to load valid TSX file");
+        if (!(doc = JSONs::instance().load(source))) {
+            Log::err(descriptor, source + ": failed to load JSON file");
             return false;
         }
-        ASSERT(node = doc->root());  // <tileset>
+        if (!processTileSetJSON(doc, source, firstGid)) {
+            Log::err(descriptor, source + ": failed to parse JSON tileset file");
+            return false;
+        }
+        return true;
     }
 
     ASSERT(node.intAttr("tilewidth", &tilex));
@@ -294,9 +282,118 @@ bool AreaTMX::processTileSet(XMLNode node)
     return true;
 }
 
+bool AreaTMX::processTileSetJSON(JSONObjectRef obj,
+                                 const std::string& source,
+                                 int firstGid) {
+
+/*
+ {
+   "image": "forest.png",
+   "imageheight": 304,
+   "imagewidth": 272,
+   "name": "forest.png",
+   "tilecount": 323,
+   "tileheight": 16,
+   "tileproperties": {
+     "29": {
+       "frames": "29,58",
+       "speed": "0.75"
+     }
+   },
+   "tilewidth": 16
+ }
+*/
+
+    TileSet* set = nullptr;
+    std::shared_ptr<TiledImage> img;
+
+    unsigned tilex, tiley;
+    unsigned pixelw, pixelh;
+    unsigned width, height;
+
+    ASSERT(obj->hasString("image"));
+    ASSERT(obj->hasUnsigned("imageheight"));
+    ASSERT(obj->hasUnsigned("imagewidth"));
+    ASSERT(obj->hasString("name"));
+    ASSERT(obj->hasUnsigned("tileheight"));
+    ASSERT(obj->hasUnsigned("tilewidth"));
+
+    tilex = obj->unsignedAt("tilewidth");
+    tiley = obj->unsignedAt("tileheight");
+
+    if (tileDim && tileDim != ivec2(tilex, tiley)) {
+        Log::err(descriptor,
+                 "Tileset's width/height contradict earlier <layer>");
+        return false;
+    }
+    tileDim = ivec2(tilex, tiley);
+
+    pixelw = obj->unsignedAt("imagewidth");
+    pixelh = obj->unsignedAt("imageheight");
+
+    width = pixelw / tileDim.x;
+    height = pixelh / tileDim.y;
+
+    std::string imgSource = dirname(source) + obj->stringAt("image");
+    tileSets[imgSource] = TileSet((size_t)width,
+                                  (size_t)height);
+    set = &tileSets[imgSource];
+
+    // Load tileset image.
+    img = Images::instance().loadTiles(imgSource, tilex, tiley);
+    if (!img) {
+        Log::err(descriptor, "Tileset image not found");
+        return false;
+    }
+
+    // Initialize "vanilla" tile type array.
+    for (size_t i = 0; i < img->size(); i++) {
+        auto& tileImg = (*img.get())[i];
+        TileType* type = new TileType(tileImg);
+        set->add(type);
+        gids.push_back(type);
+    }
+
+    if (obj->hasObject("tileproperties")) {
+        // Handle explicitly declared "non-vanilla" types.
+
+        JSONObjectPtr tilesProperties = obj->objectAt("tileproperties");
+        std::vector<std::string> tileIds = tilesProperties->names();
+
+        for (auto& _id : tileIds) {
+            // Must be an object... can't be an int... :)
+            ASSERT(tilesProperties->hasObject(_id));
+            JSONObjectPtr tileProperties = tilesProperties->objectAt(_id);
+
+            // "id" is 0-based index of a tile in the current
+            // tileset, if the tileset were a flat array.
+            unsigned id;
+            if (!parseUInt(_id, &id)) {
+                Log::err(descriptor, "Tile type id is invalid");
+                return false;
+            }
+            if (img->size() <= id) {
+                Log::err(descriptor, "Tile type id is invalid");
+                return false;
+            }
+
+            // Initialize a default TileType, we'll build on that.
+            TileType* type = new TileType((*img.get())[id]);
+            ASSERT(processTileTypeJSON(std::move(tileProperties),
+                                       *type, img, id));
+            // "gid" is the global area-wide id of the tile.
+            size_t gid = (size_t)id + (size_t)firstGid;
+            delete gids[gid];  // "vanilla" type
+            gids[gid] = type;
+            set->set((size_t)id, type);
+        }
+    }
+
+    return true;
+}
+
 bool AreaTMX::processTileType(XMLNode node, TileType& type,
-        std::shared_ptr<TiledImage>& img, int id)
-{
+                              std::shared_ptr<TiledImage>& img, int id) {
 
 /*
   <tile id="8">
@@ -384,6 +481,100 @@ bool AreaTMX::processTileType(XMLNode node, TileType& type,
         if (framesvec.empty() || frameLen == -1) {
             Log::err(descriptor, "tile type must either have both "
                 "frames and speed or none");
+            return false;
+        }
+        // Add 'now' to Animation constructor??
+        time_t now = World::instance().time();
+        type.anim = Animation(framesvec, frameLen);
+        type.anim.startOver(now, cycles);
+    }
+
+    return true;
+}
+
+bool AreaTMX::processTileTypeJSON(JSONObjectPtr obj, TileType& type,
+                                  std::shared_ptr<TiledImage>& img, int id) {
+
+/*
+  {
+    "flags": "nowalk",
+    "onEnter": "skid"
+    "onLeave": "no_skid"
+    "onUse": "no_skid"
+  }
+
+  {
+    "frames": "29,58",
+    "speed": "0.75"
+  }
+*/
+
+    // The id has already been handled by processTileSet, so we don't have
+    // to worry about it.
+
+    // If a Tile is animated, it needs both member frames and a speed.
+    std::vector<std::shared_ptr<Image>> framesvec;
+    unsigned cycles = ANIM_INFINITE_CYCLES;
+    int frameLen = -1;
+
+    if (obj->hasString("flags")) {
+        std::string flags = obj->stringAt("flags");
+        ASSERT(splitTileFlags(flags, &type.flags));
+    }
+    if (obj->hasString("on_enter")) {
+        std::string scriptName = obj->stringAt("on_enter");
+        type.enterScript = dataArea->script(scriptName);
+    }
+    if (obj->hasString("on_leave")) {
+        std::string scriptName = obj->stringAt("on_leave");
+        type.leaveScript = dataArea->script(scriptName);
+    }
+    if (obj->hasString("on_use")) {
+        std::string scriptName = obj->stringAt("on_use");
+        type.useScript = dataArea->script(scriptName);
+    }
+    if (obj->hasString("frames")) {
+        std::string memtemp;
+        std::vector<std::string> frames;
+        std::vector<std::string>::iterator it;
+
+        memtemp = obj->stringAt("frames");
+        frames = splitStr(memtemp, ",");
+
+        // Make sure the first member is this tile.
+        if (atoi(frames[0].c_str()) != id) {
+            Log::err(descriptor, "first member of tile"
+                                         " id " + itostr(id) +
+                                 " animation must be itself.");
+            return false;
+        }
+
+        // Add frames to our animation.
+        // We already have one from TileType's constructor.
+        for (it = frames.begin(); it < frames.end(); it++) {
+            int idx = atoi(it->c_str());
+            if (idx < 0 || (int)img->size() <= idx) {
+                Log::err(descriptor, "frame index out "
+                        "of range for animated tile");
+                return false;
+            }
+            framesvec.push_back((*img.get())[(size_t)idx]);
+        }
+    }
+    if (obj->hasString("speed")) {
+        std::string _hertz = obj->stringAt("speed");
+        double hertz;
+        ASSERT(parseDouble(_hertz, &hertz));
+        frameLen = (int)(1000.0/hertz);
+    }
+    if (obj->hasUnsigned("cycles")) {
+        cycles = obj->unsignedAt("cycles");
+    }
+
+    if (framesvec.size() || frameLen != -1) {
+        if (framesvec.empty() || frameLen == -1) {
+            Log::err(descriptor, "Tile type must either have both "
+                    "frames and speed or none");
             return false;
         }
         // Add 'now' to Animation constructor??

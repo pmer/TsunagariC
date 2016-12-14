@@ -31,8 +31,8 @@
 
 #include <string>
 
-#include <rapidjson/document.h>
-#include <rapidjson/reader.h>
+#include "rapidjson/document.h"
+#include "rapidjson/reader.h"
 
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"

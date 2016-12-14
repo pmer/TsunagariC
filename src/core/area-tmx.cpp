@@ -35,8 +35,10 @@
 #include <string>
 #include <vector>
 
+#include "core/area.h"
 #include "core/entity.h"
 #include "core/images.h"
+#include "core/jsons.h"
 #include "core/log.h"
 #include "core/resources.h"
 #include "core/string2.h"
@@ -44,6 +46,7 @@
 #include "core/string2.h"
 #include "core/window.h"
 #include "core/world.h"
+#include "core/xmls.h"
 
 #ifdef _WIN32
     #include "os/windows.h"
@@ -56,6 +59,51 @@
          can't imagine why the author did this, but we have to take it into
          account.
 */
+
+class AreaTMX : public Area
+{
+public:
+    AreaTMX(Player* player, const std::string& filename);
+
+    //! Parse the file specified in the constructor, generating a full Area
+    //! object. Must be called before use.
+    virtual bool init();
+
+private:
+    //! Allocate Tile objects for one layer of map.
+    void allocateMapLayer();
+
+    //! Parse an Area file.
+    bool processDescriptor();
+    bool processMapProperties(XMLNode node);
+    bool processTileSet(XMLNode node);
+    bool processTileSetJSON(JSONObjectRef obj, const std::string& source,
+                            int firstGid);
+    bool processTileType(XMLNode node, TileType& type,
+                         std::shared_ptr<TiledImage>& img, int id);
+    bool processTileTypeJSON(JSONObjectPtr obj, TileType& type,
+                             std::shared_ptr<TiledImage>& img, int id);
+    bool processLayer(XMLNode node);
+    bool processLayerProperties(XMLNode node, double* depth);
+    bool processLayerData(XMLNode node, int z);
+    bool processObjectGroup(XMLNode node);
+    bool processObjectGroupProperties(XMLNode node, double* depth);
+    bool processObject(XMLNode node, int z);
+    bool splitTileFlags(const std::string& strOfFlags, unsigned* flags);
+    bool parseExit(const std::string& dest, Exit* exit,
+                   bool* wwide, bool* hwide);
+    bool parseARGB(const std::string& str,
+                   unsigned char& a, unsigned char& r,
+                   unsigned char& g, unsigned char& b);
+
+    std::vector<TileType*> gids;
+};
+
+
+Area* makeAreaFromTMX(Player* player, const std::string& filename) {
+    return new AreaTMX(player, filename);
+}
+
 
 AreaTMX::AreaTMX(Player* player, const std::string& descriptor)
         : Area(player, descriptor) {

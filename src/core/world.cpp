@@ -29,6 +29,7 @@
 
 #include <limits>
 
+#include "core/area.h"
 #include "core/area-tmx.h"
 #include "core/client-conf.h"
 #include "core/images.h"
@@ -213,7 +214,7 @@ Area* World::getArea(const std::string& filename)
         return entry->second;
     }
 
-    Area* newArea = new AreaTMX(player.get(), filename);
+    Area* newArea = makeAreaFromTMX(player.get(), filename);
 
     if (!newArea->init()) {
         newArea = nullptr;

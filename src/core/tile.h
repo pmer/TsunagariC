@@ -156,7 +156,7 @@ class FlagManip {
 */
 class Exit {
  public:
-    Exit();
+    Exit() = default;
     Exit(std::string area, int x, int y, double z);
 
  public:
@@ -243,7 +243,7 @@ class Tile : public TileBase {
 */
 class TileType : public TileBase {
  public:
-    TileType();
+    TileType() = default;
     TileType(const std::shared_ptr<Image>& img);
 
     //! Returns true if onscreen and we need to update our animation.
@@ -256,7 +256,7 @@ class TileType : public TileBase {
 
 class TileSet {
  public:
-    TileSet();
+    TileSet() = default;
     TileSet(size_t width, size_t height);
 
     void add(TileType* type);

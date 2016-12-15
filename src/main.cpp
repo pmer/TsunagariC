@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <libxml/parser.h>
 #include <physfs.h>
 
 #include "core/client-conf.h"
@@ -84,12 +83,6 @@ int main(int argc, char** argv) {
     Log::info("Main", Formatter("Starting %") % TSUNAGARI_RELEASE_VERSION);
     Log::reportVerbosityOnStartup();
 
-    /* This initializes the XML library and checks for potential
-     * ABI mismatches between the version it was compiled for and
-     * the actual shared library used.
-     */
-    LIBXML_TEST_VERSION
-
     GameWindow* window;
     {
         TimeMeasure m("Constructed window");
@@ -122,8 +115,6 @@ int main(int argc, char** argv) {
     delete window;
 
     PHYSFS_deinit();
-
-    xmlCleanupParser();
 
     return 0;
 }

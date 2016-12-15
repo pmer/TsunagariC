@@ -310,7 +310,6 @@ void World::garbageCollect()
     Images::instance().garbageCollect();
     Music::instance().garbageCollect();
     Sounds::instance().garbageCollect();
-    XMLs::instance().garbageCollect();
 }
 
 time_t World::calculateDt(time_t now)

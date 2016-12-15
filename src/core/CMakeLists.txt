@@ -28,5 +28,4 @@ set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/viewport.cpp
     ${CMAKE_CURRENT_LIST_DIR}/window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/world.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/xmls.cpp
 )

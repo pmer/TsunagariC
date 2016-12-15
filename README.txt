@@ -35,6 +35,5 @@ Requirements:
 NAME        LICENSE     LINK
 libboost    (BOOST)     http://www.boost.org/
 libgosu     (MIT)       http://github.com/jlnr/gosu/
-libxml2     (MIT)       http://xmlsoft.org/
 PhysicsFS   (ZLIB)      http://icculus.org/physfs/
 

@@ -38,7 +38,6 @@
 #include "core/resources.h"
 #include "core/string2.h"
 #include "core/world.h"
-#include "core/xmls.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 

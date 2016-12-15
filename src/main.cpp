@@ -28,8 +28,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <physfs.h>
-
 #include "config.h"
 #include "core/client-conf.h"
 #include "core/formatter.h"
@@ -114,8 +112,6 @@ int main(int argc, char** argv) {
 
     // Cleanup
     delete window;
-
-    PHYSFS_deinit();
 
     return 0;
 }

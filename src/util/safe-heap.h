@@ -42,9 +42,6 @@ class SafeHeap {
         , c()
         , alive(true) {}
 
-     ~SafeHeap() {
-     }
-
      void push(T t) {
          std::lock_guard<std::mutex> lock(m);
          q.push(t);

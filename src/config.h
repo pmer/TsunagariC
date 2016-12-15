@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** client-conf.h                      **
+** config.h                           **
 ** Copyright 2011-2013 PariahSoft LLC **
 ** Copyright 2016 Paul Merrill        **
 ***************************************/
@@ -25,52 +25,27 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef CLIENT_CONF_H
-#define CLIENT_CONF_H
+#ifndef SRC_CONFIG_H_
+#define SRC_CONFIG_H_
 
-#include <string>
+#include "core/client-conf.h"
 
-#include "core/log.h"
-#include "core/vec.h"
+/* Release version. */
+#define TSUNAGARI_RELEASE_VERSION "Tsunagari Tile Engine AlphaP4 Revision 4"
 
-//! Game Movement Mode
-enum movement_mode_t {
-    TURN,
-    TILE,
-    NOTILE
-};
+// === Required Data Paths ===
+    /* Tsunagari config file. */
+    #define CLIENT_CONF_PATH "./client.json"
+// ===
 
-//! Halting Mode
-enum halting_mode_t {
-    HALT_FATAL,
-    HALT_SCRIPT,
-    HALT_ERROR
-};
+// === Client.json Default Values ===
+    #define DEF_ENGINE_VERBOSITY  V_VERBOSE
+    #define DEF_ENGINE_HALTING    HALT_FATAL
+    #define DEF_WINDOW_WIDTH      640
+    #define DEF_WINDOW_HEIGHT     480
+    #define DEF_WINDOW_FULLSCREEN false
+    #define DEF_CACHE_ENABLED     true
+    #define DEF_CACHE_TTL         300
+// ===
 
-//! Engine-wide user-confurable values.
-struct Conf {
-    Conf();
-
-    /**
-     * Check for missing required configuration variables.
-     */
-    bool validate(const std::string& filename);
-
-    verbosity_t verbosity;
-    movement_mode_t moveMode;
-    halting_mode_t halting;
-    ivec2 windowSize;
-    bool fullscreen;
-    int musicVolume;
-    int soundVolume;
-    bool cacheEnabled;
-    int cacheTTL;
-    int persistInit;
-    int persistCons;
-};
-extern Conf conf;
-
-bool parseConfig(const std::string& filename);
-bool parseCommandLine(int argc, char* argv[]);
-
-#endif
+#endif  // SRC_CONFIG_H_

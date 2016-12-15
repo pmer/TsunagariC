@@ -30,6 +30,7 @@
 
 #include <physfs.h>
 
+#include "config.h"
 #include "core/client-conf.h"
 #include "core/formatter.h"
 #include "core/log.h"

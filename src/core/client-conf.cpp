@@ -30,6 +30,7 @@
 #include <iostream>
 #include <vector>
 
+#include "config.h"
 #include "core/jsons.h"
 #include "nbcl/nbcl.h"
 #include "util/math2.h"

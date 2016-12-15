@@ -82,6 +82,16 @@ class Optional {
 
     T* operator->() { assert(exists); return &x; }
     T& operator*() { assert(exists); return x; }
+
+    bool operator==(const Optional<T>& other) {
+        if (exists != other.exists) {
+            return false;
+        }
+        if (!exists) {
+            return true;
+        }
+        return exists ? x == other.x : true;
+    }
 };
 
 #endif  // SRC_UTIL_OPTIONAL_H_

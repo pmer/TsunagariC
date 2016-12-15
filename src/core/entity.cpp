@@ -283,7 +283,7 @@ enum SetPhaseResult Entity::_setPhase(const std::string& name)
     if (phase != newPhase) {
         time_t now = World::instance().time();
         phase = newPhase;
-        phase->startOver(now, ANIM_INFINITE_CYCLES);
+        phase->startOver(now);
         phaseName = name;
         redraw = true;
         return PHASE_CHANGED;

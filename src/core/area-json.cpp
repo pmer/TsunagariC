@@ -393,7 +393,6 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
 
     // If a Tile is animated, it needs both member frames and a speed.
     std::vector<std::shared_ptr<Image>> framesvec;
-    unsigned cycles = ANIM_INFINITE_CYCLES;
     int frameLen = -1;
 
     if (obj->hasString("flags")) {
@@ -446,9 +445,6 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
         CHECK(parseDouble(_hertz, &hertz));
         frameLen = (int)(1000.0/hertz);
     }
-    if (obj->hasUnsigned("cycles")) {
-        cycles = obj->unsignedAt("cycles");
-    }
 
     if (framesvec.size() || frameLen != -1) {
         if (framesvec.empty() || frameLen == -1) {
@@ -459,7 +455,7 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
         // Add 'now' to Animation constructor??
         time_t now = World::instance().time();
         type.anim = Animation(framesvec, frameLen);
-        type.anim.startOver(now, cycles);
+        type.anim.startOver(now);
     }
 
     return true;

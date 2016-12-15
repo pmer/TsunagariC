@@ -52,6 +52,8 @@ class JSONObject {
     virtual bool hasObject(const std::string& name) const = 0;
     virtual bool hasArray(const std::string& name) const = 0;
 
+    virtual bool hasStringDouble(const std::string& name) const = 0;
+
     virtual bool boolAt(const std::string& name) const = 0;
     virtual int intAt(const std::string& name) const = 0;
     virtual unsigned unsignedAt(const std::string& name) const = 0;
@@ -59,6 +61,8 @@ class JSONObject {
     virtual std::string stringAt(const std::string& name) const = 0;
     virtual JSONObjectPtr objectAt(const std::string& name) const = 0;
     virtual JSONArrayPtr arrayAt(const std::string& name) const = 0;
+
+    virtual double stringDoubleAt(const std::string& name) const = 0;
 
  protected:
     JSONObject() = default;

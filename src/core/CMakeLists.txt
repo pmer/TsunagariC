@@ -3,7 +3,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR})
 set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/animation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/area.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/area-tmx.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/area-json.cpp
     ${CMAKE_CURRENT_LIST_DIR}/bitrecord.cpp
     ${CMAKE_CURRENT_LIST_DIR}/character.cpp
     ${CMAKE_CURRENT_LIST_DIR}/client-conf.cpp

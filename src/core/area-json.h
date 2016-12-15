@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** area-tmx.h                         **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** area-json.h                        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,14 +25,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef AREA_TMX_H
-#define AREA_TMX_H
+#ifndef SRC_CORE_AREA_JSON_H_
+#define SRC_CORE_AREA_JSON_H_
 
 #include <string>
 
 class Area;
 class Player;
 
-Area* makeAreaFromTMX(Player* player, const std::string& filename);
+Area* makeAreaFromJSON(Player* player, const std::string& filename);
 
-#endif
+#endif  // SRC_CORE_AREA_JSON_H_

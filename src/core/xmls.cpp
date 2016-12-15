@@ -41,7 +41,7 @@
     #include "os/windows.h"
 #endif
 
-#define ASSERT(x)  if (!(x)) { return false; }
+#define CHECK(x)  if (!(x)) { return false; }
 
 
 XMLNode::XMLNode()
@@ -244,9 +244,9 @@ static std::shared_ptr<xmlDtd> parseDTD(const std::string& dtdContent)
 
 static bool preloadDTDs()
 {
-    ASSERT(dtds["area"] = parseDTD(CONTENT_OF_AREA_DTD()));
-    ASSERT(dtds["entity"] = parseDTD(CONTENT_OF_ENTITY_DTD()));
-    ASSERT(dtds["tsx"] = parseDTD(CONTENT_OF_TSX_DTD()));
+    CHECK(dtds["area"] = parseDTD(CONTENT_OF_AREA_DTD()));
+    CHECK(dtds["entity"] = parseDTD(CONTENT_OF_ENTITY_DTD()));
+    CHECK(dtds["tsx"] = parseDTD(CONTENT_OF_TSX_DTD()));
     return true;
 }
 

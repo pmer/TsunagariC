@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** world.cpp                          **
-** Copyright 2011-2016 Paul Merrill   **
 ** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -30,7 +30,7 @@
 #include <limits>
 
 #include "core/area.h"
-#include "core/area-tmx.h"
+#include "core/area-json.h"
 #include "core/client-conf.h"
 #include "core/images.h"
 #include "core/log.h"
@@ -43,7 +43,7 @@
 
 #include "data/data-world.h"
 
-#define ASSERT(x)  if (!(x)) { return false; }
+#define CHECK(x)  if (!(x)) { return false; }
 
 static World globalWorld;
 
@@ -71,7 +71,7 @@ bool World::init()
 
     conf.moveMode = parameters.moveMode;
 
-    ASSERT(player->init(gameStart.player.file, gameStart.player.phase));
+    CHECK(player->init(gameStart.player.file, gameStart.player.phase));
 
     Area* area = getArea(gameStart.area);
     if (area == nullptr) {
@@ -214,7 +214,7 @@ Area* World::getArea(const std::string& filename)
         return entry->second;
     }
 
-    Area* newArea = makeAreaFromTMX(player.get(), filename);
+    Area* newArea = makeAreaFromJSON(player.get(), filename);
 
     if (!newArea->init()) {
         newArea = nullptr;

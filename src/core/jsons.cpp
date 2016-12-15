@@ -38,6 +38,9 @@
 #include "cache/readercache.h"
 #include "core/measure.h"
 #include "core/resources.h"
+#include "core/string2.h"
+
+#define CHECK(x)  if (!(x)) { return false; }
 
 typedef rapidjson::Document RJDocument;
 typedef RJDocument::ValueType::ConstObject RJObject;
@@ -57,6 +60,8 @@ class JSONObjectImpl : public JSONObject {
     bool hasObject(const std::string& name) const;
     bool hasArray(const std::string& name) const;
 
+    bool hasStringDouble(const std::string& name) const;
+
     bool boolAt(const std::string& name) const;
     int intAt(const std::string& name) const;
     unsigned unsignedAt(const std::string& name) const;
@@ -64,6 +69,8 @@ class JSONObjectImpl : public JSONObject {
     std::string stringAt(const std::string& name) const;
     JSONObjectPtr objectAt(const std::string& name) const;
     JSONArrayPtr arrayAt(const std::string& name) const;
+
+    double stringDoubleAt(const std::string& name) const;
 
  protected:
     JSONObjectImpl() = default;
@@ -159,6 +166,22 @@ std::vector<std::string> JSONObjectImpl::names() const {
     return names;
 }
 
+template<typename T>
+static bool isStringDouble(const T& val) {
+    CHECK(val.IsString());
+    const std::string str = val.GetString();
+    double d;
+    return parseDouble(str, &d);
+}
+
+template<typename T>
+static double stringDoubleFrom(const T& val) {
+    const std::string str = val.GetString();
+    double d;
+    parseDouble(str, &d);
+    return d;
+}
+
 bool JSONObjectImpl::hasBool(const std::string& name) const { return get().HasMember(name) && get()[name].IsBool(); }
 bool JSONObjectImpl::hasInt(const std::string& name) const { return get().HasMember(name) && get()[name].IsInt(); }
 bool JSONObjectImpl::hasUnsigned(const std::string& name) const { return get().HasMember(name) && get()[name].IsUint(); }
@@ -166,6 +189,7 @@ bool JSONObjectImpl::hasDouble(const std::string& name) const { return get().Has
 bool JSONObjectImpl::hasString(const std::string& name) const { return get().HasMember(name) && get()[name].IsString(); }
 bool JSONObjectImpl::hasObject(const std::string& name) const { return get().HasMember(name) && get()[name].IsObject(); }
 bool JSONObjectImpl::hasArray(const std::string& name) const { return get().HasMember(name) && get()[name].IsArray(); }
+bool JSONObjectImpl::hasStringDouble(const std::string& name) const { return get().HasMember(name) && isStringDouble(get()[name]); }
 
 bool JSONObjectImpl::boolAt(const std::string& name) const { return get()[name].GetBool(); }
 int JSONObjectImpl::intAt(const std::string& name) const { return get()[name].GetInt(); }
@@ -174,7 +198,7 @@ double JSONObjectImpl::doubleAt(const std::string& name) const { return get()[na
 std::string JSONObjectImpl::stringAt(const std::string& name) const { return get()[name].GetString(); }
 JSONObjectPtr JSONObjectImpl::objectAt(const std::string& name) const { return JSONObjectPtr(new JSONObjectReal(get()[name].GetObject())); }
 JSONArrayPtr JSONObjectImpl::arrayAt(const std::string& name) const { return JSONArrayPtr(new JSONArrayImpl(get()[name].GetArray())); }
-
+double JSONObjectImpl::stringDoubleAt(const std::string& name) const { return stringDoubleFrom(get()[name]); }
 
 JSONObjectReal::JSONObjectReal(const RJObject object) : object(std::move(object)) {}
 

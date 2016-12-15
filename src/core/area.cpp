@@ -49,7 +49,7 @@
 
 #include "data/data-world.h"
 
-#define ASSERT(x)  if (!(x)) { return false; }
+#define CHECK(x)  if (!(x)) { return false; }
 
 /* NOTE: In the TMX map format used by Tiled, tileset tiles start counting
          their Y-positions from 0, while layer tiles start counting from 1. I

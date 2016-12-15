@@ -40,7 +40,7 @@
 #include "core/world.h"
 #include "core/xmls.h"
 
-#define ASSERT(x)  if (!(x)) { return false; }
+#define CHECK(x)  if (!(x)) { return false; }
 
 static std::string directions[][3] = {
     {"up-left",   "up",     "up-right"},
@@ -71,7 +71,7 @@ bool Entity::init(const std::string& descriptor,
         const std::string& initialPhase)
 {
     this->descriptor = descriptor;
-    ASSERT(processDescriptor());
+    CHECK(processDescriptor());
     setPhase(initialPhase);
     return true;
 }
@@ -358,13 +358,13 @@ bool Entity::processDescriptor() {
         setSpeedMultiplier(speedMul);  // Calculate speed from tile size.
     }
     if (doc->hasObject("sprite")) {
-        ASSERT(processSprite(doc->objectAt("sprite")));
+        CHECK(processSprite(doc->objectAt("sprite")));
     }
     if (doc->hasObject("sounds")) {
-        ASSERT(processSounds(doc->objectAt("sounds")));
+        CHECK(processSounds(doc->objectAt("sounds")));
     }
     if (doc->hasObject("scripts")) {
-        ASSERT(processScripts(doc->objectAt("scripts")));
+        CHECK(processScripts(doc->objectAt("scripts")));
     }
     return true;
 }
@@ -372,13 +372,13 @@ bool Entity::processDescriptor() {
 bool Entity::processSprite(JSONObjectPtr sprite) {
     std::shared_ptr<TiledImage> tiles;
 
-    ASSERT(sprite->hasObject("sheet"));
-    ASSERT(sprite->hasObject("phases"));
+    CHECK(sprite->hasObject("sheet"));
+    CHECK(sprite->hasObject("phases"));
 
     JSONObjectPtr sheet = sprite->objectAt("sheet");
-    ASSERT(sheet->hasUnsigned("tile_width"));
-    ASSERT(sheet->hasUnsigned("tile_height"));
-    ASSERT(sheet->hasString("path"));
+    CHECK(sheet->hasUnsigned("tile_width"));
+    CHECK(sheet->hasUnsigned("tile_height"));
+    CHECK(sheet->hasString("path"));
 
     imgsz.x = sheet->intAt("tile_width");
     imgsz.y = sheet->intAt("tile_height");
@@ -391,8 +391,8 @@ bool Entity::processSprite(JSONObjectPtr sprite) {
 
 bool Entity::processPhases(JSONObjectPtr phases, TiledImage& tiles) {
     for (std::string& name : phases->names()) {
-        ASSERT(phases->hasObject(name));
-        ASSERT(processPhase(name, phases->objectAt(name), tiles));
+        CHECK(phases->hasObject(name));
+        CHECK(processPhase(name, phases->objectAt(name), tiles));
     }
     return true;
 }
@@ -410,7 +410,7 @@ std::vector<int> intArrayToVector(JSONArrayPtr array) {
 bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& tiles) {
     // Each phase requires a 'name' and a 'frame' or 'frames'. Additionally,
     // 'speed' is required if 'frames' is found.
-    ASSERT(phase->hasUnsigned("frame") || phase->hasArray("frames"));
+    CHECK(phase->hasUnsigned("frame") || phase->hasArray("frames"));
 
     if (phase->hasUnsigned("frame")) {
         unsigned frame = phase->unsignedAt("frame");
@@ -456,8 +456,8 @@ bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& ti
 
 bool Entity::processSounds(JSONObjectPtr sounds) {
     for (std::string& name : sounds->names()) {
-        ASSERT(sounds->hasString(name));
-        ASSERT(processSound(name, sounds->stringAt(name)));
+        CHECK(sounds->hasString(name));
+        CHECK(processSound(name, sounds->stringAt(name)));
     }
     return true;
 }
@@ -474,8 +474,8 @@ bool Entity::processSound(std::string& name, std::string path) {
 
 bool Entity::processScripts(JSONObjectPtr scripts) {
     for (std::string& name : scripts->names()) {
-        ASSERT(scripts->hasString(name));
-        ASSERT(processScript(name, scripts->stringAt(name)));
+        CHECK(scripts->hasString(name));
+        CHECK(processScript(name, scripts->stringAt(name)));
     }
     return true;
 }

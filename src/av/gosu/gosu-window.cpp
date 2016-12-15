@@ -34,7 +34,7 @@
 #include "core/client-conf.h"
 #include "core/world.h"
 
-#define ASSERT(x)  if (!(x)) { return false; }
+#define CHECK(x)  if (!(x)) { return false; }
 
 // Garbage collection called every X milliseconds
 #define GC_CALL_PERIOD 10 * 1000

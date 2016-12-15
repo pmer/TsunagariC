@@ -36,7 +36,7 @@
 #include "core/world.h"
 #include "core/window.h"
 
-#define ASSERT(x)  if (!(x)) { return false; }
+#define CHECK(x)  if (!(x)) { return false; }
 
 static Player* globalPlayer = nullptr;
 

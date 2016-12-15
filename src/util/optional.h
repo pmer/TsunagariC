@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef OPTIONAL_H
-#define OPTIONAL_H
+#ifndef SRC_UTIL_OPTIONAL_H_
+#define SRC_UTIL_OPTIONAL_H_
 
 #include <assert.h>
 
@@ -52,4 +52,4 @@ class Optional {
     const T& operator*() const { assert(exists); return x; }
 };
 
-#endif  // OPTIONAL_H
+#endif  // SRC_UTIL_OPTIONAL_H_

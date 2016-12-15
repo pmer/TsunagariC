@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** character.cpp                      **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -36,8 +36,7 @@ Character::Character()
       nowalkExempt(0),
       fromCoord(0.0, 0.0, 0.0),
       fromTile(nullptr),
-      destTile(nullptr),
-      destExit(nullptr)
+      destTile(nullptr)
 {
     enterTile();
 }
@@ -150,7 +149,7 @@ void Character::moveByTile(ivec2 delta)
     destTile = area->getTile(dest);
     setDestinationCoordinate(area->phys2virt_r(dest));
 
-    destExit = nullptr;
+    destExit = Optional<Exit>();
     if (fromTile && fromTile->exitAt(delta)) {
         destExit = fromTile->exitAt(delta);
     }
@@ -248,7 +247,7 @@ void Character::arrived()
     Entity::arrived();
 
     if (destTile) {
-        double* layermod = destTile->layermods[EXIT_NORMAL];
+        Optional<double> layermod = destTile->layermods[EXIT_NORMAL];
         if (layermod) {
             r.z = *layermod;
         }

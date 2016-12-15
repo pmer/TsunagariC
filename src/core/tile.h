@@ -38,6 +38,7 @@ class TileSet;
 #include "core/animation.h"
 #include "core/vec.h"
 #include "data/data-area.h"
+#include "util/optional.h"
 
 class Area;
 class Entity;
@@ -209,11 +210,11 @@ class Tile : public TileBase {
 
     double getZ() const;
 
-    Exit* getNormalExit() const;
+    Optional<Exit> getNormalExit() const;
     void setNormalExit(Exit exit);
 
-    Exit* exitAt(ivec2 dir) const;
-    double* layermodAt(ivec2 dir) const;
+    Optional<Exit> exitAt(ivec2 dir) const;
+    Optional<double> layermodAt(ivec2 dir) const;
 
     void runEnterScript(Entity* triggeredBy);
     void runLeaveScript(Entity* triggeredBy);
@@ -229,8 +230,8 @@ class Tile : public TileBase {
      * cannot be losslessly transformed into area-space.
      */
     int x, y, z;
-    Exit* exits[EXITS_LENGTH];
-    double* layermods[EXITS_LENGTH];
+    Optional<Exit> exits[EXITS_LENGTH];
+    Optional<double> layermods[EXITS_LENGTH];
     int entCnt; //!< Number of entities on this Tile.
 };
 

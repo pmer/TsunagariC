@@ -150,7 +150,7 @@ void Player::arrived()
     Entity::arrived();
 
     if (destExit) {
-        takeExit(destExit);
+        takeExit(*destExit);
     }
 
     // If we have a velocity, keep moving.
@@ -159,16 +159,16 @@ void Player::arrived()
     }
 }
 
-void Player::takeExit(Exit* exit)
+void Player::takeExit(const Exit& exit)
 {
     World& world = World::instance();
-    Area* newArea = world.getArea(exit->area);
+    Area* newArea = world.getArea(exit.area);
     if (newArea) {
-        world.focusArea(newArea, exit->coords);
+        world.focusArea(newArea, exit.coords);
     }
     else {
         // Roll back movement if exit failed to open.
         setTileCoords(fromCoord);
-        Log::err("Exit", exit->area + ": failed to load properly");
+        Log::err("Exit", exit.area + ": failed to load properly");
     }
 }

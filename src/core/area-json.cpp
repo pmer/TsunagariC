@@ -742,19 +742,19 @@ bool AreaJSON::processObject(JSONObjectPtr obj) {
             tile.flags |= flags;
             for (size_t i = 0; i < 5; i++) {
                 if (exit[i]) {
-                    tile.exits[i] = new Exit(*exit[i]);
                     int dx = X - x;
                     int dy = Y - y;
                     if (wwide[i]) {
-                        tile.exits[i]->coords.x += dx;
+                        exit[i]->coords.x += dx;
                     }
                     if (hwide[i]) {
-                        tile.exits[i]->coords.y += dy;
+                        exit[i]->coords.y += dy;
                     }
+                    tile.exits[i] = exit[i];
                 }
             }
             for (size_t i = 0; i < 5; i++) {
-                tile.layermods[i] = layermods[i] ? new double(*layermods[i]) : nullptr;
+                tile.layermods[i] = layermods[i];
             }
             tile.enterScript = enterScript;
             tile.leaveScript = leaveScript;

@@ -31,9 +31,10 @@
 #include <time.h>
 
 #include "core/entity.h"
+#include "core/tile.h"
 #include "core/vec.h"
+#include "util/optional.h"
 
-class Exit;
 class Tile;
 
 class Character : public Entity
@@ -94,7 +95,7 @@ protected:
     rcoord fromCoord;
     Tile* fromTile;
     Tile* destTile;
-    Exit* destExit;
+    Optional<Exit> destExit;
 };
 
 #endif

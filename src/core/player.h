@@ -59,7 +59,7 @@ public:
 protected:
     void arrived();
 
-    void takeExit(Exit* exit);
+    void takeExit(const Exit& exit);
 
 private:
     //! Stores intent to move continuously in some direction.

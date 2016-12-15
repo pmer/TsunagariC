@@ -41,15 +41,47 @@ class Optional {
     explicit Optional(T&& x) : x(std::move(x)), exists(true) {}
     explicit Optional(const T& x) : x(x), exists(true) {}
 
-    Optional &operator=(const T &x) {
+    Optional(Optional<T>&& other) : exists(other.exists) {
+        if (exists) {
+            x = other.x;
+        }
+        other.exists = false;
+    }
+    Optional(const Optional<T>& other) : exists(other.exists) {
+        if (exists) {
+            x = other.x;
+        }
+    }
+
+    Optional& operator=(const T &x) {
         this->x = x;
         exists = true;
         return *this;
     }
 
+    Optional& operator=(Optional<T>&& other) {
+        if (other.exists) {
+            x = std::move(other.x);
+        }
+        exists = other.exists;
+        other.exists = false;
+        return *this;
+    }
+    Optional& operator=(const Optional<T>& other) {
+        if (other.exists) {
+            x = std::move(other.x);
+        }
+        exists = other.exists;
+        return *this;
+    }
+
     operator bool() const { return exists; }
+
     const T* operator->() const { assert(exists); return &x; }
     const T& operator*() const { assert(exists); return x; }
+
+    T* operator->() { assert(exists); return &x; }
+    T& operator*() { assert(exists); return x; }
 };
 
 #endif  // SRC_UTIL_OPTIONAL_H_

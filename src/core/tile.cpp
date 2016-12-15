@@ -182,7 +182,7 @@ icoord Tile::moveDest(icoord here, ivec2 facing) const
 {
     icoord dest = here + icoord(facing.x, facing.y, 0);
 
-    double* layermod = layermodAt(facing);
+    Optional<double> layermod = layermodAt(facing);
     if (layermod)
         dest = area->virt2phys(vicoord(dest.x, dest.y, *layermod));
     return dest;
@@ -199,29 +199,26 @@ double Tile::getZ() const
     return vi.z;
 }
 
-Exit* Tile::getNormalExit() const
+Optional<Exit> Tile::getNormalExit() const
 {
     return exits[EXIT_NORMAL];
 }
 
 void Tile::setNormalExit(Exit exit)
 {
-    Exit** norm = &exits[EXIT_NORMAL];
-    if (*norm)
-        delete *norm;
-    *norm = new Exit(exit);
+    exits[EXIT_NORMAL] = exit;
 }
 
-Exit* Tile::exitAt(ivec2 dir) const
+Optional<Exit> Tile::exitAt(ivec2 dir) const
 {
     int idx = ivec2_to_dir(dir);
-    return idx == -1 ? nullptr : exits[idx];
+    return idx == -1 ? Optional<Exit>() : exits[idx];
 }
 
-double* Tile::layermodAt(ivec2 dir) const
+Optional<double> Tile::layermodAt(ivec2 dir) const
 {
     int idx = ivec2_to_dir(dir);
-    return idx == -1 ? nullptr : layermods[idx];
+    return idx == -1 ? Optional<double>() : layermods[idx];
 }
 
 void Tile::runEnterScript(Entity* triggeredBy)

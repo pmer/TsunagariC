@@ -30,23 +30,21 @@
 
 #include "core/resources.h"
 
-class PhysfsResource : public Resource
-{
-public:
+class PhysfsResource : public Resource {
+ public:
     PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
     ~PhysfsResource() = default;
 
     const void* data();
     size_t size();
 
-private:
+ private:
     std::unique_ptr<const char[]> _data;
     size_t _size;
 };
 
-class PhysfsResources : public Resources
-{
-public:
+class PhysfsResources : public Resources {
+ public:
     PhysfsResources();
     ~PhysfsResources() = default;
 
@@ -54,7 +52,7 @@ public:
 
     std::unique_ptr<Resource> load(const std::string& path);
 
-private:
+ private:
     PhysfsResources(const PhysfsResources&) = delete;
     PhysfsResources& operator=(const PhysfsResources&) = delete;
 

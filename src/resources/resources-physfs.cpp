@@ -39,17 +39,13 @@
 #include "data/data-world.h"
 
 PhysfsResource::PhysfsResource(std::unique_ptr<const char[]> data, size_t size)
-    : _data(std::move(data)), _size(size)
-{
-}
+    : _data(std::move(data)), _size(size) {}
 
-const void* PhysfsResource::data()
-{
+const void* PhysfsResource::data() {
     return _data.get();
 }
 
-size_t PhysfsResource::size()
-{
+size_t PhysfsResource::size() {
     return _size;
 }
 
@@ -57,18 +53,14 @@ size_t PhysfsResource::size()
 static PhysfsResources globalResources;
 static std::mutex globalPhysfsMutex;
 
-Resources& Resources::instance()
-{
+Resources& Resources::instance() {
     return globalResources;
 }
 
 PhysfsResources::PhysfsResources()
-    : initialized(false)
-{
-}
+    : initialized(false) {}
 
-static void initialize()
-{
+static void initialize() {
     if (!PHYSFS_init(nullptr)) {
         Log::fatal("Resources", "PHYSFS_init");
     }
@@ -84,8 +76,7 @@ static void initialize()
     }
 }
 
-std::unique_ptr<Resource> PhysfsResources::load(const std::string& path)
-{
+std::unique_ptr<Resource> PhysfsResources::load(const std::string& path) {
     std::lock_guard<std::mutex> lock(globalPhysfsMutex);
 
     TimeMeasure m("Mapped " + path);

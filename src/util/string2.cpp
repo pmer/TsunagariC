@@ -25,7 +25,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/string2.h"
+#include "string2.h"
 
 #include <ctype.h>
 #include <limits.h>

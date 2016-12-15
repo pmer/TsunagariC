@@ -41,7 +41,7 @@
 #include "core/jsons.h"
 #include "core/log.h"
 #include "core/resources.h"
-#include "core/string2.h"
+#include "util/string2.h"
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"

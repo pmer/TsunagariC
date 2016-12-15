@@ -30,7 +30,7 @@
 #include "core/area.h"
 #include "core/formatter.h"
 #include "core/log.h"
-#include "core/string2.h"
+#include "util/string2.h"
 #include "core/tile.h"
 #include "core/world.h"
 

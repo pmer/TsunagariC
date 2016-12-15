@@ -36,7 +36,7 @@
 #include "core/log.h"
 #include "core/math2.h"
 #include "core/resources.h"
-#include "core/string2.h"
+#include "util/string2.h"
 #include "core/world.h"
 
 #define CHECK(x)  if (!(x)) { return false; }

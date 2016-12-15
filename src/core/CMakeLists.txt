@@ -23,7 +23,6 @@ set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/random.cpp
     ${CMAKE_CURRENT_LIST_DIR}/resources.cpp
     ${CMAKE_CURRENT_LIST_DIR}/sounds.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/string2.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/viewport.cpp
     ${CMAKE_CURRENT_LIST_DIR}/window.cpp

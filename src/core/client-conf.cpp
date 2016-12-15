@@ -36,7 +36,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 
 #include "nbcl/nbcl.h"
-#include "core/string2.h"
+#include "util/string2.h"
 
 Conf conf; // Project-wide global configuration.
 

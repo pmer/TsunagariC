@@ -38,7 +38,7 @@
 #include "cache/readercache.h"
 #include "core/measure.h"
 #include "core/resources.h"
-#include "core/string2.h"
+#include "util/string2.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 

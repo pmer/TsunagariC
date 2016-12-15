@@ -83,17 +83,15 @@ int main(int argc, char** argv) {
     Log::reportVerbosityOnStartup();
 
     GameWindow* window;
+
     {
         TimeMeasure m("Constructed window");
         window = GameWindow::create();
     }
+
     World& world = World::instance();
     DataWorld& dataWorld = DataWorld::instance();
 
-    if (!window->init()) {
-        Log::fatal("Main", "GameWindow::init");
-        return 1;
-    }
     {
         TimeMeasure m("Constructed world");
         if (!world.init()) {
@@ -101,6 +99,7 @@ int main(int argc, char** argv) {
             return 1;
         }
     }
+
     if (!dataWorld.init()) {
         Log::fatal("Main", "DataWorld::init");
         return 1;

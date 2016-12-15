@@ -100,15 +100,6 @@ GosuGameWindow::GosuGameWindow()
     keys[Gosu::ButtonName::kbDown] = KBDownArrow;
 }
 
-GosuGameWindow::~GosuGameWindow()
-{
-}
-
-bool GosuGameWindow::init()
-{
-    return true;
-}
-
 unsigned GosuGameWindow::width() const
 {
     return graphics().width();

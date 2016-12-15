@@ -62,9 +62,6 @@ class GameWindow {
 
     virtual ~GameWindow() = default;
 
-    //! GameWindow Initializer
-    virtual bool init() = 0;
-
     //! Width of the window in pixels.
     virtual unsigned width() const = 0;
 

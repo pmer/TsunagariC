@@ -1,9 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** gosu-window.h                      **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016      Paul Merrill   **
-***************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** window.h                      **
+** Copyright 2016 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,25 +24,23 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_WINDOW_H
-#define GOSU_WINDOW_H
+#ifndef SRC_AV_SDL2_WINDOW_H_
+#define SRC_AV_SDL2_WINDOW_H_
 
+#include <chrono>
 #include <map>
 #include <string>
 
-#include <Gosu/Window.hpp>  // for Gosu::Window
+#include <SDL.h>
 
 #include "core/window.h"
 
-namespace Gosu {
-    class Button;
-}
+class SDL2GameWindow : public GameWindow {
+ public:
+    SDL2GameWindow();
+    ~SDL2GameWindow() = default;
 
-class GosuGameWindow : public GameWindow, public Gosu::Window
-{
-public:
-    GosuGameWindow();
-    ~GosuGameWindow() = default;
+    bool init();
 
     unsigned width() const;
 
@@ -51,25 +48,12 @@ public:
 
     void setCaption(const std::string& caption);
 
-    //! Gosu Callback
-    void buttonDown(const Gosu::Button btn);
-
-    //! Gosu Callback
-    void buttonUp(const Gosu::Button btn);
-
-    //! Gosu Callback
-    void draw();
-
-    //! Gosu Callback
-    bool needsRedraw() const;
-
-    //! Gosu Callback
-    void update();
-
     void mainLoop();
+    void handleEvents();
+    void handleEvent(const SDL_Event& event);
 
-        void drawRect(double x1, double x2, double y1, double y2,
-                uint32_t argb);
+    void drawRect(double x1, double x2, double y1, double y2,
+            uint32_t argb);
 
     void scale(double x, double y);
     void translate(double x, double y);
@@ -77,20 +61,11 @@ public:
 
     void close();
 
-protected:
-    //! Process persistent keyboard input
-    void handleKeyboardInput(time_t now);
+    std::chrono::time_point<std::chrono::steady_clock> start;
 
-    time_t now;
-    time_t lastGCtime;
-
-    struct keystate {
-        bool consecutive, initiallyResolved;
-        time_t since;
-    };
-
-    std::map<Gosu::Button, keystate> keystates;
-    std::vector<KeyboardKey> gosuToTsunagariKey;
+ private:
+    SDL_Window* window;
+    SDL_Renderer* renderer;
 };
 
-#endif
+#endif  // SRC_AV_SDL2_WINDOW_H_

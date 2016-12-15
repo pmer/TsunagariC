@@ -33,6 +33,7 @@
 #include "core/area-json.h"
 #include "core/client-conf.h"
 #include "core/images.h"
+#include "core/jsons.h"
 #include "core/log.h"
 #include "core/music.h"
 #include "core/player.h"
@@ -308,6 +309,7 @@ void World::restoreKeys()
 void World::garbageCollect()
 {
     Images::instance().garbageCollect();
+    JSONs::instance().garbageCollect();
     Music::instance().garbageCollect();
     Sounds::instance().garbageCollect();
 }

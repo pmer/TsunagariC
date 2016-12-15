@@ -150,7 +150,7 @@ class FlagManip {
 
 //! Convenience trigger for inter-area teleportation.
 /*!
-    Tiles with a exit trigger attached can teleport the player to a
+    Tiles with an exit trigger attached can teleport the player to a
     new area in the World. The Exit struct contains the destination
     area and coordinates.
 */

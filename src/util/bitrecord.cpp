@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** bitrecord.cpp                      **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,20 +25,15 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/bitrecord.h"
+#include "bitrecord.h"
 
-BitRecord::BitRecord(size_t length)
-    : states(length)
-{
-}
+BitRecord::BitRecord(size_t length) : states(length) {}
 
-char& BitRecord::operator[] (size_t idx)
-{
+char& BitRecord::operator[] (size_t idx) {
     return states[idx];
 }
 
-std::vector<size_t> BitRecord::diff(const BitRecord& other)
-{
+std::vector<size_t> BitRecord::diff(const BitRecord& other) {
     std::vector<size_t> changes;
 
     for (size_t i = 0; i < states.size(); i++) {

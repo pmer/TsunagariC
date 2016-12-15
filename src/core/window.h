@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 
-#include "core/bitrecord.h"
+#include "util/bitrecord.h"
 
 enum KeyboardKey {
     KBEscape = 1,

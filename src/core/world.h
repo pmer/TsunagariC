@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 
-#include "core/bitrecord.h"
+#include "util/bitrecord.h"
 #include "core/vec.h"
 #include "core/window.h"  // for KeyboardKey
 

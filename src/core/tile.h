@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** tile.h                             **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef TILE_H
-#define TILE_H
+#ifndef SRC_CORE_TILE_H_
+#define SRC_CORE_TILE_H_
 
 #include <string>
 #include <vector>
@@ -127,9 +127,8 @@ enum ExitDirection {
 /**
  * Independant object that can manipulate a Tile's flags.
  */
-class FlagManip
-{
-public:
+class FlagManip {
+ public:
     FlagManip(unsigned* flags);
 
     bool isNowalk() const;
@@ -144,7 +143,7 @@ public:
     void setNowalkExit(bool nowalk);
     void setNowalkAreaBound(bool nowalk);
 
-private:
+ private:
     unsigned* flags;
 };
 
@@ -155,18 +154,17 @@ private:
     area and coordinates.
 */
 class Exit {
-public:
+ public:
     Exit();
     Exit(const std::string area, int x, int y, double z);
 
-public:
+ public:
     std::string area;
     vicoord coords;
 };
 
-class TileBase
-{
-public:
+class TileBase {
+ public:
     TileBase();
 
     FlagManip flagManip();
@@ -178,7 +176,7 @@ public:
     TileType* getType() const;
     void setType(TileType* type);
 
-public:
+ public:
     TileBase* parent;
     unsigned flags;
     DataArea::TileScript enterScript, leaveScript, useScript;
@@ -191,9 +189,8 @@ public:
     tiles of the same type, these properties will only apply to one
     tile.
 */
-class Tile : public TileBase
-{
-public:
+class Tile : public TileBase {
+ public:
     Tile(); // Should not be used. Wanted by std::containers.
     Tile(Area* area, int x, int y, int z);
 
@@ -222,7 +219,7 @@ public:
     void runLeaveScript(Entity* triggeredBy);
     void runUseScript(Entity* triggeredBy);
 
-public:
+ public:
     Area* area;
 
     /*
@@ -243,23 +240,21 @@ public:
     certain type. As opposed to local properties for a single tile,
     all tiles of this type will share the defined characteristics.
 */
-class TileType : public TileBase
-{
-public:
+class TileType : public TileBase {
+ public:
     TileType();
     TileType(const std::shared_ptr<Image>& img);
 
     //! Returns true if onscreen and we need to update our animation.
     bool needsRedraw() const;
 
-public:
+ public:
     Animation anim; //! Graphics for tiles of this type.
     std::vector<Tile*> allOfType;
 };
 
-class TileSet
-{
-public:
+class TileSet {
+ public:
     TileSet();
     TileSet(size_t width, size_t height);
 
@@ -269,12 +264,11 @@ public:
     size_t getWidth() const;
     size_t getHeight() const;
 
-private:
+ private:
     size_t idx(size_t x, size_t y) const;
 
     std::vector<TileType*> types;
     size_t width, height;
 };
 
-#endif
-
+#endif  // SRC_CORE_TILE_H_

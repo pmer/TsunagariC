@@ -59,7 +59,7 @@ public:
 
     // For scripts
 
-    //! Play a sound with a 10% speed variation applied to it.
+    //! Play a sound with a 3% speed variation applied to it.
     void playSoundEffect(const std::string& sound);
 
     void playSoundAndThen(const std::string& sound, ThenFn then);

@@ -61,7 +61,7 @@ void DataArea::turn()
 
 void DataArea::playSoundEffect(const std::string& sound)
 {
-    Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.1, 0.1));
+    Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.03, 0.03));
 }
 
 void DataArea::playSoundAndThen(const std::string& sound, ThenFn then)

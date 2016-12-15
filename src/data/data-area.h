@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine         **
 ** area.h                        **
 ** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2016 Paul Merrill   **
 **********************************/
 
 // **********
@@ -50,7 +50,7 @@ public:
 
     virtual ~DataArea();
 
-    Area* area; // borrowed reference
+    Area* area;  // borrowed reference
 
     virtual void onLoad();
     virtual void onFocus();

@@ -31,28 +31,17 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#include <fstream>
 #include <limits>
 #include <sstream>
 
 #include "core/log.h"
-
-template<class T>
-static T bound(T value, T min, T max)
-{
-    if (value < min) {
-        return min;
-    }
-    if (value > max) {
-        return max;
-    }
-    return value;
-}
+#include "util/math2.h"
 
 /**
  * Matches regex /\s*-?\d+/
  */
-bool isInteger(const std::string& s)
-{
+bool isInteger(const std::string& s) {
     const int space = 0;
     const int sign = 1;
     const int digit = 2;
@@ -80,8 +69,7 @@ bool isInteger(const std::string& s)
 /**
  * Matches regex /\s*-?\d+\.?\d* /   [sic: star-slash ends comment]
  */
-bool isDecimal(const std::string& s)
-{
+bool isDecimal(const std::string& s) {
     const int space = 0;
     const int sign = 1;
     const int digit = 2;
@@ -117,8 +105,7 @@ bool isDecimal(const std::string& s)
 /**
  * Matches "5-7,2,12-14" no whitespace.
  */
-bool isRanges(const std::string& s)
-{
+bool isRanges(const std::string& s) {
     const int sign = 0;
     const int digit = 1;
     const int dash = 3;
@@ -158,8 +145,7 @@ bool isRanges(const std::string& s)
     return true;
 }
 
-bool iequals(const std::string& a, const std::string& b)
-{
+bool iequals(const std::string& a, const std::string& b) {
     if (a.length() != b.length())
         return false;
     size_t len = a.length();
@@ -170,8 +156,7 @@ bool iequals(const std::string& a, const std::string& b)
     return true;
 }
 
-bool parseBool(const std::string& s)
-{
+bool parseBool(const std::string& s) {
     static std::string true_ = "true";
     static std::string yes = "yes";
     static std::string on = "on";
@@ -182,8 +167,7 @@ bool parseBool(const std::string& s)
         s == "1";
 }
 
-bool parseUInt(const std::string& s, unsigned* n)
-{
+bool parseUInt(const std::string& s, unsigned* n) {
     size_t pos = std::numeric_limits<size_t>::max();
     unsigned long i = std::stoul(s, &pos, 10);
     if (pos < s.size()) {
@@ -196,8 +180,7 @@ bool parseUInt(const std::string& s, unsigned* n)
     return true;
 }
 
-bool parseUInt(const std::string& s, int* n)
-{
+bool parseUInt(const std::string& s, int* n) {
     size_t pos = std::numeric_limits<size_t>::max();
     unsigned long i = std::stoul(s, &pos, 10);
     if (pos < s.size()) {
@@ -210,22 +193,19 @@ bool parseUInt(const std::string& s, int* n)
     return true;
 }
 
-bool parseDouble(const std::string& s, double* n)
-{
+bool parseDouble(const std::string& s, double* n) {
     size_t pos = std::numeric_limits<size_t>::max();
     *n = std::stod(s, &pos);
     return pos >= s.size();
 }
 
-int parseInt100(const std::string& s)
-{
+int parseInt100(const std::string& s) {
     int i = atoi(s.c_str());
     return bound(i, 0, 100);
 }
 
 std::vector<std::string> splitStr(const std::string& input,
-        const std::string& delimiter)
-{
+        const std::string& delimiter) {
     std::vector<std::string> strlist;
     size_t i = 0;
 
@@ -242,8 +222,7 @@ std::vector<std::string> splitStr(const std::string& input,
     return strlist;
 }
 
-std::vector<int> parseRanges(const std::string& format)
-{
+std::vector<int> parseRanges(const std::string& format) {
     std::vector<int> ints;
     typedef std::vector<std::string> StringVector;
     StringVector ranges = splitStr(format, ",");
@@ -279,9 +258,15 @@ std::vector<int> parseRanges(const std::string& format)
     return ints;
 }
 
-std::string itostr(int in)
-{
+std::string itostr(int in) {
     std::stringstream out;
     out << in;
     return out.str();
+}
+
+std::string slurp(const std::string& filename) {
+    std::ifstream in(filename);
+    std::stringstream sstr;
+    sstr << in.rdbuf();
+    return sstr.str();
 }

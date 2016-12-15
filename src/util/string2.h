@@ -66,4 +66,6 @@ std::vector<int> parseRanges(const std::string& format);
 //! Convert an integer to a representative string.
 std::string itostr(int in);
 
+std::string slurp(const std::string& filename);
+
 #endif  // STRING2_H

@@ -106,6 +106,9 @@ class JSONs {
     //! Load a JSON document.
     virtual JSONObjectRef load(const std::string& path) = 0;
 
+    //! Parse a document from the outside world.
+    static JSONObjectPtr parse(std::string data);
+
     //! Free JSON documents not recently used.
     virtual void garbageCollect() = 0;
 

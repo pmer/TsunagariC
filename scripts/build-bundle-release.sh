@@ -4,7 +4,7 @@ root="$here/.."
 rm -rf "$root/Tsungari.app"
 cp -a "$root/build-release/Tsunagari.app" "$root"
 mkdir -p "$root/Tsunagari.app/Contents/Resources"
-cp "$root/bin/client.ini" \
+cp "$root/bin/client.json" \
    "$root/bin/testing.world" \
    "$here/data/Tsunagari.icns" \
    "$root/Tsunagari.app/Contents/Resources"

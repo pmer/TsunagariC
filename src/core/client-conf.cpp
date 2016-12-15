@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** client-conf.cpp                    **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,34 +27,28 @@
 
 #include "core/client-conf.h"
 
-#include <fstream>
 #include <iostream>
 #include <vector>
 
-#include <boost/config.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
-
+#include "core/jsons.h"
 #include "nbcl/nbcl.h"
+#include "util/math2.h"
 #include "util/string2.h"
 
 Conf conf; // Project-wide global configuration.
 
 // Initialize and set configuration defaults.
-Conf::Conf()
-{
+Conf::Conf() {
     persistInit = 0;
     persistCons = 0;
 }
 
-bool Conf::validate(const std::string& filename)
-{
+bool Conf::validate(const std::string& filename) {
     return true;
 }
 
 /* Output compiled-in engine defaults. */
-static void defaultsQuery()
-{
+static void defaultsQuery() {
     std::cerr << "CLIENT_CONF_PATH:                    "
         << CLIENT_CONF_PATH << std::endl;
     std::cerr << "DEF_ENGINE_VERBOSITY:                "
@@ -75,92 +69,104 @@ static void defaultsQuery()
 
 // Parse and process the client config file, and set configuration defaults for
 // missing options.
-bool parseConfig(const std::string& filename)
-{
-    namespace pt = boost::property_tree;
-    pt::ptree ini;
+bool parseConfig(const std::string& filename) {
+    std::string file = slurp(filename);
 
-    bool parse_error = false;
-
-    conf.cacheEnabled = DEF_CACHE_TTL ? true : false;
-
-    try {
-        pt::read_ini(filename.c_str(), ini);
-    }
-    catch (pt::ini_parser_error) {
-        Log::err(filename, "could not parse config");
-        parse_error = true;
-    }
-
-    conf.windowSize.x = ini.get("window.width", DEF_WINDOW_WIDTH);
-    conf.windowSize.y = ini.get("window.height", DEF_WINDOW_HEIGHT);
-    conf.fullscreen = ini.get("window.fullscreen", DEF_WINDOW_FULLSCREEN);
-    conf.cacheEnabled = ini.get("cache.enabled", DEF_CACHE_ENABLED);
-
-    conf.musicVolume = ini.get("audio.musicvolume", 100);
-    if (conf.musicVolume < 0) {
-        conf.musicVolume = 0;
-    }
-    else if (conf.musicVolume > 100) {
-        conf.musicVolume = 100;
-    }
-
-    conf.soundVolume = ini.get("audio.soundvolume", 100);
-    if (conf.soundVolume < 0) {
-        conf.soundVolume = 0;
-    }
-    else if (conf.soundVolume > 100) {
-        conf.soundVolume = 100;
-    }
-
-    conf.cacheTTL = ini.get("cache.ttl", DEF_CACHE_TTL);
-    if (!conf.cacheTTL) {
-        conf.cacheEnabled = false;
-    }
-
-    std::string verbosity = ini.get("engine.verbosity", DEF_ENGINE_VERBOSITY);
-    if (verbosity.empty()) {
-        ;
-    }
-    else if (verbosity == "quiet") {
-        conf.verbosity = V_QUIET;
-    }
-    else if (verbosity == "normal") {
-        conf.verbosity = V_NORMAL;
-    }
-    else if (verbosity == "verbose") {
-        conf.verbosity = V_VERBOSE;
-    }
-    else {
-        Log::err(filename, "unknown value for \"[engine] verbosity\", using default");
-    }
-
-    std::string halting = ini.get("engine.halting", DEF_ENGINE_HALTING);
-    if (halting.empty()) {
-        ;
-    }
-    else if (halting == "fatal") {
-        conf.halting = HALT_FATAL;
-    }
-    else if (halting == "script") {
-        conf.halting = HALT_SCRIPT;
-    }
-    else if (halting == "error") {
-        conf.halting = HALT_ERROR;
-    }
-    else {
-        Log::err(filename, "unknown value for \"[engine] halting\", using default");
-    }
-
-    if (parse_error) {
+    if (file.size() == 0) {
+        Log::err(filename, "Could not find " + filename);
         return false;
     }
+
+    JSONObjectPtr doc = JSONs::parse(std::move(file));
+
+    if (!doc) {
+        Log::err(filename, "Could not parse " + filename);
+        return false;
+    }
+
+    conf.verbosity = DEF_ENGINE_VERBOSITY;
+    conf.halting = DEF_ENGINE_HALTING;
+    conf.windowSize = {DEF_WINDOW_WIDTH, DEF_WINDOW_HEIGHT};
+    conf.fullscreen = DEF_WINDOW_FULLSCREEN;
+    conf.musicVolume = 100;
+    conf.soundVolume = 100;
+    conf.cacheEnabled = DEF_CACHE_ENABLED;
+    conf.cacheEnabled = DEF_CACHE_TTL != 0;
+    conf.cacheTTL = DEF_CACHE_TTL;
+
+    if (doc->hasObject("engine")) {
+        JSONObjectPtr engine = doc->objectAt("engine");
+
+        if (engine->hasString("verbosity")) {
+            std::string verbosity = engine->stringAt("verbosity");
+            if (verbosity == "quiet") {
+                conf.verbosity = V_QUIET;
+            } else if (verbosity == "normal") {
+                conf.verbosity = V_NORMAL;
+            } else if (verbosity == "verbose") {
+                conf.verbosity = V_VERBOSE;
+            } else {
+                Log::err(filename, "Unknown value for \"engine.verbosity\", using default");
+            }
+        }
+
+        if (engine->hasString("halting")) {
+            std::string halting = engine->stringAt("halting");
+            if (halting == "fatal") {
+                conf.halting = HALT_FATAL;
+            } else if (halting == "script") {
+                conf.halting = HALT_SCRIPT;
+            } else if (halting == "error") {
+                conf.halting = HALT_ERROR;
+            } else {
+                Log::err(filename, "Unknown value for \"enginehalting\", using default");
+            }
+        }
+    }
+
+    if (doc->hasObject("window")) {
+        JSONObjectPtr window = doc->objectAt("window");
+
+        if (window->hasUnsigned("width")) {
+            conf.windowSize.x = window->unsignedAt("width");
+        }
+        if (window->hasUnsigned("height")) {
+            conf.windowSize.y = window->unsignedAt("height");
+        }
+        if (window->hasBool("fullscreen")) {
+            conf.fullscreen = window->boolAt("fullscreen");
+        }
+    }
+
+    if (doc->hasObject("audio")) {
+        JSONObjectPtr audio = doc->objectAt("audio");
+
+        if (audio->hasUnsigned("musicvolume")) {
+            unsigned volume = audio->unsignedAt("musicvolume");
+            conf.musicVolume = bound(volume, 0u, 100u);
+        }
+        if (audio->hasUnsigned("soundvolume")) {
+            unsigned volume = audio->unsignedAt("soundvolume");
+            conf.soundVolume = bound(volume, 0u, 100u);
+        }
+    }
+
+    if (doc->hasObject("cache")) {
+        JSONObjectPtr cache = doc->objectAt("cache");
+
+        if (cache->hasBool("enabled")) {
+            conf.cacheEnabled = cache->boolAt("enabled");
+        }
+        if (cache->hasUnsigned("ttl")) {
+            conf.cacheEnabled = cache->unsignedAt("ttl");
+        }
+    }
+
     return true;
 }
 
 // Parse and process command line options and arguments.
-bool parseCommandLine(int argc, char* argv[])
-{
+bool parseCommandLine(int argc, char* argv[]) {
     NBCL cmd(argc, argv);
 
     cmd.setStrayArgsDesc("[WORLD FILE]");

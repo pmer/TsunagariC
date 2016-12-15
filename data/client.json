@@ -1,0 +1,19 @@
+{
+	"engine": {
+		"verbosity": "verbose",
+		"halting": "fatal"
+	},
+	"window": {
+		"width": 720,
+		"height": 480,
+		"fullscreen": false
+	},
+	"audio": {
+		"musicvolume": 100,
+		"soundvolume": 100
+	},
+	"cache": {
+		"enabled": true,
+		"ttl": 300  // Unused item expiration time in seconds.
+	}
+}

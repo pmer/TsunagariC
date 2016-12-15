@@ -154,7 +154,6 @@ JSONs& JSONs::instance() {
     return globalJSONs;
 }
 
-
 std::vector<std::string> JSONObjectImpl::names() const {
     std::vector<std::string> names;
     for (auto& property : get()) {
@@ -272,6 +271,10 @@ JSONsImpl::JSONsImpl() : documents(genJSON) {}
 
 JSONObjectRef JSONsImpl::load(const std::string& path) {
     return documents.lifetimeRequest(path);
+}
+
+JSONObjectPtr JSONs::parse(std::string data) {
+    return std::unique_ptr<JSONDocImpl>(new JSONDocImpl(data));
 }
 
 void JSONsImpl::garbageCollect() {

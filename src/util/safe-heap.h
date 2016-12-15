@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SAFE_HEAP_H
-#define SAFE_HEAP_H
+#ifndef SRC_UTIL_SAFE_HEAP_H_
+#define SRC_UTIL_SAFE_HEAP_H_
 
 #include <condition_variable>
 #include <mutex>
@@ -74,4 +74,4 @@ class SafeHeap {
      bool alive;
 };
 
-#endif  // SAFE_HEAP_H
+#endif  // SRC_UTIL_SAFE_HEAP_H_

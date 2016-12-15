@@ -48,23 +48,16 @@
 
 static World globalWorld;
 
-World& World::instance()
-{
+World& World::instance() {
     return globalWorld;
 }
 
 World::World()
     : player(new Player),
-      lastTime(0), total(0), alive(false), redraw(false), userPaused(false), paused(0)
-{
-}
+      lastTime(0), total(0), alive(false), redraw(false),
+      userPaused(false), paused(0) {}
 
-World::~World()
-{
-}
-
-bool World::init()
-{
+bool World::init() {
     alive = true;
 
     auto& parameters = DataWorld::instance().parameters;
@@ -90,13 +83,11 @@ bool World::init()
     return true;
 }
 
-time_t World::time() const
-{
+time_t World::time() const {
     return total;
 }
 
-void World::buttonDown(KeyboardKey key)
-{
+void World::buttonDown(KeyboardKey key) {
     switch (key) {
     case KBEscape:
         userPaused = !userPaused;
@@ -113,8 +104,7 @@ void World::buttonDown(KeyboardKey key)
     }
 }
 
-void World::buttonUp(KeyboardKey key)
-{
+void World::buttonUp(KeyboardKey key) {
     switch (key) {
     case KBEscape:
         break;
@@ -128,8 +118,7 @@ void World::buttonUp(KeyboardKey key)
     }
 }
 
-void World::draw()
-{
+void World::draw() {
     redraw = false;
 
     GameWindow& window = GameWindow::instance();
@@ -176,18 +165,15 @@ void World::draw()
     area->draw();
 }
 
-bool World::needsRedraw() const
-{
+bool World::needsRedraw() const {
     return redraw || (!paused && area->needsRedraw());
 }
 
-void World::update(time_t now)
-{
+void World::update(time_t now) {
     if (lastTime == 0) {
         // There is no dt on the first update().  Don't tick.
         lastTime = now;
-    }
-    else {
+    } else {
         time_t dt = calculateDt(now);
         if (!paused) {
             total += dt;
@@ -196,20 +182,17 @@ void World::update(time_t now)
     }
 }
 
-void World::tick(time_t dt)
-{
+void World::tick(time_t dt) {
     area->tick(dt);
 }
 
-void World::turn()
-{
+void World::turn() {
     if (conf.moveMode == TURN) {
         area->turn();
     }
 }
 
-Area* World::getArea(const std::string& filename)
-{
+Area* World::getArea(const std::string& filename) {
     AreaMap::iterator entry = areas.find(filename);
     if (entry != areas.end()) {
         return entry->second;
@@ -231,18 +214,15 @@ Area* World::getArea(const std::string& filename)
     return newArea;
 }
 
-Area* World::getFocusedArea()
-{
+Area* World::getFocusedArea() {
     return area;
 }
 
-void World::focusArea(Area* area, int x, int y, double z)
-{
+void World::focusArea(Area* area, int x, int y, double z) {
     focusArea(area, vicoord(x, y, z));
 }
 
-void World::focusArea(Area* area, vicoord playerPos)
-{
+void World::focusArea(Area* area, vicoord playerPos) {
     this->area = area;
     player->setArea(area);
     player->setTileCoords(playerPos);
@@ -250,8 +230,7 @@ void World::focusArea(Area* area, vicoord playerPos)
     area->focus();
 }
 
-void World::setPaused(bool b)
-{
+void World::setPaused(bool b) {
     if (!alive) {
         return;
     }
@@ -281,13 +260,11 @@ void World::setPaused(bool b)
     }
 }
 
-void World::storeKeys()
-{
+void World::storeKeys() {
     keyStates.push(GameWindow::instance().getKeysDown());
 }
 
-void World::restoreKeys()
-{
+void World::restoreKeys() {
     BitRecord now = GameWindow::instance().getKeysDown();
     BitRecord then = keyStates.top();
     typedef std::vector<size_t> Size_tVector;
@@ -299,30 +276,26 @@ void World::restoreKeys()
         KeyboardKey key = (KeyboardKey)*it;
         if (now[key]) {
             buttonDown(key);
-        }
-        else {
+        } else {
             buttonUp(key);
         }
     }
 }
 
-void World::garbageCollect()
-{
+void World::garbageCollect() {
     Images::instance().garbageCollect();
     JSONs::instance().garbageCollect();
     Music::instance().garbageCollect();
     Sounds::instance().garbageCollect();
 }
 
-time_t World::calculateDt(time_t now)
-{
+time_t World::calculateDt(time_t now) {
     time_t dt = now - lastTime;
     lastTime = now;
     return dt;
 }
 
-void World::pushLetterbox()
-{
+void World::pushLetterbox() {
     GameWindow& window = GameWindow::instance();
     Viewport& view = Viewport::instance();
 

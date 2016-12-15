@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** resources-physfs.cpp               **
-** Copyright 2011-2015 PariahSoft LLC **
-** Copyright 2015-2016 Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********

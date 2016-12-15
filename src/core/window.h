@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** window.h                           **
-** Copyright 2011-2016 Paul Merrill   **
 ** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef SRC_CORE_WINDOW_H_
+#define SRC_CORE_WINDOW_H_
 
 #include <map>
 #include <string>
@@ -52,8 +52,7 @@ enum KeyboardKey {
     This class is structurally the main class of the Tsunagari Tile Engine.
     It handles input and drawing.
 */
-class GameWindow
-{
+class GameWindow {
  public:
     static GameWindow* create();
     static GameWindow& instance();
@@ -61,7 +60,7 @@ class GameWindow
     //! Time since epoch.
     static time_t time();
 
-    virtual ~GameWindow();
+    virtual ~GameWindow() = default;
 
     //! GameWindow Initializer
     virtual bool init() = 0;
@@ -103,4 +102,4 @@ class GameWindow
 
 };
 
-#endif
+#endif  // SRC_CORE_WINDOW_H_

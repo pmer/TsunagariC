@@ -1,9 +1,9 @@
-/***********************************
-** Tsunagari Tile Engine          **
-** os/mac.m                       **
-** Copyright 2013 PariahSoft LLC  **
-** Copyright 2016 Paul Merrill    **
-***********************************/
+/****************************************
+** Tsunagari Tile Engine               **
+** os/mac.m                            **
+** Copyright 2013      Michael Reiley  **
+** Copyright 2013-2016 Paul Merrill    **
+****************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 
-#include <core/world.h>
+#include "core/world.h"
 
 void macSetWorkingDirectory() {
     UInt8 pathBytes[512];
@@ -76,4 +76,4 @@ void macMessageBox(const char* title, const char* msg) {
     World::instance().setPaused(false);
 }
 
-#endif
+#endif  // __APPLE__

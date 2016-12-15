@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** os/windows.h                       **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -24,8 +25,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#if defined _WIN32 && !defined OS_WINDOWS_H
-#define OS_WINDOWS_H
+#ifdef _WIN32
+
+#ifndef SRC_OS_WINDOWS_H_
+#define SRC_OS_WINDOWS_H_
 
 #include <string>
 
@@ -54,5 +57,6 @@ void wFixConsole();
 // Simple wrapper to create a halting (modal) message box.
 void wMessageBox(const std::string& title, const std::string& text);
 
-#endif
+#endif  // SRC_OS_WINDOWS_H_
 
+#endif  // _WIN32

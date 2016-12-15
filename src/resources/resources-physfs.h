@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources-physfs.h            **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** resources-physfs.h                 **
+** Copyright 2015      Michael Reiley **
+** Copyright 2015-2016 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_PHYSFS_H
-#define RESOURCES_PHYSFS_H
+#ifndef SRC_RESOURCES_RESOURCES_PHYSFS_H_
+#define SRC_RESOURCES_RESOURCES_PHYSFS_H_
 
 #include "core/resources.h"
 
@@ -61,4 +61,4 @@ private:
     bool initialized;
 };
 
-#endif
+#endif  // SRC_RESOURCES_RESOURCES_PHYSFS_H_

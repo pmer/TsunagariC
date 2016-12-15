@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** world.h                            **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef WORLD_H
-#define WORLD_H
+#ifndef SRC_CORE_WORLD_H_
+#define SRC_CORE_WORLD_H_
 
 #include <memory>
 #include <stack>
@@ -47,16 +47,15 @@ class Player;
  * sound effects, music, and scripts. From the perspective from a player, each
  * world should be a separate game. Tsunagari is an engine that powers worlds.
  */
-class World
-{
-public:
+class World {
+ public:
     /**
      * Get the currently open World.
      */
     static World& instance();
 
     World();
-    ~World();
+    ~World() = default;
 
     /**
      * Initialize the world for use.
@@ -140,7 +139,7 @@ public:
 
     // ScriptRef keydownScript, keyupScript;
 
-protected:
+ protected:
     /**
      * Calculate time passed since engine state was last updated.
      */
@@ -153,7 +152,7 @@ protected:
      */
     void pushLetterbox();
 
-protected:
+ protected:
     typedef std::map<std::string, Area*> AreaMap;
 
     std::shared_ptr<Image> pauseInfo;
@@ -180,4 +179,4 @@ protected:
     std::stack<BitRecord> keyStates;
 };
 
-#endif
+#endif  // SRC_CORE_WORLD_H_

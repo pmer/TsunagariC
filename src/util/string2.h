@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** string2.h                          **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef STRING2_H
-#define STRING2_H
+#ifndef SRC_UTIL_STRING2_H_
+#define SRC_UTIL_STRING2_H_
 
 #include <string>
 #include <vector>
@@ -68,4 +68,4 @@ std::string itostr(int in);
 
 std::string slurp(const std::string& filename);
 
-#endif  // STRING2_H
+#endif  // SRC_UTIL_STRING2_H_

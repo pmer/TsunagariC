@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DISPATCH_QUEUE_H
-#define DISPATCH_QUEUE_H
+#ifndef SRC_UTIL_DISPATCH_QUEUE_H_
+#define SRC_UTIL_DISPATCH_QUEUE_H_
 
 #include <functional>
 
@@ -52,4 +52,4 @@ class DispatchQueue {
     DispatchQueueImpl* impl;
 };
 
-#endif  // DISPATCH_QUEUE_H
+#endif  // SRC_UTIL_DISPATCH_QUEUE_H_

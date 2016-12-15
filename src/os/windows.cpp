@@ -2,8 +2,8 @@
 ** Tsunagari Tile Engine              **
 ** windows.cpp                        **
 ** Copyright 2007 Julian Raschke      **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -66,4 +66,4 @@ void wMessageBox(const std::string& title, const std::string& text) {
     World::instance().setPaused(false);
 }
 
-#endif
+#endif  // _WIN32

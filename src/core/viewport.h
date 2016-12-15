@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** viewport.h                         **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -24,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef VIEWPORT_H
-#define VIEWPORT_H
+#ifndef SRC_CORE_VIEWPORT_H_
+#define SRC_CORE_VIEWPORT_H_
 
 class Area;
 class Entity;
@@ -34,13 +35,12 @@ class Entity;
 /*!
 
  */
-class Viewport
-{
-public:
+class Viewport {
+ public:
     static Viewport& instance();
 
     Viewport();
-    ~Viewport();
+    ~Viewport() = default;
 
     void setSize(rvec2 virtRes);
 
@@ -74,7 +74,7 @@ public:
 
     void setArea(const Area* a);
 
-private:
+ private:
     void update();
 
     void _jumpToEntity(const Entity* e);
@@ -91,8 +91,7 @@ private:
                           bool loop) const;
     rvec2 addLetterboxOffset(rvec2 pt) const;
 
-    enum TrackingMode
-    {
+    enum TrackingMode {
         TM_MANUAL,
         TM_FOLLOW_ENTITY
     };
@@ -106,5 +105,4 @@ private:
     const Entity* targete;
 };
 
-#endif
-
+#endif  // SRC_CORE_VIEWPORT_H_

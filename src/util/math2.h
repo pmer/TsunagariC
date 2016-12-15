@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** math2.h                       **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-***********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** math2.h                            **
+** Copyright 2014      Michael Reiley **
+** Copyright 2014-2016 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,28 +25,26 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef MATH_H
-#define MATH_H
+#ifndef SRC_UTIL_MATH_H_
+#define SRC_UTIL_MATH_H_
 
 template<class T>
-static T bound(T value, T min, T max)
-{
+static T bound(T value, T min, T max) {
     if (value < min) {
         return min;
-    }
-    if (value > max) {
+    } else if (value > max) {
         return max;
+    } else {
+        return value;
     }
-    return value;
 }
 
 template<class T>
-static T wrap(T min, T value, T max)
-{
+static T wrap(T min, T value, T max) {
     while (value < min) {
         value += max;
     }
     return value % max;
 }
 
-#endif
+#endif  // SRC_UTIL_MATH_H_

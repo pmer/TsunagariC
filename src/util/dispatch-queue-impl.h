@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DISPATCH_QUEUE_IMPL_H
-#define DISPATCH_QUEUE_IMPL_H
+#ifndef SRC_UTIL_DISPATCH_QUEUE_IMPL_H_
+#define SRC_UTIL_DISPATCH_QUEUE_IMPL_H_
 
 #include <thread>
 #include <vector>
@@ -52,4 +52,4 @@ class DispatchQueueImpl {
     std::vector<std::thread> threads;
 };
 
-#endif  // DISPATCH_QUEUE_IMPL_H
+#endif  // SRC_UTIL_DISPATCH_QUEUE_IMPL_H_

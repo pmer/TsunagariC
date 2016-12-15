@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** window.cpp                         **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,48 +25,40 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "core/window.h"
+
 #include <stdlib.h>
 
-#include "core/window.h"
 #include "core/world.h"
 
-GameWindow::GameWindow()
-    : keysDown(KB_SIZE)
-{
-}
+GameWindow::GameWindow() : keysDown(KB_SIZE) {}
 
-GameWindow::~GameWindow()
-{
-}
-
-void GameWindow::emitKeyDown(KeyboardKey key)
-{
+void GameWindow::emitKeyDown(KeyboardKey key) {
     keysDown[key]++;
 
-    if (keysDown[KBEscape] &&
-            (keysDown[KBLeftShift] || keysDown[KBRightShift])) {
+    if (keysDown[KBEscape] && (keysDown[KBLeftShift] ||
+                               keysDown[KBRightShift])) {
         close();
         exit(0);
     }
 
-    if (keysDown[key])
+    if (keysDown[key]) {
         World::instance().buttonDown(key);
+    }
 }
 
-void GameWindow::emitKeyUp(KeyboardKey key)
-{
+void GameWindow::emitKeyUp(KeyboardKey key) {
     keysDown[key]--;
 
-    if (!keysDown[key])
+    if (!keysDown[key]) {
         World::instance().buttonUp(key);
+    }
 }
 
-bool GameWindow::isKeyDown(KeyboardKey key)
-{
+bool GameWindow::isKeyDown(KeyboardKey key) {
     return keysDown[key] != false;
 }
 
-BitRecord GameWindow::getKeysDown()
-{
+BitRecord GameWindow::getKeysDown() {
     return keysDown;
 }

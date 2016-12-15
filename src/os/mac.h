@@ -1,8 +1,9 @@
-/***********************************
-** Tsunagari Tile Engine          **
-** os/mac.h                       **
-** Copyright 2013 PariahSoft LLC  **
-***********************************/
+/****************************************
+** Tsunagari Tile Engine               **
+** os/mac.h                            **
+** Copyright 2013      Michael Reiley  **
+** Copyright 2013-2016 Paul Merrill    **
+****************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,8 +25,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#if defined __APPLE__ && !defined OS_MAC_H
-#define OS_MAC_H
+#ifdef __APPLE__
+
+#ifndef SRC_OS_MAC_H_
+#define SRC_OS_MAC_H_
 
 /**
  * Sets the current working directory to the "Resources" folder in the .app package.
@@ -37,4 +40,6 @@ void macSetWorkingDirectory();
  */
 void macMessageBox(const char* title, const char* msg);
 
-#endif
+#endif  // SRC_OS_MAC_H_
+
+#endif  // __APPLE__

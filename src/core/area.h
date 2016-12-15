@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** area.h                             **
-** Copyright 2011-2016 Paul Merrill   **
 ** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef AREA_H
-#define AREA_H
+#ifndef SRC_CORE_AREA_H_
+#define SRC_CORE_AREA_H_
 
 #include <map>
 #include <memory>
@@ -59,9 +59,8 @@ class Player;
     The viewport will not scroll past the edge of an Area. (At least as of
     June 2012. :)
 */
-class Area
-{
-public:
+class Area {
+ public:
     Area(Player* player, const std::string& filename);
     virtual ~Area();
 
@@ -167,7 +166,7 @@ public:
     DataArea* getDataArea();
 
 
-protected:
+ protected:
     // Convert between virtual and physical map depths.
     int depthIndex(double depth) const;
     double indexDepth(int idx) const;
@@ -177,7 +176,7 @@ protected:
     void drawTile(Tile& tile, int x, int y, double depth);
     void drawEntities();
 
-protected:
+ protected:
     DataArea* dataArea;
 
     Player* player;
@@ -223,4 +222,4 @@ protected:
     bool musicIntroSet, musicLoopSet;
 };
 
-#endif
+#endif  // SRC_CORE_AREA_H_

@@ -127,8 +127,8 @@ Exit::Exit()
 {
 }
 
-Exit::Exit(const std::string area, int x, int y, double z)
-    : area(area), coords(x, y, z)
+Exit::Exit(std::string area, int x, int y, double z)
+    : area(std::move(area)), coords(x, y, z)
 {
 }
 

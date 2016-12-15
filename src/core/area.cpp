@@ -37,7 +37,7 @@
 #include "core/formatter.h"
 #include "core/log.h"
 #include "core/images.h"
-#include "core/math2.h"
+#include "util/math2.h"
 #include "core/music.h"
 #include "core/npc.h"
 #include "core/overlay.h"

@@ -29,7 +29,7 @@
 
 #include "core/client-conf.h"
 #include "core/formatter.h"
-#include "core/math2.h"
+#include "util/math2.h"
 
 static void clientIniVolumeVerify() {
     if (conf.musicVolume < 0 || 100 < conf.musicVolume) {

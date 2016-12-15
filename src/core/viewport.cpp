@@ -27,7 +27,7 @@
 
 #include "core/area.h"
 #include "core/entity.h"
-#include "core/math2.h"
+#include "util/math2.h"
 #include "core/vec.h"
 #include "core/viewport.h"
 #include "core/window.h"

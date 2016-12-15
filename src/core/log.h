@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** log.h                              **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2016 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef LOG_H
-#define LOG_H
+#ifndef SRC_CORE_LOG_H_
+#define SRC_CORE_LOG_H_
 
 #include <string>
 
@@ -36,9 +36,8 @@ enum verbosity_t {
     V_VERBOSE  //! Display fatals, errors and info.
 };
 
-class Log
-{
-public:
+class Log {
+ public:
     /**
      * Initialize the clock for log timestamps.
      */
@@ -71,12 +70,12 @@ public:
      */
     static void reportVerbosityOnStartup();
 
-private:
-    Log();
+ private:
+    Log() = delete;
     Log(const Log&) = delete;
     Log(Log&&) = delete;
     Log& operator=(const Log&) = delete;
     Log& operator=(Log&&) = delete;
 };
 
-#endif
+#endif  // SRC_CORE_LOG_H_

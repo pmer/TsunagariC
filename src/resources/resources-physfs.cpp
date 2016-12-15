@@ -175,5 +175,7 @@ std::unique_ptr<Resource> PhysfsResources::load(const std::string& path)
         return std::unique_ptr<Resource>();;
     }
 
+    PHYSFS_close(zf);
+
     return std::make_unique<PhysfsResource>(std::move(data), size);
 }

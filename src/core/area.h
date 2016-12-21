@@ -41,6 +41,8 @@
 
 #include "data/data-area.h"
 
+#include "util/optional.h"
+
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
 
 class Character;
@@ -218,8 +220,7 @@ class Area {
 
     // The following contain filenames such that they may be loaded lazily.
     const std::string descriptor;
-    std::string musicIntro, musicLoop;
-    bool musicIntroSet, musicLoopSet;
+    Optional<std::string> musicPath;
 };
 
 #endif  // SRC_CORE_AREA_H_

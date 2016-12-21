@@ -32,16 +32,11 @@
 
 /**
  * State manager for currently playing music. Continuously controls which music
- * will play. At the moment, each Area has an INTRO music and a LOOP music.
- * Immediately upon entering an Area, the currently playing music is stopped
- * and the associated intro music started. Once the intro music finishes, or,
- * if there is no intro music, then immediately upon entering said Area, the
- * loop music begins. Loop music is looped forever until either the world is
- * exited or new music is specified, either by a script or by entering a new
- * Area.
+ * will play. Immediately upon entering an Area, the currently playing music is
+ * stopped and the new music started and will play in a loop.
  *
- * When switching to a new Area with the same intro or loop music as the
- * previous Area, the music is left alone, if possible.
+ * When switching to a new Area with the same music as the previous Area, the
+ * music is left alone, if possible.
  *
  * When a new music is played, the pause state of the previous music is
  * dropped.
@@ -53,11 +48,8 @@ class Music {
 
     virtual ~Music() = default;
 
-    //! If the intro filepath has changed, start playing it.
-    virtual void setIntro(const std::string& filepath) = 0;
-    //! If the loop filepath has changed, then play the loop either now,
-    //! or after an also-new intro music has played.
-    virtual void setLoop(const std::string& filepath) = 0;
+    //! If the music filepath has changed, start playing it.
+    virtual void play(const std::string& filepath) = 0;
 
     //! Stop playing music.  To begin again, set a new intro or loop.
     virtual void stop() = 0;
@@ -69,9 +61,6 @@ class Music {
 
     //! Between 0.0 (silence) and 1.0 (full).
     virtual void setVolume(double volume) = 0;
-
-    //! Perform per-tick maintenance of the music subsystem.
-    virtual void tick() = 0;
 
     //! Free music not recently played.
     virtual void garbageCollect() = 0;

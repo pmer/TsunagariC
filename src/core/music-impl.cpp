@@ -30,41 +30,39 @@
 #include "core/music-worker.h"
 #include "util/dispatch-queue.h"
 
-const DispatchQueue::QualityOfService WORKER_QOS = DispatchQueue::UTILITY;
+static const DispatchQueue::QualityOfService WORKER_QOS = DispatchQueue::UTILITY;
 
 class MusicImpl : public Music {
  public:
-    void setIntro(const std::string& filepath);
-    void setLoop(const std::string& filepath);
+    void play(const std::string& filepath);
     void stop();
     void pause();
     void resume();
     void setVolume(double volume);
-    void tick();
     void garbageCollect();
 
  private:
     DispatchQueue queue;
 };
 
-MusicImpl* globalMusic;
+static MusicImpl* globalMusic = nullptr;
 
 Music& Music::instance() {
-    if (!globalMusic) {
+    if (globalMusic == nullptr) {
         globalMusic = new MusicImpl;
     }
     return *globalMusic;
 }
 
-void MusicImpl::setIntro(const std::string& filename) {
+void MusicImpl::play(const std::string& filename) {
     queue.async([filename]() {
-        MusicWorker::instance().setIntro(filename);
+        MusicWorker::instance().play(filename);
     }, WORKER_QOS);
 }
 
-void MusicImpl::setLoop(const std::string& filename) {
-    queue.async([filename]() {
-        MusicWorker::instance().setLoop(filename);
+void MusicImpl::stop() {
+    queue.async([]() {
+        MusicWorker::instance().stop();
     }, WORKER_QOS);
 }
 
@@ -83,18 +81,6 @@ void MusicImpl::resume() {
 void MusicImpl::setVolume(double attemptedVolume) {
     queue.async([attemptedVolume]() {
         MusicWorker::instance().setVolume(attemptedVolume);
-    }, WORKER_QOS);
-}
-
-void MusicImpl::stop() {
-    queue.async([]() {
-        MusicWorker::instance().stop();
-    }, WORKER_QOS);
-}
-
-void MusicImpl::tick() {
-    queue.async([]() {
-        MusicWorker::instance().tick();
     }, WORKER_QOS);
 }
 

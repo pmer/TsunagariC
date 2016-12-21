@@ -181,15 +181,11 @@ bool AreaJSON::processMapProperties(JSONObjectPtr obj) {
 /*
  {
    "name": "Wooded Area"
-   "intro_music": "arrive.oga",
-   "main_music": "wind.oga",
+   "music": "wind.oga",
    "loop": "xy",
    "color_overlay": "255,255,255,127"
  }
 */
-
-    musicIntroSet = false;
-    musicLoopSet = false;
 
     if (!obj->hasString("name")) {
         Log::err(descriptor, "Area must have \"name\" property");
@@ -197,13 +193,8 @@ bool AreaJSON::processMapProperties(JSONObjectPtr obj) {
 
     name = obj->stringAt("name");
 
-    if (obj->hasString("intro_music")) {
-        musicIntro = obj->stringAt("intro_music");
-        musicIntroSet = true;
-    }
-    if (obj->hasString("main_music")) {
-        musicLoop = obj->stringAt("main_music");
-        musicLoopSet = true;
+    if (obj->hasString("music")) {
+        musicPath = obj->stringAt("music");
     }
     if (obj->hasString("loop")) {
         const std::string directions = obj->stringAt("loop");

@@ -25,8 +25,11 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_MUSIC_H
-#define GOSU_MUSIC_H
+#ifndef SRC_AV_GOSU_GOSU_MUSIC_H_
+#define SRC_AV_GOSU_GOSU_MUSIC_H_
+
+#include <memory>
+#include <string>
 
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
@@ -36,14 +39,12 @@ namespace Gosu {
     class Song;
 }
 
-class GosuMusic : public MusicWorker
-{
-public:
+class GosuMusic : public MusicWorker {
+ public:
     GosuMusic();
     ~GosuMusic();
 
-    void setIntro(const std::string& filename);
-    void setLoop(const std::string& filename);
+    void play(std::string filename);
 
     void stop();
 
@@ -53,17 +54,12 @@ public:
 
     void setVolume(double volume);
 
-    void tick();
-
     void garbageCollect();
 
-private:
-    void playIntro();
-    void playLoop();
-
-    std::shared_ptr<Gosu::Song> musicInst, introMusic, loopMusic;
+ private:
+    std::shared_ptr<Gosu::Song> musicInst;
 
     ReaderCache<std::shared_ptr<Gosu::Song>> songs;
 };
 
-#endif
+#endif  // SRC_AV_GOSU_GOSU_MUSIC_H_

@@ -90,11 +90,8 @@ void Area::focus()
         }
     }
 
-    if (musicIntroSet) {
-        Music::instance().setIntro(musicIntro);
-    }
-    if (musicLoopSet) {
-        Music::instance().setLoop(musicLoop);
+    if (musicPath) {
+        Music::instance().play(*musicPath);
     }
 
     if (dataArea) {
@@ -235,7 +232,6 @@ void Area::tick(time_t dt)
     }
 
     Viewport::instance().tick(dt);
-    Music::instance().tick();
 }
 
 void Area::turn()

@@ -49,52 +49,28 @@ static double clientIniVolumeUnapply(double volume) {
 
 
 MusicWorker::MusicWorker()
-    : state(NOT_PLAYING), volume(1.0), pausedCount(0) {}
+    : volume(1.0), paused(0) {}
 
-void MusicWorker::setIntro(const std::string& filename) {
-    if (newIntro == filename) {
-        return;
-    }
-
-    switch (state) {
-    case NOT_PLAYING:
-    case PLAYING_INTRO:
-    case PLAYING_LOOP:
-        state = CHANGED_INTRO;
-    default:
-        break;
-    }
-
-    newIntro = filename;
+void MusicWorker::play(std::string filename) {
+    paused = 0;
+    path = filename;
 }
 
-void MusicWorker::setLoop(const std::string& filename) {
-    if (newLoop == filename) {
-        return;
-    }
-
-    switch (state) {
-    case NOT_PLAYING:
-    case PLAYING_INTRO:
-    case PLAYING_LOOP:
-        state = CHANGED_LOOP;
-    default:
-        break;
-    }
-
-    newLoop = filename;
+void MusicWorker::stop() {
+    paused = 0;
+    path = "";
 }
 
 void MusicWorker::pause() {
-    pausedCount++;
+    paused++;
 }
 
 void MusicWorker::resume() {
-    if (pausedCount <= 0) {
-        Log::err("MusicWorker", "unpausing, but music not paused");
+    if (paused <= 0) {
+        Log::err("MusicWorker", "Unpausing, but music not paused");
         return;
     }
-    pausedCount--;
+    paused--;
 }
 
 double MusicWorker::getVolume() {
@@ -105,30 +81,10 @@ void MusicWorker::setVolume(double attemptedVolume) {
     double newVolume = bound(attemptedVolume, 0.0, 1.0);
     if (attemptedVolume != newVolume) {
         Log::info("MusicWorker",
-            Formatter(
-                "Attempted to set volume to %, setting it to %"
-            ) % attemptedVolume % newVolume
+            Formatter("Attempted to set volume to %, setting it to %")
+                % attemptedVolume % newVolume
         );
     }
 
     volume = clientIniVolumeApply(newVolume);
-}
-
-void MusicWorker::stop() {
-    state = NOT_PLAYING;
-    pausedCount = 0;
-    curIntro = newIntro = "";
-    curLoop = newLoop = "";
-}
-
-void MusicWorker::playIntro() {
-    curIntro = newIntro;
-    state = PLAYING_INTRO;
-    pausedCount = 0;
-}
-
-void MusicWorker::playLoop() {
-    curLoop = newLoop;
-    state = PLAYING_LOOP;
-    pausedCount = 0;
 }

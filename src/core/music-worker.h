@@ -36,8 +36,7 @@ class MusicWorker {
 
     virtual ~MusicWorker() = default;
 
-    virtual void setIntro(const std::string& filepath);
-    virtual void setLoop(const std::string& filepath);
+    virtual void play(std::string path);
 
     virtual void stop();
 
@@ -47,30 +46,15 @@ class MusicWorker {
     double getVolume();
     virtual void setVolume(double volume);
 
-    virtual void tick() = 0;
-
     virtual void garbageCollect() = 0;
 
  protected:
     MusicWorker();
 
-    void playIntro();
-    void playLoop();
-
-    enum MUSIC_STATE
-    {
-        NOT_PLAYING,
-        PLAYING_INTRO,
-        PLAYING_LOOP,
-        CHANGED_INTRO,
-        CHANGED_LOOP
-    } state;
-
     double volume;
-    int pausedCount;
+    int paused;
 
-    std::string curIntro, newIntro;
-    std::string curLoop, newLoop;
+    std::string path;
 };
 
 #endif  // SRC_CORE_MUSIC_WORKER_H_

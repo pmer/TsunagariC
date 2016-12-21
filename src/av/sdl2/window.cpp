@@ -1,9 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** gosu-window.cpp                    **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016      Paul Merrill   **
-***************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** window.cpp                    **
+** Copyright 2016 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,22 +29,13 @@
 #include <chrono>
 #include <thread>
 
+#include "av/sdl2/error.h"
 #include "core/client-conf.h"
 #include "core/log.h"
 #include "core/measure.h"
 #include "core/world.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
-
-
-static void logSdlError(std::string message) {
-    std::string err = SDL_GetError();
-    if (err.size() > 0) {
-        message = message + ": " + err;
-    }
-    Log::err("SDL2Window", message);
-}
-
 
 static SDL2GameWindow globalWindow;
 
@@ -76,7 +66,7 @@ bool SDL2GameWindow::init() {
     {
         //TimeMeasure m("Initializing SDL2");
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
-            logSdlError("SDL_Init");
+            sdlDie("SDL2GameWindow", "SDL_Init");
             return false;
         }
     }
@@ -98,7 +88,7 @@ bool SDL2GameWindow::init() {
                                   width, height, flags);
 
         if (!window) {
-            logSdlError("SDL_CreateWindow");
+            sdlDie("SDL2GameWindow", "SDL_CreateWindow");
             return false;
         }
     }
@@ -111,7 +101,7 @@ bool SDL2GameWindow::init() {
         renderer = SDL_CreateRenderer(window, -1, flags);
 
         if (!renderer) {
-            logSdlError("SDL_CreateRenderer");
+            sdlDie("SDL2GameWindow", "SDL_CreateRenderer");
             return false;
         }
     }

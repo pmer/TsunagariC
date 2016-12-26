@@ -44,7 +44,7 @@
 #endif
 
 #ifdef __APPLE__
-  #include "os/mac.h"
+  #include "os/mac-gui.h"
 #endif
 
 /**

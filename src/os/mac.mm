@@ -1,9 +1,8 @@
-/****************************************
-** Tsunagari Tile Engine               **
-** os/mac.m                            **
-** Copyright 2013      Michael Reiley  **
-** Copyright 2013-2016 Paul Merrill    **
-****************************************/
+/***********************************
+** Tsunagari Tile Engine          **
+** os/mac.mm                      **
+** Copyright 2016 Paul Merrill    **
+***********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,53 +26,65 @@
 
 #ifdef __APPLE__
 
-#import <Foundation/Foundation.h>
-#import <AppKit/AppKit.h>
+#define _DARWIN_USE_64_BIT_INODE
 
+#include <fcntl.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <sys/dir.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#include "core/world.h"
+#include <string>
+#include <vector>
 
-void macSetWorkingDirectory() {
-    UInt8 pathBytes[512];
-    CFBundleRef mainBundle;
-    CFURLRef url;
-    NSString* appPath;
+char dirSeparator = '/';
 
-    /* FIXME: memory leaks? */
-    mainBundle = CFBundleGetMainBundle();
-    url = CFBundleCopyBundleURL(mainBundle);
-    CFURLGetFileSystemRepresentation(url, true, pathBytes, sizeof(pathBytes));
-    appPath = [[NSString alloc] initWithBytes:pathBytes
-                                       length:strlen((char*)pathBytes)+1
-                                     encoding:NSUTF8StringEncoding];
-    [[NSFileManager defaultManager] changeCurrentDirectoryPath:appPath];
-
-    chdir("Contents/Resources");
-
-    [appPath release];
+uint64_t getFileSize(const std::string& path) {
+    struct stat status;
+    if (stat(path.c_str(), &status)) {
+        return SIZE_T_MAX;
+    }
+    return static_cast<uint64_t>(status.st_size);
 }
 
-void macMessageBox(const char* title, const char* msg) {
-    World::instance().setPaused(true);
+bool isDir(const std::string& path) {
+    struct stat status;
+    if (stat(path.c_str(), &status)) {
+        return false;
+    }
+    return S_ISDIR(status.st_mode);
+}
 
-    NSString *nsTitle = [[NSString alloc] initWithCString:title
-                                                 encoding:NSUTF8StringEncoding];
-    NSString *nsMsg = [[NSString alloc] initWithCString:msg
-                                               encoding:NSUTF8StringEncoding];
+std::vector<std::string> listDir(const std::string& path) {
+    DIR* dir = nullptr;
+    struct dirent* entry = nullptr;
+    std::vector<std::string> names;
 
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert addButtonWithTitle:@"OK"];
-    [alert setMessageText:nsTitle];
-    [alert setInformativeText:nsMsg];
-    [alert setAlertStyle:NSAlertStyleCritical];
-    [alert runModal];
+    if ((dir = opendir(path.c_str())) == nullptr) {
+        return std::vector<std::string>();
+    }
 
-    [alert release];
-    [nsTitle release];
-    [nsMsg release];
+    while ((entry = readdir(dir))) {
+        if (entry->d_ino == 0) {
+            // Ignore unlinked files.
+            continue;
+        }
+        if (entry->d_name[0] == '.') {
+            // Ignore hidden files and directories.
+            continue;
+        }
+        if ((entry->d_type & (DT_DIR | DT_REG)) == 0) {
+            // Ignore odd files.
+            continue;
+        }
+        names.emplace_back(entry->d_name, entry->d_namlen);
+    }
 
-    World::instance().setPaused(false);
+    closedir(dir);
+
+    return names;
 }
 
 #endif  // __APPLE__

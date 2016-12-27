@@ -28,6 +28,7 @@
 
 #include <fcntl.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/uio.h>
@@ -91,12 +92,12 @@ class PackReaderImpl : public PackReader {
  public:
     ~PackReaderImpl();
 
-    BlobIndex size();
+    BlobIndex size() const;
 
-    BlobIndex findIndex(const std::string& path);
+    BlobIndex findIndex(const std::string& path) const;
 
-    std::string getBlobPath(BlobIndex index);
-    uint64_t getBlobSize(BlobIndex index);
+    std::string getBlobPath(BlobIndex index) const;
+    uint64_t getBlobSize(BlobIndex index) const;
     void* getBlobData(BlobIndex index);
 
     int fd;
@@ -149,7 +150,7 @@ std::unique_ptr<PackReader> PackReader::fromFile(const std::string& path) {
 
     // Add an extra element to pathOffsets that holds the end position of the
     // last path.
-    reader->pathOffsets.get()[header.blobCount] = header.metadataBlockOffset;
+    reader->pathOffsets.get()[blobCount] = pathsBlockSize;
 
     for (PackReader::BlobIndex i = 0; i < blobCount; i++) {
         uint64_t pathBegin = reader->pathOffsets.get()[i];
@@ -167,11 +168,11 @@ PackReaderImpl::~PackReaderImpl() {
     close(fd);
 }
 
-PackReader::BlobIndex PackReaderImpl::size() {
+PackReader::BlobIndex PackReaderImpl::size() const {
     return header.blobCount;
 }
 
-PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) {
+PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) const {
     auto it = lookups.find(path);
     if (it == lookups.end()) {
         return BLOB_NOT_FOUND;
@@ -180,20 +181,21 @@ PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) {
     }
 }
 
-std::string PackReaderImpl::getBlobPath(PackReader::BlobIndex index) {
+std::string PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const {
     uint64_t begin = pathOffsets.get()[index];
     uint64_t end = pathOffsets.get()[index + 1];
     return std::string(paths.get() + begin, paths.get() + end);
 }
 
-uint64_t PackReaderImpl::getBlobSize(PackReader::BlobIndex index) {
+uint64_t PackReaderImpl::getBlobSize(PackReader::BlobIndex index) const {
     return metadatas.get()[index].uncompressedSize;
 }
 
 void* PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
     uint64_t size = getBlobSize(index);
-    char* data = new char[size];
-    // seek
+    void* data = malloc(size);
+    uint64_t offset = dataOffsets.get()[index];
+    lseek(fd, static_cast<off_t>(offset), SEEK_SET);
     read(fd, data, size);
     return data;
 }

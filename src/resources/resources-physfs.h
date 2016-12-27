@@ -35,8 +35,8 @@ class PhysfsResource : public Resource {
     PhysfsResource(std::unique_ptr<const char[]> data, size_t size);
     ~PhysfsResource() = default;
 
-    const void* data();
-    size_t size();
+    const void* data() const;
+    size_t size() const;
 
  private:
     std::unique_ptr<const char[]> _data;

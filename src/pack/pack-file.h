@@ -43,12 +43,12 @@ class PackReader {
     static std::unique_ptr<PackReader> fromFile(const std::string& path);
     virtual ~PackReader() = default;
 
-    virtual BlobIndex size() = 0;
+    virtual BlobIndex size() const = 0;
 
-    virtual BlobIndex findIndex(const std::string& path) = 0;
+    virtual BlobIndex findIndex(const std::string& path) const = 0;
 
-    virtual std::string getBlobPath(BlobIndex index) = 0;
-    virtual BlobSize getBlobSize(BlobIndex index) = 0;
+    virtual std::string getBlobPath(BlobIndex index) const = 0;
+    virtual BlobSize getBlobSize(BlobIndex index) const = 0;
     virtual void* getBlobData(BlobIndex index) = 0;
 };
 

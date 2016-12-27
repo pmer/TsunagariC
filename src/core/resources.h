@@ -35,10 +35,10 @@ class Resource
 public:
     virtual ~Resource() = default;
 
-    virtual const void* data() = 0;
-    virtual size_t size() = 0;
+    virtual const void* data() const = 0;
+    virtual size_t size() const = 0;
 
-    const std::string asString();
+    std::string asString() const;
 
 protected:
     Resource() = default;

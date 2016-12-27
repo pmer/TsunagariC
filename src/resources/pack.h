@@ -1,9 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources.cpp                 **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** pack.h                      **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,9 +24,52 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/resources.h"
+#ifndef SRC_RESOURCES_PACK_H_
+#define SRC_RESOURCES_PACK_H_
 
-std::string Resource::asString() const
-{
-    return std::string((char*)data(), size());
-}
+#include <stdlib.h>
+
+#include <memory>
+#include <mutex>
+
+#include "core/resources.h"
+#include "pack/pack-file.h"
+
+struct Free {
+    void operator() (void* ptr) {
+        free(ptr);
+    }
+};
+
+class PackResource : public Resource {
+ public:
+    PackResource(void* data, size_t size);
+    ~PackResource() = default;
+
+    const void* data() const;
+    size_t size() const;
+
+ private:
+    std::unique_ptr<void, Free> _data;
+    size_t _size;
+};
+
+class PackResources : public Resources {
+ public:
+    PackResources();
+    ~PackResources() = default;
+
+    void init();
+
+    std::unique_ptr<Resource> load(const std::string& path);
+
+ private:
+    PackResources(const PackResources&) = delete;
+    PackResources& operator=(const PackResources&) = delete;
+
+    bool initialized;
+    std::mutex mutex;
+    std::unique_ptr<PackReader> pack;
+};
+
+#endif  // SRC_RESOURCES_PACK_H_

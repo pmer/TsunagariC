@@ -41,11 +41,11 @@
 PhysfsResource::PhysfsResource(std::unique_ptr<const char[]> data, size_t size)
     : _data(std::move(data)), _size(size) {}
 
-const void* PhysfsResource::data() {
+const void* PhysfsResource::data() const {
     return _data.get();
 }
 
-size_t PhysfsResource::size() {
+size_t PhysfsResource::size() const {
     return _size;
 }
 

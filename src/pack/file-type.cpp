@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** pack-file.h                 **
+** file-type.cpp               **
 ** Copyright 2016 Paul Merrill **
 ********************************/
 
@@ -24,42 +24,31 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_PACK_FILE_H_
-#define SRC_PACK_PACK_FILE_H_
+#include "pack/file-type.h"
 
-#include <stdint.h>
-
-#include <memory>
 #include <string>
 
-typedef uint64_t BlobSize;
-
-class PackReader {
- public:
-    typedef uint64_t FileIndex;
-
-    static constexpr FileIndex BLOB_NOT_FOUND = UINT64_MAX;
-
-    static std::unique_ptr<PackReader> fromFile(const std::string& path);
-    virtual ~PackReader() = default;
-
-    virtual FileIndex size() = 0;
-
-    virtual FileIndex findIndex(const std::string& path) = 0;
-
-    virtual std::string getBlobPath(FileIndex index) = 0;
-    virtual BlobSize getBlobSize(FileIndex index) = 0;
-    virtual void* getBlobData(FileIndex index) = 0;
+static const std::string textExtensions[] = {
+        ".json"
 };
 
-class PackWriter {
- public:
-    static std::unique_ptr<PackWriter> make();
-    virtual ~PackWriter() = default;
-
-    virtual bool writeToFile(const std::string& path) = 0;
-
-    virtual void addBlob(std::string path, BlobSize size, const void* data) = 0;
+static const std::string mediaExtensions[] = {
+        ".oga",
+        ".png"
 };
 
-#endif  // SRC_PACK_PACK_FILE_H_
+FileType determineFileType(const std::string& path) {
+    auto dot = path.rfind('.');
+    std::string extension = path.substr(dot);
+    for (auto& textExtension : textExtensions) {
+        if (extension == textExtension) {
+            return FT_TEXT;
+        }
+    }
+    for (auto& mediaExtension : mediaExtensions) {
+        if (extension == mediaExtension) {
+            return FT_MEDIA;
+        }
+    }
+    return FT_UNKNOWN;
+}

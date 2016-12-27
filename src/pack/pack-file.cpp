@@ -1,8 +1,8 @@
-/***********************************
-** Tsunagari Tile Engine          **
-** pack-file.cpp                  **
-** Copyright 2016 Paul Merrill    **
-***********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** pack-file.cpp               **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,6 +36,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include "pack/file-type.h"
 
 //                                       "T   s    u    n    a   g    a   r"
 static constexpr uint8_t PACK_MAGIC[8] = {84, 115, 117, 110, 97, 103, 97, 114};
@@ -73,7 +75,15 @@ struct Blob {
 };
 
 static bool operator<(const Blob& a, const Blob& b) {
-    return a.size < b.size;
+    FileType typeA = determineFileType(a.path);
+    FileType typeB = determineFileType(b.path);
+    if (typeA < typeB) {
+        return true;
+    } else if (typeA > typeB) {
+        return false;
+    } else {
+        return a.path < b.path;
+    }
 }
 
 

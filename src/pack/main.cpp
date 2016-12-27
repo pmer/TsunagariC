@@ -92,7 +92,7 @@ static bool listArchive(const std::string& archivePath) {
     std::unique_ptr<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
-        for (PackReader::FileIndex i = 0; i < pack->size(); i++) {
+        for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
             printf("%s %llu\n", blobPath.c_str(), blobSize);

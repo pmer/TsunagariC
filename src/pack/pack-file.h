@@ -36,18 +36,20 @@ typedef uint64_t BlobSize;
 
 class PackReader {
  public:
-    typedef uint32_t FileIndex;
+    typedef uint64_t FileIndex;
 
-    static constexpr FileIndex BLOB_DOES_NOT_EXIST = UINT32_MAX;
+    static constexpr FileIndex BLOB_NOT_FOUND = UINT64_MAX;
 
     static std::unique_ptr<PackReader> fromFile(const std::string& path);
     virtual ~PackReader() = default;
 
     virtual FileIndex size() = 0;
 
-    virtual std::string getPath(FileIndex index) = 0;
-    virtual BlobSize getSize(FileIndex index) = 0;
-    virtual const void* getData(FileIndex index) = 0;
+    virtual FileIndex findIndex(const std::string& path) = 0;
+
+    virtual std::string getBlobPath(FileIndex index) = 0;
+    virtual BlobSize getBlobSize(FileIndex index) = 0;
+    virtual void* getBlobData(FileIndex index) = 0;
 };
 
 class PackWriter {

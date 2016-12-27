@@ -1,8 +1,8 @@
-/***********************************
-** Tsunagari Tile Engine          **
-** main.cpp                       **
-** Copyright 2016 Paul Merrill    **
-***********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** main.cpp                    **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,16 +26,20 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "os/os.h"
 #include "pack/pack-file.h"
 
-static void usage(const char* argv0) {
-    printf("%s: <output-archive> [input-file]...\n", argv0);
+const char* exe = nullptr;
+
+static void usage() {
+    fprintf(stderr, "usage: %s create <output-archive> [input-file]...\n", exe);
+    fprintf(stderr, "       %s list <archive>\n", exe);
 }
 
 
-void slurp(const std::string& path, uint64_t* size, void** data) {
+static void slurp(const std::string& path, uint64_t* size, void** data) {
     *size = getFileSize(path);
     *data = new char*[*size];
     FILE* f = fopen(path.c_str(), "r");
@@ -69,28 +73,72 @@ static void addPath(PackWriter* pack, std::string path) {
     }
 }
 
+template<typename Iterator>
+static bool createArchive(const std::string& archivePath,
+                          Iterator inputsBegin,
+                          Iterator inputsEnd) {
+    std::unique_ptr<PackWriter> pack = PackWriter::make();
+
+    for (; inputsBegin != inputsEnd; ++inputsBegin) {
+        const std::string& inputPath = *inputsBegin;
+        addPath(pack.get(), inputPath);
+    }
+
+    printf("Writing to %s\n", archivePath.c_str());
+    return pack->writeToFile(archivePath);
+}
+
+static bool listArchive(const std::string& archivePath) {
+    std::unique_ptr<PackReader> pack = PackReader::fromFile(archivePath);
+
+    if (pack) {
+        for (PackReader::FileIndex i = 0; i < pack->size(); i++) {
+            std::string blobPath = pack->getBlobPath(i);
+            uint64_t blobSize = pack->getBlobSize(i);
+            printf("%s %llu\n", blobPath.c_str(), blobSize);
+        }
+        return true;
+    } else {
+        fprintf(stderr, "%s: %s: not found\n", exe, archivePath.c_str());
+        return false;
+    }
+}
+
 int main(int argc, char* argv[]) {
+    exe = strrchr(argv[0], dirSeparator);
+    if (exe) {
+        exe += 1;
+    } else {
+        exe = argv[0];
+    }
+
     if (argc == 1) {
-        usage(argv[0]);
+        usage();
         return 0;
     }
     if (argc == 2) {
-        usage(argv[0]);
+        usage();
         return 1;
     }
 
-    std::unique_ptr<PackWriter> pack = PackWriter::make();
+    std::string command = argv[1];
+    std::vector<std::string> args;
 
     for (int i = 2; i < argc; i++) {
-        addPath(pack.get(), argv[i]);
+        args.push_back(argv[i]);
     }
 
-    std::string archive = argv[1];
+    if (command == "create") {
+        return createArchive(args[0], args.begin() + 1, args.end()) ? 0 : 1;
+    } else if (command == "list") {
+        if (argc != 3) {
+            usage();
+            return 1;
+        }
 
-    printf("Writing to %s\n", archive.c_str());
-    if (pack->writeToFile(argv[1])) {
-        return 0;
+        return listArchive(args[0]) ? 0 : 1;
     } else {
+        usage();
         return 1;
     }
 }

@@ -28,5 +28,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated")
 
-include(${CMAKE_CURRENT_LIST_DIR}/external/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/deps/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt)

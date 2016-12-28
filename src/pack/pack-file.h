@@ -32,11 +32,10 @@
 #include <memory>
 #include <string>
 
-typedef uint64_t BlobSize;
-
 class PackReader {
  public:
     typedef uint64_t BlobIndex;
+    typedef uint64_t BlobSize;
 
     static constexpr BlobIndex BLOB_NOT_FOUND = UINT64_MAX;
 
@@ -54,6 +53,8 @@ class PackReader {
 
 class PackWriter {
  public:
+    typedef uint64_t BlobSize;
+
     static std::unique_ptr<PackWriter> make();
     virtual ~PackWriter() = default;
 

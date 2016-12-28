@@ -65,14 +65,14 @@ enum BlobCompressionType {
 };
 
 struct BlobMetadata {
-    BlobSize uncompressedSize;
-    BlobSize compressedSize;
+    PackReader::BlobSize uncompressedSize;
+    PackReader::BlobSize compressedSize;
     BlobCompressionType compressionType;
 };
 
 struct Blob {
     std::string path;
-    BlobSize size;
+    PackWriter::BlobSize size;
     const void* data;
 };
 

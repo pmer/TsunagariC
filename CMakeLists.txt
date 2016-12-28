@@ -8,7 +8,6 @@ set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES}
     ${GOSU_LIBRARIES}
     ${GOSU_DEPENDENCIES}
     ${SDL2_LIBRARIES}
-    physfs
 )
 
 include_directories(

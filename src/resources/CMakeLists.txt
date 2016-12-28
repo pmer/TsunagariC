@@ -1,4 +1,3 @@
 set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/pack.cpp
-    #${CMAKE_CURRENT_LIST_DIR}/resources-physfs.cpp
 )

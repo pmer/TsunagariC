@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** window.h                      **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** window.h                    **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy

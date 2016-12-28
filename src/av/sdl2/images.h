@@ -47,7 +47,7 @@ class SDL2TiledImage: public TiledImage {
  public:
     size_t size() const;
 
-    const std::shared_ptr<Image>& operator[](size_t n) const;
+    std::shared_ptr<Image> operator[](size_t n) const;
 };
 
 

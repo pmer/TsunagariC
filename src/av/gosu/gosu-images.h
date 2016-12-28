@@ -64,7 +64,7 @@ public:
 
     size_t size() const;
 
-    const std::shared_ptr<Image>& operator[](size_t n) const;
+    std::shared_ptr<Image> operator[](size_t n) const;
 
 private:
     std::vector<std::shared_ptr<Image>> images;

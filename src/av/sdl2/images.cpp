@@ -43,7 +43,7 @@ unsigned SDL2Image::height() const { return 16; }
 
 size_t SDL2TiledImage::size() const { return 500; }
 
-const std::shared_ptr<Image>& SDL2TiledImage::operator[](size_t n) const {
+std::shared_ptr<Image> SDL2TiledImage::operator[](size_t n) const {
     std::shared_ptr<Image>* image = new std::shared_ptr<Image>(new SDL2Image);
     return *image;
 }

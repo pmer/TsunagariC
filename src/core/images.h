@@ -59,7 +59,7 @@ public:
 
     virtual size_t size() const = 0;
 
-    virtual const std::shared_ptr<Image>& operator[](size_t n) const = 0;
+    virtual std::shared_ptr<Image> operator[](size_t n) const = 0;
 
 protected:
     TiledImage() = default;

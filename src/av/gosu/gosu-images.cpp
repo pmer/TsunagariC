@@ -96,7 +96,7 @@ size_t GosuTiledImage::size() const
     return images.size();
 }
 
-const std::shared_ptr<Image>& GosuTiledImage::operator[](size_t n) const
+std::shared_ptr<Image> GosuTiledImage::operator[](size_t n) const
 {
     return images[n];
 }

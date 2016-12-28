@@ -318,8 +318,8 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
 
     // Initialize "vanilla" tile type array.
     for (size_t i = 0; i < img->size(); i++) {
-        auto& tileImg = (*img.get())[i];
-        TileType* type = new TileType(tileImg);
+        auto tileImg = (*img.get())[i];
+        TileType* type = new TileType(std::move(tileImg));
         set->add(type);
         gids.push_back(type);
     }

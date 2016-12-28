@@ -34,5 +34,3 @@ TsunagariC is released under the MIT/Expat license.
 Requirements:
 NAME        LICENSE     LINK
 libgosu     (MIT)       http://github.com/jlnr/gosu/
-PhysicsFS   (ZLIB)      http://icculus.org/physfs/
-

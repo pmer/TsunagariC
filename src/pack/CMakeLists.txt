@@ -1,4 +1,4 @@
-set(PACK_EXE_NAME pack)
+set(PACK_EXE_NAME pack-tool)
 
 set(PACK_SOURCES ${PACK_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/file-type.cpp

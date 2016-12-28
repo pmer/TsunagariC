@@ -62,6 +62,14 @@ GosuMusic::~GosuMusic() {
 }
 
 void GosuMusic::play(std::string filepath) {
+    if (path == filepath) {
+        if (musicInst->paused()) {
+            paused = 0;
+            musicInst->play(true);
+        }
+        return;
+    }
+
     MusicWorker::play(std::move(filepath));
     TimeMeasure m("Playing " + path);
     if (musicInst && musicInst->playing()) {

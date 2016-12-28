@@ -34,6 +34,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <string>
 #include <unordered_map>
 #include <vector>

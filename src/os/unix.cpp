@@ -1,8 +1,8 @@
-/***********************************
-** Tsunagari Tile Engine          **
-** os/mac.mm                      **
-** Copyright 2016 Paul Merrill    **
-***********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** os/unix.cpp                 **
+** Copyright 2016 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,8 +24,6 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifdef __APPLE__
-
 #define _DARWIN_USE_64_BIT_INODE
 
 #include <fcntl.h>
@@ -44,7 +42,7 @@ char dirSeparator = '/';
 uint64_t getFileSize(const std::string& path) {
     struct stat status;
     if (stat(path.c_str(), &status)) {
-        return SIZE_T_MAX;
+        return SIZE_MAX;
     }
     return static_cast<uint64_t>(status.st_size);
 }
@@ -79,12 +77,10 @@ std::vector<std::string> listDir(const std::string& path) {
             // Ignore odd files.
             continue;
         }
-        names.emplace_back(entry->d_name, entry->d_namlen);
+        names.emplace_back(entry->d_name);
     }
 
     closedir(dir);
 
     return names;
 }
-
-#endif  // __APPLE__

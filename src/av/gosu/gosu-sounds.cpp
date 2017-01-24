@@ -91,7 +91,7 @@ void GosuSoundInstance::volume(double attemptedVolume)
         );
     }
     assert(0 <= conf.soundVolume && conf.soundVolume <= 100);
-    instance.changeVolume(volume * conf.soundVolume / 100.0);
+    instance.change_volume(volume * conf.soundVolume / 100.0);
 }
 
 void GosuSoundInstance::pan(double attemptedPan)
@@ -104,7 +104,7 @@ void GosuSoundInstance::pan(double attemptedPan)
             ) % attemptedPan % pan
         );
     }
-    instance.changePan(pan);
+    instance.change_pan(pan);
 }
 
 void GosuSoundInstance::speed(double attemptedSpeed)
@@ -118,7 +118,7 @@ void GosuSoundInstance::speed(double attemptedSpeed)
             ) % attemptedSpeed % speed
         );
     }
-    instance.changeSpeed(speed);
+    instance.change_speed(speed);
 }
 
 
@@ -132,7 +132,7 @@ static std::shared_ptr<Gosu::Sample> genSample(const std::string& path)
     GosuCBuffer buffer(r->data(), r->size());
 
     TimeMeasure m("Constructed " + path + " as sample");
-    return std::make_shared<Gosu::Sample>(buffer.frontReader());
+    return std::make_shared<Gosu::Sample>(buffer.front_reader());
 }
 
 GosuSounds::GosuSounds()

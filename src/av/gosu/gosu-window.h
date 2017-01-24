@@ -52,16 +52,16 @@ public:
     void setCaption(const std::string& caption);
 
     //! Gosu Callback
-    void buttonDown(const Gosu::Button btn);
+    void button_down(const Gosu::Button btn);
 
     //! Gosu Callback
-    void buttonUp(const Gosu::Button btn);
+    void button_up(const Gosu::Button btn);
 
     //! Gosu Callback
     void draw();
 
     //! Gosu Callback
-    bool needsRedraw() const;
+    bool needs_redraw() const;
 
     //! Gosu Callback
     void update();

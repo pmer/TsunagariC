@@ -50,7 +50,7 @@ static std::shared_ptr<Gosu::Song> genSong(const std::string& name) {
 
     TimeMeasure m("Constructed " + name + " as music");
     return std::shared_ptr<Gosu::Song>(
-        new Gosu::Song(buffer.frontReader())
+        new Gosu::Song(buffer.front_reader())
     );
 }
 
@@ -78,7 +78,7 @@ void GosuMusic::play(std::string filepath) {
     musicInst = path.size() ? songs.lifetimeRequest(path)
                             : std::shared_ptr<Gosu::Song>();
     musicInst->play(true);
-    musicInst->changeVolume(volume);
+    musicInst->change_volume(volume);
 }
 
 bool GosuMusic::playing() {
@@ -110,7 +110,7 @@ void GosuMusic::resume() {
 void GosuMusic::setVolume(double level) {
     MusicWorker::setVolume(level);
     if (musicInst) {
-        musicInst->changeVolume(volume);
+        musicInst->change_volume(volume);
     }
 }
 

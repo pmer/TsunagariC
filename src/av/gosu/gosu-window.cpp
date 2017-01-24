@@ -65,8 +65,8 @@ namespace Gosu {
      * Call this function before creating any Gosu::Image.
      */
     void enableUndocumentedRetrofication() {
-        extern bool undocumentedRetrofication;
-        undocumentedRetrofication = true;
+        extern bool undocumented_retrofication;
+        undocumented_retrofication = true;
     }
 }
 
@@ -75,9 +75,9 @@ GosuGameWindow::GosuGameWindow()
     // but this breaks our aspect ratio-correcting letterbox.
     // Ergo we just make a window the size of the screen.
     : Gosu::Window(
-        conf.fullscreen ? Gosu::screenWidth() :
+        conf.fullscreen ? Gosu::screen_width() :
                           (unsigned)conf.windowSize.x,
-        conf.fullscreen ? Gosu::screenHeight() :
+        conf.fullscreen ? Gosu::screen_height() :
                           (unsigned)conf.windowSize.y,
         conf.fullscreen
       ),
@@ -86,18 +86,18 @@ GosuGameWindow::GosuGameWindow()
 {
     Gosu::enableUndocumentedRetrofication();
 
-    gosuToTsunagariKey.resize(Gosu::ButtonName::numButtons);
+    gosuToTsunagariKey.resize(Gosu::ButtonName::NUM_BUTTONS);
     auto& keys = gosuToTsunagariKey;
-    keys[Gosu::ButtonName::kbEscape] = KBEscape;
-    keys[Gosu::ButtonName::kbLeftShift] = KBLeftShift;
-    keys[Gosu::ButtonName::kbRightShift] = KBRightShift;
-    keys[Gosu::ButtonName::kbLeftControl] = KBLeftControl;
-    keys[Gosu::ButtonName::kbRightControl] = KBRightControl;
-    keys[Gosu::ButtonName::kbSpace] = KBSpace;
-    keys[Gosu::ButtonName::kbLeft] = KBLeftArrow;
-    keys[Gosu::ButtonName::kbRight] = KBRightArrow;
-    keys[Gosu::ButtonName::kbUp] = KBUpArrow;
-    keys[Gosu::ButtonName::kbDown] = KBDownArrow;
+    keys[Gosu::ButtonName::KB_ESCAPE] = KBEscape;
+    keys[Gosu::ButtonName::KB_LEFT_SHIFT] = KBLeftShift;
+    keys[Gosu::ButtonName::KB_RIGHT_SHIFT] = KBRightShift;
+    keys[Gosu::ButtonName::KB_LEFT_CONTROL] = KBLeftControl;
+    keys[Gosu::ButtonName::KB_RIGHT_CONTROL] = KBRightControl;
+    keys[Gosu::ButtonName::KB_SPACE] = KBSpace;
+    keys[Gosu::ButtonName::KB_LEFT] = KBLeftArrow;
+    keys[Gosu::ButtonName::KB_RIGHT] = KBRightArrow;
+    keys[Gosu::ButtonName::KB_UP] = KBUpArrow;
+    keys[Gosu::ButtonName::KB_DOWN] = KBDownArrow;
 }
 
 unsigned GosuGameWindow::width() const
@@ -112,10 +112,10 @@ unsigned GosuGameWindow::height() const
 
 void GosuGameWindow::setCaption(const std::string& caption)
 {
-    Gosu::Window::setCaption(Gosu::widen(caption));
+    Gosu::Window::set_caption(caption);
 }
 
-void GosuGameWindow::buttonDown(const Gosu::Button btn)
+void GosuGameWindow::button_down(const Gosu::Button btn)
 {
     now = this->time();
     if (keystates.find(btn) == keystates.end()) {
@@ -134,7 +134,7 @@ void GosuGameWindow::buttonDown(const Gosu::Button btn)
     }
 }
 
-void GosuGameWindow::buttonUp(const Gosu::Button btn)
+void GosuGameWindow::button_up(const Gosu::Button btn)
 {
     keystates.erase(btn);
 
@@ -149,7 +149,7 @@ void GosuGameWindow::draw()
     World::instance().draw();
 }
 
-bool GosuGameWindow::needsRedraw() const
+bool GosuGameWindow::needs_redraw() const
 {
     return World::instance().needsRedraw();
 }
@@ -179,7 +179,7 @@ void GosuGameWindow::drawRect(double x1, double x2, double y1, double y2,
 {
     Gosu::Color c(argb);
     double top = std::numeric_limits<double>::max();
-    graphics().drawQuad(
+    graphics().draw_quad(
         x1, y1, c,
         x2, y1, c,
         x2, y2, c,
@@ -190,17 +190,17 @@ void GosuGameWindow::drawRect(double x1, double x2, double y1, double y2,
 
 void GosuGameWindow::scale(double x, double y)
 {
-    graphics().pushTransform(Gosu::scale(x, y));
+    graphics().push_transform(Gosu::scale(x, y));
 }
 
 void GosuGameWindow::translate(double x, double y)
 {
-    graphics().pushTransform(Gosu::translate(x, y));
+    graphics().push_transform(Gosu::translate(x, y));
 }
 
 void GosuGameWindow::clip(double x, double y, double width, double height)
 {
-    graphics().beginClipping(x, y, width, height);
+    graphics().begin_clipping(x, y, width, height);
 }
 
 void GosuGameWindow::close()

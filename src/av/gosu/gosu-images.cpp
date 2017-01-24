@@ -70,9 +70,9 @@ void GosuImage::drawSubrect(double dstX, double dstY, double z,
          double srcW, double srcH)
 {
     static Gosu::Graphics& g = graphics();
-    g.beginClipping(dstX + srcX, dstY + srcY, srcW, srcH);
+    g.begin_clipping(dstX + srcX, dstY + srcY, srcW, srcH);
     draw(dstX, dstY, z);
-    g.endClipping();
+    g.end_clipping();
 }
 
 unsigned GosuImage::width() const
@@ -114,12 +114,12 @@ static std::shared_ptr<Image> genImage(const std::string& path)
 
     {
         TimeMeasure m("Bitmapped " + path);
-        Gosu::loadImageFile(bitmap, buffer.frontReader());
+        Gosu::load_image_file(bitmap, buffer.front_reader());
     }
 
     TimeMeasure m("Constructed " + path + " as image");
     return std::shared_ptr<Image>(
-        new GosuImage(Gosu::Image(bitmap, Gosu::ifTileable))
+        new GosuImage(Gosu::Image(bitmap, Gosu::IF_TILEABLE))
     );
 }
 
@@ -136,7 +136,7 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
 
     {
         TimeMeasure m("Bitmapped " + path);
-        Gosu::loadImageFile(bitmap, buffer.frontReader());
+        Gosu::load_image_file(bitmap, buffer.front_reader());
     }
 
     TimeMeasure m("Constructed " + path + " as tiles");
@@ -146,7 +146,7 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
             images.emplace_back(std::shared_ptr<Image>(
                 new GosuImage(
                     Gosu::Image(
-                        bitmap, x, y, tileW, tileH, Gosu::ifTileable
+                        bitmap, x, y, tileW, tileH, Gosu::IF_TILEABLE
                     )
                 )
             ));

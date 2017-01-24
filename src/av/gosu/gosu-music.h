@@ -57,7 +57,7 @@ class GosuMusic : public MusicWorker {
     void garbageCollect();
 
  private:
-    std::shared_ptr<MixMusic> musicInst;
+    std::shared_ptr<Gosu::Song> musicInst;
 
     ReaderCache<std::shared_ptr<Gosu::Song>> songs;
 };

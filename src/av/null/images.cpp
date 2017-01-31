@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** images.cpp                  **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** images.cpp                       **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,11 +32,10 @@
 
 class NullImage : public Image {
  public:
+    NullImage() : Image(0, 0) {}
+
     void draw(double, double, double) {}
     void drawSubrect(double, double, double, double, double, double, double) {}
-
-    unsigned width() const { return 0; }
-    unsigned height() const { return 0; }
 };
 
 

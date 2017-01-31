@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** images.cpp                  **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** images.cpp                       **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,13 +33,11 @@ Images& Images::instance() {
 }
 
 
+SDL2Image::SDL2Image() : Image(16, 16) {}
 void SDL2Image::draw(double dstX, double dstY, double z) {}
 void SDL2Image::drawSubrect(double dstX, double dstY, double z,
                  double srcX, double srcY,
                  double srcW, double srcH) {}
-
-unsigned SDL2Image::width() const { return 16; }
-unsigned SDL2Image::height() const { return 16; }
 
 size_t SDL2TiledImage::size() const { return 500; }
 

@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** gosu-images.h                      **
-** Copyright 2011-2015 PariahSoft LLC **
-** Copyright 2016      Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_IMAGES_H
-#define GOSU_IMAGES_H
+#ifndef SRC_AV_GOSU_IMAGES_H_
+#define SRC_AV_GOSU_IMAGES_H_
 
 #include <memory>
 #include <vector>
@@ -37,9 +37,8 @@
 #include "cache/readercache.h"
 #include "core/images.h"
 
-class GosuImage : public Image
-{
-public:
+class GosuImage : public Image {
+ public:
     explicit GosuImage(Gosu::Image&& image);
     ~GosuImage() = default;
 
@@ -48,17 +47,13 @@ public:
                      double srcX, double srcY,
                      double srcW, double srcH);
 
-    unsigned width() const;
-    unsigned height() const;
-
-private:
+ private:
     Gosu::Image image;
 };
 
 
-class GosuTiledImage: public TiledImage
-{
-public:
+class GosuTiledImage: public TiledImage {
+ public:
     explicit GosuTiledImage(std::vector<std::shared_ptr<Image>>&& images);
     ~GosuTiledImage() = default;
 
@@ -66,25 +61,24 @@ public:
 
     std::shared_ptr<Image> operator[](size_t n) const;
 
-private:
+ private:
     std::vector<std::shared_ptr<Image>> images;
 };
 
 
-class GosuImages : public Images
-{
-public:
+class GosuImages : public Images {
+ public:
     GosuImages();
     ~GosuImages() = default;
 
     std::shared_ptr<Image> load(const std::string& path);
 
     std::shared_ptr<TiledImage> loadTiles(const std::string& path,
-        unsigned tileW, unsigned tileH);
+                                          unsigned tileW, unsigned tileH);
 
     void garbageCollect();
 
-private:
+ private:
     GosuImages(const GosuImages&) = delete;
     GosuImages& operator=(const GosuImages&) = delete;
 

@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** gosu-images.cpp                    **
-** Copyright 2011-2015 PariahSoft LLC **
-** Copyright 2015-2016 Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -41,14 +41,12 @@
 #ifdef BACKEND_GOSU
 static GosuImages globalImages;
 
-Images& Images::instance()
-{
+Images& Images::instance() {
     return globalImages;
 }
 #endif
 
-static Gosu::Graphics& graphics()
-{
+static Gosu::Graphics& graphics() {
     static GameWindow& window = GameWindow::instance();
     static GosuGameWindow& gosu = (GosuGameWindow&)window;
     return gosu.graphics();
@@ -56,54 +54,36 @@ static Gosu::Graphics& graphics()
 
 
 GosuImage::GosuImage(Gosu::Image&& image)
-    : image(std::move(image))
-{
-}
+        : Image(image.width(), image.height()),
+          image(std::move(image)) {}
 
-void GosuImage::draw(double dstX, double dstY, double z)
-{
+void GosuImage::draw(double dstX, double dstY, double z) {
     image.draw(dstX, dstY, z);
 }
 
 void GosuImage::drawSubrect(double dstX, double dstY, double z,
-         double srcX, double srcY,
-         double srcW, double srcH)
-{
+                            double srcX, double srcY,
+                            double srcW, double srcH) {
     static Gosu::Graphics& g = graphics();
     g.begin_clipping(dstX + srcX, dstY + srcY, srcW, srcH);
     draw(dstX, dstY, z);
     g.end_clipping();
 }
 
-unsigned GosuImage::width() const
-{
-    return image.width();
-}
-
-unsigned GosuImage::height() const
-{
-    return image.height();
-}
-
 
 GosuTiledImage::GosuTiledImage(std::vector<std::shared_ptr<Image>>&& images)
-    : images(std::move(images))
-{
-}
+        : images(std::move(images)) {}
 
-size_t GosuTiledImage::size() const
-{
+size_t GosuTiledImage::size() const {
     return images.size();
 }
 
-std::shared_ptr<Image> GosuTiledImage::operator[](size_t n) const
-{
+std::shared_ptr<Image> GosuTiledImage::operator[](size_t n) const {
     return images[n];
 }
 
 
-static std::shared_ptr<Image> genImage(const std::string& path)
-{
+static std::shared_ptr<Image> genImage(const std::string& path) {
     std::unique_ptr<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
@@ -119,13 +99,12 @@ static std::shared_ptr<Image> genImage(const std::string& path)
 
     TimeMeasure m("Constructed " + path + " as image");
     return std::shared_ptr<Image>(
-        new GosuImage(Gosu::Image(bitmap, Gosu::IF_TILEABLE))
+            new GosuImage(Gosu::Image(bitmap, Gosu::IF_TILEABLE))
     );
 }
 
 static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
-    unsigned tileW, unsigned tileH)
-{
+                                                 unsigned tileW, unsigned tileH) {
     std::unique_ptr<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
@@ -144,11 +123,9 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
     for (unsigned y = 0; y < bitmap.height(); y += tileH) {
         for (unsigned x = 0; x < bitmap.width(); x += tileW) {
             images.emplace_back(std::shared_ptr<Image>(
-                new GosuImage(
-                    Gosu::Image(
-                        bitmap, x, y, tileW, tileH, Gosu::IF_TILEABLE
+                    new GosuImage(
+                            Gosu::Image(bitmap, x, y, tileW, tileH, Gosu::IF_TILEABLE)
                     )
-                )
             ));
         }
     }
@@ -156,19 +133,14 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
 }
 
 
-GosuImages::GosuImages()
-    : images(genImage)
-{
-}
+GosuImages::GosuImages() : images(genImage) {}
 
-std::shared_ptr<Image> GosuImages::load(const std::string& path)
-{
+std::shared_ptr<Image> GosuImages::load(const std::string& path) {
     return images.lifetimeRequest(path);
 }
 
 std::shared_ptr<TiledImage> GosuImages::loadTiles(const std::string& path,
-    unsigned tileW, unsigned tileH)
-{
+                                                  unsigned tileW, unsigned tileH) {
     auto tiledImage = tiledImages.lifetimeRequest(path);
     if (!tiledImage) {
         tiledImage = genTiledImage(path, tileW, tileH);
@@ -177,8 +149,7 @@ std::shared_ptr<TiledImage> GosuImages::loadTiles(const std::string& path,
     return tiledImage;
 }
 
-void GosuImages::garbageCollect()
-{
+void GosuImages::garbageCollect() {
     images.garbageCollect();
     tiledImages.garbageCollect();
 }

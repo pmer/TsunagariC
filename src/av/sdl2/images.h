@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** images.h                    **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** images.h                         **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,13 +33,11 @@
 
 class SDL2Image : public Image {
  public:
+    SDL2Image();
     void draw(double dstX, double dstY, double z);
     void drawSubrect(double dstX, double dstY, double z,
                      double srcX, double srcY,
                      double srcW, double srcH);
-
-    unsigned width() const;
-    unsigned height() const;
 };
 
 

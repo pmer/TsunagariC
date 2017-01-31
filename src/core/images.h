@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** images.h                           **
-** Copyright 2011-2015 PariahSoft LLC **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -24,55 +25,55 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef IMAGES_H
-#define IMAGES_H
+#ifndef SRC_CORE_IMAGES_H_
+#define SRC_CORE_IMAGES_H_
 
 #include <memory>
 #include <string>
 
-class Image
-{
-public:
+class Image {
+ public:
     virtual ~Image() = default;
 
     virtual void draw(double dstX, double dstY, double z) = 0;
     virtual void drawSubrect(double dstX, double dstY, double z,
-                     double srcX, double srcY,
-                     double srcW, double srcH) = 0;
+                             double srcX, double srcY,
+                             double srcW, double srcH) = 0;
 
-    virtual unsigned width() const = 0;
-    virtual unsigned height() const = 0;
+    unsigned width() const;
+    unsigned height() const;
 
-protected:
-    Image() = default;
+ protected:
+    Image(unsigned width, unsigned height);
 
-private:
+    unsigned _width;
+    unsigned _height;
+
+ private:
     Image(const Image&) = delete;
     Image& operator=(const Image&) = delete;
 };
 
 
-class TiledImage
-{
-public:
+class TiledImage {
+ public:
     virtual ~TiledImage() = default;
 
     virtual size_t size() const = 0;
 
     virtual std::shared_ptr<Image> operator[](size_t n) const = 0;
 
-protected:
+ protected:
     TiledImage() = default;
 
-private:
+ private:
     TiledImage(const TiledImage&) = delete;
     TiledImage& operator=(const TiledImage&) = delete;
 };
 
 
-class Images
-{
-public:
+class Images {
+ public:
     //! Acquire the global Images object.
     static Images& instance();
 
@@ -84,15 +85,15 @@ public:
     //! Load an image of tiles from the file at the given path. Each tile
     //! with have width and heigh as specified.
     virtual std::shared_ptr<TiledImage> loadTiles(const std::string& path,
-        unsigned tileW, unsigned tileH) = 0;
+                                                  unsigned tileW, unsigned tileH) = 0;
 
     //! Free images not recently used.
     virtual void garbageCollect() = 0;
 
-protected:
+ protected:
     Images() = default;
 
-private:
+ private:
     Images(const Images&) = delete;
     Images& operator=(const Images&) = delete;
 };

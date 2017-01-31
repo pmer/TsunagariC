@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** images.cpp                         **
-** Copyright 2011-2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,6 +27,13 @@
 
 #include "core/images.h"
 
-//Image::~Image() { }
-//TiledImage::~TiledImage() { }
-//Images::~Images() { }
+Image::Image(unsigned width, unsigned height)
+        : _width(width), _height(height) {}
+
+unsigned Image::width() const {
+    return _width;
+}
+
+unsigned Image::height() const {
+    return _height;
+}

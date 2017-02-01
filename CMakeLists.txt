@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
 find_package(PkgConfig REQUIRED)
-find_package(gosu REQUIRED)
+find_package(Gosu REQUIRED)
 find_package(SDL2 REQUIRED)
 
 set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES}

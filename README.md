@@ -37,4 +37,4 @@ Requirements:
 
 | NAME        | LICENSE     | LINK                          |
 | ----------- | ----------- | ----------------------------- |
-| libgosu     | MIT         | http://github.com/jlnr/gosu/  |
+| libgosu     | MIT         | http://github.com/gosu/gosu/  |

@@ -34,5 +34,7 @@ Current features include:
 TsunagariC is released under the MIT/Expat license.
 
 Requirements:
-NAME        LICENSE     LINK
-libgosu     (MIT)       http://github.com/jlnr/gosu/
+
+| NAME        | LICENSE     | LINK                          |
+| ----------- | ----------- | ----------------------------- |
+| libgosu     | MIT         | http://github.com/jlnr/gosu/  |

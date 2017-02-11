@@ -31,7 +31,7 @@ Current features include:
 * NPCs.
 * Event scripting interface in C++.
 
-TsunagariC is released under the MIT/Expat license.
+TsunagariC is released under the MIT license.
 
 Requirements:
 

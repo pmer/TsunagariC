@@ -4,10 +4,6 @@
 [![Code Climate](https://codeclimate.com/github/pmer/TsunagariC/badges/gpa.svg)](https://codeclimate.com/github/pmer/TsunagariC)
 [![LoC](https://tokei.rs/b1/github/pmer/TsunagariC)](https://github.com/Aaronepower/tokei)
 
-Based on Tsunagari Alpha Preview Release 4 "Akatsuki" Revision 4
-
------
-
 TsunagariC is a tiling game engine inspired by the cult classic game Yume
 Nikki. It is intended as an open source alternative to the popular proprietary
 RPGMaker game development suite that the original and most fangames were/are

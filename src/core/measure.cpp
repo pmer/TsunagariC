@@ -33,14 +33,6 @@
 
 
 #ifdef __APPLE__
-// The <sys/kdebug_signpost.h> header is missing on Travis CI. If it can be
-// located, we can re-enable this on Travis.
-# ifndef TRAVIS
-#  define USE_SIGNPOST
-# endif
-#endif
-
-#ifdef USE_SIGNPOST
 #include <sys/kdebug_signpost.h>
 #include <unordered_map>
 
@@ -56,34 +48,34 @@ int getSignpost(std::string description) {
         return nextSignpost++;
     }
 }
-#endif  // USE_SIGNPOST
+#endif  // __APPLE__
 
 
 struct TimeMeasureImpl {
     std::string description;
     std::chrono::time_point<std::chrono::system_clock> start;
-#ifdef USE_SIGNPOST
+#ifdef __APPLE__
     int signpost;
-#endif  // USE_SIGNPOST
+#endif
 };
 
 TimeMeasure::TimeMeasure(std::string description) {
     impl = new TimeMeasureImpl;
     impl->description = description;
     impl->start = std::chrono::system_clock::now();
-#ifdef USE_SIGNPOST
+#ifdef __APPLE__
     impl->signpost = getSignpost(description);
     kdebug_signpost_start(impl->signpost, 0, 0, 0, 0);
-#endif  // USE_SIGNPOST
+#endif
 }
 
 TimeMeasure::~TimeMeasure() {
     TimeMeasureImpl impl = *this->impl;
     delete this->impl;
 
-#ifdef USE_SIGNPOST
+#ifdef __APPLE__
     kdebug_signpost_end(impl.signpost, 0, 0, 0, 0);
-#endif  // USE_SIGNPOST
+#endif
 
     std::chrono::time_point<std::chrono::system_clock> end;
     end = std::chrono::system_clock::now();

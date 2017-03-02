@@ -1,6 +1,7 @@
 TsunagariC Tile Engine
 
 [![Code Climate](https://codeclimate.com/github/pmer/TsunagariC/badges/gpa.svg)](https://codeclimate.com/github/pmer/TsunagariC)
+[![LoC](https://tokei.rs/b1/github/pmer/TsunagariC)](https://github.com/Aaronepower/tokei)
 
 Based on Tsunagari Alpha Preview Release 4 "Akatsuki" Revision 4
 

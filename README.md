@@ -1,4 +1,4 @@
-TsunagariC Tile Engine
+# TsunagariC Tile Engine
 
 ![MIT Licensed](https://img.shields.io/github/license/pmer/TsunagariC.svg)
 [![Code Climate](https://codeclimate.com/github/pmer/TsunagariC/badges/gpa.svg)](https://codeclimate.com/github/pmer/TsunagariC)

@@ -102,7 +102,7 @@ template<>
 std::string Formatter::format(unsigned long data)
 {
     char buf[512];
-    (buf, "%lu", data);
+    sprintf(buf, "%lu", data);
     return std::string(buf);
 }
 

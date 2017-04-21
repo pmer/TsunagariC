@@ -30,9 +30,11 @@
 #include <Gosu/Bitmap.hpp>
 #include <Gosu/Graphics.hpp>
 #include <Gosu/Image.hpp>
+#include <core/formatter.h>
 
 #include "av/gosu/gosu-cbuffer.h"
 #include "av/gosu/gosu-window.h"
+#include "core/formatter.h"
 #include "core/images.h"
 #include "core/measure.h"
 #include "core/resources.h"
@@ -97,6 +99,8 @@ static std::shared_ptr<Image> genImage(const std::string& path) {
         Gosu::load_image_file(bitmap, buffer.front_reader());
     }
 
+    Log::info("Images", Formatter("Bitmap " + path + " is %×%") % bitmap.width() % bitmap.height());
+
     TimeMeasure m("Constructed " + path + " as image");
     return std::shared_ptr<Image>(
             new GosuImage(Gosu::Image(bitmap, Gosu::IF_TILEABLE))
@@ -118,6 +122,8 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
         Gosu::load_image_file(bitmap, buffer.front_reader());
     }
 
+    Log::info("Images", Formatter("Bitmap " + path + " is %×%") % bitmap.width() % bitmap.height());
+
     TimeMeasure m("Constructed " + path + " as tiles");
     std::vector<std::shared_ptr<Image>> images;
     for (unsigned y = 0; y < bitmap.height(); y += tileH) {
@@ -129,6 +135,8 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
             ));
         }
     }
+
+    Log::info("Images", Formatter("TiledImage " + path + " has % tiles") % images.size());
     return std::shared_ptr<TiledImage>(new GosuTiledImage(std::move(images)));
 }
 

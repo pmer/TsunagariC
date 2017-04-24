@@ -28,6 +28,7 @@
 #ifndef SRC_CORE_WORLD_H_
 #define SRC_CORE_WORLD_H_
 
+#include <functional>
 #include <memory>
 #include <stack>
 #include <string>

@@ -67,9 +67,9 @@ void GosuImage::drawSubrect(double dstX, double dstY, double z,
                             double srcX, double srcY,
                             double srcW, double srcH) {
     static Gosu::Graphics& g = graphics();
-    g.begin_clipping(dstX + srcX, dstY + srcY, srcW, srcH);
-    draw(dstX, dstY, z);
-    g.end_clipping();
+    g.clip_to(dstX + srcX, dstY + srcY, srcW, srcH, [=] {
+        draw(dstX, dstY, z);
+    });
 }
 
 

@@ -28,6 +28,7 @@
 #ifndef SRC_CORE_WINDOW_H_
 #define SRC_CORE_WINDOW_H_
 
+#include <functional>
 #include <map>
 #include <string>
 
@@ -81,9 +82,10 @@ class GameWindow {
     virtual void drawRect(double x1, double x2, double y1, double y2,
         uint32_t argb) = 0;
 
-    virtual void scale(double x, double y) = 0;
-    virtual void translate(double x, double y) = 0;
-    virtual void clip(double x, double y, double width, double height) = 0;
+    virtual void scale(double x, double y, std::function<void()> op) = 0;
+    virtual void translate(double x, double y, std::function<void()> op) = 0;
+    virtual void clip(double x, double y, double width, double height,
+                      std::function<void()> op) = 0;
 
     void emitKeyDown(KeyboardKey key);
     void emitKeyUp(KeyboardKey key);

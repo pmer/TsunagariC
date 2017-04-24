@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** world.cpp                          **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********

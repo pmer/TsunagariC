@@ -150,7 +150,7 @@ class World {
      * ratio and optimize drawing if the Area doesn't fit into the
      * Viewport.
      */
-    void pushLetterbox();
+    void pushLetterbox(std::function<void()> op);
 
  protected:
     typedef std::map<std::string, Area*> AreaMap;

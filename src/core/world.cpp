@@ -148,21 +148,21 @@ void World::draw() {
         window.drawRect(0, ww, 0, wh, colorOverlayARGB);
     }
 
-    pushLetterbox();
+    pushLetterbox([&] {
+        Viewport& view = Viewport::instance();
 
-    Viewport& view = Viewport::instance();
-
-    // Zoom and pan the Area to fit on-screen.
-    rvec2 padding = view.getLetterboxOffset();
-    window.translate(-padding.x, -padding.y);
-
-    rvec2 scale = view.getScale();
-    window.scale(scale.x, scale.y);
-
-    rvec2 scroll = view.getMapOffset();
-    window.translate(-scroll.x, -scroll.y);
-
-    area->draw();
+        // Zoom and pan the Area to fit on-screen.
+        rvec2 padding = view.getLetterboxOffset();
+        window.translate(-padding.x, -padding.y, [&] {
+    	    rvec2 scale = view.getScale();
+    	    window.scale(scale.x, scale.y, [&] {
+    		    rvec2 scroll = view.getMapOffset();
+    		    window.translate(-scroll.x, -scroll.y, [&] {
+    			    area->draw();
+    		    });
+    	    });
+        });
+    });
 }
 
 bool World::needsRedraw() const {
@@ -295,7 +295,7 @@ time_t World::calculateDt(time_t now) {
     return dt;
 }
 
-void World::makeLetterbox() {
+void World::pushLetterbox(std::function<void()> op) {
     GameWindow& window = GameWindow::instance();
     Viewport& view = Viewport::instance();
 
@@ -303,24 +303,26 @@ void World::makeLetterbox() {
     rvec2 sz = view.getPhysRes();
     rvec2 lb = -1 * view.getLetterboxOffset();
 
-    window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y);
+    window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y, [&] {
+        // Map bounds.
+        rvec2 scale = view.getScale();
+        rvec2 virtScroll = view.getMapOffset();
+        rvec2 padding = view.getLetterboxOffset();
 
-    // Map bounds.
-    rvec2 scale = view.getScale();
-    rvec2 virtScroll = view.getMapOffset();
-    rvec2 padding = view.getLetterboxOffset();
+        rvec2 physScroll = -1 * virtScroll * scale + padding;
 
-    rvec2 physScroll = -1 * virtScroll * scale + padding;
+        bool loopX = area->loopsInX();
+        bool loopY = area->loopsInY();
 
-    bool loopX = area->loopsInX();
-    bool loopY = area->loopsInY();
+        if (!loopX && physScroll.x > 0) {
+            // Boxes on left-right.
+            window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x, op);
+        }
+        if (!loopY && physScroll.y > 0) {
+            // Boxes on top-bottom.
+            window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y, op);
+        }
 
-    if (!loopX && physScroll.x > 0) {
-        // Boxes on left-right.
-        window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x);
-    }
-    if (!loopY && physScroll.y > 0) {
-        // Boxes on top-bottom.
-        window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y);
-    }
+        op();
+    });
 }

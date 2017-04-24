@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <algorithm>
+
 #include "os/os.h"
 #include "pack/pack-file.h"
 

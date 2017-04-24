@@ -188,19 +188,20 @@ void GosuGameWindow::drawRect(double x1, double x2, double y1, double y2,
     );
 }
 
-void GosuGameWindow::scale(double x, double y)
+void GosuGameWindow::scale(double x, double y, std::function<void()> op)
 {
-    graphics().push_transform(Gosu::scale(x, y));
+    graphics().transform(Gosu::scale(x, y), op);
 }
 
-void GosuGameWindow::translate(double x, double y)
+void GosuGameWindow::translate(double x, double y, std::function<void()> op)
 {
-    graphics().push_transform(Gosu::translate(x, y));
+    graphics().transform(Gosu::translate(x, y), op);
 }
 
-void GosuGameWindow::clip(double x, double y, double width, double height)
+void GosuGameWindow::clip(double x, double y, double width, double height,
+                          std::function<void()> op)
 {
-    graphics().begin_clipping(x, y, width, height);
+    graphics().clip_to(x, y, width, height, op);
 }
 
 void GosuGameWindow::close()

@@ -295,7 +295,7 @@ time_t World::calculateDt(time_t now) {
     return dt;
 }
 
-void World::pushLetterbox() {
+void World::makeLetterbox() {
     GameWindow& window = GameWindow::instance();
     Viewport& view = Viewport::instance();
 
@@ -304,7 +304,6 @@ void World::pushLetterbox() {
     rvec2 lb = -1 * view.getLetterboxOffset();
 
     window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y);
-    int clips = 1;
 
     // Map bounds.
     rvec2 scale = view.getScale();
@@ -319,11 +318,9 @@ void World::pushLetterbox() {
     if (!loopX && physScroll.x > 0) {
         // Boxes on left-right.
         window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x);
-        clips++;
     }
     if (!loopY && physScroll.y > 0) {
         // Boxes on top-bottom.
         window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y);
-        clips++;
     }
 }

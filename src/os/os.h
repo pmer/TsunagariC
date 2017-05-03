@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** os/os.h                       **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** os/os.h                            **
+** Copyright 2016-2017 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,6 +36,7 @@ extern char dirSeparator;
 
 uint64_t getFileSize(const std::string& path);
 bool isDir(const std::string& path);
+void makeDirectory(const std::string& path);
 std::vector<std::string> listDir(const std::string& path);
 
 #endif  // SRC_OS_OS_H_

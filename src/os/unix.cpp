@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** os/unix.cpp                 **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** os/unix.cpp                      **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -53,6 +53,10 @@ bool isDir(const std::string& path) {
         return false;
     }
     return S_ISDIR(status.st_mode);
+}
+
+void makeDirectory(const std::string& path) {
+    mkdir(path.c_str(), 0777);
 }
 
 std::vector<std::string> listDir(const std::string& path) {

@@ -100,7 +100,8 @@ static bool listArchive(const std::string& archivePath) {
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
-            printf("%s %llu\n", blobPath.c_str(), blobSize);
+
+            printf("%s: %llu bytes\n", blobPath.c_str(), blobSize);
         }
         return true;
     } else {
@@ -138,6 +139,7 @@ static void createDirs(ExtractContext* ctx, const std::string& path) {
 static void putFile(ExtractContext* ctx, const std::string& path, uint64_t size,
                     void* data) {
     createDirs(ctx, path);
+
     FILE* f = fopen(path.c_str(), "w");
     fwrite(data, size, 1, f);
     fclose(f);
@@ -152,7 +154,9 @@ static bool extractArchive(const std::string& archivePath) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
             void* blobData = pack->getBlobData(i);
-            printf("%s %llu\n", blobPath.c_str(), blobSize);
+
+            printf("Extracting %s: %llu bytes\n", blobPath.c_str(), blobSize);
+
             putFile(&ctx, blobPath, blobSize, blobData);
         }
         return true;

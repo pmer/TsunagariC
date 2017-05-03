@@ -154,13 +154,13 @@ void World::draw() {
         // Zoom and pan the Area to fit on-screen.
         rvec2 padding = view.getLetterboxOffset();
         window.translate(-padding.x, -padding.y, [&] {
-    	    rvec2 scale = view.getScale();
-    	    window.scale(scale.x, scale.y, [&] {
-    		    rvec2 scroll = view.getMapOffset();
-    		    window.translate(-scroll.x, -scroll.y, [&] {
-    			    area->draw();
-    		    });
-    	    });
+            rvec2 scale = view.getScale();
+            window.scale(scale.x, scale.y, [&] {
+                rvec2 scroll = view.getMapOffset();
+                window.translate(-scroll.x, -scroll.y, [&] {
+                    area->draw();
+                });
+            });
         });
     });
 }

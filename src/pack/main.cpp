@@ -33,6 +33,7 @@
 
 #include "os/os.h"
 #include "pack/pack-file.h"
+#include "pack/ui.h"
 #include "util/optional.h"
 
 const char* exe = nullptr;
@@ -55,7 +56,8 @@ static void slurp(const std::string& path, uint64_t* size, void** data) {
 static void addPath(PackWriter* pack, std::string path);
 
 static void addFile(PackWriter* pack, std::string path) {
-    printf("Adding %s\n", path.c_str());
+    uiShowAddingFile(path);
+
     uint64_t size;
     void* data;
     slurp(path, &size, &data);
@@ -89,7 +91,8 @@ static bool createArchive(const std::string& archivePath,
         addPath(pack.get(), inputPath);
     }
 
-    printf("Writing to %s\n", archivePath.c_str());
+    uiShowWritingArchive(archivePath.c_str());
+
     return pack->writeToFile(archivePath);
 }
 
@@ -101,7 +104,7 @@ static bool listArchive(const std::string& archivePath) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
 
-            printf("%s: %llu bytes\n", blobPath.c_str(), blobSize);
+            uiShowListingEntry(blobPath.c_str(), blobSize);
         }
         return true;
     } else {
@@ -155,7 +158,7 @@ static bool extractArchive(const std::string& archivePath) {
             uint64_t blobSize = pack->getBlobSize(i);
             void* blobData = pack->getBlobData(i);
 
-            printf("Extracting %s: %llu bytes\n", blobPath.c_str(), blobSize);
+            uiShowExtractingFile(blobPath, blobSize);
 
             putFile(&ctx, blobPath, blobSize, blobData);
         }
@@ -190,6 +193,8 @@ int main(int argc, char* argv[]) {
         args.push_back(argv[i]);
     }
 
+    int exitCode;
+
     if (command == "create") {
         return createArchive(args[0], args.begin() + 1, args.end()) ? 0 : 1;
     } else if (command == "list") {
@@ -198,16 +203,20 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
-        return listArchive(args[0]) ? 0 : 1;
+        exitCode = listArchive(args[0]) ? 0 : 1;
     } else if (command == "extract") {
         if (argc != 3) {
             usage();
             return 1;
         }
 
-        return extractArchive(args[0]) ? 0 : 1;
+        exitCode = extractArchive(args[0]) ? 0 : 1;
     } else {
         usage();
         return 1;
     }
+
+    uiDone();
+
+    return exitCode;
 }

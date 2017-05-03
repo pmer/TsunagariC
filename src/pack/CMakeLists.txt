@@ -4,6 +4,8 @@ set(PACK_SOURCES ${PACK_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/file-type.cpp
     ${CMAKE_CURRENT_LIST_DIR}/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/pack-file.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui-log.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/worker.cpp
 )
 
 set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}

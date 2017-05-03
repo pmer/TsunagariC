@@ -141,14 +141,14 @@ void World::draw() {
         }
     }
 
-    uint32_t colorOverlayARGB = area->getColorOverlay();
-    if ((colorOverlayARGB & 0xFF000000) != 0) {
-        unsigned ww = window.width();
-        unsigned wh = window.height();
-        window.drawRect(0, ww, 0, wh, colorOverlayARGB);
-    }
-
     pushLetterbox([&] {
+        uint32_t colorOverlayARGB = area->getColorOverlay();
+        if ((colorOverlayARGB & 0xFF000000) != 0) {
+            unsigned ww = window.width();
+            unsigned wh = window.height();
+            window.drawRect(0, ww, 0, wh, colorOverlayARGB);
+        }
+
         Viewport& view = Viewport::instance();
 
         // Zoom and pan the Area to fit on-screen.

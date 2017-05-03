@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** pack-file.cpp               **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** pack-file.cpp                    **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -101,6 +101,8 @@ class PackReaderImpl : public PackReader {
     uint64_t getBlobSize(BlobIndex index) const;
     void* getBlobData(BlobIndex index);
 
+    std::vector<void*> getBlobDatas(std::vector<BlobIndex> indicies);
+
     int fd;
     HeaderBlock header;
     std::unique_ptr<PathOffset> pathOffsets;
@@ -196,9 +198,34 @@ void* PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
     uint64_t size = getBlobSize(index);
     void* data = malloc(size);
     uint64_t offset = dataOffsets.get()[index];
-    lseek(fd, static_cast<off_t>(offset), SEEK_SET);
-    read(fd, data, size);
+    pread(fd, data, size, static_cast<off_t>(offset));
     return data;
+}
+
+std::vector<void*> PackReaderImpl::getBlobDatas(
+        std::vector<BlobIndex> indicies) {
+    size_t count = indicies.size();
+
+    std::vector<void*> datas;
+    iovec* iov = new iovec[count];
+
+    for (size_t i = 0; i < count; i++) {
+        uint64_t size = getBlobSize(static_cast<BlobIndex>(i));
+        void* data = malloc(size);
+
+        datas.push_back(data);
+        iov[i].iov_base = data;
+        iov[i].iov_len = size;
+    }
+
+    size_t offset = dataOffsets.get()[indicies[0]];
+    lseek(fd, static_cast<off_t>(offset), SEEK_SET);
+
+    ssize_t s = readv(fd, iov, static_cast<int>(count));
+
+    delete[] iov;
+
+    return datas;
 }
 
 

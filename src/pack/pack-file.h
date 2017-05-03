@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** pack-file.h                 **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** pack-file.h                      **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 class PackReader {
  public:
@@ -49,6 +50,10 @@ class PackReader {
     virtual std::string getBlobPath(BlobIndex index) const = 0;
     virtual BlobSize getBlobSize(BlobIndex index) const = 0;
     virtual void* getBlobData(BlobIndex index) = 0;
+
+    // indicies must be monotonic & contiguous: e.g. 4, 5, 6, 7
+    virtual std::vector<void*> getBlobDatas(
+            std::vector<BlobIndex> indicies) = 0;
 };
 
 class PackWriter {

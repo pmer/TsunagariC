@@ -24,9 +24,11 @@
 // IN THE SOFTWARE.
 // **********
 
+#include <fcntl.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <unordered_set>
@@ -143,20 +145,26 @@ static void putFile(ExtractContext* ctx, const std::string& path, uint64_t size,
                     void* data) {
     createDirs(ctx, path);
 
-    FILE* f = fopen(path.c_str(), "w");
-    fwrite(data, size, 1, f);
-    fclose(f);
+    int fd = open(path.c_str(), O_WRONLY | O_NONBLOCK | O_CREAT | O_TRUNC | O_CLOEXEC, 0777);
+    write(fd, data, size);
 }
 
 static bool extractArchive(const std::string& archivePath) {
     std::unique_ptr<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
+        std::vector<PackReader::BlobIndex> blobIndicies;
+        for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
+            blobIndicies.push_back(i);
+        }
+
+        std::vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
+
         ExtractContext ctx;
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
-            void* blobData = pack->getBlobData(i);
+            void* blobData = blobDatas[i];
 
             uiShowExtractingFile(blobPath, blobSize);
 

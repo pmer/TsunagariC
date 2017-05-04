@@ -25,32 +25,31 @@
 // **********
 
 #include "pack/ui.h"
-#include "pack/worker.h"
+
+#include "pack/pool.h"
+
+static Pool& pool = Pool::makePool(1);
 
 void uiShowAddingFile(const std::string& path) {
-    scheduleJob([=] {
+    pool.schedule([=] {
         printf("Adding %s\n", path.c_str());
     });
 }
 
 void uiShowWritingArchive(const std::string& archivePath) {
-    scheduleJob([=] {
+    pool.schedule([=] {
         printf("Writing to %s\n", archivePath.c_str());
     });
 }
 
 void uiShowListingEntry(const std::string& blobPath, uint64_t blobSize) {
-    scheduleJob([=] {
+    pool.schedule([=] {
         printf("%s: %llu bytes\n", blobPath.c_str(), blobSize);
     });
 }
 
 void uiShowExtractingFile(const std::string& blobPath, uint64_t blobSize) {
-    scheduleJob([=] {
+    pool.schedule([=] {
         printf("Extracting %s: %llu bytes\n", blobPath.c_str(), blobSize);
     });
-}
-
-void uiDone() {
-    finishJobs();
 }

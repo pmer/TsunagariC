@@ -35,6 +35,5 @@ void uiShowAddingFile(const std::string& path);
 void uiShowWritingArchive(const std::string& arhivePath);
 void uiShowListingEntry(const std::string& blobPath, uint64_t blobSize);
 void uiShowExtractingFile(const std::string& blobPath, uint64_t blogSize);
-void uiDone();
 
 #endif  // SRC_PACK_UI_H_

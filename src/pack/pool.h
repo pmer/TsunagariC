@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** worker.cpp                  **
+** pool.h                      **
 ** Copyright 2017 Paul Merrill **
 ********************************/
 
@@ -24,64 +24,17 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "pack/worker.h"
+#ifndef SRC_PACK_POOL_H_
+#define SRC_PACK_POOL_H_
 
-#include <condition_variable>
-#include <deque>
-#include <mutex>
-#include <thread>
+#include <functional>
 
-static std::thread* t = nullptr;
-static std::deque<std::function<void()>> jobs;
+class Pool {
+ public:
+    static Pool& makePool(size_t workerLimit);
+    virtual ~Pool() = default;
 
-static std::condition_variable cv;
-static std::mutex mutex;
-static bool wantQuit = false;
+    virtual void schedule(std::function<void()> job) = 0;
+};
 
-static void runJobs() {
-    bool anotherJob = true;
-
-    while (anotherJob) {
-        std::function<void()> job;
-
-        {
-            std::unique_lock<std::mutex> lock(mutex);
-            if (jobs.empty()) {
-                cv.wait(lock);
-            }
-
-            job = std::move(jobs.front());
-            jobs.pop_front();
-
-            if (jobs.empty() && wantQuit) {
-                anotherJob = false;
-            }
-        }
-
-        job();
-    }
-}
-
-void scheduleJob(std::function<void()> job) {
-    if (t == nullptr) {
-        t = new std::thread(runJobs);
-    }
-
-    {
-        std::unique_lock<std::mutex> lock(mutex);
-        jobs.push_back(job);
-    }
-    cv.notify_one();
-}
-
-void finishJobs() {
-    if (t) {
-        {
-            std::unique_lock<std::mutex> lock(mutex);
-            jobs.push_back([]{});
-            wantQuit = true;
-        }
-        cv.notify_one();
-        t->join();
-    }
-}
+#endif  // SRC_PACK_POOL_H_

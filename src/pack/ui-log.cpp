@@ -28,28 +28,28 @@
 
 #include "pack/pool.h"
 
-static Pool& pool = Pool::makePool(1);
+static std::unique_ptr<Pool> pool(Pool::makePool("ui", 1));
 
 void uiShowAddingFile(const std::string& path) {
-    pool.schedule([=] {
+    pool->schedule([=] {
         printf("Adding %s\n", path.c_str());
     });
 }
 
 void uiShowWritingArchive(const std::string& archivePath) {
-    pool.schedule([=] {
+    pool->schedule([=] {
         printf("Writing to %s\n", archivePath.c_str());
     });
 }
 
 void uiShowListingEntry(const std::string& blobPath, uint64_t blobSize) {
-    pool.schedule([=] {
+    pool->schedule([=] {
         printf("%s: %llu bytes\n", blobPath.c_str(), blobSize);
     });
 }
 
 void uiShowExtractingFile(const std::string& blobPath, uint64_t blobSize) {
-    pool.schedule([=] {
+    pool->schedule([=] {
         printf("Extracting %s: %llu bytes\n", blobPath.c_str(), blobSize);
     });
 }

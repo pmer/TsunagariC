@@ -35,6 +35,7 @@
 
 #include "os/os.h"
 #include "pack/pack-file.h"
+#include "pack/pool.h"
 #include "pack/ui.h"
 #include "util/optional.h"
 
@@ -115,10 +116,6 @@ static bool listArchive(const std::string& archivePath) {
     }
 }
 
-struct ExtractContext {
-    std::unordered_set<std::string> createdDirectories;
-};
-
 static Optional<std::string> getParentPath(const std::string& path) {
     auto sep = path.find_last_of('/');
     if (sep == path.npos) {
@@ -128,22 +125,18 @@ static Optional<std::string> getParentPath(const std::string& path) {
     }
 }
 
-static void createDirs(ExtractContext* ctx, const std::string& path) {
+static void createDirs(const std::string& path) {
     Optional<std::string> parentPath = getParentPath(path);
     if (parentPath) {
-        if (ctx->createdDirectories.count(*parentPath) == 0) {
-            // Make sure parentPath's parent exists.
-            createDirs(ctx, *parentPath);
+        // Make sure parentPath's parent exists.
+        createDirs(*parentPath);
 
-            ctx->createdDirectories.insert(*parentPath);
-            makeDirectory(*parentPath);
-        }
+        makeDirectory(*parentPath);
     }
 }
 
-static void putFile(ExtractContext* ctx, const std::string& path, uint64_t size,
-                    void* data) {
-    createDirs(ctx, path);
+static void putFile(const std::string& path, uint64_t size, void* data) {
+    createDirs(path);
 
     int fd = open(path.c_str(), O_WRONLY | O_NONBLOCK | O_CREAT | O_TRUNC | O_CLOEXEC, 0777);
     write(fd, data, size);
@@ -160,16 +153,20 @@ static bool extractArchive(const std::string& archivePath) {
 
         std::vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
 
-        ExtractContext ctx;
+        std::unique_ptr<Pool> pool(Pool::makePool("extract", 1));
+
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
             void* blobData = blobDatas[i];
 
-            uiShowExtractingFile(blobPath, blobSize);
+            pool->schedule([=] {
+                uiShowExtractingFile(blobPath, blobSize);
 
-            putFile(&ctx, blobPath, blobSize, blobData);
+                putFile(blobPath, blobSize, blobData);
+            });
         }
+
         return true;
     } else {
         fprintf(stderr, "%s: %s: not found\n", exe, archivePath.c_str());

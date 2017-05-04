@@ -28,10 +28,11 @@
 #define SRC_PACK_POOL_H_
 
 #include <functional>
+#include <string>
 
 class Pool {
  public:
-    static Pool& makePool(size_t workerLimit);
+    static Pool* makePool(std::string name, size_t workerLimit);
     virtual ~Pool() = default;
 
     virtual void schedule(std::function<void()> job) = 0;

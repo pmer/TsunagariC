@@ -25,7 +25,6 @@
 // **********
 
 #include "pack/pool.h"
-#include "util/optional.h"
 
 #include <condition_variable>
 #include <deque>
@@ -39,6 +38,8 @@ class PoolImpl : public Pool {
 
     void schedule(std::function<void()> job);
 
+    std::string name;
+
     size_t workerLimit;
     std::vector<std::thread> workers;
 
@@ -46,13 +47,14 @@ class PoolImpl : public Pool {
     std::deque<std::function<void()>> jobs;
 
     std::condition_variable available;
-    std::mutex mutex;
+    std::mutex access;
 };
 
-Pool& Pool::makePool(size_t workerLimit) {
+Pool* Pool::makePool(std::string name, size_t workerLimit) {
     PoolImpl* pool = new PoolImpl;
+    pool->name = name;
     pool->workerLimit = workerLimit;
-    return *pool;
+    return pool;
 }
 
 static void runJobs(PoolImpl* pool) {
@@ -60,8 +62,8 @@ static void runJobs(PoolImpl* pool) {
 
     do {
         {
-            std::unique_lock<std::mutex> lock(pool->mutex);
-            if (pool->jobs.empty()) {
+            std::unique_lock<std::mutex> lock(pool->access);
+            while (pool->jobs.empty()) {
                 pool->available.wait(lock);
             }
 
@@ -87,7 +89,7 @@ void PoolImpl::schedule(std::function<void()> job) {
     startWorker(this);
 
     {
-        std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(access);
         jobs.push_back(job);
     }
     available.notify_one();
@@ -95,7 +97,7 @@ void PoolImpl::schedule(std::function<void()> job) {
 
 PoolImpl::~PoolImpl() {
     {
-        std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(access);
         for (size_t i = 0; i < workers.size(); i++) {
             // Send over empty jobs.
             jobs.push_back(std::function<void()>());

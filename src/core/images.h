@@ -98,4 +98,4 @@ class Images {
     Images& operator=(const Images&) = delete;
 };
 
-#endif
+#endif  // SRC_CORE_IMAGES_H_

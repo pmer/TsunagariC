@@ -33,6 +33,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/memory.h"
+
 class Image;
 
 /**
@@ -58,7 +60,7 @@ class Animation {
      *
      * @param frame static image
      */
-    Animation(std::shared_ptr<Image> frame);
+    Animation(Arc<Image> frame);
 
     /**
      * Constructs a Animation from a list of frames.
@@ -70,7 +72,7 @@ class Animation {
      * @param frameTime length of time in milliseconds that each frame
      *        will display for
      */
-    Animation(std::vector<std::shared_ptr<Image>> frames,
+    Animation(std::vector<Arc<Image>> frames,
         time_t frameTime);
 
     /**
@@ -95,7 +97,7 @@ class Animation {
     Image* frame(time_t now);
 
  private:
-    typedef std::vector<std::shared_ptr<Image>> ImageVec;
+    typedef std::vector<Arc<Image>> ImageVec;
 
 
     /** List of images in animation. */

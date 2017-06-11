@@ -28,8 +28,9 @@
 #ifndef SRC_CORE_IMAGES_H_
 #define SRC_CORE_IMAGES_H_
 
-#include <memory>
 #include <string>
+
+#include "util/memory.h"
 
 class Image {
  public:
@@ -61,7 +62,7 @@ class TiledImage {
 
     virtual size_t size() const = 0;
 
-    virtual std::shared_ptr<Image> operator[](size_t n) const = 0;
+    virtual Arc<Image> operator[](size_t n) const = 0;
 
  protected:
     TiledImage() = default;
@@ -80,12 +81,12 @@ class Images {
     virtual ~Images() = default;
 
     //! Load an image from the file at the given path.
-    virtual std::shared_ptr<Image> load(const std::string& path) = 0;
+    virtual Arc<Image> load(const std::string& path) = 0;
 
     //! Load an image of tiles from the file at the given path. Each tile
     //! with have width and heigh as specified.
-    virtual std::shared_ptr<TiledImage> loadTiles(const std::string& path,
-                                                  unsigned tileW, unsigned tileH) = 0;
+    virtual Arc<TiledImage> loadTiles(const std::string& path,
+                                      unsigned tileW, unsigned tileH) = 0;
 
     //! Free images not recently used.
     virtual void garbageCollect() = 0;

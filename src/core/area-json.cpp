@@ -45,6 +45,7 @@
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"
+#include "util/memory.h"
 #include "util/optional.h"
 
 #ifdef _WIN32
@@ -78,7 +79,7 @@ class AreaJSON : public Area {
     bool processTileSetFile(JSONObjectRef obj, const std::string& source,
                             int firstGid);
     bool processTileType(JSONObjectPtr obj, TileType& type,
-                         std::shared_ptr<TiledImage>& img, int id);
+                         Arc<TiledImage>& img, int id);
     bool processLayer(JSONObjectPtr obj);
     bool processLayerProperties(JSONObjectPtr obj);
     bool processLayerData(JSONArrayPtr arr);
@@ -275,7 +276,7 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
 */
 
     TileSet* set = nullptr;
-    std::shared_ptr<TiledImage> img;
+    Arc<TiledImage> img;
 
     unsigned tilex, tiley;
     unsigned pixelw, pixelh;
@@ -363,7 +364,7 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
 }
 
 bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
-                              std::shared_ptr<TiledImage>& img, int id) {
+                              Arc<TiledImage>& img, int id) {
 
 /*
   {
@@ -383,7 +384,7 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
     // to worry about it.
 
     // If a Tile is animated, it needs both member frames and a speed.
-    std::vector<std::shared_ptr<Image>> framesvec;
+    std::vector<Arc<Image>> framesvec;
     int frameLen = -1;
 
     if (obj->hasString("flags")) {
@@ -445,7 +446,7 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
         }
         // Add 'now' to Animation constructor??
         time_t now = World::instance().time();
-        type.anim = Animation(framesvec, frameLen);
+        type.anim = Animation(std::move(framesvec), frameLen);
         type.anim.startOver(now);
     }
 

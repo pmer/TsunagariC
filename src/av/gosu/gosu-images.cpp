@@ -57,7 +57,7 @@ static Gosu::Graphics& graphics() {
 
 GosuImage::GosuImage(Gosu::Image&& image)
         : Image(image.width(), image.height()),
-          image(std::move(image)) {}
+          image(move_(image)) {}
 
 void GosuImage::draw(double dstX, double dstY, double z) {
     image.draw(dstX, dstY, z);
@@ -73,23 +73,23 @@ void GosuImage::drawSubrect(double dstX, double dstY, double z,
 }
 
 
-GosuTiledImage::GosuTiledImage(std::vector<std::shared_ptr<Image>>&& images)
-        : images(std::move(images)) {}
+GosuTiledImage::GosuTiledImage(std::vector<Arc<Image>>&& images)
+        : images(move_(images)) {}
 
 size_t GosuTiledImage::size() const {
     return images.size();
 }
 
-std::shared_ptr<Image> GosuTiledImage::operator[](size_t n) const {
+Arc<Image> GosuTiledImage::operator[](size_t n) const {
     return images[n];
 }
 
 
-static std::shared_ptr<Image> genImage(const std::string& path) {
+static Arc<Image> genImage(const std::string& path) {
     std::unique_ptr<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
-        return std::shared_ptr<Image>();
+        return Arc<Image>();
     }
     GosuCBuffer buffer(r->data(), r->size());
     Gosu::Bitmap bitmap;
@@ -102,17 +102,15 @@ static std::shared_ptr<Image> genImage(const std::string& path) {
     Log::info("Images", Formatter("Bitmap " + path + " is %×%") % bitmap.width() % bitmap.height());
 
     TimeMeasure m("Constructed " + path + " as image");
-    return std::shared_ptr<Image>(
-            new GosuImage(Gosu::Image(bitmap, Gosu::IF_TILEABLE))
-    );
+    return Arc<Image>(new GosuImage(Gosu::Image(bitmap, Gosu::IF_TILEABLE)));
 }
 
-static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
-                                                 unsigned tileW, unsigned tileH) {
+static Arc<TiledImage> genTiledImage(const std::string& path,
+                                     unsigned tileW, unsigned tileH) {
     std::unique_ptr<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
-        return std::shared_ptr<TiledImage>();
+        return Arc<TiledImage>();
     }
     GosuCBuffer buffer(r->data(), r->size());
     Gosu::Bitmap bitmap;
@@ -125,30 +123,28 @@ static std::shared_ptr<TiledImage> genTiledImage(const std::string& path,
     Log::info("Images", Formatter("Bitmap " + path + " is %×%") % bitmap.width() % bitmap.height());
 
     TimeMeasure m("Constructed " + path + " as tiles");
-    std::vector<std::shared_ptr<Image>> images;
+    std::vector<Arc<Image>> images;
     for (unsigned y = 0; y < bitmap.height(); y += tileH) {
         for (unsigned x = 0; x < bitmap.width(); x += tileW) {
-            images.emplace_back(std::shared_ptr<Image>(
-                    new GosuImage(
-                            Gosu::Image(bitmap, x, y, tileW, tileH, Gosu::IF_TILEABLE)
-                    )
-            ));
+            images.emplace_back(Arc<Image>(new GosuImage(
+                Gosu::Image(bitmap, x, y, tileW, tileH, Gosu::IF_TILEABLE)
+            )));
         }
     }
 
     Log::info("Images", Formatter("TiledImage " + path + " has % tiles") % images.size());
-    return std::shared_ptr<TiledImage>(new GosuTiledImage(std::move(images)));
+    return Arc<TiledImage>(new GosuTiledImage(move_(images)));
 }
 
 
 GosuImages::GosuImages() : images(genImage) {}
 
-std::shared_ptr<Image> GosuImages::load(const std::string& path) {
+Arc<Image> GosuImages::load(const std::string& path) {
     return images.lifetimeRequest(path);
 }
 
-std::shared_ptr<TiledImage> GosuImages::loadTiles(const std::string& path,
-                                                  unsigned tileW, unsigned tileH) {
+Arc<TiledImage> GosuImages::loadTiles(const std::string& path,
+                                      unsigned tileW, unsigned tileH) {
     auto tiledImage = tiledImages.lifetimeRequest(path);
     if (!tiledImage) {
         tiledImage = genTiledImage(path, tileW, tileH);

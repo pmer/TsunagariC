@@ -34,13 +34,13 @@ Animation::Animation()
       cycleTime(1),
       frameShowing(0) {}
 
-Animation::Animation(std::shared_ptr<Image> frame)
+Animation::Animation(Arc<Image> frame)
     : frames { std::move(frame) },
       frameTime(1),
       cycleTime(1),
       frameShowing(0) {}
 
-Animation::Animation(std::vector<std::shared_ptr<Image>> frames,
+Animation::Animation(std::vector<Arc<Image>> frames,
         time_t frameTime)
     : frames(std::move(frames)),
       frameTime(frameTime),

@@ -38,6 +38,7 @@ class TileSet;
 #include "core/animation.h"
 #include "core/vec.h"
 #include "data/data-area.h"
+#include "util/memory.h"
 #include "util/optional.h"
 
 class Area;
@@ -244,7 +245,7 @@ class Tile : public TileBase {
 class TileType : public TileBase {
  public:
     TileType() = default;
-    TileType(const std::shared_ptr<Image>& img);
+    TileType(const Arc<Image>& img);
 
     //! Returns true if onscreen and we need to update our animation.
     bool needsRedraw() const;

@@ -34,10 +34,11 @@
 #include "core/images.h"
 #include "core/jsons.h"
 #include "core/log.h"
-#include "util/math2.h"
 #include "core/resources.h"
-#include "util/string2.h"
 #include "core/world.h"
+#include "util/math2.h"
+#include "util/string2.h"
+#include "util/memory.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 
@@ -369,7 +370,7 @@ bool Entity::processDescriptor() {
 }
 
 bool Entity::processSprite(JSONObjectPtr sprite) {
-    std::shared_ptr<TiledImage> tiles;
+    Arc<TiledImage> tiles;
 
     CHECK(sprite->hasObject("sheet"));
     CHECK(sprite->hasObject("phases"));
@@ -431,7 +432,7 @@ bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& ti
         double fps = phase->doubleAt("speed");
 
         std::vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
-        std::vector<std::shared_ptr<Image>> images;
+        std::vector<Arc<Image>> images;
         for (auto it = frames.begin(); it != frames.end(); it++) {
             int i = *it;
             if (i < 0 || (int)tiles.size() < i) {
@@ -442,7 +443,7 @@ bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& ti
             images.push_back(tiles[(size_t)i]);
         }
 
-        phases[name] = Animation(images, (time_t)(1000.0 / fps));
+        phases[name] = Animation(std::move(images), (time_t)(1000.0 / fps));
     }
     else {
         Log::err(descriptor,
@@ -479,7 +480,7 @@ bool Entity::processScripts(JSONObjectPtr scripts) {
     return true;
 }
 
-bool Entity::processScript(std::string& name, std::string path) {
+bool Entity::processScript(std::string& /*name*/, std::string path) {
     if (path.empty()) {
         Log::err(descriptor, "script path is empty");
         return false;

@@ -32,8 +32,9 @@
 #include "core/area.h"
 #include "core/formatter.h"
 #include "core/log.h"
-#include "util/string2.h"
 #include "core/world.h"
+#include "util/memory.h"
+#include "util/string2.h"
 
 static int ivec2_to_dir(ivec2 v) {
     switch (v.x) {
@@ -216,7 +217,7 @@ void Tile::runUseScript(Entity* triggeredBy) {
 /*
  * TILETYPE
  */
-TileType::TileType(const std::shared_ptr<Image>& img) {
+TileType::TileType(const Arc<Image>& img) {
     anim = Animation(img);
 }
 

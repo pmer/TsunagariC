@@ -28,7 +28,6 @@
 #ifndef SRC_AV_GOSU_IMAGES_H_
 #define SRC_AV_GOSU_IMAGES_H_
 
-#include <memory>
 #include <vector>
 
 #include <Gosu/Image.hpp>
@@ -36,6 +35,7 @@
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
 #include "core/images.h"
+#include "util/memory.h"
 
 class GosuImage : public Image {
  public:
@@ -54,15 +54,15 @@ class GosuImage : public Image {
 
 class GosuTiledImage: public TiledImage {
  public:
-    explicit GosuTiledImage(std::vector<std::shared_ptr<Image>>&& images);
+    explicit GosuTiledImage(std::vector<Arc<Image>>&& images);
     ~GosuTiledImage() = default;
 
     size_t size() const;
 
-    std::shared_ptr<Image> operator[](size_t n) const;
+    Arc<Image> operator[](size_t n) const;
 
  private:
-    std::vector<std::shared_ptr<Image>> images;
+    std::vector<Arc<Image>> images;
 };
 
 
@@ -71,10 +71,10 @@ class GosuImages : public Images {
     GosuImages();
     ~GosuImages() = default;
 
-    std::shared_ptr<Image> load(const std::string& path);
+    Arc<Image> load(const std::string& path);
 
-    std::shared_ptr<TiledImage> loadTiles(const std::string& path,
-                                          unsigned tileW, unsigned tileH);
+    Arc<TiledImage> loadTiles(const std::string& path,
+                              unsigned tileW, unsigned tileH);
 
     void garbageCollect();
 
@@ -82,11 +82,11 @@ class GosuImages : public Images {
     GosuImages(const GosuImages&) = delete;
     GosuImages& operator=(const GosuImages&) = delete;
 
-    ReaderCache<std::shared_ptr<Image>> images;
+    ReaderCache<Arc<Image>> images;
     // We can't use a ReaderCache here because TiledImages are constructed
     // with three arguments, but a ReaderCache only supports the use of
     // one.
-    Cache<std::shared_ptr<TiledImage>> tiledImages;
+    Cache<Arc<TiledImage>> tiledImages;
 };
 
 #endif

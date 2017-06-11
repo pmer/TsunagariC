@@ -34,9 +34,10 @@
 #include <string>
 #include <vector>
 
-#include "util/bitrecord.h"
 #include "core/vec.h"
 #include "core/window.h"  // for KeyboardKey
+#include "util/bitrecord.h"
+#include "util/memory.h"
 
 class Area;
 class Image;
@@ -156,7 +157,7 @@ class World {
  protected:
     typedef std::map<std::string, Area*> AreaMap;
 
-    std::shared_ptr<Image> pauseInfo;
+    Arc<Image> pauseInfo;
 
     AreaMap areas;
     Area* area;

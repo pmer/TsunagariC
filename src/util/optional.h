@@ -38,7 +38,7 @@ class Optional {
 
  public:
     explicit Optional() : x(), exists(false) {}
-    explicit Optional(T&& x) : x(std::move(x)), exists(true) {}
+    explicit Optional(T&& x) noexcept : x(std::move(x)), exists(true) {}
     explicit Optional(const T& x) : x(x), exists(true) {}
 
     Optional(Optional<T>&& other) : exists(other.exists) {

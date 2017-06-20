@@ -29,7 +29,7 @@
 
 #include <assert.h>
 
-#include <memory>
+#include "util/move.h"
 
 template<typename T>
 class Optional {
@@ -38,7 +38,7 @@ class Optional {
 
  public:
     explicit Optional() : x(), exists(false) {}
-    explicit Optional(T&& x) noexcept : x(std::move(x)), exists(true) {}
+    explicit Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
     explicit Optional(const T& x) : x(x), exists(true) {}
 
     Optional(Optional<T>&& other) : exists(other.exists) {
@@ -61,7 +61,7 @@ class Optional {
 
     Optional& operator=(Optional<T>&& other) {
         if (other.exists) {
-            x = std::move(other.x);
+            x = move_(other.x);
         }
         exists = other.exists;
         other.exists = false;
@@ -69,7 +69,7 @@ class Optional {
     }
     Optional& operator=(const Optional<T>& other) {
         if (other.exists) {
-            x = std::move(other.x);
+            x = move_(other.x);
         }
         exists = other.exists;
         return *this;

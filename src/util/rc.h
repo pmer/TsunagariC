@@ -27,10 +27,10 @@
 #ifndef SRC_CORE_RC_H_
 #define SRC_CORE_RC_H_
 
-#include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "util/assert.h"
 #include "util/meta.h"
 #include "util/unique.h"
 
@@ -185,8 +185,8 @@ class SharedPtr {
     operator bool() const noexcept { return x != nullptr; }
 
     T* get() const noexcept { return x; }
-    T* operator->() const noexcept { assert(x); return x; }
-    T& operator*() const noexcept { assert(x); return *x; }
+    T* operator->() const noexcept { assert_(x); return x; }
+    T& operator*() const noexcept { assert_(x); return *x; }
 
     bool operator==(const SharedPtr& other) const noexcept {
         return x == other.x;
@@ -295,8 +295,8 @@ class CompactSharedPtr {
     operator bool() const { return data != nullptr; }
 
     T* get() const noexcept { return data->x; }
-    T* operator->() const noexcept { assert(data); return data->x; }
-    T& operator*() const noexcept { assert(data); return *data->x; }
+    T* operator->() const noexcept { assert_(data); return data->x; }
+    T& operator*() const noexcept { assert_(data); return *data->x; }
 
     bool operator==(const CompactSharedPtr& other) const noexcept {
         return data == other.data;

@@ -37,7 +37,6 @@
 #include "core/formatter.h"
 #include "core/log.h"
 #include "core/images.h"
-#include "util/math2.h"
 #include "core/music.h"
 #include "core/npc.h"
 #include "core/overlay.h"
@@ -46,6 +45,8 @@
 #include "core/viewport.h"
 #include "core/window.h"
 #include "core/world.h"
+#include "util/assert.h"
+#include "util/math2.h"
 
 #include "data/data-world.h"
 
@@ -548,7 +549,7 @@ int Area::depthIndex(double depth) const
 
 double Area::indexDepth(int idx) const
 {
-    assert(0 <= idx && idx <= dim.z);
+    assert_(0 <= idx && idx <= dim.z);
     return idx2depth[(size_t)idx];
 }
 
@@ -558,7 +559,7 @@ void Area::drawTiles()
 {
     icube tiles = visibleTiles();
     for (int z = tiles.z1; z < tiles.z2; z++) {
-        assert(0 <= z && z <= dim.z);
+        assert_(0 <= z && z <= dim.z);
         double depth = idx2depth[(size_t)z];
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {

@@ -28,10 +28,11 @@
 #ifndef FORMATTER_H
 #define FORMATTER_H
 
-#include <assert.h>
 #include <string.h>
 
 #include <string>
+
+#include "util/assert.h"
 
 /**
  * Formatter
@@ -47,7 +48,7 @@ public:
     template<class T>
     Formatter& operator %(T data)
     {
-        assert(pos < result.size());
+        assert_(pos < result.size());
 
         size_t markerSize = 1;
         result.replace(pos, markerSize, format(data));

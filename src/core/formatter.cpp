@@ -1,9 +1,9 @@
-/***********************************
-** Tsunagari Tile Engine          **
-** formatter.cpp                  **
-** Copyright 2013 PariahSoft LLC  **
-** Copyright 2016 Paul Merrill    **
-***********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** formatter.cpp                    **
+** Copyright 2013 PariahSoft LLC    **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,8 +27,9 @@
 
 #include "core/formatter.h"
 
-#include <assert.h>
 #include <stdio.h>
+
+#include "util/assert.h"
 
 Formatter::Formatter(std::string format)
     : result(format), pos(0)
@@ -44,7 +45,7 @@ Formatter::~Formatter()
 
 Formatter::operator const std::string&()
 {
-    assert(pos == result.size());
+    assert_(pos == result.size());
 
     return result;
 }
@@ -52,7 +53,7 @@ Formatter::operator const std::string&()
 
 void Formatter::findNextPlaceholder()
 {
-    assert(pos <= result.size());
+    assert_(pos <= result.size());
 
     size_t next = result.find("%", pos);
     if (next != std::string::npos) {

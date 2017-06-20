@@ -27,16 +27,15 @@
 
 #include "gosu-sounds.h"
 
-#include <assert.h>
-
 #include <limits>
 
 #include "core/client-conf.h"
 #include "core/formatter.h"
-#include "util/math2.h"
 #include "core/measure.h"
 #include "core/resources.h"
 #include "core/sounds.h"
+#include "util/assert.h"
+#include "util/math2.h"
 
 #include "av/gosu/gosu-cbuffer.h"
 
@@ -90,7 +89,7 @@ void GosuSoundInstance::volume(double attemptedVolume)
             ) % attemptedVolume % volume
         );
     }
-    assert(0 <= conf.soundVolume && conf.soundVolume <= 100);
+    assert_(0 <= conf.soundVolume && conf.soundVolume <= 100);
     instance.change_volume(volume * conf.soundVolume / 100.0);
 }
 

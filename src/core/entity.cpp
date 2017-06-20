@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** entity.cpp                         **
 ** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2016-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,7 +25,6 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <assert.h>
 #include <math.h>
 
 #include "core/area.h"
@@ -36,6 +35,7 @@
 #include "core/log.h"
 #include "core/resources.h"
 #include "core/world.h"
+#include "util/assert.h"
 #include "util/math2.h"
 #include "util/string2.h"
 #include "util/move.h"
@@ -221,7 +221,7 @@ void Entity::setSpeedMultiplier(double multiplier)
 {
     speedMul = multiplier;
     if (area) {
-        assert(area->getTileDimensions().x == area->getTileDimensions().y);
+        assert_(area->getTileDimensions().x == area->getTileDimensions().y);
         double tilesPerMillisecond = area->getTileDimensions().x / 1000.0;
         speed = baseSpeed * speedMul * tilesPerMillisecond;
     }

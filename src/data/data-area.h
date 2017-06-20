@@ -32,9 +32,10 @@
 
 #include <functional>
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
+
+#include "util/unique.h"
 
 class Area;
 class Entity;
@@ -84,7 +85,7 @@ private:
     DataArea& operator=(const DataArea&) = delete;
     DataArea& operator=(DataArea&&) = delete;
 
-    std::vector<std::unique_ptr<InProgress>> inProgresses;
+    std::vector<Unique<InProgress>> inProgresses;
 };
 
 #endif

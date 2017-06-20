@@ -28,8 +28,8 @@
 #include "data/data-area.h"
 
 #include "core/algorithm.h"
-#include "util/random.h"
 #include "core/sounds.h"
+#include "util/random.h"
 
 #include "data/inprogress.h"
 
@@ -50,7 +50,7 @@ void DataArea::tick(time_t dt)
         auto& inProgress = inProgresses[i];
         inProgress->tick(dt);
     }
-    erase_if(inProgresses, [] (std::unique_ptr<InProgress>& ip) { return ip->isOver(); });
+    erase_if(inProgresses, [] (Unique<InProgress>& ip) { return ip->isOver(); });
     onTick(dt);
 }
 

@@ -27,7 +27,7 @@
 
 #include "animation.h"
 
-#include <assert.h>
+#include "util/assert.h"
 
 Animation::Animation()
     : frameTime(1),
@@ -47,7 +47,7 @@ Animation::Animation(std::vector<Arc<Image>> frames,
       cycleTime(1),
       frameShowing(0),
       offset(0) {
-    assert(frameTime > 0);
+    assert_(frameTime > 0);
 
     cycleTime = frameTime * (time_t)this->frames.size();
 }

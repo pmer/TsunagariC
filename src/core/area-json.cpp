@@ -27,7 +27,6 @@
 
 #include "core/area-json.h"
 
-#include <assert.h>
 #include <math.h>
 
 #include <limits>
@@ -45,6 +44,7 @@
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"
+#include "util/assert.h"
 #include "util/move.h"
 #include "util/optional.h"
 
@@ -115,9 +115,9 @@ bool AreaJSON::init() {
 
 
 void AreaJSON::allocateMapLayer() {
-    assert(0 <= dim.y && dim.y <= std::numeric_limits<int>::max());
-    assert(0 <= dim.x && dim.x <= std::numeric_limits<int>::max());
-    assert(0 <= dim.z && dim.z + 1 <= std::numeric_limits<int>::max());
+    assert_(0 <= dim.y && dim.y <= std::numeric_limits<int>::max());
+    assert_(0 <= dim.x && dim.x <= std::numeric_limits<int>::max());
+    assert_(0 <= dim.z && dim.z + 1 <= std::numeric_limits<int>::max());
 
     map.push_back(grid_t((size_t)dim.y, row_t((size_t)dim.x)));
     grid_t& grid = map[(size_t)dim.z];
@@ -523,7 +523,7 @@ bool AreaJSON::processLayerData(JSONArrayPtr arr) {
     const int z = dim.z - 1;
 
     // If we ever allow finding layers out of order.
-    //assert(0 <= z && z < dim.z);
+    //assert_(0 <= z && z < dim.z);
 
     size_t x = 0, y = 0;
 
@@ -631,7 +631,7 @@ bool AreaJSON::processObject(JSONObjectPtr obj) {
     const int z = dim.z - 1;
 
     // If we ever allow finding layers out of order.
-    //assert(0 <= z && z < dim.z);
+    //assert_(0 <= z && z < dim.z);
 
     // Gather object properties now. Assign them to tiles later.
     bool wwide[5], hwide[5];  // Wide exit in dimensions: width, height

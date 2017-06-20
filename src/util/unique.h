@@ -27,7 +27,7 @@
 #ifndef SRC_CORE_UNIQUE_H_
 #define SRC_CORE_UNIQUE_H_
 
-#include <assert.h>
+#include "util/assert.h"
 
 //
 // Pointers
@@ -87,8 +87,8 @@ class Unique {
     operator bool() const noexcept { return x != nullptr; }
 
     T* get() const noexcept { return x; }
-    T* operator->() const noexcept { assert(x); return x; }
-    T& operator*() const noexcept { assert(x); return *x; }
+    T* operator->() const noexcept { assert_(x); return x; }
+    T& operator*() const noexcept { assert_(x); return *x; }
 
  private:
     // Unique pointers cannot be copied.

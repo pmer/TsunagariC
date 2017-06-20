@@ -8,6 +8,7 @@ set(PACK_SOURCES ${PACK_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/pack-file.cpp
     ${CMAKE_CURRENT_LIST_DIR}/pool.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui-log.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../util/assert.cpp
 )
 
 set(PACK_LIBRARIES

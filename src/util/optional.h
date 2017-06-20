@@ -27,8 +27,7 @@
 #ifndef SRC_UTIL_OPTIONAL_H_
 #define SRC_UTIL_OPTIONAL_H_
 
-#include <assert.h>
-
+#include "util/assert.h"
 #include "util/move.h"
 
 template<typename T>
@@ -77,11 +76,11 @@ class Optional {
 
     operator bool() const { return exists; }
 
-    const T* operator->() const { assert(exists); return &x; }
-    const T& operator*() const { assert(exists); return x; }
+    const T* operator->() const { assert_(exists); return &x; }
+    const T& operator*() const { assert_(exists); return x; }
 
-    T* operator->() { assert(exists); return &x; }
-    T& operator*() { assert(exists); return x; }
+    T* operator->() { assert_(exists); return &x; }
+    T& operator*() { assert_(exists); return x; }
 
     bool operator==(const Optional<T>& other) {
         if (exists != other.exists) {

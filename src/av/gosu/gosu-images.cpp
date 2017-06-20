@@ -30,7 +30,6 @@
 #include <Gosu/Bitmap.hpp>
 #include <Gosu/Graphics.hpp>
 #include <Gosu/Image.hpp>
-#include <core/formatter.h>
 
 #include "av/gosu/gosu-cbuffer.h"
 #include "av/gosu/gosu-window.h"
@@ -39,6 +38,7 @@
 #include "core/measure.h"
 #include "core/resources.h"
 #include "core/window.h"
+#include "util/unique.h"
 
 #ifdef BACKEND_GOSU
 static GosuImages globalImages;
@@ -86,7 +86,7 @@ Arc<Image> GosuTiledImage::operator[](size_t n) const {
 
 
 static Arc<Image> genImage(const std::string& path) {
-    std::unique_ptr<Resource> r = Resources::instance().load(path);
+    Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
         return Arc<Image>();
@@ -107,7 +107,7 @@ static Arc<Image> genImage(const std::string& path) {
 
 static Arc<TiledImage> genTiledImage(const std::string& path,
                                      unsigned tileW, unsigned tileH) {
-    std::unique_ptr<Resource> r = Resources::instance().load(path);
+    Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
         return Arc<TiledImage>();

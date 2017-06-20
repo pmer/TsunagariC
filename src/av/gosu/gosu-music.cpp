@@ -31,6 +31,7 @@
 
 #include "core/measure.h"
 #include "core/resources.h"
+#include "util/unique.h"
 
 #include "av/gosu/gosu-cbuffer.h"
 
@@ -41,7 +42,7 @@ MusicWorker& MusicWorker::instance() {
 }
 
 static std::shared_ptr<Gosu::Song> genSong(const std::string& name) {
-    std::unique_ptr<Resource> r = Resources::instance().load(name);
+    Unique<Resource> r = Resources::instance().load(name);
     if (!r) {
         // Error logged.
         return std::shared_ptr<Gosu::Song>();

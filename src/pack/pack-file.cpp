@@ -112,13 +112,13 @@ class PackReaderImpl : public PackReader {
     std::unordered_map<std::string, BlobIndex> lookups;
 };
 
-std::unique_ptr<PackReader> PackReader::fromFile(const std::string& path) {
+Unique<PackReader> PackReader::fromFile(const std::string& path) {
     PackReaderImpl* reader = new PackReaderImpl;
 
     reader->fd = open(path.c_str(), O_RDONLY);
 
     if (reader->fd == -1) {
-        return std::unique_ptr<PackReader>();
+        return Unique<PackReader>();
     }
 
     int fd = reader->fd;
@@ -127,11 +127,11 @@ std::unique_ptr<PackReader> PackReader::fromFile(const std::string& path) {
     read(fd, &header, sizeof(header));
 
     if (memcmp(header.magic, PACK_MAGIC, sizeof(header.magic)) != 0) {
-        return std::unique_ptr<PackReader>();
+        return Unique<PackReader>();
     }
 
-    if (!(header.version == PACK_VERSION)) {
-        return std::unique_ptr<PackReader>();
+    if (header.version != PACK_VERSION) {
+        return Unique<PackReader>();
     }
 
     uint64_t blobCount = reader->header.blobCount;
@@ -164,7 +164,7 @@ std::unique_ptr<PackReader> PackReader::fromFile(const std::string& path) {
         reader->lookups[blobPath] = i;
     }
 
-    return std::unique_ptr<PackReaderImpl>(reader);
+    return Unique<PackReader>(reader);
 }
 
 PackReaderImpl::~PackReaderImpl() {
@@ -244,8 +244,8 @@ class PackWriterImpl : public PackWriter {
     bool sorted = true;
 };
 
-std::unique_ptr<PackWriter> PackWriter::make() {
-    return std::make_unique<PackWriterImpl>();
+Unique<PackWriter> PackWriter::make() {
+    return Unique<PackWriter>(new PackWriterImpl);
 }
 
 bool PackWriterImpl::writeToFile(const std::string &path) {

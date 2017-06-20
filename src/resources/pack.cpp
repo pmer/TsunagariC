@@ -68,7 +68,7 @@ void PackResources::init() {
     }
 }
 
-std::unique_ptr<Resource> PackResources::load(const std::string& path) {
+Unique<Resource> PackResources::load(const std::string& path) {
     std::lock_guard<std::mutex> lock(mutex);
 
     TimeMeasure m("Mapped " + path);
@@ -84,7 +84,7 @@ std::unique_ptr<Resource> PackResources::load(const std::string& path) {
 
     if (index == PackReader::BLOB_NOT_FOUND) {
         Log::err("PackResources", Formatter("%: file missing") % fullPath);
-        return std::unique_ptr<Resource>();
+        return Unique<Resource>();
     }
 
     uint64_t blobSize = pack->getBlobSize(index);
@@ -92,10 +92,10 @@ std::unique_ptr<Resource> PackResources::load(const std::string& path) {
     // Will it fit in memory?
     if (blobSize > std::numeric_limits<size_t>::max()) {
         Log::err("PackResources", Formatter("%: file too large") % fullPath);
-        return std::unique_ptr<Resource>();;
+        return Unique<Resource>();;
     }
 
     void* blobData = pack->getBlobData(index);
 
-    return std::make_unique<PackResource>(blobData, blobSize);
+    return Unique<Resource>(new PackResource(blobData, blobSize));
 }

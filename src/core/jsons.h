@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** jsons.h                     **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** jsons.h                          **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,15 +27,16 @@
 #ifndef SRC_CORE_JSONS_H_
 #define SRC_CORE_JSONS_H_
 
-#include <memory>
 #include <string>
 #include <vector>
+
+#include "util/unique.h"
 
 class JSONArray;
 class JSONObject;
 
-typedef std::unique_ptr<const JSONArray> JSONArrayPtr;
-typedef std::unique_ptr<const JSONObject> JSONObjectPtr;
+typedef Unique<const JSONArray> JSONArrayPtr;
+typedef Unique<const JSONObject> JSONObjectPtr;
 typedef std::shared_ptr<const JSONObject> JSONObjectRef;
 
 class JSONObject {

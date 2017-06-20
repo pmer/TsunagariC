@@ -29,9 +29,10 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 #include <vector>
+
+#include "util/unique.h"
 
 class PackReader {
  public:
@@ -40,7 +41,7 @@ class PackReader {
 
     static constexpr BlobIndex BLOB_NOT_FOUND = UINT64_MAX;
 
-    static std::unique_ptr<PackReader> fromFile(const std::string& path);
+    static Unique<PackReader> fromFile(const std::string& path);
     virtual ~PackReader() = default;
 
     virtual BlobIndex size() const = 0;
@@ -60,7 +61,7 @@ class PackWriter {
  public:
     typedef uint64_t BlobSize;
 
-    static std::unique_ptr<PackWriter> make();
+    static Unique<PackWriter> make();
     virtual ~PackWriter() = default;
 
     virtual bool writeToFile(const std::string& path) = 0;

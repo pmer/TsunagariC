@@ -87,7 +87,7 @@ template<typename Iterator>
 static bool createArchive(const std::string& archivePath,
                           Iterator inputsBegin,
                           Iterator inputsEnd) {
-    std::unique_ptr<PackWriter> pack = PackWriter::make();
+    Unique<PackWriter> pack = PackWriter::make();
 
     for (; inputsBegin != inputsEnd; ++inputsBegin) {
         const std::string& inputPath = *inputsBegin;
@@ -100,7 +100,7 @@ static bool createArchive(const std::string& archivePath,
 }
 
 static bool listArchive(const std::string& archivePath) {
-    std::unique_ptr<PackReader> pack = PackReader::fromFile(archivePath);
+    Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
@@ -143,7 +143,7 @@ static void putFile(const std::string& path, uint64_t size, void* data) {
 }
 
 static bool extractArchive(const std::string& archivePath) {
-    std::unique_ptr<PackReader> pack = PackReader::fromFile(archivePath);
+    Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
         std::vector<PackReader::BlobIndex> blobIndicies;

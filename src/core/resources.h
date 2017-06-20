@@ -27,8 +27,9 @@
 #ifndef RESOURCES_H
 #define RESOURCES_H
 
-#include <memory>
 #include <string>
+
+#include "util/unique.h"
 
 class Resource
 {
@@ -63,7 +64,7 @@ public:
 
     //! Load a resource from the file at the given path.
     //! Returns nullptr if the resource does not exist.
-    virtual std::unique_ptr<Resource> load(const std::string& path) = 0;
+    virtual Unique<Resource> load(const std::string& path) = 0;
 
 protected:
     Resources() = default;

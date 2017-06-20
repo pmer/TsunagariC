@@ -36,6 +36,7 @@
 #include "core/sounds.h"
 #include "util/assert.h"
 #include "util/math2.h"
+#include "util/unique.h"
 
 #include "av/gosu/gosu-cbuffer.h"
 
@@ -123,7 +124,7 @@ void GosuSoundInstance::speed(double attemptedSpeed)
 
 static std::shared_ptr<Gosu::Sample> genSample(const std::string& path)
 {
-    std::unique_ptr<Resource> r = Resources::instance().load(path);
+    Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
         return std::shared_ptr<Gosu::Sample>();

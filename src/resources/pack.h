@@ -61,7 +61,7 @@ class PackResources : public Resources {
 
     void init();
 
-    std::unique_ptr<Resource> load(const std::string& path);
+    Unique<Resource> load(const std::string& path);
 
  private:
     PackResources(const PackResources&) = delete;
@@ -69,7 +69,7 @@ class PackResources : public Resources {
 
     bool initialized;
     std::mutex mutex;
-    std::unique_ptr<PackReader> pack;
+    Unique<PackReader> pack;
 };
 
 #endif  // SRC_RESOURCES_PACK_H_

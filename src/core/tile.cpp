@@ -33,7 +33,7 @@
 #include "core/formatter.h"
 #include "core/log.h"
 #include "core/world.h"
-#include "util/memory.h"
+#include "util/move.h"
 #include "util/string2.h"
 
 static int ivec2_to_dir(ivec2 v) {

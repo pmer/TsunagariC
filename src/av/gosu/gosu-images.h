@@ -35,7 +35,7 @@
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
 #include "core/images.h"
-#include "util/memory.h"
+#include "util/move.h"
 
 class GosuImage : public Image {
  public:

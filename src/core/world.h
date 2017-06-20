@@ -37,7 +37,7 @@
 #include "core/vec.h"
 #include "core/window.h"  // for KeyboardKey
 #include "util/bitrecord.h"
-#include "util/memory.h"
+#include "util/arc.h"
 
 class Area;
 class Image;

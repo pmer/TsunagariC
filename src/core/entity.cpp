@@ -38,7 +38,7 @@
 #include "core/world.h"
 #include "util/math2.h"
 #include "util/string2.h"
-#include "util/memory.h"
+#include "util/move.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 

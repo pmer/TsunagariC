@@ -45,7 +45,7 @@
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"
-#include "util/memory.h"
+#include "util/move.h"
 #include "util/optional.h"
 
 #ifdef _WIN32

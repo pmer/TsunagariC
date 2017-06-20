@@ -33,7 +33,7 @@
 #include <memory>
 #include <vector>
 
-#include "util/memory.h"
+#include "util/arc.h"
 
 class Image;
 

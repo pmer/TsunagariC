@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** ui-log.cpp                       **
-** Copyright 2016-2017 Paul Merrill **
-*************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** move.h                        **
+** Copyright 2017 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,33 +24,30 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "pack/ui.h"
+#ifndef SRC_CORE_MOVE_H_
+#define SRC_CORE_MOVE_H_
 
-#include "pack/pool.h"
-#include "util/unique.h"
+//
+// Move
+//   move_()  same as std::move
+//
 
-static Unique<Pool> pool(Pool::makePool("ui", 1));
+template<typename T>
+struct Refless {
+    typedef T value;
+};
+template<typename T>
+struct Refless<T&&> {
+    typedef T value;
+};
+template<typename T>
+struct Refless<T&> {
+    typedef T value;
+};
 
-void uiShowAddingFile(const std::string& path) {
-    pool->schedule([=] {
-        printf("Adding %s\n", path.c_str());
-    });
+template<typename T>
+inline constexpr typename Refless<T>::value&& move_(T&& x) noexcept {
+    return static_cast<typename Refless<T>::value&&>(x);
 }
 
-void uiShowWritingArchive(const std::string& archivePath) {
-    pool->schedule([=] {
-        printf("Writing to %s\n", archivePath.c_str());
-    });
-}
-
-void uiShowListingEntry(const std::string& blobPath, uint64_t blobSize) {
-    pool->schedule([=] {
-        printf("%s: %llu bytes\n", blobPath.c_str(), blobSize);
-    });
-}
-
-void uiShowExtractingFile(const std::string& blobPath, uint64_t blobSize) {
-    pool->schedule([=] {
-        printf("Extracting %s: %llu bytes\n", blobPath.c_str(), blobSize);
-    });
-}
+#endif  // SRC_CORE_MOVE_H_

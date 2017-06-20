@@ -30,7 +30,7 @@
 
 #include <string>
 
-#include "util/memory.h"
+#include "util/arc.h"
 
 class Image {
  public:

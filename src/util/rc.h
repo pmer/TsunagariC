@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** memory.h                      **
+** rc.h                          **
 ** Copyright 2017 Paul Merrill   **
 **********************************/
 
@@ -24,107 +24,28 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_MEMORY_H_
-#define SRC_CORE_MEMORY_H_
+#ifndef SRC_CORE_RC_H_
+#define SRC_CORE_RC_H_
 
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 
-#include <atomic>
-#include <type_traits>
-#include <utility>
-
 #include "util/meta.h"
-
-//
-// Move
-//   move()  same as std::move
-//
-template<typename T>
-struct Refless {
-    typedef T value;
-};
-template<typename T>
-struct Refless<T&&> {
-    typedef T value;
-};
-template<typename T>
-struct Refless<T&> {
-    typedef T value;
-};
-
-template<typename T>
-inline constexpr typename Refless<T>::value&& move_(T&& x) noexcept {
-    return static_cast<typename Refless<T>::value&&>(x);
-}
-
+#include "util/unique.h"
 
 //
 // Pointers
-//   class Unique      Unique pointer
-//   class Rc          "Reference counter" shared pointer
-//   class Arc         "Atomic reference counter" thread-safe shared pointer
-//   class CompactRc   Fast shared pointer (does not handle abstract classes or
-//                                          custom deleters)
-//   class CompactArc  Fast thread-safe shared pointer
+//   unique.h
+//     class Unique      Unique pointer
+//   rc.h
+//     class Rc          "Reference counter" shared pointer
+//     class CompactRc   Fast shared pointer (does not handle abstract classes
+//                                            or custom deleters)
+//   arc.h
+//     class Arc         "Atomic reference counter" thread-safe shared pointer
+//     class CompactArc  Fast thread-safe shared pointer
 //
-
-template<typename T>
-struct DefaultUniqueDestructor {
-    void operator()(T* x) { delete x; }
-};
-
-// Unique pointers delete their object when destroyed.
-template<typename T, typename Deleter = DefaultUniqueDestructor<T>>
-class Unique {
-    T* x;
-    Deleter d;
-
- public:
-    Unique() : x(nullptr) {}
-
-    Unique(Unique&& other) noexcept : x(other.x) {
-        other.x = nullptr;
-    }
-
-    Unique(T* x) : x(x) {}
-
-    template<typename ...Args>
-    explicit Unique(Args&& ...args)
-            : x(new T(std::forward<Args>(args)...)) {}
-
-    ~Unique() {
-        d(x);
-    }
-
-    Unique& operator=(T* x) {
-        delete this->x;
-        this->x = x;
-        return *this;
-    }
-
-    Unique& operator=(Unique&& other) {
-        x = other.x;
-        other.x = nullptr;
-        return *this;
-    }
-
-    operator bool() const noexcept { return x != nullptr; }
-
-    T* get() const noexcept { return x; }
-    T* operator->() const noexcept { assert(x); return x; }
-    T& operator*() const noexcept { assert(x); return *x; }
-
- private:
-    // Unique pointers cannot be copied.
-    Unique(const Unique&) {}
-    Unique& operator=(const Unique&) { return *this; }
-
-    // Meaningless...
-    bool operator==(Unique&&) { return false; }
-    bool operator==(const Unique&) const { return false; }
-};
 
 // FIXME: How can we reduce memory usage? Also, can we reduce allocations so
 //        none are needed for default delete?
@@ -308,10 +229,12 @@ struct CompactSharedData {
     T x;
     Count count;
 
+    /*
     template<typename ...Args>
     explicit CompactSharedData(Args&& ...args)
             : x(new T(std::forward<Args>(args)...)),
               count{1} {}
+    */
 };
 
 // Shared pointer for complete, AKA non-abstract, data types. We combine the
@@ -341,9 +264,11 @@ class CompactSharedPtr {
         incref();
     }
 
+    /*
     template<typename ...Args>
     explicit CompactSharedPtr(Args&& ...args)
             : data(std::forward<Args>(args)...) {}
+    */
 
     ~CompactSharedPtr() {
         decref();
@@ -413,27 +338,12 @@ struct NonAtomic {
     size_t get() { return x; }
 };
 
-struct Atomic {
-    std::atomic<size_t> x;
-    Atomic(size_t x) : x(x) {}
-    Atomic& operator++() { ++x; return *this; }
-    Atomic& operator--() { --x; return *this; }
-    bool operator==(size_t x) { return this->x == x; }
-    size_t get() { return x; }
-};
-
 // Shared pointers delete their pointer only when the last pointer to the same
 // object is destroyed.
 template<typename T>
 using Rc = SharedPtr<T, NonAtomic>;
 
 template<typename T>
-using Arc = SharedPtr<T, Atomic>;
-
-template<typename T>
 using CompactRc = CompactSharedPtr<T, NonAtomic>;
-
-template<typename T>
-using CompactArc = CompactSharedPtr<T, Atomic>;
 
 #endif  // SRC_CORE_MEMORY_H_

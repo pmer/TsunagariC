@@ -38,7 +38,7 @@ class TileSet;
 #include "core/animation.h"
 #include "core/vec.h"
 #include "data/data-area.h"
-#include "util/memory.h"
+#include "util/move.h"
 #include "util/optional.h"
 
 class Area;

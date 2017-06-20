@@ -28,7 +28,7 @@
 #include "data/data-area.h"
 
 #include "core/algorithm.h"
-#include "core/random.h"
+#include "util/random.h"
 #include "core/sounds.h"
 
 #include "data/inprogress.h"

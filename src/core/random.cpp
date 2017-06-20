@@ -25,7 +25,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/random.h"
+#include "util/random.h"
 
 #include <stdlib.h>
 

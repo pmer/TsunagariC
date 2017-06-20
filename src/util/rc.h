@@ -328,7 +328,7 @@ class CompactSharedPtr {
     }
 };
 
-// Wrappers to increase clarity of error messages.
+// Wrapper to increase clarity of error messages.
 struct NonAtomic {
     size_t x;
     NonAtomic(size_t x) : x(x) {}

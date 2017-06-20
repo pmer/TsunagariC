@@ -31,21 +31,21 @@
 //
 // template struct If
 //
-template<bool Cond, typename TrueT, typename FalseT>
+template<bool Cond, typename WhenTrue, typename WhenFalse>
 struct If_;
 
-template<typename TrueT, typename FalseT>
-struct If_<true, TrueT, FalseT> {
-    typedef TrueT value;
+template<typename WhenTrue, typename WhenFalse>
+struct If_<true, WhenTrue, WhenFalse> {
+    typedef WhenTrue value;
 };
 
-template<typename TrueT, typename FalseT>
-struct If_<false, TrueT, FalseT> {
-    typedef FalseT value;
+template<typename WhenTrue, typename WhenFalse>
+struct If_<false, WhenTrue, WhenFalse> {
+    typedef WhenFalse value;
 };
 
-template<bool Cond, typename TrueT, typename FalseT>
-using If = typename If_<Cond, TrueT, FalseT>::value;
+template<bool Cond, typename WhenTrue, typename WhenFalse>
+using If = typename If_<Cond, WhenTrue, WhenFalse>::value;
 
 
 //
@@ -66,24 +66,34 @@ using EnableIf = typename EnableIf_<Cond>::value;
 
 
 //
-// template struct IsBaseOf
+// template DeclVal()
 //
-// https://stackoverflow.com/questions/2631585/c-how-to-require-that-one-template-type-is-derived-from-the-other
-template<typename B, typename D>
-struct IsBaseOf {
-    typedef char yes[1];
-    typedef char no[2];
+template<typename T>
+T&& DeclVal();
 
-    static yes& test(B*);
-    static no& test(...);
 
-    static D* d();
+//
+// template struct IsConvertible
+//
+template<typename T>
+void ConvertibleTest(T);
 
-    static constexpr bool value = sizeof(test(d())) == sizeof(yes);
+template<typename From, typename To, typename = void>
+struct IsConvertible {
+    static constexpr bool value = false;
 };
 
+template<typename From, typename To>
+struct IsConvertible<From, To, decltype(ConvertibleTest<To>(DeclVal<From>()))> {
+    static constexpr bool value = true;
+};
+
+
+//
+// template struct EnableIfSubclass
+//
 template<typename B, typename D>
-using EnableIfSubclass = typename EnableIf_<std::is_convertible<D, B>::value>::value;
+using EnableIfSubclass = typename EnableIf_<IsConvertible<D, B>::value>::value;
 
 
 //

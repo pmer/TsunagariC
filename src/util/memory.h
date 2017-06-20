@@ -189,8 +189,7 @@ class SharedPtr {
     }
 
     template<typename D>
-    SharedPtr(SharedPtr<D, Count>&& other,
-              EnableIfSubclass<T, D> = Null())
+    SharedPtr(SharedPtr<D, Count>&& other, EnableIfSubclass<T, D> = Null())
             : x(other.x), data(other.data) {
         other.x = nullptr;
         other.data = nullptr;
@@ -202,8 +201,7 @@ class SharedPtr {
     }
 
     template<typename D>
-    SharedPtr(SharedPtr<D, Count>& other,
-              EnableIfSubclass<T, D> = Null())
+    SharedPtr(SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Null())
             : x(other.x), data(reinterpret_cast<SharedData<T, Count>*>(other.data)) {
         incref();
     }
@@ -215,8 +213,7 @@ class SharedPtr {
     }
 
     template<typename D>
-    SharedPtr(const SharedPtr<D, Count>& other,
-              EnableIfSubclass<T, D> = Null())
+    SharedPtr(const SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Null())
             : x(other.x), data(other.data) {
         incref();
     }

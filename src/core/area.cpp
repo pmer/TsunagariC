@@ -208,7 +208,7 @@ void Area::tick(time_t dt)
     for (auto& overlay : overlays) {
         overlay->tick(dt);
     }
-    erase_if(overlays, [] (const std::shared_ptr<Overlay>& o) {
+    erase_if(overlays, [] (const Rc<Overlay>& o) {
         bool dead = o->isDead();
         if (dead) {
             o->setArea(nullptr);
@@ -222,7 +222,7 @@ void Area::tick(time_t dt)
         for (auto& character : characters) {
             character->tick(dt);
         }
-        erase_if(characters, [] (const std::shared_ptr<Character>& c) {
+        erase_if(characters, [] (const Rc<Character>& c) {
             bool dead = c->isDead();
             if (dead) {
                 c->setArea(nullptr);
@@ -245,7 +245,7 @@ void Area::turn()
     for (auto& character : characters) {
         character->turn();
     }
-    erase_if(characters, [] (const std::shared_ptr<Character>& c) {
+    erase_if(characters, [] (const Rc<Character>& c) {
         bool dead = c->isDead();
         if (dead) {
             c->setArea(nullptr);
@@ -445,13 +445,13 @@ const std::string Area::getDescriptor() const
     return descriptor;
 }
 
-std::shared_ptr<NPC> Area::spawnNPC(const std::string& descriptor,
+Rc<NPC> Area::spawnNPC(const std::string& descriptor,
     vicoord coord, const std::string& phase)
 {
-    auto c = std::make_shared<NPC>();
+    auto c = Rc<NPC>(new NPC);
     if (!c->init(descriptor, phase)) {
         // Error logged.
-        return std::shared_ptr<NPC>();
+        return Rc<NPC>();
     }
     c->setArea(this);
     c->setTileCoords(coord);
@@ -459,13 +459,13 @@ std::shared_ptr<NPC> Area::spawnNPC(const std::string& descriptor,
     return c;
 }
 
-std::shared_ptr<Overlay> Area::spawnOverlay(const std::string& descriptor,
+Rc<Overlay> Area::spawnOverlay(const std::string& descriptor,
     vicoord coord, const std::string& phase)
 {
-    auto o = std::make_shared<Overlay>();
+    auto o = Rc<Overlay>(new Overlay);
     if (!o->init(descriptor, phase)) {
         // Error logged.
-        return std::shared_ptr<Overlay>();
+        return Rc<Overlay>();
     }
     o->setArea(this);
     o->teleport(coord);
@@ -473,12 +473,12 @@ std::shared_ptr<Overlay> Area::spawnOverlay(const std::string& descriptor,
     return o;
 }
 
-void Area::insert(std::shared_ptr<Character> c)
+void Area::insert(Rc<Character> c)
 {
     characters.insert(c);
 }
 
-void Area::insert(std::shared_ptr<Overlay> o)
+void Area::insert(Rc<Overlay> o)
 {
     overlays.insert(o);
 }

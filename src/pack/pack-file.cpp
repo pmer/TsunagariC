@@ -205,6 +205,7 @@ void* PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
 std::vector<void*> PackReaderImpl::getBlobDatas(
         std::vector<BlobIndex> indicies) {
     size_t count = indicies.size();
+    size_t totalSize = 0;
 
     std::vector<void*> datas;
     iovec* iov = new iovec[count];
@@ -216,12 +217,15 @@ std::vector<void*> PackReaderImpl::getBlobDatas(
         datas.push_back(data);
         iov[i].iov_base = data;
         iov[i].iov_len = size;
+
+        totalSize += size;
     }
 
     size_t offset = dataOffsets.get()[indicies[0]];
     lseek(fd, static_cast<off_t>(offset), SEEK_SET);
 
-    ssize_t s = readv(fd, iov, static_cast<int>(count));
+    /* ssize_t s = */ readv(fd, iov, static_cast<int>(count));
+    // TODO: compare s with totalSize, throw exception if not equal?
 
     delete[] iov;
 

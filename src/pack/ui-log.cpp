@@ -27,8 +27,9 @@
 #include "pack/ui.h"
 
 #include "pack/pool.h"
+#include "util/memory.h"
 
-static std::unique_ptr<Pool> pool(Pool::makePool("ui", 1));
+static Unique<Pool> pool(Pool::makePool("ui", 1));
 
 void uiShowAddingFile(const std::string& path) {
     pool->schedule([=] {

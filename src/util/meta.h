@@ -27,6 +27,7 @@
 #ifndef SRC_CORE_META_H_
 #define SRC_CORE_META_H_
 
+
 //
 // template struct If
 //
@@ -46,6 +47,7 @@ struct If_<false, TrueT, FalseT> {
 template<bool Cond, typename TrueT, typename FalseT>
 using If = typename If_<Cond, TrueT, FalseT>::value;
 
+
 //
 // template struct EnableIf
 //
@@ -62,6 +64,7 @@ struct EnableIf_<true> {
 template<bool Cond>
 using EnableIf = typename EnableIf_<Cond>::value;
 
+
 //
 // template struct IsBaseOf
 //
@@ -77,6 +80,24 @@ struct IsBaseOf {
     static D* d();
 
     static constexpr bool value = sizeof(test(d())) == sizeof(yes);
+};
+
+template<typename B, typename D>
+using EnableIfSubclass = typename EnableIf_<std::is_convertible<D, B>::value>::value;
+
+
+//
+// template struct IsAbstract
+//
+template<typename T>
+struct IsAbstract {
+    typedef char yes[1];
+    typedef char no[2];
+
+    static no& test(T (*)[1]);
+    static yes& test(...);
+
+    static constexpr bool value = sizeof(test(nullptr)) == sizeof(yes);
 };
 
 #endif  // SRC_CORE_META_H_

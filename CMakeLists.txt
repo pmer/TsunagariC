@@ -3,11 +3,13 @@ cmake_minimum_required(VERSION 3.6)
 find_package(PkgConfig REQUIRED)
 find_package(Gosu REQUIRED)
 find_package(SDL2 REQUIRED)
+find_package(Threads)
 
 set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES}
     ${GOSU_LIBRARIES}
     ${GOSU_DEPENDENCIES}
     ${SDL2_LIBRARIES}
+    Threads::Threads
 )
 
 include_directories(

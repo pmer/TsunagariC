@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** pack.h                      **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** pack.h                           **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,9 +34,10 @@
 
 #include "core/resources.h"
 #include "pack/pack-file.h"
+#include "util/unique.h"
 
 struct Free {
-    void operator() (void* ptr) {
+    void operator() (char* ptr) {
         free(ptr);
     }
 };
@@ -50,7 +51,7 @@ class PackResource : public Resource {
     size_t size() const;
 
  private:
-    std::unique_ptr<void, Free> _data;
+    Unique<char, Free> _data;
     size_t _size;
 };
 

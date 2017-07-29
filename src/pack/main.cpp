@@ -38,6 +38,7 @@
 #include "pack/pool.h"
 #include "pack/ui.h"
 #include "util/optional.h"
+#include "util/unique.h"
 
 const char* exe = nullptr;
 
@@ -153,7 +154,7 @@ static bool extractArchive(const std::string& archivePath) {
 
         std::vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
 
-        std::unique_ptr<Pool> pool(Pool::makePool("extract", 1));
+        Unique<Pool> pool(Pool::makePool("extract", 1));
 
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             std::string blobPath = pack->getBlobPath(i);

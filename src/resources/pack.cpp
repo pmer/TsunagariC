@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** pack.cpp                    **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** pack.cpp                         **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,7 +45,7 @@ Resources& Resources::instance() {
 
 
 PackResource::PackResource(void* data, size_t size)
-    : _data(data), _size(size) {}
+    : _data(static_cast<char*>(data)), _size(size) {}
 
 const void* PackResource::data() const {
     return _data.get();

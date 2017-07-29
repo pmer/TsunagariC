@@ -40,6 +40,7 @@
 #include <vector>
 
 #include "pack/file-type.h"
+#include "util/unique.h"
 
 //                                       "T   s    u    n    a   g    a   r"
 static constexpr uint8_t PACK_MAGIC[8] = {84, 115, 117, 110, 97, 103, 97, 114};
@@ -105,10 +106,10 @@ class PackReaderImpl : public PackReader {
 
     int fd;
     HeaderBlock header;
-    std::unique_ptr<PathOffset> pathOffsets;
-    std::unique_ptr<char> paths;
-    std::unique_ptr<BlobMetadata> metadatas;
-    std::unique_ptr<uint64_t> dataOffsets;
+    Unique<PathOffset> pathOffsets;
+    Unique<char> paths;
+    Unique<BlobMetadata> metadatas;
+    Unique<uint64_t> dataOffsets;
     std::unordered_map<std::string, BlobIndex> lookups;
 };
 
@@ -136,10 +137,10 @@ Unique<PackReader> PackReader::fromFile(const std::string& path) {
 
     uint64_t blobCount = reader->header.blobCount;
 
-    reader->pathOffsets.reset(new PathOffset[blobCount + 1]);
-    reader->paths.reset(new char[header.pathsBlockSize]);
-    reader->metadatas.reset(new BlobMetadata[blobCount]);
-    reader->dataOffsets.reset(new uint64_t[blobCount]);
+    reader->pathOffsets = new PathOffset[blobCount + 1];
+    reader->paths = new char[header.pathsBlockSize];
+    reader->metadatas = new BlobMetadata[blobCount];
+    reader->dataOffsets = new uint64_t[blobCount];
 
     uint64_t pathOffsetsBlockSize = blobCount * sizeof(PathOffset);
     uint64_t pathsBlockSize = header.pathsBlockSize;

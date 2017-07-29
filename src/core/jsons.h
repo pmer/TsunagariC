@@ -30,6 +30,7 @@
 #include <string>
 #include <vector>
 
+#include "util/rc.h"
 #include "util/unique.h"
 
 class JSONArray;
@@ -37,7 +38,7 @@ class JSONObject;
 
 typedef Unique<const JSONArray> JSONArrayPtr;
 typedef Unique<const JSONObject> JSONObjectPtr;
-typedef std::shared_ptr<const JSONObject> JSONObjectRef;
+typedef Rc<const JSONObject> JSONObjectRef;
 
 class JSONObject {
  public:

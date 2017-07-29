@@ -256,15 +256,21 @@ const RJObject& JSONDocImpl::get() const {
 static JSONObjectRef genJSON(const std::string& path) {
     Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
-        return nullptr;
+        return JSONObjectRef();
     }
     std::string json = r->asString();
 
     TimeMeasure m("Constructed " + path + " as json");
 
-    std::shared_ptr<JSONDocImpl> document = std::make_shared<JSONDocImpl>(std::move(json));
+    JSONDocImpl* document = new JSONDocImpl(std::move(json));
 
-    return document->isValid() ? document : nullptr;
+    if (document->isValid()) {
+        return JSONObjectRef(document);
+    }
+    else {
+        delete document;
+        return JSONObjectRef();
+    }
 }
 
 JSONsImpl::JSONsImpl() : documents(genJSON) {}

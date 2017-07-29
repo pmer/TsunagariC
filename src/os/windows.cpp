@@ -66,4 +66,8 @@ void wMessageBox(const std::string& title, const std::string& text) {
     World::instance().setPaused(false);
 }
 
+void setTermColor(TermColor color) {
+    // TODO
+}
+
 #endif  // _WIN32

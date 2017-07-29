@@ -39,4 +39,13 @@ bool isDir(const std::string& path);
 void makeDirectory(const std::string& path);
 std::vector<std::string> listDir(const std::string& path);
 
+enum TermColor {
+    TC_RESET,
+    TC_GREEN,
+    TC_YELLOW,
+    TC_RED,
+};
+
+void setTermColor(TermColor color);
+
 #endif  // SRC_OS_OS_H_

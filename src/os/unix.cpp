@@ -24,6 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "os/os.h"
+
 #define _DARWIN_USE_64_BIT_INODE
 
 #include <fcntl.h>
@@ -34,6 +36,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -87,4 +90,40 @@ std::vector<std::string> listDir(const std::string& path) {
     closedir(dir);
 
     return names;
+}
+
+static bool isaTTY() {
+    static bool checked = false;
+    static bool tty = false;
+
+    if (!checked) {
+        tty = isatty(0) != 0;
+    }
+    return tty;
+}
+
+void setTermColor(TermColor color) {
+    if (!isaTTY()) {
+        return;
+    }
+
+    // VT100 terminal control codes from:
+    //   http://www.termsys.demon.co.uk/vtansi.htm
+
+    const char escape = 27;
+
+    switch (color) {
+    case TC_RESET:
+        std::cout << escape << "[0m";
+        break;
+    case TC_GREEN:
+        std::cout << escape << "[32m";
+        break;
+    case TC_YELLOW:
+        std::cout << escape << "[33m";
+        break;
+    case TC_RED:
+        std::cout << escape << "[31m";
+        break;
+    }
 }

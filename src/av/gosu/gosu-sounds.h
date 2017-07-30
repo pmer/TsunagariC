@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-sound.h                       **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016      Paul Merrill   **
+** gosu-sounds.h                      **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_SOUND_H
-#define GOSU_SOUND_H
+#ifndef SRC_AV_GOSU_GOSU_SOUNDS_H_
+#define SRC_AV_GOSU_GOSU_SOUNDS_H_
 
 #include <Gosu/Audio.hpp>
 
@@ -34,9 +34,8 @@
 #include "cache/readercache.h"
 #include "core/sounds.h"
 
-class GosuSoundInstance : public SoundInstance
-{
-public:
+class GosuSoundInstance : public SoundInstance {
+ public:
     GosuSoundInstance(Gosu::SampleInstance instance);
 
     ~GosuSoundInstance() = default;
@@ -52,7 +51,7 @@ public:
     void pan(double pan);
     void speed(double speed);
 
-private:
+ private:
     GosuSoundInstance() = delete;
     GosuSoundInstance(const GosuSoundInstance&) = delete;
     GosuSoundInstance& operator=(const GosuSoundInstance&) = delete;
@@ -61,9 +60,8 @@ private:
 };
 
 
-class GosuSounds : public Sounds
-{
-public:
+class GosuSounds : public Sounds {
+ public:
     GosuSounds();
 
     ~GosuSounds() = default;
@@ -72,11 +70,11 @@ public:
 
     void garbageCollect();
 
-private:
+ private:
     GosuSounds(const GosuSounds&) = delete;
     GosuSounds& operator=(const GosuSounds&) = delete;
 
     ReaderCache<std::shared_ptr<Gosu::Sample>> samples;
 };
 
-#endif
+#endif  // SRC_AV_GOSU_GOSU_SOUNDS_H_

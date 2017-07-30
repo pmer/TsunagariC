@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-sound.cpp                     **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2015-2016 Paul Merrill   **
+** gosu-sounds.cpp                    **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -43,87 +43,73 @@
 #ifdef BACKEND_GOSU
 static GosuSounds globalSounds;
 
-Sounds& Sounds::instance()
-{
+Sounds& Sounds::instance() {
     return globalSounds;
 }
 #endif
 
 GosuSoundInstance::GosuSoundInstance(Gosu::SampleInstance instance)
-    : instance(instance)
-{
+    : instance(instance) {
     volume(1.0);
 }
 
-bool GosuSoundInstance::playing()
-{
+bool GosuSoundInstance::playing() {
     return instance.playing();
 }
 
-void GosuSoundInstance::stop()
-{
+void GosuSoundInstance::stop() {
        instance.stop();
 }
 
-bool GosuSoundInstance::paused()
-{
+bool GosuSoundInstance::paused() {
     return instance.paused();
 }
 
-void GosuSoundInstance::pause()
-{
+void GosuSoundInstance::pause() {
     instance.pause();
 }
 
-void GosuSoundInstance::resume()
-{
+void GosuSoundInstance::resume() {
     instance.resume();
 }
 
-void GosuSoundInstance::volume(double attemptedVolume)
-{
+void GosuSoundInstance::volume(double attemptedVolume) {
     double volume = bound(attemptedVolume, 0.0, 1.0);
     if (attemptedVolume != volume) {
         Log::info("SoundInstance",
             Formatter(
                 "Attempted to set volume to %, setting it to %"
-            ) % attemptedVolume % volume
-        );
+                ) % attemptedVolume % volume);
     }
     assert_(0 <= conf.soundVolume && conf.soundVolume <= 100);
     instance.change_volume(volume * conf.soundVolume / 100.0);
 }
 
-void GosuSoundInstance::pan(double attemptedPan)
-{
+void GosuSoundInstance::pan(double attemptedPan) {
     double pan = bound(attemptedPan, 0.0, 1.0);
     if (attemptedPan != pan) {
         Log::info("SoundInstance",
             Formatter(
                 "Attempted to set pan to %, setting it to %"
-            ) % attemptedPan % pan
-        );
+                ) % attemptedPan % pan);
     }
     instance.change_pan(pan);
 }
 
-void GosuSoundInstance::speed(double attemptedSpeed)
-{
+void GosuSoundInstance::speed(double attemptedSpeed) {
     double speed = bound(attemptedSpeed, 0.0,
         std::numeric_limits<double>::max());
     if (attemptedSpeed != speed) {
         Log::info("SoundInstance",
             Formatter(
                 "Attempted to set speed to %, setting it to %"
-            ) % attemptedSpeed % speed
-        );
+                ) % attemptedSpeed % speed);
     }
     instance.change_speed(speed);
 }
 
 
-static std::shared_ptr<Gosu::Sample> genSample(const std::string& path)
-{
+static std::shared_ptr<Gosu::Sample> genSample(const std::string& path) {
     Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
@@ -135,13 +121,9 @@ static std::shared_ptr<Gosu::Sample> genSample(const std::string& path)
     return std::make_shared<Gosu::Sample>(buffer.front_reader());
 }
 
-GosuSounds::GosuSounds()
-    : samples(genSample)
-{
-}
+GosuSounds::GosuSounds() : samples(genSample) {}
 
-std::shared_ptr<SoundInstance> GosuSounds::play(const std::string& path)
-{
+std::shared_ptr<SoundInstance> GosuSounds::play(const std::string& path) {
     auto sample = samples.lifetimeRequest(path);
     if (!sample) {
         // Error logged.
@@ -150,7 +132,6 @@ std::shared_ptr<SoundInstance> GosuSounds::play(const std::string& path)
     return std::make_shared<GosuSoundInstance>(sample->play());
 }
 
-void GosuSounds::garbageCollect()
-{
+void GosuSounds::garbageCollect() {
     samples.garbageCollect();
 }

@@ -66,9 +66,9 @@ class NullGameWindow : public GameWindow {
 
     void drawRect(double, double, double, double, uint32_t) {}
 
-    void scale(double, double) {}
-    void translate(double, double) {}
-    void clip(double, double, double, double) {}
+    void scale(double, double, std::function<void()>) {}
+    void translate(double, double, std::function<void()>) {}
+    void clip(double, double, double, double, std::function<void()>) {}
 
     void close() {}
 

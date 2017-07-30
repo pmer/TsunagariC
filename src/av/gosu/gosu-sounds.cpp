@@ -27,8 +27,6 @@
 
 #include "gosu-sounds.h"
 
-#include <limits>
-
 #include "core/client-conf.h"
 #include "core/formatter.h"
 #include "core/measure.h"
@@ -97,8 +95,7 @@ void GosuSoundInstance::pan(double attemptedPan) {
 }
 
 void GosuSoundInstance::speed(double attemptedSpeed) {
-    double speed = bound(attemptedSpeed, 0.0,
-        std::numeric_limits<double>::max());
+    double speed = bound(attemptedSpeed, 0.0, 100.0);
     if (attemptedSpeed != speed) {
         Log::info("SoundInstance",
             Formatter(

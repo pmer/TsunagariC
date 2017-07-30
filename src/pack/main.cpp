@@ -37,6 +37,7 @@
 #include "pack/pack-file.h"
 #include "pack/pool.h"
 #include "pack/ui.h"
+#include "util/move.h"
 #include "util/optional.h"
 #include "util/unique.h"
 
@@ -65,7 +66,7 @@ static void addFile(PackWriter* pack, std::string path) {
     uint64_t size;
     void* data;
     slurp(path, &size, &data);
-    pack->addBlob(std::move(path), size, data);
+    pack->addBlob(move_(path), size, data);
 }
 
 static void addDir(PackWriter* pack, std::string path) {

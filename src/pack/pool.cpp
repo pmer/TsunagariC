@@ -32,6 +32,8 @@
 #include <thread>
 #include <vector>
 
+#include "util/move.h"
+
 class PoolImpl : public Pool {
  public:
     ~PoolImpl();
@@ -67,7 +69,7 @@ static void runJobs(PoolImpl* pool) {
                 pool->available.wait(lock);
             }
 
-            job = std::move(pool->jobs.front());
+            job = move_(pool->jobs.front());
             pool->jobs.pop_front();
         }
 

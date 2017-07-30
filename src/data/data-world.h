@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** world.h                       **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** world.h                            **
+** Copyright 2014      PariahSoft LLC **
+** Copyright 2016-2017 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,12 +29,11 @@
 #define DATAWORLD_H
 
 #include <map>
-#include <memory>
 #include <string>
 
 #include "core/client-conf.h"
-
-class DataArea;
+#include "data/data-area.h"
+#include "util/unique.h"
 
 class DataWorld
 {
@@ -73,7 +72,7 @@ public:
 protected:
     DataWorld();
 
-    std::map<std::string,std::shared_ptr<DataArea>> areas;
+    std::map<std::string,Unique<DataArea>> areas;
 
 private:
     DataWorld(const DataWorld&) = delete;

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** world.h                            **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -29,7 +29,6 @@
 #define SRC_CORE_WORLD_H_
 
 #include <functional>
-#include <memory>
 #include <stack>
 #include <string>
 #include <vector>
@@ -38,6 +37,7 @@
 #include "core/window.h"  // for KeyboardKey
 #include "util/bitrecord.h"
 #include "util/arc.h"
+#include "util/unique.h"
 
 class Area;
 class Image;
@@ -161,7 +161,7 @@ class World {
 
     AreaMap areas;
     Area* area;
-    std::unique_ptr<Player> player;
+    Unique<Player> player;
 
     /**
      * Last time engine state was updated. See World::update().

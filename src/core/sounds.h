@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** sounds.h                           **
-** Copyright 2011-2014 PariahSoft LLC **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -24,15 +25,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SOUNDS_H
-#define SOUNDS_H
+#ifndef SRC_CORE_SOUNDS_H_
+#define SRC_CORE_SOUNDS_H_
 
 #include <memory>
 #include <string>
 
-class SoundInstance
-{
-public:
+class SoundInstance {
+ public:
     virtual ~SoundInstance();
 
     //! Whether the sound is currently playing.
@@ -55,10 +55,10 @@ public:
     //! 1.0 is normal speed
     virtual void speed(double speed) = 0;
 
-protected:
+ protected:
     SoundInstance() = default;
 
-private:
+ private:
     SoundInstance(const SoundInstance&) = delete;
     SoundInstance(SoundInstance&&) = delete;
     SoundInstance& operator=(const SoundInstance&) = delete;
@@ -66,9 +66,8 @@ private:
 };
 
 
-class Sounds
-{
-public:
+class Sounds {
+ public:
     //! Acquire the global Sounds object.
     static Sounds& instance();
 
@@ -80,14 +79,14 @@ public:
     //! Free sounds not recently played.
     virtual void garbageCollect() = 0;
 
-protected:
+ protected:
     Sounds() = default;
 
-private:
+ private:
     Sounds(const Sounds&) = delete;
     Sounds(Sounds&&) = delete;
     Sounds& operator=(const Sounds&) = delete;
     Sounds& operator=(Sounds&&) = delete;
 };
 
-#endif
+#endif  // SRC_CORE_SOUNDS_H_

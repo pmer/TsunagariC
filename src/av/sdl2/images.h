@@ -27,8 +27,6 @@
 #ifndef SRC_AV_SDL2_IMAGE_H_
 #define SRC_AV_SDL2_IMAGE_H_
 
-#include <memory>
-
 #include "core/images.h"
 
 class SDL2Image : public Image {

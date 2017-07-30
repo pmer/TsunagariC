@@ -30,7 +30,6 @@
 
 #include <time.h>
 
-#include <memory>
 #include <vector>
 
 #include "util/arc.h"

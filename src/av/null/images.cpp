@@ -26,8 +26,6 @@
 
 #include <limits.h>
 
-#include <memory>
-
 #include "core/images.h"
 
 class NullImage : public Image {

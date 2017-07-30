@@ -29,7 +29,6 @@
 #define SRC_CORE_AREA_H_
 
 #include <map>
-#include <memory>
 #include <set>
 #include <string>
 #include <vector>

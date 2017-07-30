@@ -29,7 +29,6 @@
 
 #include <stdlib.h>
 
-#include <memory>
 #include <mutex>
 
 #include "core/resources.h"

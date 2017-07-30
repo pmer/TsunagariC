@@ -28,7 +28,6 @@
 
 #include <stdlib.h>
 
-#include <memory>
 #include <mutex>
 
 #include "core/formatter.h"

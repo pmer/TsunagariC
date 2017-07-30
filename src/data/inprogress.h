@@ -31,7 +31,6 @@
 #include <time.h>
 
 #include <functional>
-#include <memory>
 #include <string>
 
 #include "core/sounds.h"

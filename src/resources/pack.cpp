@@ -26,6 +26,7 @@
 
 #include "resources/pack.h"
 
+#include <limits>
 #include <mutex>
 
 #include "core/formatter.h"

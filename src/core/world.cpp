@@ -65,7 +65,10 @@ bool World::init() {
 
     conf.moveMode = parameters.moveMode;
 
-    CHECK(player->init(gameStart.player.file, gameStart.player.phase));
+    if (!player->init(gameStart.player.file, gameStart.player.phase)) {
+        Log::fatal("World", "failed to load player");
+        return false;
+    }
 
     Area* area = getArea(gameStart.area);
     if (area == nullptr) {

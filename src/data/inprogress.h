@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** inprogress.h                  **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** inprogress.h                       **
+** Copyright 2014      PariahSoft LLC **
+** Copyright 2016-2017 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef INPROGRESS_H
-#define INPROGRESS_H
+#ifndef SRC_DATA_INPROGRESS_H_
+#define SRC_DATA_INPROGRESS_H_
 
 #include <time.h>
 
@@ -55,20 +55,19 @@
  *
  * InProgress objects are invoked right before a DataArea's onTick().
  */
-class InProgress
-{
-public:
+class InProgress {
+ public:
     virtual ~InProgress();
 
     virtual void tick(time_t dt);
     bool isOver();
 
-protected:
+ protected:
     InProgress();
 
     bool over;
 
-private:
+ private:
     InProgress(const InProgress&);
     InProgress& operator=(const InProgress&);
 };
@@ -79,16 +78,15 @@ private:
  * The then function is called on the first tick where the sound is not
  * playing.
  */
-class InProgressSound : public InProgress
-{
-public:
+class InProgressSound : public InProgress {
+ public:
     typedef std::function<void ()> ThenFn;
 
     InProgressSound(const std::string& sound, ThenFn then);
 
     void tick(time_t dt);
 
-private:
+ private:
     std::shared_ptr<SoundInstance> sound;
     ThenFn then;
 };
@@ -103,9 +101,8 @@ private:
  * On the first tick where the timer has expired, progress is not called, but
  * the then function is.
  */
-class InProgressTimer : public InProgress
-{
-public:
+class InProgressTimer : public InProgress {
+ public:
     typedef std::function<void (double)> ProgressFn;
     typedef std::function<void ()> ThenFn;
 
@@ -116,10 +113,10 @@ public:
 
     void tick(time_t dt);
 
-private:
+ private:
     time_t duration, passed;
     ProgressFn progress;
     ThenFn then;
 };
 
-#endif
+#endif  // SRC_DATA_INPROGRESS_H_

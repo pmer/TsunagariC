@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** area.cpp                      **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** data-area.cpp                      **
+** Copyright 2014      PariahSoft LLC **
+** Copyright 2016-2017 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -40,8 +40,7 @@ void DataArea::onFocus() {}
 void DataArea::onTick(time_t) {}
 void DataArea::onTurn() {}
 
-void DataArea::tick(time_t dt)
-{
+void DataArea::tick(time_t dt) {
     // Only iterate over inProgresses that existed at the time of the
     // beginning of the loop.  Also, iterate by index instead of by
     // iterator because iterators are invalidated if the vector is
@@ -54,46 +53,35 @@ void DataArea::tick(time_t dt)
     onTick(dt);
 }
 
-void DataArea::turn()
-{
+void DataArea::turn() {
     onTurn();
 }
 
-void DataArea::playSoundEffect(const std::string& sound)
-{
+void DataArea::playSoundEffect(const std::string& sound) {
     Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.03, 0.03));
 }
 
-void DataArea::playSoundAndThen(const std::string& sound, ThenFn then)
-{
+void DataArea::playSoundAndThen(const std::string& sound, ThenFn then) {
     inProgresses.emplace_back(
-        new InProgressSound(sound, then)
-    );
+        new InProgressSound(sound, then));
 }
 
-void DataArea::timerProgress(time_t duration, ProgressFn progress)
-{
+void DataArea::timerProgress(time_t duration, ProgressFn progress) {
     inProgresses.emplace_back(
-        new InProgressTimer(duration, progress)
-    );
+        new InProgressTimer(duration, progress));
 }
 
-void DataArea::timerThen(time_t duration, ThenFn then)
-{
+void DataArea::timerThen(time_t duration, ThenFn then) {
     inProgresses.emplace_back(
-        new InProgressTimer(duration, then)
-    );
+        new InProgressTimer(duration, then));
 }
 
 void DataArea::timerProgressAndThen(time_t duration, ProgressFn progress,
-    ThenFn then)
-{
+    ThenFn then) {
     inProgresses.emplace_back(
-        new InProgressTimer(duration, progress, then)
-    );
+        new InProgressTimer(duration, progress, then));
 }
 
-DataArea::TileScript DataArea::script(const std::string& scriptName)
-{
+DataArea::TileScript DataArea::script(const std::string& scriptName) {
     return scripts[scriptName];
 }

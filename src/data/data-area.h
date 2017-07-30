@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** area.h                        **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** data-area.h                        **
+** Copyright 2014      PariahSoft LLC **
+** Copyright 2016-2017 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DATAAREA_H
-#define DATAAREA_H
+#ifndef SRC_DATA_DATA_AREA_H_
+#define SRC_DATA_DATA_AREA_H_
 
 #include <time.h>
 
@@ -42,9 +42,8 @@ class Entity;
 class InProgress;
 class Tile;
 
-class DataArea
-{
-public:
+class DataArea {
+ public:
     typedef void (DataArea::* TileScript)(Entity& triggeredBy, Tile& tile);
     typedef std::function<void (double)> ProgressFn;
     typedef std::function<void ()> ThenFn;
@@ -74,12 +73,12 @@ public:
     void turn();
     TileScript script(const std::string& scriptName);
 
-protected:
+ protected:
     DataArea();
 
     std::map<std::string,TileScript> scripts;
 
-private:
+ private:
     DataArea(const DataArea&) = delete;
     DataArea(DataArea&&) = delete;
     DataArea& operator=(const DataArea&) = delete;
@@ -88,4 +87,4 @@ private:
     std::vector<Unique<InProgress>> inProgresses;
 };
 
-#endif
+#endif  // SRC_DATA_DATA_AREA_H_

@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef DATAWORLD_H
-#define DATAWORLD_H
+#ifndef SRC_DATA_DATA_WORLD_H_
+#define SRC_DATA_DATA_WORLD_H_
 
 #include <map>
 #include <string>
@@ -35,9 +35,8 @@
 #include "data/data-area.h"
 #include "util/unique.h"
 
-class DataWorld
-{
-public:
+class DataWorld {
+ public:
     static DataWorld& instance();
 
     virtual ~DataWorld();
@@ -69,16 +68,16 @@ public:
     } parameters;
     std::string datafile;
 
-protected:
+ protected:
     DataWorld();
 
     std::map<std::string,Unique<DataArea>> areas;
 
-private:
+ private:
     DataWorld(const DataWorld&) = delete;
     DataWorld(DataWorld&&) = delete;
     DataWorld& operator=(const DataWorld&) = delete;
     DataWorld& operator=(DataWorld&&) = delete;
 };
 
-#endif
+#endif  // SRC_DATA_DATA_WORLD_H_

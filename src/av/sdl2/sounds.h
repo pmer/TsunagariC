@@ -48,7 +48,7 @@ class SDL2Sounds : public Sounds {
  public:
     SDL2Sounds() = default;
 
-    std::shared_ptr<SoundInstance> play(const std::string& path);
+    Rc<SoundInstance> play(const std::string& path);
 
     void garbageCollect();
 

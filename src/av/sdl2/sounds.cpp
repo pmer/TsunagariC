@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** sounds.cpp                  **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** sounds.cpp                       **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,8 +45,8 @@ void SDL2SoundInstance::pan(double pan) {}
 void SDL2SoundInstance::speed(double speed) {}
 
 
-std::shared_ptr<SoundInstance> SDL2Sounds::play(const std::string& path) {
-    return std::make_shared<SDL2SoundInstance>();
+Rc<SoundInstance> SDL2Sounds::play(const std::string& path) {
+    return Rc<SoundInstance>();
 }
 
 void SDL2Sounds::garbageCollect() {}

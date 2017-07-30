@@ -45,12 +45,12 @@ void uiShowWritingArchive(const std::string& archivePath) {
 
 void uiShowListingEntry(const std::string& blobPath, uint64_t blobSize) {
     pool->schedule([=] {
-        printf("%s: %llu bytes\n", blobPath.c_str(), blobSize);
+        printf("%s: %lu bytes\n", blobPath.c_str(), blobSize);
     });
 }
 
 void uiShowExtractingFile(const std::string& blobPath, uint64_t blobSize) {
     pool->schedule([=] {
-        printf("Extracting %s: %llu bytes\n", blobPath.c_str(), blobSize);
+        printf("Extracting %s: %lu bytes\n", blobPath.c_str(), blobSize);
     });
 }

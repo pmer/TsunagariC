@@ -37,8 +37,8 @@
 #include "core/world.h"
 #include "util/assert.h"
 #include "util/math2.h"
-#include "util/string2.h"
 #include "util/move.h"
+#include "util/string2.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 
@@ -443,7 +443,7 @@ bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& ti
             images.push_back(tiles[(size_t)i]);
         }
 
-        phases[name] = Animation(std::move(images), (time_t)(1000.0 / fps));
+        phases[name] = Animation(move_(images), (time_t)(1000.0 / fps));
     }
     else {
         Log::err(descriptor,

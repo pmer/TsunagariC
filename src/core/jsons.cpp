@@ -38,6 +38,7 @@
 #include "cache/readercache.h"
 #include "core/measure.h"
 #include "core/resources.h"
+#include "util/move.h"
 #include "util/string2.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
@@ -199,14 +200,14 @@ JSONObjectPtr JSONObjectImpl::objectAt(const std::string& name) const { return J
 JSONArrayPtr JSONObjectImpl::arrayAt(const std::string& name) const { return JSONArrayPtr(new JSONArrayImpl(get()[name].GetArray())); }
 double JSONObjectImpl::stringDoubleAt(const std::string& name) const { return stringDoubleFrom(get()[name]); }
 
-JSONObjectReal::JSONObjectReal(const RJObject object) : object(std::move(object)) {}
+JSONObjectReal::JSONObjectReal(const RJObject object) : object(move_(object)) {}
 
 const RJObject& JSONObjectReal::get() const {
     return object;
 }
 
 
-JSONArrayImpl::JSONArrayImpl(RJArray array) : array(std::move(array)) {}
+JSONArrayImpl::JSONArrayImpl(RJArray array) : array(move_(array)) {}
 
 size_t JSONArrayImpl::size() const {
     return array.Size();
@@ -234,7 +235,7 @@ const RJArray::PlainType& JSONArrayImpl::at(size_t index) const {
 
 
 JSONDocImpl::JSONDocImpl(std::string json)
-        : json(std::move(json)) {
+        : json(move_(json)) {
     document.ParseInsitu<
             rapidjson::kParseInsituFlag |
             rapidjson::kParseCommentsFlag |
@@ -262,7 +263,7 @@ static JSONObjectRef genJSON(const std::string& path) {
 
     TimeMeasure m("Constructed " + path + " as json");
 
-    JSONDocImpl* document = new JSONDocImpl(std::move(json));
+    JSONDocImpl* document = new JSONDocImpl(move_(json));
 
     if (document->isValid()) {
         return JSONObjectRef(document);

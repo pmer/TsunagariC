@@ -165,9 +165,9 @@ bool AreaJSON::processDescriptor() {
         const std::string type = layer->stringAt("type");
 
         if (type == "tilelayer") {
-            CHECK(processLayer(std::move(layer)));
+            CHECK(processLayer(move_(layer)));
         } else if (type == "objectgroup") {
-            CHECK(processObjectGroup(std::move(layer)));
+            CHECK(processObjectGroup(move_(layer)));
         } else {
             Log::err(descriptor, "Each layer must be a tilelayer or objectlayer");
             return false;
@@ -320,7 +320,7 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
     // Initialize "vanilla" tile type array.
     for (size_t i = 0; i < img->size(); i++) {
         auto tileImg = (*img.get())[i];
-        TileType* type = new TileType(std::move(tileImg));
+        TileType* type = new TileType(move_(tileImg));
         set->add(type);
         gids.push_back(type);
     }
@@ -350,7 +350,7 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
 
             // Initialize a default TileType, we'll build on that.
             TileType* type = new TileType((*img.get())[id]);
-            CHECK(processTileType(std::move(tileProperties),
+            CHECK(processTileType(move_(tileProperties),
                                   *type, img, id));
             // "gid" is the global area-wide id of the tile.
             size_t gid = (size_t)id + (size_t)firstGid;
@@ -446,7 +446,7 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
         }
         // Add 'now' to Animation constructor??
         time_t now = World::instance().time();
-        type.anim = Animation(std::move(framesvec), frameLen);
+        type.anim = Animation(move_(framesvec), frameLen);
         type.anim.startOver(now);
     }
 

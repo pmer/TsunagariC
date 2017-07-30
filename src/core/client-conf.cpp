@@ -34,6 +34,7 @@
 #include "core/jsons.h"
 #include "nbcl/nbcl.h"
 #include "util/math2.h"
+#include "util/move.h"
 #include "util/string2.h"
 
 Conf conf; // Project-wide global configuration.
@@ -78,7 +79,7 @@ bool parseConfig(const std::string& filename) {
         return false;
     }
 
-    JSONObjectPtr doc = JSONs::parse(std::move(file));
+    JSONObjectPtr doc = JSONs::parse(move_(file));
 
     if (!doc) {
         Log::err(filename, "Could not parse " + filename);

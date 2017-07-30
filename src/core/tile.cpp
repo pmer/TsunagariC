@@ -112,7 +112,7 @@ void FlagManip::setNowalkAreaBound(bool nowalk) {
 
 
 Exit::Exit(std::string area, int x, int y, double z)
-    : area(std::move(area)), coords(x, y, z) {}
+    : area(move_(area)), coords(x, y, z) {}
 
 
 /*

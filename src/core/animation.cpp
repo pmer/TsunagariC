@@ -28,6 +28,7 @@
 #include "animation.h"
 
 #include "util/assert.h"
+#include "util/move.h"
 
 Animation::Animation()
     : frameTime(1),
@@ -35,14 +36,14 @@ Animation::Animation()
       frameShowing(0) {}
 
 Animation::Animation(Rc<Image> frame)
-    : frames { std::move(frame) },
+    : frames { move_(frame) },
       frameTime(1),
       cycleTime(1),
       frameShowing(0) {}
 
 Animation::Animation(std::vector<Rc<Image>> frames,
         time_t frameTime)
-    : frames(std::move(frames)),
+    : frames(move_(frames)),
       frameTime(frameTime),
       cycleTime(1),
       frameShowing(0),

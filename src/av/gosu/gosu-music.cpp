@@ -41,18 +41,16 @@ MusicWorker& MusicWorker::instance() {
     return globalMusicWorker;
 }
 
-static std::shared_ptr<Gosu::Song> genSong(const std::string& name) {
+static Rc<Gosu::Song> genSong(const std::string& name) {
     Unique<Resource> r = Resources::instance().load(name);
     if (!r) {
         // Error logged.
-        return std::shared_ptr<Gosu::Song>();
+        return Rc<Gosu::Song>();
     }
     GosuCBuffer buffer(r->data(), r->size());
 
     TimeMeasure m("Constructed " + name + " as music");
-    return std::shared_ptr<Gosu::Song>(
-        new Gosu::Song(buffer.front_reader())
-    );
+    return Rc<Gosu::Song>(new Gosu::Song(buffer.front_reader()));
 }
 
 
@@ -77,7 +75,7 @@ void GosuMusic::play(std::string filepath) {
         musicInst->stop();
     }
     musicInst = path.size() ? songs.lifetimeRequest(path)
-                            : std::shared_ptr<Gosu::Song>();
+                            : Rc<Gosu::Song>();
     musicInst->play(true);
     musicInst->change_volume(volume);
 }
@@ -91,7 +89,7 @@ void GosuMusic::stop() {
     if (musicInst) {
         musicInst->stop();
     }
-    musicInst = std::shared_ptr<Gosu::Song>();
+    musicInst = Rc<Gosu::Song>();
 }
 
 void GosuMusic::pause() {

@@ -28,12 +28,12 @@
 #ifndef SRC_AV_GOSU_GOSU_MUSIC_H_
 #define SRC_AV_GOSU_GOSU_MUSIC_H_
 
-#include <memory>
 #include <string>
 
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
 #include "core/music-worker.h"
+#include "util/rc.h"
 
 namespace Gosu {
     class Song;
@@ -57,9 +57,9 @@ class GosuMusic : public MusicWorker {
     void garbageCollect();
 
  private:
-    std::shared_ptr<Gosu::Song> musicInst;
+    Rc<Gosu::Song> musicInst;
 
-    ReaderCache<std::shared_ptr<Gosu::Song>> songs;
+    ReaderCache<Rc<Gosu::Song>> songs;
 };
 
 #endif  // SRC_AV_GOSU_GOSU_MUSIC_H_

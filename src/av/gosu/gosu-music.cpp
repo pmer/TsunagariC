@@ -31,6 +31,7 @@
 
 #include "core/measure.h"
 #include "core/resources.h"
+#include "util/move.h"
 #include "util/unique.h"
 
 #include "av/gosu/gosu-cbuffer.h"
@@ -69,7 +70,7 @@ void GosuMusic::play(std::string filepath) {
         return;
     }
 
-    MusicWorker::play(std::move(filepath));
+    MusicWorker::play(move_(filepath));
     TimeMeasure m("Playing " + path);
     if (musicInst && musicInst->playing()) {
         musicInst->stop();

@@ -25,6 +25,7 @@
 // **********
 
 #include "util/dispatch-queue-impl.h"
+#include "util/move.h"
 
 bool operator<(const TaskContext& lhs, const TaskContext& rhs) {
     return lhs.qualityOfService < rhs.qualityOfService;
@@ -35,7 +36,7 @@ DispatchQueueImpl::DispatchQueueImpl() {
     n = 1;  // debug, and to help with MusicWorker until better mechanism for series-of-tasks implemented
     for (unsigned i = 0; i < n; i++) {
         std::thread thread(&DispatchQueueImpl::runTasks, this);
-        threads.emplace_back(std::move(thread));
+        threads.emplace_back(move_(thread));
     }
 }
 

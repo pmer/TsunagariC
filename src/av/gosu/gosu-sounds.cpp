@@ -106,16 +106,16 @@ void GosuSoundInstance::speed(double attemptedSpeed) {
 }
 
 
-static std::shared_ptr<Gosu::Sample> genSample(const std::string& path) {
+static Rc<Gosu::Sample> genSample(const std::string& path) {
     Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
-        return std::shared_ptr<Gosu::Sample>();
+        return Rc<Gosu::Sample>();
     }
     GosuCBuffer buffer(r->data(), r->size());
 
     TimeMeasure m("Constructed " + path + " as sample");
-    return std::make_shared<Gosu::Sample>(buffer.front_reader());
+    return Rc<Gosu::Sample>(new Gosu::Sample(buffer.front_reader()));
 }
 
 GosuSounds::GosuSounds() : samples(genSample) {}

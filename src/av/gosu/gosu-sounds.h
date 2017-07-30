@@ -74,7 +74,7 @@ class GosuSounds : public Sounds {
     GosuSounds(const GosuSounds&) = delete;
     GosuSounds& operator=(const GosuSounds&) = delete;
 
-    ReaderCache<std::shared_ptr<Gosu::Sample>> samples;
+    ReaderCache<Rc<Gosu::Sample>> samples;
 };
 
 #endif  // SRC_AV_GOSU_GOSU_SOUNDS_H_

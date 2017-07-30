@@ -64,7 +64,7 @@ Area::Area(Player* player,
       player(player),
       colorOverlayARGB(0),
       dim(0, 0, 0),
-      tileDim(0, 0),
+      aTileDim(0, 0),
       loopX(false), loopY(false),
       beenFocused(false),
       redraw(true),
@@ -158,11 +158,11 @@ bool Area::needsRedraw() const
 
     const icube tiles = visibleTiles();
     const icube pixels = {
-        tiles.x1 * tileDim.x,
-        tiles.y1 * tileDim.y,
+        tiles.x1 * aTileDim.x,
+        tiles.y1 * aTileDim.y,
         tiles.z1,
-        tiles.x2 * tileDim.x,
-        tiles.y2 * tileDim.y,
+        tiles.x2 * aTileDim.x,
+        tiles.y2 * aTileDim.y,
         tiles.z2,
     };
 
@@ -362,12 +362,12 @@ ivec3 Area::getDimensions() const
 
 ivec2 Area::getTileDimensions() const
 {
-    return tileDim;
+    return aTileDim;
 }
 
 double Area::isometricZOff(rvec2 pos) const
 {
-    return pos.y / tileDim.y * ISOMETRIC_ZOFF_PER_TILE;
+    return pos.y / aTileDim.y * ISOMETRIC_ZOFF_PER_TILE;
 }
 
 icube Area::visibleTileBounds() const
@@ -375,10 +375,10 @@ icube Area::visibleTileBounds() const
     rvec2 screen = Viewport::instance().getVirtRes();
     rvec2 off = Viewport::instance().getMapOffset();
 
-    int x1 = (int)floor(off.x / tileDim.x);
-    int y1 = (int)floor(off.y / tileDim.y);
-    int x2 = (int)ceil((screen.x + off.x) / tileDim.x);
-    int y2 = (int)ceil((screen.y + off.y) / tileDim.y);
+    int x1 = (int)floor(off.x / aTileDim.x);
+    int y1 = (int)floor(off.y / aTileDim.y);
+    int x2 = (int)ceil((screen.x + off.x) / aTileDim.x);
+    int y2 = (int)ceil((screen.y + off.y) / aTileDim.y);
 
     return icube(x1, y1, 0, x2, y2, dim.z);
 }
@@ -493,8 +493,8 @@ vicoord Area::phys2virt_vi(icoord phys) const
 rcoord Area::phys2virt_r(icoord phys) const
 {
     return rcoord(
-        (double)phys.x * tileDim.x,
-        (double)phys.y * tileDim.y,
+        (double)phys.x * aTileDim.x,
+        (double)phys.y * aTileDim.y,
         indexDepth(phys.z)
     );
 }
@@ -507,8 +507,8 @@ icoord Area::virt2phys(vicoord virt) const
 icoord Area::virt2phys(rcoord virt) const
 {
     return icoord(
-        (int)(virt.x / tileDim.x),
-        (int)(virt.y / tileDim.y),
+        (int)(virt.x / aTileDim.x),
+        (int)(virt.y / aTileDim.y),
         depthIndex(virt.z)
     );
 }
@@ -516,8 +516,8 @@ icoord Area::virt2phys(rcoord virt) const
 rcoord Area::virt2virt(vicoord virt) const
 {
     return rcoord(
-        (double)virt.x * tileDim.x,
-        (double)virt.y * tileDim.y,
+        (double)virt.x * aTileDim.x,
+        (double)virt.y * aTileDim.y,
         virt.z
     );
 }
@@ -525,8 +525,8 @@ rcoord Area::virt2virt(vicoord virt) const
 vicoord Area::virt2virt(rcoord virt) const
 {
     return vicoord(
-        (int)virt.x / tileDim.x,
-        (int)virt.y / tileDim.y,
+        (int)virt.x / aTileDim.x,
+        (int)virt.y / aTileDim.y,
         virt.z
     );
 }

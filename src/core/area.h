@@ -200,7 +200,7 @@ class Area {
 
     //! Pixel size for each tile in area. All tiles in an Area must be the
     //! same size.
-    ivec2 tileDim;
+    ivec2 aTileDim;
 
     typedef std::map<std::string, TileSet> tilesets_t;
     tilesets_t tileSets;

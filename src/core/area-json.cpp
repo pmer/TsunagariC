@@ -291,18 +291,18 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
     tilex = obj->unsignedAt("tilewidth");
     tiley = obj->unsignedAt("tileheight");
 
-    if (tileDim && tileDim != ivec2(tilex, tiley)) {
+    if (aTileDim && aTileDim != ivec2(tilex, tiley)) {
         Log::err(descriptor,
                  "Tileset's width/height contradict earlier <layer>");
         return false;
     }
-    tileDim = ivec2(tilex, tiley);
+    aTileDim = ivec2(tilex, tiley);
 
     pixelw = obj->unsignedAt("imagewidth");
     pixelh = obj->unsignedAt("imageheight");
 
-    width = pixelw / tileDim.x;
-    height = pixelh / tileDim.y;
+    width = pixelw / aTileDim.x;
+    height = pixelh / aTileDim.y;
 
     std::string imgSource = dirname(source) + obj->stringAt("image");
     tileSets[imgSource] = TileSet((size_t)width,
@@ -713,10 +713,10 @@ bool AreaJSON::processObject(JSONObjectPtr obj) {
     CHECK(obj->hasUnsigned("y"));
     CHECK(obj->hasUnsigned("width"));
     CHECK(obj->hasUnsigned("height"));
-    const unsigned x = obj->unsignedAt("x") / tileDim.x;
-    const unsigned y = obj->unsignedAt("y") / tileDim.y;
-    const unsigned w = obj->unsignedAt("width") / tileDim.x;
-    const unsigned h = obj->unsignedAt("height") / tileDim.y;
+    const unsigned x = obj->unsignedAt("x") / aTileDim.x;
+    const unsigned y = obj->unsignedAt("y") / aTileDim.y;
+    const unsigned w = obj->unsignedAt("width") / aTileDim.x;
+    const unsigned h = obj->unsignedAt("height") / aTileDim.y;
 
     CHECK(x + w <= dim.x);
     CHECK(y + h <= dim.y);

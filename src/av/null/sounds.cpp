@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** sounds.cpp                  **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** sounds.cpp                       **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -43,8 +43,8 @@ class NullSoundInstance : public SoundInstance {
 
 class NullSounds : public Sounds {
  public:
-    std::shared_ptr<SoundInstance> play(const std::string&) {
-        return std::make_shared<NullSoundInstance>();
+    Rc<SoundInstance> play(const std::string&) {
+        return Rc<SoundInstance>();
     }
 
     void garbageCollect() {}

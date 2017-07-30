@@ -42,7 +42,7 @@ class NullTiledImage: public TiledImage {
     size_t size() const { return 1000; }
 
     Rc<Image> operator[](size_t) const {
-        return Rc<Image>();
+        return Rc<Image>(new NullImage);
     }
 };
 
@@ -53,9 +53,8 @@ class NullImages : public Images {
         return Rc<Image>();
     }
 
-    Rc<TiledImage> loadTiles(const std::string&,
-                                          unsigned, unsigned) {
-        return Rc<TiledImage>();
+    Rc<TiledImage> loadTiles(const std::string&, unsigned, unsigned) {
+        return Rc<TiledImage>(new NullTiledImage);
     }
 
     void garbageCollect() {}

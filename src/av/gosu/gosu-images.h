@@ -54,15 +54,15 @@ class GosuImage : public Image {
 
 class GosuTiledImage: public TiledImage {
  public:
-    explicit GosuTiledImage(std::vector<Arc<Image>>&& images);
+    explicit GosuTiledImage(std::vector<Rc<Image>>&& images);
     ~GosuTiledImage() = default;
 
     size_t size() const;
 
-    Arc<Image> operator[](size_t n) const;
+    Rc<Image> operator[](size_t n) const;
 
  private:
-    std::vector<Arc<Image>> images;
+    std::vector<Rc<Image>> images;
 };
 
 
@@ -71,9 +71,9 @@ class GosuImages : public Images {
     GosuImages();
     ~GosuImages() = default;
 
-    Arc<Image> load(const std::string& path);
+    Rc<Image> load(const std::string& path);
 
-    Arc<TiledImage> loadTiles(const std::string& path,
+    Rc<TiledImage> loadTiles(const std::string& path,
                               unsigned tileW, unsigned tileH);
 
     void garbageCollect();
@@ -82,11 +82,11 @@ class GosuImages : public Images {
     GosuImages(const GosuImages&) = delete;
     GosuImages& operator=(const GosuImages&) = delete;
 
-    ReaderCache<Arc<Image>> images;
+    ReaderCache<Rc<Image>> images;
     // We can't use a ReaderCache here because TiledImages are constructed
     // with three arguments, but a ReaderCache only supports the use of
     // one.
-    Cache<Arc<TiledImage>> tiledImages;
+    Cache<Rc<TiledImage>> tiledImages;
 };
 
 #endif

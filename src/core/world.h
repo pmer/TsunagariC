@@ -157,7 +157,7 @@ class World {
  protected:
     typedef std::map<std::string, Area*> AreaMap;
 
-    Arc<Image> pauseInfo;
+    Rc<Image> pauseInfo;
 
     AreaMap areas;
     Area* area;

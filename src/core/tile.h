@@ -245,7 +245,7 @@ class Tile : public TileBase {
 class TileType : public TileBase {
  public:
     TileType() = default;
-    TileType(const Arc<Image>& img);
+    TileType(const Rc<Image>& img);
 
     //! Returns true if onscreen and we need to update our animation.
     bool needsRedraw() const;

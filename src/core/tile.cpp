@@ -217,7 +217,7 @@ void Tile::runUseScript(Entity* triggeredBy) {
 /*
  * TILETYPE
  */
-TileType::TileType(const Arc<Image>& img) {
+TileType::TileType(const Rc<Image>& img) {
     anim = Animation(img);
 }
 

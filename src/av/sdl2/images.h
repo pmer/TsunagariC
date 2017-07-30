@@ -45,7 +45,7 @@ class SDL2TiledImage: public TiledImage {
  public:
     size_t size() const;
 
-    std::shared_ptr<Image> operator[](size_t n) const;
+    Rc<Image> operator[](size_t n) const;
 };
 
 
@@ -53,9 +53,9 @@ class SDL2Images : public Images {
  public:
     SDL2Images() = default;
 
-    std::shared_ptr<Image> load(const std::string& path);
+    Rc<Image> load(const std::string& path);
 
-    std::shared_ptr<TiledImage> loadTiles(const std::string& path,
+    Rc<TiledImage> loadTiles(const std::string& path,
         unsigned tileW, unsigned tileH);
 
     void garbageCollect();

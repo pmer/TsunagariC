@@ -60,7 +60,7 @@ class Animation {
      *
      * @param frame static image
      */
-    Animation(Arc<Image> frame);
+    Animation(Rc<Image> frame);
 
     /**
      * Constructs a Animation from a list of frames.
@@ -72,7 +72,7 @@ class Animation {
      * @param frameTime length of time in milliseconds that each frame
      *        will display for
      */
-    Animation(std::vector<Arc<Image>> frames,
+    Animation(std::vector<Rc<Image>> frames,
         time_t frameTime);
 
     /**
@@ -97,7 +97,7 @@ class Animation {
     Image* frame(time_t now);
 
  private:
-    typedef std::vector<Arc<Image>> ImageVec;
+    typedef std::vector<Rc<Image>> ImageVec;
 
 
     /** List of images in animation. */

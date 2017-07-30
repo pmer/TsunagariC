@@ -41,20 +41,20 @@ void SDL2Image::drawSubrect(double dstX, double dstY, double z,
 
 size_t SDL2TiledImage::size() const { return 500; }
 
-std::shared_ptr<Image> SDL2TiledImage::operator[](size_t n) const {
-    std::shared_ptr<Image>* image = new std::shared_ptr<Image>(new SDL2Image);
+Rc<Image> SDL2TiledImage::operator[](size_t n) const {
+    Rc<Image>* image = new Rc<Image>(new SDL2Image);
     return *image;
 }
 
 
-std::shared_ptr<Image> SDL2Images::load(const std::string& path) {
-    std::shared_ptr<Image>* image = new std::shared_ptr<Image>(new SDL2Image);
+Rc<Image> SDL2Images::load(const std::string& path) {
+    Rc<Image>* image = new Rc<Image>(new SDL2Image);
     return *image;
 }
 
-std::shared_ptr<TiledImage> SDL2Images::loadTiles(const std::string& path,
-                                      unsigned tileW, unsigned tileH) {
-    std::shared_ptr<TiledImage>* image = new std::shared_ptr<TiledImage>(new SDL2TiledImage);
+Rc<TiledImage> SDL2Images::loadTiles(const std::string& path,
+                                     unsigned tileW, unsigned tileH) {
+    Rc<TiledImage>* image = new Rc<TiledImage>(new SDL2TiledImage);
     return *image;
 }
 

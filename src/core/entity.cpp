@@ -370,7 +370,7 @@ bool Entity::processDescriptor() {
 }
 
 bool Entity::processSprite(JSONObjectPtr sprite) {
-    Arc<TiledImage> tiles;
+    Rc<TiledImage> tiles;
 
     CHECK(sprite->hasObject("sheet"));
     CHECK(sprite->hasObject("phases"));
@@ -432,7 +432,7 @@ bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& ti
         double fps = phase->doubleAt("speed");
 
         std::vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
-        std::vector<Arc<Image>> images;
+        std::vector<Rc<Image>> images;
         for (auto it = frames.begin(); it != frames.end(); it++) {
             int i = *it;
             if (i < 0 || (int)tiles.size() < i) {

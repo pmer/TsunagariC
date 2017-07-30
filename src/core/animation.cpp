@@ -34,13 +34,13 @@ Animation::Animation()
       cycleTime(1),
       frameShowing(0) {}
 
-Animation::Animation(Arc<Image> frame)
+Animation::Animation(Rc<Image> frame)
     : frames { std::move(frame) },
       frameTime(1),
       cycleTime(1),
       frameShowing(0) {}
 
-Animation::Animation(std::vector<Arc<Image>> frames,
+Animation::Animation(std::vector<Rc<Image>> frames,
         time_t frameTime)
     : frames(std::move(frames)),
       frameTime(frameTime),

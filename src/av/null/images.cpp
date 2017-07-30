@@ -43,21 +43,21 @@ class NullTiledImage: public TiledImage {
  public:
     size_t size() const { return 1000; }
 
-    std::shared_ptr<Image> operator[](size_t) const {
-        return std::make_shared<NullImage>();
+    Rc<Image> operator[](size_t) const {
+        return Rc<Image>();
     }
 };
 
 
 class NullImages : public Images {
  public:
-    std::shared_ptr<Image> load(const std::string&) {
-        return std::shared_ptr<Image>();
+    Rc<Image> load(const std::string&) {
+        return Rc<Image>();
     }
 
-    std::shared_ptr<TiledImage> loadTiles(const std::string&,
+    Rc<TiledImage> loadTiles(const std::string&,
                                           unsigned, unsigned) {
-        return std::make_shared<NullTiledImage>();
+        return Rc<TiledImage>();
     }
 
     void garbageCollect() {}

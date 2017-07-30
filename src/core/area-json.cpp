@@ -79,7 +79,7 @@ class AreaJSON : public Area {
     bool processTileSetFile(JSONObjectRef obj, const std::string& source,
                             int firstGid);
     bool processTileType(JSONObjectPtr obj, TileType& type,
-                         Arc<TiledImage>& img, int id);
+                         Rc<TiledImage>& img, int id);
     bool processLayer(JSONObjectPtr obj);
     bool processLayerProperties(JSONObjectPtr obj);
     bool processLayerData(JSONArrayPtr arr);
@@ -276,7 +276,7 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
 */
 
     TileSet* set = nullptr;
-    Arc<TiledImage> img;
+    Rc<TiledImage> img;
 
     unsigned tilex, tiley;
     unsigned pixelw, pixelh;
@@ -364,7 +364,7 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
 }
 
 bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
-                              Arc<TiledImage>& img, int id) {
+                               Rc<TiledImage>& img, int id) {
 
 /*
   {
@@ -384,7 +384,7 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
     // to worry about it.
 
     // If a Tile is animated, it needs both member frames and a speed.
-    std::vector<Arc<Image>> framesvec;
+    std::vector<Rc<Image>> framesvec;
     int frameLen = -1;
 
     if (obj->hasString("flags")) {

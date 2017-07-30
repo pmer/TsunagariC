@@ -66,7 +66,7 @@ class GosuSounds : public Sounds {
 
     ~GosuSounds() = default;
 
-    std::shared_ptr<SoundInstance> play(const std::string& path);
+    Rc<SoundInstance> play(const std::string& path);
 
     void garbageCollect();
 

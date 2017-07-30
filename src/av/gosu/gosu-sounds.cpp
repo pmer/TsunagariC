@@ -123,13 +123,13 @@ static std::shared_ptr<Gosu::Sample> genSample(const std::string& path) {
 
 GosuSounds::GosuSounds() : samples(genSample) {}
 
-std::shared_ptr<SoundInstance> GosuSounds::play(const std::string& path) {
+Rc<SoundInstance> GosuSounds::play(const std::string& path) {
     auto sample = samples.lifetimeRequest(path);
     if (!sample) {
         // Error logged.
-        return std::shared_ptr<GosuSoundInstance>();
+        return Rc<SoundInstance>();
     }
-    return std::make_shared<GosuSoundInstance>(sample->play());
+    return Rc<SoundInstance>(new GosuSoundInstance(sample->play()));
 }
 
 void GosuSounds::garbageCollect() {

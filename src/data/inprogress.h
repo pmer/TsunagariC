@@ -87,7 +87,7 @@ class InProgressSound : public InProgress {
     void tick(time_t dt);
 
  private:
-    std::shared_ptr<SoundInstance> sound;
+    Rc<SoundInstance> sound;
     ThenFn then;
 };
 

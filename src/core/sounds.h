@@ -28,8 +28,9 @@
 #ifndef SRC_CORE_SOUNDS_H_
 #define SRC_CORE_SOUNDS_H_
 
-#include <memory>
 #include <string>
+
+#include "util/rc.h"
 
 class SoundInstance {
  public:
@@ -74,7 +75,7 @@ class Sounds {
     virtual ~Sounds();
 
     //! Play a sound from the file at the given path.
-    virtual std::shared_ptr<SoundInstance> play(const std::string& path) = 0;
+    virtual Rc<SoundInstance> play(const std::string& path) = 0;
 
     //! Free sounds not recently played.
     virtual void garbageCollect() = 0;

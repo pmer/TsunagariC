@@ -26,8 +26,6 @@
 
 #include "resources/pack.h"
 
-#include <stdlib.h>
-
 #include <mutex>
 
 #include "core/formatter.h"

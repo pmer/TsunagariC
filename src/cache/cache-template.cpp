@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** cache.cpp                          **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** cache-template.cpp                 **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef CACHE_TEMPLATE_CPP
-#define CACHE_TEMPLATE_CPP
+#ifndef SRC_CACHE_CACHE_TEMPLATE_CPP_
+#define SRC_CACHE_CACHE_TEMPLATE_CPP_
 
 #include "cache/cache.h"
 
@@ -39,8 +39,7 @@
 #define IN_USE_NOW -1
 
 template<class T>
-T Cache<T>::momentaryRequest(const std::string& name)
-{
+T Cache<T>::momentaryRequest(const std::string& name) {
     if (conf.cacheEnabled) {
         CacheMapIter it = map.find(name);
         if (it != map.end()) {
@@ -57,8 +56,7 @@ T Cache<T>::momentaryRequest(const std::string& name)
 }
 
 template<class T>
-T Cache<T>::lifetimeRequest(const std::string& name)
-{
+T Cache<T>::lifetimeRequest(const std::string& name) {
     if (conf.cacheEnabled) {
         typename CacheMap::iterator it = map.find(name);
         if (it != map.end()) {
@@ -73,8 +71,7 @@ T Cache<T>::lifetimeRequest(const std::string& name)
 }
 
 template<class T>
-void Cache<T>::momentaryPut(const std::string& name, T data)
-{
+void Cache<T>::momentaryPut(const std::string& name, T data){
     if (!conf.cacheEnabled) {
         return;
     }
@@ -86,8 +83,7 @@ void Cache<T>::momentaryPut(const std::string& name, T data)
 }
 
 template<class T>
-void Cache<T>::lifetimePut(const std::string& name, T data)
-{
+void Cache<T>::lifetimePut(const std::string& name, T data) {
     if (!conf.cacheEnabled) {
         return;
     }
@@ -98,8 +94,7 @@ void Cache<T>::lifetimePut(const std::string& name, T data)
 }
 
 template<class T>
-void Cache<T>::garbageCollect()
-{
+void Cache<T>::garbageCollect() {
     if (!conf.cacheEnabled) {
         return;
     }
@@ -127,4 +122,4 @@ void Cache<T>::garbageCollect()
     }
 }
 
-#endif
+#endif  // SRC_CACHE_CACHE_TEMPLATE_CPP_

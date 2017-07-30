@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** cache.h                            **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -24,16 +25,15 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef CACHE_H
-#define CACHE_H
+#ifndef SRC_CACHE_CACHE_H_
+#define SRC_CACHE_CACHE_H_
 
 #include <map>
 #include <string>
 
 template<class T>
-class Cache
-{
-public:
+class Cache {
+ public:
     T momentaryRequest(const std::string& name);
 
     T lifetimeRequest(const std::string& name);
@@ -44,11 +44,10 @@ public:
 
     void garbageCollect();
 
-private:
-    struct CacheEntry
-    {
+ private:
+    struct CacheEntry {
         T resource;
-        time_t lastUsed; // time in milliseconds
+        time_t lastUsed;  // time in milliseconds
         size_t memoryUsed;
     };
 
@@ -57,4 +56,4 @@ private:
     CacheMap map;
 };
 
-#endif
+#endif  // SRC_CORE_CACHE_H_

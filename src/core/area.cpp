@@ -185,7 +185,7 @@ bool Area::needsRedraw() const
     for (int z = tiles.z1; z < tiles.z2; z++) {
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {
-                const Tile* tile = getTile(x, y, z);
+                const Tile* tile = getTile(icoord(x, y, z));
                 const TileType* type = tile->getType();
                 if (type && type->needsRedraw()) {
                     return true;
@@ -272,16 +272,6 @@ void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
 }
 
 
-const Tile* Area::getTile(int x, int y, int z) const
-{
-    return grid.getTile(icoord(x, y, z));
-}
-
-const Tile* Area::getTile(int x, int y, double z) const
-{
-    return grid.getTile(vicoord(x, y, z));
-}
-
 const Tile* Area::getTile(icoord phys) const
 {
     return grid.getTile(phys);
@@ -295,16 +285,6 @@ const Tile* Area::getTile(vicoord virt) const
 const Tile* Area::getTile(rcoord virt) const
 {
     return grid.getTile(virt);
-}
-
-Tile* Area::getTile(int x, int y, int z)
-{
-    return grid.getTile(icoord(x, y, z));
-}
-
-Tile* Area::getTile(int x, int y, double z)
-{
-    return grid.getTile(vicoord(x, y, z));
 }
 
 Tile* Area::getTile(icoord phys)
@@ -366,16 +346,6 @@ icube Area::visibleTiles() const
     }
 
     return icube{x1, y1, 0, x2, y2, grid.dim.z};
-}
-
-bool Area::inBounds(int x, int y, int z) const
-{
-    return grid.inBounds(icoord(x, y, z));
-}
-
-bool Area::inBounds(int x, int y, double z) const
-{
-    return grid.inBounds(vicoord(x, y, z));
 }
 
 bool Area::inBounds(icoord phys) const
@@ -526,7 +496,7 @@ void Area::drawTiles()
         double depth = grid.idx2depth[(size_t)z];
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {
-                Tile* tile = getTile(x, y, z);
+                Tile* tile = getTile(icoord(x, y, z));
                 // We are certain the Tile exists.
                 drawTile(*tile, x, y, depth, grid.tileDim.y);
             }

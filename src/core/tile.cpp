@@ -160,7 +160,7 @@ icoord Tile::moveDest(icoord here, ivec2 facing) const {
 }
 
 Tile* Tile::offset(int x, int y) const {
-    return area->getTile(this->x + x, this->y + y, z);
+    return area->getTile(icoord(this->x + x, this->y + y, z));
 }
 
 double Tile::getZ() const {

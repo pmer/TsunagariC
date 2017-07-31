@@ -102,13 +102,9 @@ class Area {
     uint32_t getColorOverlay();
     void setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 
-    const Tile* getTile(int x, int y, int z) const; /* phys */
-    const Tile* getTile(int x, int y, double z) const; /* virt */
     const Tile* getTile(icoord phys) const;
     const Tile* getTile(vicoord virt) const;
     const Tile* getTile(rcoord virt) const;
-    Tile* getTile(int x, int y, int z); /* phys */
-    Tile* getTile(int x, int y, double z); /* virt */
     Tile* getTile(icoord phys);
     Tile* getTile(vicoord virt);
     Tile* getTile(rcoord virt);
@@ -124,8 +120,6 @@ class Area {
     icube visibleTiles() const;
 
     //! Returns true if a Tile exists at the specified coordinate.
-    bool inBounds(int x, int y, int z) const; /* phys */
-    bool inBounds(int x, int y, double z) const; /* virt */
     bool inBounds(icoord phys) const;
     bool inBounds(vicoord virt) const;
     bool inBounds(rcoord virt) const;

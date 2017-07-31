@@ -96,7 +96,7 @@ void Entity::draw()
     img->draw(
         doff.x + r.x,
         doff.y + r.y,
-        r.z + area->isometricZOff(rvec2(r.x, r.y))
+        r.z
     );
 }
 

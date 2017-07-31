@@ -114,20 +114,20 @@ bool AreaJSON::init() {
 
 
 void AreaJSON::allocateMapLayer() {
+    ivec3 dim = grid.dim;
+
+    // FIXME: Better int overflow check that multiplies x,y,z together.
     assert_(0 <= dim.y && dim.y <= std::numeric_limits<int>::max());
     assert_(0 <= dim.x && dim.x <= std::numeric_limits<int>::max());
     assert_(0 <= dim.z && dim.z + 1 <= std::numeric_limits<int>::max());
 
-    map.push_back(grid_t((size_t)dim.y, row_t((size_t)dim.x)));
-    grid_t& grid = map[(size_t)dim.z];
     for (int y = 0; y < dim.y; y++) {
-        row_t& row = grid[(size_t)y];
         for (int x = 0; x < dim.x; x++) {
-            Tile& tile = row[(size_t)x];
-            new (&tile) Tile(this, x, y, dim.z);
+            grid.grid.emplace_back(this, x, y, dim.z);
         }
     }
-    dim.z++;
+
+    grid.dim.z++;
 }
 
 bool AreaJSON::processDescriptor() {
@@ -138,9 +138,9 @@ bool AreaJSON::processDescriptor() {
     CHECK(doc->hasUnsigned("width"));
     CHECK(doc->hasUnsigned("height"));
 
-    dim.x = doc->unsignedAt("width");
-    dim.y = doc->unsignedAt("height");
-    dim.z = 0;
+    grid.dim.x = doc->unsignedAt("width");
+    grid.dim.y = doc->unsignedAt("height");
+    grid.dim.z = 0;
 
     CHECK(doc->hasObject("properties"));
     CHECK(processMapProperties(doc->objectAt("properties")));
@@ -198,8 +198,8 @@ bool AreaJSON::processMapProperties(JSONObjectPtr obj) {
     }
     if (obj->hasString("loop")) {
         const std::string directions = obj->stringAt("loop");
-        loopX = directions.find('x') != std::string::npos;
-        loopY = directions.find('y') != std::string::npos;
+        grid.loopX = directions.find('x') != std::string::npos;
+        grid.loopY = directions.find('y') != std::string::npos;
     }
     if (obj->hasString("color_overlay")) {
         unsigned char a, r, g, b;
@@ -291,18 +291,18 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
     tilex = obj->unsignedAt("tilewidth");
     tiley = obj->unsignedAt("tileheight");
 
-    if (aTileDim && aTileDim != ivec2(tilex, tiley)) {
+    if (grid.tileDim && grid.tileDim != ivec2(tilex, tiley)) {
         Log::err(descriptor,
                  "Tileset's width/height contradict earlier <layer>");
         return false;
     }
-    aTileDim = ivec2(tilex, tiley);
+    grid.tileDim = ivec2(tilex, tiley);
 
     pixelw = obj->unsignedAt("imagewidth");
     pixelh = obj->unsignedAt("imageheight");
 
-    width = pixelw / aTileDim.x;
-    height = pixelh / aTileDim.y;
+    width = pixelw / grid.tileDim.x;
+    height = pixelh / grid.tileDim.y;
 
     std::string imgSource = dirname(source) + obj->stringAt("image");
     tileSets[imgSource] = TileSet((size_t)width,
@@ -465,13 +465,13 @@ bool AreaJSON::processLayer(JSONObjectPtr obj) {
  }
 */
 
-    CHECK(obj->hasUnsigned("width"));
-    CHECK(obj->hasUnsigned("height"));
+    CHECK(obj->hasInt("width"));
+    CHECK(obj->hasInt("height"));
 
-    const unsigned x = obj->unsignedAt("width");
-    const unsigned y = obj->unsignedAt("height");
+    const int x = obj->intAt("width");
+    const int y = obj->intAt("height");
 
-    if (dim.x != x || dim.y != y) {
+    if (grid.dim.x != x || grid.dim.y != y) {
         Log::err(descriptor, "layer x,y size != map x,y size");
         return false;
     }
@@ -502,13 +502,13 @@ bool AreaJSON::processLayerProperties(JSONObjectPtr obj) {
 
     const double depth = obj->stringDoubleAt("depth");
 
-    if (depth2idx.find(depth) != depth2idx.end()) {
+    if (grid.depth2idx.find(depth) != grid.depth2idx.end()) {
         Log::err(descriptor, "Layers cannot share a depth");
         return false;
     }
 
-    depth2idx[depth] = dim.z - 1;
-    idx2depth.push_back(depth);  // Effectively idx2depth[dim.z - 1] = depth;
+    grid.depth2idx[depth] = grid.dim.z - 1;
+    grid.idx2depth.push_back(depth);  // Effectively idx2depth[dim.z - 1] = depth;
 
     return true;
 }
@@ -519,7 +519,7 @@ bool AreaJSON::processLayerData(JSONArrayPtr arr) {
  [9, 9, 9, ..., 3, 9, 9]
 */
 
-    const int z = dim.z - 1;
+    const int z = grid.dim.z - 1;
 
     // If we ever allow finding layers out of order.
     //assert_(0 <= z && z < dim.z);
@@ -539,12 +539,12 @@ bool AreaJSON::processLayerData(JSONArrayPtr arr) {
         // position on this layer.
         if (gid > 0) {
             TileType* type = gids[(size_t)gid];
-            Tile& tile = map[(size_t)z][y][x];
+            Tile& tile = grid.grid[(z * grid.dim.y + y) * grid.dim.x + x];
             type->allOfType.push_back(&tile);
             tile.parent = type;
         }
 
-        if (++x == (size_t)dim.x) {
+        if (++x == (size_t)grid.dim.x) {
             x = 0;
             y++;
         }
@@ -592,14 +592,14 @@ bool AreaJSON::processObjectGroupProperties(JSONObjectPtr obj) {
 
     const double depth = obj->stringDoubleAt("depth");
 
-    if (depth2idx.find(depth) != depth2idx.end()) {
+    if (grid.depth2idx.find(depth) != grid.depth2idx.end()) {
         Log::err(descriptor, "Layers cannot share a depth");
         return false;
     }
 
     allocateMapLayer();
-    depth2idx[depth] = dim.z - 1;
-    idx2depth.push_back(depth);  // Effectively idx2depth[dim.z - 1] = depth;
+    grid.depth2idx[depth] = grid.dim.z - 1;
+    grid.idx2depth.push_back(depth);  // Effectively idx2depth[dim.z - 1] = depth;
 
     return true;
 }
@@ -627,7 +627,7 @@ bool AreaJSON::processObject(JSONObjectPtr obj) {
         return true;
     }
 
-    const int z = dim.z - 1;
+    const int z = grid.dim.z - 1;
 
     // If we ever allow finding layers out of order.
     //assert_(0 <= z && z < dim.z);
@@ -709,22 +709,22 @@ bool AreaJSON::processObject(JSONObjectPtr obj) {
     // of the map. We don't keep an intermediary "object" object lying
     // around.
 
-    CHECK(obj->hasUnsigned("x"));
-    CHECK(obj->hasUnsigned("y"));
-    CHECK(obj->hasUnsigned("width"));
-    CHECK(obj->hasUnsigned("height"));
-    const unsigned x = obj->unsignedAt("x") / aTileDim.x;
-    const unsigned y = obj->unsignedAt("y") / aTileDim.y;
-    const unsigned w = obj->unsignedAt("width") / aTileDim.x;
-    const unsigned h = obj->unsignedAt("height") / aTileDim.y;
+    CHECK(obj->hasInt("x"));
+    CHECK(obj->hasInt("y"));
+    CHECK(obj->hasInt("width"));
+    CHECK(obj->hasInt("height"));
+    const int x = obj->intAt("x") / grid.tileDim.x;
+    const int y = obj->intAt("y") / grid.tileDim.y;
+    const int w = obj->intAt("width") / grid.tileDim.x;
+    const int h = obj->intAt("height") / grid.tileDim.y;
 
-    CHECK(x + w <= dim.x);
-    CHECK(y + h <= dim.y);
+    CHECK(x + w <= grid.dim.x);
+    CHECK(y + h <= grid.dim.y);
 
     // We know which Tiles are being talked about now... yay
-    for (unsigned Y = y; Y < y + h; Y++) {
-        for (unsigned X = x; X < x + w; X++) {
-            Tile& tile = map[(size_t)z][(size_t)Y][(size_t)X];
+    for (int Y = y; Y < y + h; Y++) {
+        for (int X = x; X < x + w; X++) {
+            Tile& tile = grid.grid[(z * grid.dim.y + Y) * grid.dim.x + X];
 
             tile.flags |= flags;
             for (size_t i = 0; i < 5; i++) {

@@ -35,6 +35,7 @@
 
 #include "core/entity.h"
 #include "core/tile.h"
+#include "core/tile-grid.h"
 #include "core/vec.h"
 #include "core/window.h"
 
@@ -118,11 +119,6 @@ class Area {
     ivec3 getDimensions() const;
     //! Return the pixel dimensions of a Tile graphic.
     ivec2 getTileDimensions() const;
-    //! Return the isometric z-offset for an X-Y position in the Area.
-    double isometricZOff(rvec2 pos) const;
-    //! Returns a physical cubic range of Tiles that could be visible
-    //! on-screen.
-    icube visibleTileBounds() const;
     //! Returns a physical cubic range of Tiles that are visible on-screen.
     //! Takes actual map size into account.
     icube visibleTiles() const;
@@ -174,7 +170,6 @@ class Area {
 
     //! Calculate frame to show for each type of tile
     void drawTiles();
-    void drawTile(Tile& tile, int x, int y, double depth);
     void drawEntities();
 
  protected:
@@ -188,32 +183,13 @@ class Area {
     typedef std::set<Rc<Overlay>> OverlaySet;
     OverlaySet overlays;
 
-    typedef std::vector<Tile> row_t;
-    typedef std::vector<row_t> grid_t;
-    typedef std::vector<grid_t> tilematrix_t;
-
-    //! 3-dimensional array of the tiles that make up the map.
-    tilematrix_t map;
-
-    //! 3-dimensional length of map.
-    ivec3 dim;
-
-    //! Pixel size for each tile in area. All tiles in an Area must be the
-    //! same size.
-    ivec2 aTileDim;
+    TileGrid<Tile> grid;
 
     typedef std::map<std::string, TileSet> tilesets_t;
     tilesets_t tileSets;
 
-    //! Maps virtual float-point depths to an index in our map array.
-    std::map<double, int> depth2idx;
-
-    //! Maps an index in our map array to a virtual float-point depth.
-    std::vector<double> idx2depth;
-
 
     std::string name, author;
-    bool loopX, loopY;
     bool beenFocused;
     bool redraw;
 

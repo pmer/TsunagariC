@@ -63,13 +63,14 @@ Area::Area(Player* player,
     : dataArea(DataWorld::instance().area(descriptor)),
       player(player),
       colorOverlayARGB(0),
-      dim(0, 0, 0),
-      aTileDim(0, 0),
-      loopX(false), loopY(false),
       beenFocused(false),
       redraw(true),
       descriptor(descriptor)
 {
+    grid.dim = ivec3(0, 0, 0);
+    grid.tileDim = ivec2(0, 0);
+    grid.loopX = false;
+    grid.loopY = false;
 }
 
 Area::~Area()
@@ -158,11 +159,11 @@ bool Area::needsRedraw() const
 
     const icube tiles = visibleTiles();
     const icube pixels = {
-        tiles.x1 * aTileDim.x,
-        tiles.y1 * aTileDim.y,
+        tiles.x1 * grid.tileDim.x,
+        tiles.y1 * grid.tileDim.y,
         tiles.z1,
-        tiles.x2 * aTileDim.x,
-        tiles.y2 * aTileDim.y,
+        tiles.x2 * grid.tileDim.x,
+        tiles.y2 * grid.tileDim.y,
         tiles.z2,
     };
 
@@ -273,74 +274,52 @@ void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
 
 const Tile* Area::getTile(int x, int y, int z) const
 {
-    if (loopX) {
-        x = wrap(0, x, dim.x);
-    }
-    if (loopY) {
-        y = wrap(0, y, dim.y);
-    }
-    if (inBounds(x, y, z)) {
-        return &map[(size_t)z][(size_t)y][(size_t)x];
-    }
-    else {
-        return nullptr;
-    }
+    return grid.getTile(icoord(x, y, z));
 }
 
 const Tile* Area::getTile(int x, int y, double z) const
 {
-    return getTile(x, y, depthIndex(z));
+    return grid.getTile(vicoord(x, y, z));
 }
 
 const Tile* Area::getTile(icoord phys) const
 {
-    return getTile(phys.x, phys.y, phys.z);
+    return grid.getTile(phys);
 }
 
 const Tile* Area::getTile(vicoord virt) const
 {
-    return getTile(virt2phys(virt));
+    return grid.getTile(virt);
 }
 
 const Tile* Area::getTile(rcoord virt) const
 {
-    return getTile(virt2phys(virt));
+    return grid.getTile(virt);
 }
 
 Tile* Area::getTile(int x, int y, int z)
 {
-    if (loopX) {
-        x = wrap(0, x, dim.x);
-    }
-    if (loopY) {
-        y = wrap(0, y, dim.y);
-    }
-    if (inBounds(x, y, z)) {
-        return &map[(size_t)z][(size_t)y][(size_t)x];
-    }
-    else {
-        return nullptr;
-    }
+    return grid.getTile(icoord(x, y, z));
 }
 
 Tile* Area::getTile(int x, int y, double z)
 {
-    return getTile(x, y, depthIndex(z));
+    return grid.getTile(vicoord(x, y, z));
 }
 
 Tile* Area::getTile(icoord phys)
 {
-    return getTile(phys.x, phys.y, phys.z);
+    return grid.getTile(phys);
 }
 
 Tile* Area::getTile(vicoord virt)
 {
-    return getTile(virt2phys(virt));
+    return grid.getTile(virt);
 }
 
 Tile* Area::getTile(rcoord virt)
 {
-    return getTile(virt2phys(virt));
+    return grid.getTile(virt);
 }
 
 TileSet* Area::getTileSet(const std::string& imagePath)
@@ -357,71 +336,61 @@ TileSet* Area::getTileSet(const std::string& imagePath)
 
 ivec3 Area::getDimensions() const
 {
-    return dim;
+    return grid.dim;
 }
 
 ivec2 Area::getTileDimensions() const
 {
-    return aTileDim;
-}
-
-double Area::isometricZOff(rvec2 pos) const
-{
-    return pos.y / aTileDim.y * ISOMETRIC_ZOFF_PER_TILE;
-}
-
-icube Area::visibleTileBounds() const
-{
-    rvec2 screen = Viewport::instance().getVirtRes();
-    rvec2 off = Viewport::instance().getMapOffset();
-
-    int x1 = (int)floor(off.x / aTileDim.x);
-    int y1 = (int)floor(off.y / aTileDim.y);
-    int x2 = (int)ceil((screen.x + off.x) / aTileDim.x);
-    int y2 = (int)ceil((screen.y + off.y) / aTileDim.y);
-
-    return icube(x1, y1, 0, x2, y2, dim.z);
+    return grid.tileDim;
 }
 
 icube Area::visibleTiles() const
 {
-    icube cube = visibleTileBounds();
-    if (!loopX) {
-        cube.x1 = std::max(cube.x1, 0);
-        cube.x2 = std::min(cube.x2, dim.x);
+    Viewport& viewport = Viewport::instance();
+
+    rvec2 screen = viewport.getVirtRes();
+    rvec2 off = viewport.getMapOffset();
+
+    int x1 = static_cast<int>(floor(off.x / grid.tileDim.x));
+    int y1 = static_cast<int>(floor(off.y / grid.tileDim.y));
+    int x2 = static_cast<int>(ceil((screen.x + off.x) / grid.tileDim.x));
+    int y2 = static_cast<int>(ceil((screen.y + off.y) / grid.tileDim.y));
+
+    if (!grid.loopX) {
+        x1 = bound(x1, 0, grid.dim.x);
+        x2 = bound(x2, 0, grid.dim.x);
     }
-    if (!loopY) {
-        cube.y1 = std::max(cube.y1, 0);
-        cube.y2 = std::min(cube.y2, dim.y);
+    if (!grid.loopY) {
+        y1 = bound(y1, 0, grid.dim.y);
+        y2 = bound(y2, 0, grid.dim.y);
     }
-    return cube;
+
+    return icube{x1, y1, 0, x2, y2, grid.dim.z};
 }
 
 bool Area::inBounds(int x, int y, int z) const
 {
-    return ((loopX || (0 <= x && x < dim.x)) &&
-        (loopY || (0 <= y && y < dim.y)) &&
-                  0 <= z && z < dim.z);
+    return grid.inBounds(icoord(x, y, z));
 }
 
 bool Area::inBounds(int x, int y, double z) const
 {
-    return inBounds(x, y, depthIndex(z));
+    return grid.inBounds(vicoord(x, y, z));
 }
 
 bool Area::inBounds(icoord phys) const
 {
-    return inBounds(phys.x, phys.y, phys.z);
+    return grid.inBounds(phys);
 }
 
 bool Area::inBounds(vicoord virt) const
 {
-    return inBounds(virt2phys(virt));
+    return grid.inBounds(virt);
 }
 
 bool Area::inBounds(rcoord virt) const
 {
-    return inBounds(virt2phys(virt));
+    return grid.inBounds(virt);
 }
 
 bool Area::inBounds(Entity* ent) const
@@ -433,12 +402,12 @@ bool Area::inBounds(Entity* ent) const
 
 bool Area::loopsInX() const
 {
-    return loopX;
+    return grid.loopX;
 }
 
 bool Area::loopsInY() const
 {
-    return loopY;
+    return grid.loopY;
 }
 
 const std::string Area::getDescriptor() const
@@ -487,48 +456,32 @@ void Area::insert(Rc<Overlay> o)
 
 vicoord Area::phys2virt_vi(icoord phys) const
 {
-    return vicoord(phys.x, phys.y, indexDepth(phys.z));
+    return grid.phys2virt_vi(phys);
 }
 
 rcoord Area::phys2virt_r(icoord phys) const
 {
-    return rcoord(
-        (double)phys.x * aTileDim.x,
-        (double)phys.y * aTileDim.y,
-        indexDepth(phys.z)
-    );
+    return grid.phys2virt_r(phys);
 }
 
 icoord Area::virt2phys(vicoord virt) const
 {
-    return icoord(virt.x, virt.y, depthIndex(virt.z));
+    return grid.virt2phys(virt);
 }
 
 icoord Area::virt2phys(rcoord virt) const
 {
-    return icoord(
-        (int)(virt.x / aTileDim.x),
-        (int)(virt.y / aTileDim.y),
-        depthIndex(virt.z)
-    );
+    return grid.virt2phys(virt);
 }
 
 rcoord Area::virt2virt(vicoord virt) const
 {
-    return rcoord(
-        (double)virt.x * aTileDim.x,
-        (double)virt.y * aTileDim.y,
-        virt.z
-    );
+    return grid.virt2virt(virt);
 }
 
 vicoord Area::virt2virt(rcoord virt) const
 {
-    return vicoord(
-        (int)virt.x / aTileDim.x,
-        (int)virt.y / aTileDim.y,
-        virt.z
-    );
+    return grid.virt2virt(virt);
 }
 
 DataArea* Area::getDataArea()
@@ -538,40 +491,17 @@ DataArea* Area::getDataArea()
 
 int Area::depthIndex(double depth) const
 {
-    std::map<double, int>::const_iterator it;
-    it = depth2idx.find(depth);
-    if (it == depth2idx.end()) {
-        Log::fatal(descriptor, Formatter(
-            "attempt to access invalid layer: %") % depth);
-    }
-    return it->second;
+    return grid.depthIndex(depth);
 }
 
 double Area::indexDepth(int idx) const
 {
-    assert_(0 <= idx && idx <= dim.z);
-    return idx2depth[(size_t)idx];
+    return grid.indexDepth(idx);
 }
 
 
 
-void Area::drawTiles()
-{
-    icube tiles = visibleTiles();
-    for (int z = tiles.z1; z < tiles.z2; z++) {
-        assert_(0 <= z && z <= dim.z);
-        double depth = idx2depth[(size_t)z];
-        for (int y = tiles.y1; y < tiles.y2; y++) {
-            for (int x = tiles.x1; x < tiles.x2; x++) {
-                Tile* tile = getTile(x, y, z);
-                // We are certain the Tile exists.
-                drawTile(*tile, x, y, depth);
-            }
-        }
-    }
-}
-
-void Area::drawTile(Tile& tile, int x, int y, double depth)
+static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY)
 {
     TileType* type = (TileType*)tile.parent;
     if (type) {
@@ -579,11 +509,27 @@ void Area::drawTile(Tile& tile, int x, int y, double depth)
         Image* img = type->anim.frame(now);
         if (img) {
             rvec2 drawPos(
-                double(x * (int)img->width()),
-                double(y * (int)img->height())
+                    double(x * (int)img->width()),
+                    double(y * (int)img->height())
             );
-            img->draw(drawPos.x, drawPos.y,
-                      depth + isometricZOff(drawPos));
+            double zOffset = drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
+            img->draw(drawPos.x, drawPos.y, depth + zOffset);
+        }
+    }
+}
+
+void Area::drawTiles()
+{
+    icube tiles = visibleTiles();
+    for (int z = tiles.z1; z < tiles.z2; z++) {
+        assert_(0 <= z && z <= grid.dim.z);
+        double depth = grid.idx2depth[(size_t)z];
+        for (int y = tiles.y1; y < tiles.y2; y++) {
+            for (int x = tiles.x1; x < tiles.x2; x++) {
+                Tile* tile = getTile(x, y, z);
+                // We are certain the Tile exists.
+                drawTile(*tile, x, y, depth, grid.tileDim.y);
+            }
         }
     }
 }

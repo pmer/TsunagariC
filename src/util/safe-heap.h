@@ -33,6 +33,7 @@
 
 #include "util/optional.h"
 
+// TODO: Replace with lock-free variant.
 template <class T>
 class SafeHeap {
  public:

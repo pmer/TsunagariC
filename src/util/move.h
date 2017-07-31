@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_MOVE_H_
-#define SRC_CORE_MOVE_H_
+#ifndef SRC_UTIL_MOVE_H_
+#define SRC_UTIL_MOVE_H_
 
 //
 // Move
@@ -50,4 +50,4 @@ inline constexpr typename Refless<T>::value&& move_(T&& x) noexcept {
     return static_cast<typename Refless<T>::value&&>(x);
 }
 
-#endif  // SRC_CORE_MOVE_H_
+#endif  // SRC_UTIL_MOVE_H_

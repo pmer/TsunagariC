@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_META_H_
-#define SRC_CORE_META_H_
+#ifndef SRC_UTIL_META_H_
+#define SRC_UTIL_META_H_
 
 
 //
@@ -110,4 +110,4 @@ struct IsAbstract {
     static constexpr bool value = sizeof(test(nullptr)) == sizeof(yes);
 };
 
-#endif  // SRC_CORE_META_H_
+#endif  // SRC_UTIL_META_H_

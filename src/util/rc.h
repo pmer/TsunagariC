@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_RC_H_
-#define SRC_CORE_RC_H_
+#ifndef SRC_UTIL_RC_H_
+#define SRC_UTIL_RC_H_
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -346,4 +346,4 @@ using Rc = SharedPtr<T, NonAtomic>;
 template<typename T>
 using CompactRc = CompactSharedPtr<T, NonAtomic>;
 
-#endif  // SRC_CORE_MEMORY_H_
+#endif  // SRC_UTIL_RC_H_

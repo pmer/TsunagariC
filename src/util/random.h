@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RANDOM_H
-#define RANDOM_H
+#ifndef SRC_UTIL_RANDOM_H_
+#define SRC_UTIL_RANDOM_H_
 
     //! Produce a random integer.
     /*!
@@ -43,5 +43,4 @@ int randInt(int min, int max);
     */
 double randFloat(double min, double max);
 
-#endif
-
+#endif  // SRC_UTIL_RANDOM_H_

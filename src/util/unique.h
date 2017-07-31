@@ -88,7 +88,7 @@ class Unique {
 
     T* get() const noexcept { return x; }
     T* operator->() const noexcept { assert_(x); return x; }
-    T& operator*() const noexcept { assert_(x); return *x; }
+    T& operator*() const noexcept { return *x; }
 
  private:
     // Unique pointers cannot be copied.

@@ -114,8 +114,6 @@ T* TileGrid<T>::getTile(icoord phys) {
         phys.y = wrap(0, phys.y, dim.y);
     }
 
-    assert_(inBounds(phys));
-
     int idx = (phys.z * y + phys.y) * x + phys.x;
     return &grid[idx];
 }

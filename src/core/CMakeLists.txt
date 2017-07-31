@@ -19,7 +19,6 @@ set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/npc.cpp
     ${CMAKE_CURRENT_LIST_DIR}/overlay.cpp
     ${CMAKE_CURRENT_LIST_DIR}/player.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/random.cpp
     ${CMAKE_CURRENT_LIST_DIR}/resources.cpp
     ${CMAKE_CURRENT_LIST_DIR}/sounds.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tile.cpp

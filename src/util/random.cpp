@@ -29,15 +29,12 @@
 
 #include <stdlib.h>
 
-int randInt(int min, int max)
-{
+int randInt(int min, int max) {
     return rand() % ((max+1)-min) + min;
 }
 
-double randFloat(double min, double max)
-{
+double randFloat(double min, double max) {
         int i = rand();
         double d = (double)i / RAND_MAX;
         return d * (max-min) + min;
 }
-

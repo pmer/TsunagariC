@@ -16,14 +16,14 @@ License:
 
 -----
 
-=== LibBoost ===
+=== EASTL ===
 
-Copyright (c) 2003-2016:
-	All contributors.
+Copyright (c) 2015:
+	Electronic Arts.
 
 License:
-	Boost License
-	<http://www.boost.org/LICENSE_1_0.txt>
+	MIT
+	<http://www.opensource.org/licenses/mit-license.php>
 
 -----
 
@@ -37,29 +37,6 @@ Copyright (c) 2004-2016:
 License:
 	MIT License
 	<http://www.opensource.org/licenses/mit-license.php>
-
------
-
-=== LibXML2 ===
-
-Copyright (c) 1998-2003:
-	Daniel Veillard
-
-License:
-	MIT License
-	<http://www.opensource.org/licenses/mit-license.php>
-
------
-
-=== PhysicsFS ===
-
-Copyright (c) 2001-2012:
-	Ryan C. Gordon
-	All Contributors.
-
-License:
-	ZLIB License
-	<http://hg.icculus.org/icculus/physfs/raw-file/tip/LICENSE.txt>
 
 -----
 

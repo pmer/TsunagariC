@@ -30,10 +30,9 @@
 
 #include <time.h>
 
-#include <vector>
-
 #include "core/images.h"
-#include "util/arc.h"
+#include "util/rc.h"
+#include "util/vector.h"
 
 /**
  * An Animation is a sequence of bitmap images (called frames) used to creates
@@ -70,8 +69,7 @@ class Animation {
      * @param frameTime length of time in milliseconds that each frame
      *        will display for
      */
-    Animation(std::vector<Rc<Image>> frames,
-        time_t frameTime);
+    Animation(vector<Rc<Image>> frames, time_t frameTime);
 
     /**
      * Starts the animation over.
@@ -95,7 +93,7 @@ class Animation {
     Image* frame(time_t now);
 
  private:
-    typedef std::vector<Rc<Image>> ImageVec;
+    typedef vector<Rc<Image>> ImageVec;
 
 
     /** List of images in animation. */

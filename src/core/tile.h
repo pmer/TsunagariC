@@ -29,7 +29,6 @@
 #define SRC_CORE_TILE_H_
 
 #include <string>
-#include <vector>
 
 class Tile;
 class TileType;
@@ -40,6 +39,7 @@ class TileSet;
 #include "data/data-area.h"
 #include "util/move.h"
 #include "util/optional.h"
+#include "util/vector.h"
 
 class Area;
 class Entity;
@@ -252,7 +252,7 @@ class TileType : public TileBase {
 
  public:
     Animation anim; //! Graphics for tiles of this type.
-    std::vector<Tile*> allOfType;
+    vector<Tile*> allOfType;
 };
 
 class TileSet {
@@ -269,7 +269,7 @@ class TileSet {
  private:
     size_t idx(size_t x, size_t y) const;
 
-    std::vector<TileType*> types;
+    vector<TileType*> types;
     size_t width, height;
 };
 

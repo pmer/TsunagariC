@@ -398,14 +398,14 @@ bool Entity::processPhases(JSONObjectPtr phases, TiledImage& tiles) {
     return true;
 }
 
-std::vector<int> intArrayToVector(JSONArrayPtr array) {
-    std::vector<int> vector;
+vector<int> intArrayToVector(JSONArrayPtr array) {
+    vector<int> v;
     for (size_t i = 0; i < array->size(); i++) {
         if (array->isUnsigned(i)) {
-            vector.push_back(array->intAt(i));
+            v.push_back(array->intAt(i));
         }
     }
-    return vector;
+    return v;
 }
 
 bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& tiles) {
@@ -432,8 +432,8 @@ bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& ti
         }
         double fps = phase->doubleAt("speed");
 
-        std::vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
-        std::vector<Rc<Image>> images;
+        vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
+        vector<Rc<Image>> images;
         for (auto it = frames.begin(); it != frames.end(); it++) {
             int i = *it;
             if (i < 0 || (int)tiles.size() < i) {

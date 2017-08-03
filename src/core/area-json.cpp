@@ -31,7 +31,6 @@
 
 #include <limits>
 #include <string>
-#include <vector>
 
 #include "core/area.h"
 #include "core/entity.h"
@@ -46,6 +45,7 @@
 #include "util/assert.h"
 #include "util/move.h"
 #include "util/optional.h"
+#include "util/vector.h"
 
 #ifdef _WIN32
     #include "os/windows.h"
@@ -93,7 +93,7 @@ class AreaJSON : public Area {
                    unsigned char& a, unsigned char& r,
                    unsigned char& g, unsigned char& b);
 
-    std::vector<TileType*> gids;
+    vector<TileType*> gids;
 };
 
 
@@ -328,7 +328,7 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
         // Handle explicitly declared "non-vanilla" types.
 
         JSONObjectPtr tilesProperties = obj->objectAt("tileproperties");
-        std::vector<std::string> tileIds = tilesProperties->names();
+        vector<std::string> tileIds = tilesProperties->names();
 
         for (auto& _id : tileIds) {
             // Must be an object... can't be an int... :)
@@ -383,7 +383,7 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
     // to worry about it.
 
     // If a Tile is animated, it needs both member frames and a speed.
-    std::vector<Rc<Image>> framesvec;
+    vector<Rc<Image>> framesvec;
     int frameLen = -1;
 
     if (obj->hasString("flags")) {
@@ -404,8 +404,8 @@ bool AreaJSON::processTileType(JSONObjectPtr obj, TileType& type,
     }
     if (obj->hasString("frames")) {
         std::string memtemp;
-        std::vector<std::string> frames;
-        std::vector<std::string>::iterator it;
+        vector<std::string> frames;
+        vector<std::string>::iterator it;
 
         memtemp = obj->stringAt("frames");
         frames = splitStr(memtemp, ",");
@@ -808,7 +808,7 @@ bool AreaJSON::parseExit(const std::string& dest,
   E.g.:   "babysfirst.area,1,3,0"
 */
 
-    std::vector<std::string> strs = splitStr(dest, ",");
+    vector<std::string> strs = splitStr(dest, ",");
 
     if (strs.size() != 4) {
         Log::err(descriptor, "exit: Invalid format");
@@ -843,7 +843,7 @@ bool AreaJSON::parseARGB(const std::string& str,
                          unsigned char& g, unsigned char& b) {
     unsigned char* channels[] = { &a, &r, &g, &b };
 
-    std::vector<std::string> strs = splitStr(str, ",");
+    vector<std::string> strs = splitStr(str, ",");
 
     if (strs.size() != 4) {
         Log::err(descriptor, "invalid ARGB format");

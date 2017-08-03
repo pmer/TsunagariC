@@ -28,10 +28,10 @@
 #define SRC_UTIL_DISPATCH_QUEUE_IMPL_H_
 
 #include <thread>
-#include <vector>
 
 #include "util/dispatch-queue.h"
 #include "util/safe-heap.h"
+#include "util/vector.h"
 
 struct TaskContext {
     Task task;
@@ -49,7 +49,7 @@ class DispatchQueueImpl {
     void runTasks();
 
     SafeHeap<TaskContext> tasks;
-    std::vector<std::thread> threads;
+    vector<std::thread> threads;
 };
 
 #endif  // SRC_UTIL_DISPATCH_QUEUE_IMPL_H_

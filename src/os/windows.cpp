@@ -33,10 +33,10 @@
 #include <Windows.h>
 
 #include <string>
-#include <vector>
 
 #include "core/window.h"
 #include "core/world.h"
+#include "util/vector.h"
 
 void wFixConsole() {
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {

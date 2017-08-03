@@ -30,9 +30,9 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "util/unique.h"
+#include "util/vector.h"
 
 class PackReader {
  public:
@@ -53,8 +53,7 @@ class PackReader {
     virtual void* getBlobData(BlobIndex index) = 0;
 
     // indicies must be monotonic & contiguous: e.g. 4, 5, 6, 7
-    virtual std::vector<void*> getBlobDatas(
-            std::vector<BlobIndex> indicies) = 0;
+    virtual vector<void*> getBlobDatas(vector<BlobIndex> indicies) = 0;
 };
 
 class PackWriter {

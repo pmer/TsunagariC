@@ -28,7 +28,6 @@
 #include "core/client-conf.h"
 
 #include <iostream>
-#include <vector>
 
 #include "config.h"
 #include "core/jsons.h"
@@ -36,6 +35,7 @@
 #include "util/math2.h"
 #include "util/move.h"
 #include "util/string2.h"
+#include "util/vector.h"
 
 Conf conf; // Project-wide global configuration.
 
@@ -272,7 +272,7 @@ bool parseCommandLine(int argc, char* argv[]) {
     }
 
     if (cmd.check("--size")) {
-        std::vector<std::string> dim = splitStr(cmd.get("--size"), "x");
+        vector<std::string> dim = splitStr(cmd.get("--size"), "x");
         if (dim.size() != 2) {
             Log::fatal("cmdline", "invalid argument for -s/--size");
             return false;

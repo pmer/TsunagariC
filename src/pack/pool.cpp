@@ -30,9 +30,9 @@
 #include <deque>
 #include <mutex>
 #include <thread>
-#include <vector>
 
 #include "util/move.h"
+#include "util/vector.h"
 
 class PoolImpl : public Pool {
  public:
@@ -43,7 +43,7 @@ class PoolImpl : public Pool {
     std::string name;
 
     size_t workerLimit;
-    std::vector<std::thread> workers;
+    vector<std::thread> workers;
 
     // Empty jobs are the signal to quit.
     std::deque<std::function<void()>> jobs;

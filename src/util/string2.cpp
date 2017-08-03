@@ -204,9 +204,9 @@ int parseInt100(const std::string& s) {
     return bound(i, 0, 100);
 }
 
-std::vector<std::string> splitStr(const std::string& input,
-        const std::string& delimiter) {
-    std::vector<std::string> strlist;
+vector<std::string> splitStr(const std::string& input,
+                             const std::string& delimiter) {
+    vector<std::string> strlist;
     size_t i = 0;
 
     for (size_t pos = input.find(delimiter); pos != std::string::npos; pos = input.find(delimiter, i)) {
@@ -222,9 +222,9 @@ std::vector<std::string> splitStr(const std::string& input,
     return strlist;
 }
 
-std::vector<int> parseRanges(const std::string& format) {
-    std::vector<int> ints;
-    typedef std::vector<std::string> StringVector;
+vector<int> parseRanges(const std::string& format) {
+    vector<int> ints;
+    typedef vector<std::string> StringVector;
     StringVector ranges = splitStr(format, ",");
     for (StringVector::const_iterator it = ranges.begin(); it != ranges.end(); it++) {
         const std::string& range = *it;

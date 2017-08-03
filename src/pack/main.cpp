@@ -70,7 +70,7 @@ static void addFile(PackWriter* pack, std::string path) {
 }
 
 static void addDir(PackWriter* pack, std::string path) {
-    std::vector<std::string> names = listDir(path);
+    vector<std::string> names = listDir(path);
     std::sort(names.begin(), names.end());
     for (auto& name : names) {
         addPath(pack, path + dirSeparator + name);
@@ -148,12 +148,12 @@ static bool extractArchive(const std::string& archivePath) {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
-        std::vector<PackReader::BlobIndex> blobIndicies;
+        vector<PackReader::BlobIndex> blobIndicies;
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             blobIndicies.push_back(i);
         }
 
-        std::vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
+        vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
 
         Unique<Pool> pool(Pool::makePool("extract", 1));
 
@@ -194,7 +194,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::string command = argv[1];
-    std::vector<std::string> args;
+    vector<std::string> args;
 
     for (int i = 2; i < argc; i++) {
         args.push_back(argv[i]);

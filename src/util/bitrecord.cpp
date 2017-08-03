@@ -27,14 +27,14 @@
 
 #include "bitrecord.h"
 
-BitRecord::BitRecord(size_t length) : states(length) {}
+BitRecord::BitRecord(size_t length) : states(vector<char>(length)) {}
 
 char& BitRecord::operator[] (size_t idx) {
     return states[idx];
 }
 
-std::vector<size_t> BitRecord::diff(const BitRecord& other) {
-    std::vector<size_t> changes;
+vector<size_t> BitRecord::diff(const BitRecord& other) {
+    vector<size_t> changes;
 
     for (size_t i = 0; i < states.size(); i++) {
         if (states[i] != other.states[i]) {

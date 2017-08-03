@@ -41,8 +41,8 @@
 #include "core/sounds.h"
 #include "core/viewport.h"
 #include "core/window.h"
-
 #include "data/data-world.h"
+#include "util/vector.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 
@@ -270,7 +270,7 @@ void World::storeKeys() {
 void World::restoreKeys() {
     BitRecord now = GameWindow::instance().getKeysDown();
     BitRecord then = keyStates.top();
-    typedef std::vector<size_t> Size_tVector;
+    typedef vector<size_t> Size_tVector;
     Size_tVector diffs = now.diff(then);
 
     keyStates.pop();

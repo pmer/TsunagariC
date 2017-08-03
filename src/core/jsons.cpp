@@ -51,7 +51,7 @@ class JSONObjectImpl : public JSONObject {
  public:
     virtual ~JSONObjectImpl() = default;
 
-    std::vector<std::string> names() const;
+    vector<std::string> names() const;
 
     bool hasBool(const std::string& name) const;
     bool hasInt(const std::string& name) const;
@@ -155,8 +155,8 @@ JSONs& JSONs::instance() {
     return globalJSONs;
 }
 
-std::vector<std::string> JSONObjectImpl::names() const {
-    std::vector<std::string> names;
+vector<std::string> JSONObjectImpl::names() const {
+    vector<std::string> names;
     for (auto& property : get()) {
         auto& name = property.name;
         if (name.IsString()) {

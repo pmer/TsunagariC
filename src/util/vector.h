@@ -8,6 +8,9 @@
 
 
 #include <stddef.h>
+#include <stdlib.h>
+
+#include <utility>
 
 #include <new>
 
@@ -208,9 +211,9 @@ inline vector<T>::vector(size_type n) {
     mpEnd     = mpBegin;
     mCapacity = mpBegin + n;
 
-    iterator dest = mpBegin;
+    T* dest = mpBegin;
     for (; n > 0; --n, ++dest) {
-        new (static_cast<void*>(&*dest)) T();
+        new (static_cast<void*>(dest)) T;
     }
 
     mpEnd = mpBegin + n;
@@ -439,7 +442,7 @@ vector<T>::back() const {
 template <typename T>
 inline void vector<T>::push_back(const value_type& value) {
     if(mpEnd < mCapacity) {
-        ::new((void*)mpEnd++) value_type(value);
+        new((void*)mpEnd++) value_type(value);
     }
     else {
         DoInsertValueEnd(value);

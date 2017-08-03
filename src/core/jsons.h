@@ -28,10 +28,10 @@
 #define SRC_CORE_JSONS_H_
 
 #include <string>
-#include <vector>
 
 #include "util/rc.h"
 #include "util/unique.h"
+#include "util/vector.h"
 
 class JSONArray;
 class JSONObject;
@@ -44,7 +44,7 @@ class JSONObject {
  public:
     virtual ~JSONObject() = default;
 
-    virtual std::vector<std::string> names() const = 0;
+    virtual vector<std::string> names() const = 0;
 
     virtual bool hasBool(const std::string& name) const = 0;
     virtual bool hasInt(const std::string& name) const = 0;

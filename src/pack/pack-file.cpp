@@ -37,10 +37,10 @@
 #include <algorithm>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "pack/file-type.h"
 #include "util/unique.h"
+#include "util/vector.h"
 
 //                                       "T   s    u    n    a   g    a   r"
 static constexpr uint8_t PACK_MAGIC[8] = {84, 115, 117, 110, 97, 103, 97, 114};
@@ -102,7 +102,7 @@ class PackReaderImpl : public PackReader {
     uint64_t getBlobSize(BlobIndex index) const;
     void* getBlobData(BlobIndex index);
 
-    std::vector<void*> getBlobDatas(std::vector<BlobIndex> indicies);
+    vector<void*> getBlobDatas(vector<BlobIndex> indicies);
 
     int fd;
     HeaderBlock header;
@@ -203,12 +203,11 @@ void* PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
     return data;
 }
 
-std::vector<void*> PackReaderImpl::getBlobDatas(
-        std::vector<BlobIndex> indicies) {
+vector<void*> PackReaderImpl::getBlobDatas(vector<BlobIndex> indicies) {
     size_t count = indicies.size();
     size_t totalSize = 0;
 
-    std::vector<void*> datas;
+    vector<void*> datas;
     iovec* iov = new iovec[count];
 
     for (size_t i = 0; i < count; i++) {
@@ -241,7 +240,7 @@ class PackWriterImpl : public PackWriter {
     void addBlob(std::string path, uint64_t size, const void* data);
 
  private:
-    std::vector<Blob> blobs;
+    vector<Blob> blobs;
     bool sorted = true;
 };
 
@@ -292,11 +291,11 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
         sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize + metadataBlockSize,
     };
 
-    std::vector<PathOffset> pathOffsetsBlock;
+    vector<PathOffset> pathOffsetsBlock;
     std::string pathsBlock;
-    std::vector<BlobMetadata> metadatasBlock;
-    std::vector<uint64_t> dataOffsetsBlock;
-    std::vector<iovec> ios;
+    vector<BlobMetadata> metadatasBlock;
+    vector<uint64_t> dataOffsetsBlock;
+    vector<iovec> ios;
 
     pathOffsetsBlock.reserve(blobCount);
     pathsBlock.reserve(pathsBlockSize);

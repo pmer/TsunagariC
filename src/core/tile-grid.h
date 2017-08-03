@@ -29,13 +29,13 @@
 #define SRC_CORE_TILE_GRID_H_
 
 #include <unordered_map>
-#include <vector>
 
 #include "core/formatter.h"
 #include "core/log.h"
 #include "core/vec.h"
 #include "util/assert.h"
 #include "util/math2.h"
+#include "util/vector.h"
 
 class Viewport;
 
@@ -82,7 +82,7 @@ class TileGrid {
 
  public:
     //! 3-dimensional array of the tiles that make up the grid.
-    std::vector<T> grid;
+    vector<T> grid;
 
     //! 3-dimensional length of map.
     ivec3 dim;
@@ -95,7 +95,7 @@ class TileGrid {
     std::unordered_map<double, int> depth2idx;
 
     //! Maps an index in our map array to a virtual float-point depth.
-    std::vector<double> idx2depth;
+    vector<double> idx2depth;
 
     bool loopX, loopY;
 };

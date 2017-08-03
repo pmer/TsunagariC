@@ -73,7 +73,7 @@ void GosuImage::drawSubrect(double dstX, double dstY, double z,
 }
 
 
-GosuTiledImage::GosuTiledImage(std::vector<Rc<Image>>&& images)
+GosuTiledImage::GosuTiledImage(vector<Rc<Image>>&& images)
         : images(move_(images)) {}
 
 size_t GosuTiledImage::size() const {
@@ -123,7 +123,7 @@ static Rc<TiledImage> genTiledImage(const std::string& path,
     Log::info("Images", Formatter("Bitmap " + path + " is %×%") % bitmap.width() % bitmap.height());
 
     TimeMeasure m("Constructed " + path + " as tiles");
-    std::vector<Rc<Image>> images;
+    vector<Rc<Image>> images;
     for (unsigned y = 0; y < bitmap.height(); y += tileH) {
         for (unsigned x = 0; x < bitmap.width(); x += tileW) {
             images.emplace_back(Rc<Image>(new GosuImage(

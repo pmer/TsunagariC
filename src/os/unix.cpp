@@ -38,7 +38,8 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
+
+#include "util/vector.h"
 
 char dirSeparator = '/';
 
@@ -62,13 +63,13 @@ void makeDirectory(const std::string& path) {
     mkdir(path.c_str(), 0777);
 }
 
-std::vector<std::string> listDir(const std::string& path) {
+vector<std::string> listDir(const std::string& path) {
     DIR* dir = nullptr;
     struct dirent* entry = nullptr;
-    std::vector<std::string> names;
+    vector<std::string> names;
 
     if ((dir = opendir(path.c_str())) == nullptr) {
-        return std::vector<std::string>();
+        return vector<std::string>();
     }
 
     while ((entry = readdir(dir))) {

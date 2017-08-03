@@ -31,10 +31,10 @@
 #include <functional>
 #include <map>
 #include <string>
-#include <vector>
 
 #include "core/jsons.h"
 #include "core/vec.h"
+#include "util/vector.h"
 
 class Animation;
 class Area;
@@ -210,8 +210,8 @@ protected:
     //!  e.g.: ["step"] = "sounds/player_step.oga"
     std::map<std::string, std::string> soundPaths;
 
-    std::vector<OnTickFn> onTickFns;
-    std::vector<OnTurnFn> onTurnFns;
+    vector<OnTickFn> onTickFns;
+    vector<OnTurnFn> onTurnFns;
 };
 
 #endif

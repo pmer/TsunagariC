@@ -31,7 +31,6 @@
 #include <functional>
 #include <stack>
 #include <string>
-#include <vector>
 
 #include "core/vec.h"
 #include "core/window.h"  // for KeyboardKey

@@ -30,14 +30,15 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
+
+#include "util/vector.h"
 
 extern char dirSeparator;
 
 uint64_t getFileSize(const std::string& path);
 bool isDir(const std::string& path);
 void makeDirectory(const std::string& path);
-std::vector<std::string> listDir(const std::string& path);
+vector<std::string> listDir(const std::string& path);
 
 enum TermColor {
     TC_RESET,

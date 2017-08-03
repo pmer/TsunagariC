@@ -35,6 +35,7 @@
 #include <Gosu/Window.hpp>  // for Gosu::Window
 
 #include "core/window.h"
+#include "util/vector.h"
 
 namespace Gosu {
     class Button;
@@ -91,7 +92,7 @@ protected:
     };
 
     std::map<Gosu::Button, keystate> keystates;
-    std::vector<KeyboardKey> gosuToTsunagariKey;
+    vector<KeyboardKey> gosuToTsunagariKey;
 };
 
 #endif

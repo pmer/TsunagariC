@@ -31,7 +31,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "core/entity.h"
 #include "core/tile.h"

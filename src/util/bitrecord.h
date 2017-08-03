@@ -30,17 +30,17 @@
 
 #include <string.h>  // for size_t
 
-#include <vector>
+#include "util/vector.h"
 
 class BitRecord {
  public:
     BitRecord(size_t length);
 
     char& operator[] (size_t idx);
-    std::vector<size_t> diff(const BitRecord& other);
+    vector<size_t> diff(const BitRecord& other);
 
  private:
-    std::vector<char> states;
+    vector<char> states;
 };
 
 #endif  // SRC_CORE_BITRECORD_H_

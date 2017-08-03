@@ -36,13 +36,13 @@ Animation::Animation()
       frameShowing(0) {}
 
 Animation::Animation(Rc<Image> frame)
-    : frames { move_(frame) },
-      frameTime(1),
+    : frameTime(1),
       cycleTime(1),
-      frameShowing(0) {}
+      frameShowing(0) {
+    frames.push_back(move_(frame));
+}
 
-Animation::Animation(std::vector<Rc<Image>> frames,
-        time_t frameTime)
+Animation::Animation(vector<Rc<Image>> frames, time_t frameTime)
     : frames(move_(frames)),
       frameTime(frameTime),
       cycleTime(1),

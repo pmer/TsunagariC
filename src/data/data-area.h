@@ -33,9 +33,9 @@
 #include <functional>
 #include <map>
 #include <string>
-#include <vector>
 
 #include "util/unique.h"
+#include "util/vector.h"
 
 class Area;
 class Entity;
@@ -84,7 +84,7 @@ class DataArea {
     DataArea& operator=(const DataArea&) = delete;
     DataArea& operator=(DataArea&&) = delete;
 
-    std::vector<Unique<InProgress>> inProgresses;
+    vector<Unique<InProgress>> inProgresses;
 };
 
 #endif  // SRC_DATA_DATA_AREA_H_

@@ -28,14 +28,13 @@
 #ifndef SRC_AV_GOSU_IMAGES_H_
 #define SRC_AV_GOSU_IMAGES_H_
 
-#include <vector>
-
 #include <Gosu/Image.hpp>
 
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
 #include "core/images.h"
 #include "util/move.h"
+#include "util/vector.h"
 
 class GosuImage : public Image {
  public:
@@ -54,7 +53,7 @@ class GosuImage : public Image {
 
 class GosuTiledImage: public TiledImage {
  public:
-    explicit GosuTiledImage(std::vector<Rc<Image>>&& images);
+    explicit GosuTiledImage(vector<Rc<Image>>&& images);
     ~GosuTiledImage() = default;
 
     size_t size() const;
@@ -62,7 +61,7 @@ class GosuTiledImage: public TiledImage {
     Rc<Image> operator[](size_t n) const;
 
  private:
-    std::vector<Rc<Image>> images;
+    vector<Rc<Image>> images;
 };
 
 

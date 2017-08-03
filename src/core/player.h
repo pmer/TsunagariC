@@ -28,10 +28,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <vector>
-
 #include "core/character.h"
 #include "core/vec.h"
+#include "util/vector.h"
 
 class Exit;
 
@@ -67,7 +66,7 @@ private:
 
     //! Stack storing depressed keyboard keys in the form of movement
     //! vectors.
-    std::vector<ivec2> movements;
+    vector<ivec2> movements;
 };
 
 #endif

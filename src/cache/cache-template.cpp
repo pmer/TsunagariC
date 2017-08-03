@@ -30,11 +30,10 @@
 
 #include "cache/cache.h"
 
-#include <vector>
-
 #include "core/client-conf.h"
 #include "core/log.h"
 #include "core/world.h"
+#include "util/vector.h"
 
 #define IN_USE_NOW -1
 
@@ -99,7 +98,7 @@ void Cache<T>::garbageCollect() {
         return;
     }
     time_t now = World::instance().time();
-    typedef std::vector<std::string> StringVector;
+    typedef vector<std::string> StringVector;
     StringVector dead;
     for (CacheMapIter it = map.begin(); it != map.end(); it++) {
         const std::string& name = it->first;

@@ -10,8 +10,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include <utility>
-
 #include <new>
 
 #include "util/assert.h"

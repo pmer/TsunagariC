@@ -671,9 +671,9 @@ void vector<T>::DoGrow(size_type n) {
 
 template <typename T>
 inline void vector<T>::DoSwap(this_type& x) {
-    std::swap(mpBegin,   x.mpBegin);
-    std::swap(mpEnd,     x.mpEnd);
-    std::swap(mCapacity, x.mCapacity); // We do this even if EASTL_ALLOCATOR_COPY_ENABLED is 0.
+    swap_(mpBegin,   x.mpBegin);
+    swap_(mpEnd,     x.mpEnd);
+    swap_(mCapacity, x.mCapacity); // We do this even if EASTL_ALLOCATOR_COPY_ENABLED is 0.
 }
 
 

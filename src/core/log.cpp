@@ -32,6 +32,7 @@
 #include <mutex>
 
 #include "core/client-conf.h"
+#include "core/formatter.h"
 #include "core/window.h"
 #include "os/os.h"
 
@@ -94,16 +95,20 @@ void Log::err(std::string domain, std::string msg) {
         Log::fatal(domain, msg);
     }
     else if (verb > V_QUIET) {
-        std::unique_lock<std::mutex> lock(stdoutMutex);
+        {
+            std::unique_lock<std::mutex> lock(stdoutMutex);
 
-        setTermColor(TC_GREEN);
-        std::cerr << makeTimestamp();
+            setTermColor(TC_GREEN);
+            std::cerr << makeTimestamp();
 
-        setTermColor(TC_RED);
-        std::cerr << "Error [" + domain + "]";
+            setTermColor(TC_RED);
+            std::cerr << "Error [" + domain + "]";
 
-        setTermColor(TC_RESET);
-        std::cerr << " - " << chomp(msg) << std::endl;
+            setTermColor(TC_RESET);
+            std::cerr << " - " << chomp(msg) << std::endl;
+        }
+
+        std::string str = Formatter("Error [%] - %") % domain % chomp(msg);
 
         #ifdef _WIN32
             wMessageBox("Tsunagari - Error", str);
@@ -115,16 +120,20 @@ void Log::err(std::string domain, std::string msg) {
 }
 
 void Log::fatal(std::string domain, std::string msg) {
-    std::unique_lock<std::mutex> lock(stdoutMutex);
+    {
+        std::unique_lock<std::mutex> lock(stdoutMutex);
 
-    setTermColor(TC_GREEN);
-    std::cerr << makeTimestamp();
+        setTermColor(TC_GREEN);
+        std::cerr << makeTimestamp();
 
-    setTermColor(TC_RED);
-    std::cerr << "Fatal [" + domain + "]";
+        setTermColor(TC_RED);
+        std::cerr << "Fatal [" + domain + "]";
 
-    setTermColor(TC_RESET);
-    std::cerr << " - " << chomp(msg) << std::endl;
+        setTermColor(TC_RESET);
+        std::cerr << " - " << chomp(msg) << std::endl;
+    }
+
+    std::string str = Formatter("Fatal [%] - %") % domain % chomp(msg);
 
     #ifdef _WIN32
         wMessageBox("Tsunagari - Fatal", str);

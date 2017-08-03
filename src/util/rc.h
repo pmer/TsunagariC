@@ -50,100 +50,59 @@
 // FIXME: How can we reduce memory usage? Also, can we reduce allocations so
 //        none are needed for default delete?
 
-template<typename T>
-struct Deleter {
-    virtual ~Deleter() {}
-    virtual void operator()(T* t) = 0;
-};
-
-template<typename B>
-struct DefaultDeleter : public Deleter<B> {
-    ~DefaultDeleter() {}
-    void operator()(B* x) { delete x; }
-};
-
-template<typename T>
-struct AttemptedAbstractDeleter : public Deleter<T> {
-    ~AttemptedAbstractDeleter() {}
-    void operator()(T*) { abort(); }
-};
-
-template<typename T, typename Count>
-struct SharedData {
-    Count count;
-    Unique<Deleter<T>> deleter;
-    bool deleted = false;
-
-    SharedData(Deleter<T>* deleter)
-            : count(1), deleter(deleter) {
-    }
-
-    void incref() {
-        ++count;
-    }
-
-    void decref() {
-        --count;
-    }
-
-    void destroy(T* x) {
-        (*deleter)(x);
-    }
-};
-
 // Shared pointer that allows pointers to abstract types and custom deleters.
 template<typename T, typename Count>
 class SharedPtr {
  public:
     T* x;
-    SharedData<T, Count>* data;
+    Count* count;
 
  public:
     // Default constructor
-    SharedPtr() : x(nullptr), data(nullptr) {}
+    SharedPtr() : x(nullptr), count(nullptr) {}
 
     // Move constructors
     SharedPtr(SharedPtr&& other) noexcept
-            : x(other.x), data(other.data) {
+            : x(other.x), count(other.count) {
         other.x = nullptr;
-        other.data = nullptr;
+        other.count = nullptr;
     }
 
     template<typename D>
     SharedPtr(SharedPtr<D, Count>&& other, EnableIfSubclass<T, D> = Null())
-            : x(other.x), data(other.data) {
+            : x(other.x), count(other.count) {
         other.x = nullptr;
-        other.data = nullptr;
+        other.count = nullptr;
     }
 
     SharedPtr(SharedPtr& other)
-            : x(other.x), data(other.data) {
+            : x(other.x), count(other.count) {
         incref();
     }
 
     template<typename D>
     SharedPtr(SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Null())
-            : x(other.x), data(reinterpret_cast<SharedData<T, Count>*>(other.data)) {
+            : x(other.x), count(other.count) {
         incref();
     }
 
     // Copy constructors
     SharedPtr(const SharedPtr& other)
-            : x(other.x), data(other.data) {
+            : x(other.x), count(other.count) {
         incref();
     }
 
     template<typename D>
     SharedPtr(const SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Null())
-            : x(other.x), data(other.data) {
+            : x(other.x), count(other.count) {
         incref();
     }
 
     // Raw-pointer constructor
     template<typename D>
     SharedPtr(D* d, EnableIfSubclass<T*, D*> = Null()) : x(d) {
-        data = d ? new SharedData<T, Count>(new DefaultDeleter<T>())
-                 : nullptr;
+        count = d ? new Count(1)
+                  : nullptr;
     }
 
     // FIXME: Add T* t constructor that does not store pointer to deleter.
@@ -154,7 +113,7 @@ class SharedPtr {
     template<typename ...Args>
     explicit SharedPtr(Args&& ...args)
             : x(new T(std::forward<Args>(args)...)),
-              data(new SharedData<T, Count>{1, new DefaultDeleter<T, T>()}) {}
+              count(1) {}
     */
 
     ~SharedPtr() {
@@ -169,15 +128,15 @@ class SharedPtr {
 
     SharedPtr& operator=(SharedPtr&& other) noexcept {
         x = other.x;
-        data = other.data;
+        count = other.count;
         other.x = nullptr;
-        other.data = nullptr;
+        other.count = nullptr;
         return *this;
     }
 
     SharedPtr& operator=(const SharedPtr& other) noexcept {
         x = other.x;
-        data = other.data;
+        count = other.count;
         incref();
         return *this;
     }
@@ -193,11 +152,11 @@ class SharedPtr {
     }
 
     bool unique() const noexcept {
-        return data && data->count == 1;
+        return count && *count == 1;
     }
 
     size_t refCount() const noexcept {
-        return data ? data->count : 0;
+        return count ? *count : 0;
     }
 
  private:
@@ -205,17 +164,17 @@ class SharedPtr {
     bool operator==(SharedPtr&&) { return false; }
 
     inline void incref() {
-        if (data) {
-            data->incref();
+        if (count) {
+            ++*count;
         }
     }
 
     inline void decref() {
-        if (data) {
-            data->decref();
-            if (data->count == 0) {
-                data->destroy(x);
-                delete data;
+        if (count) {
+            --*count;
+            if (*count == 0) {
+                delete x;
+                delete count;
             }
         }
     }

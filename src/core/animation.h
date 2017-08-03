@@ -32,9 +32,8 @@
 
 #include <vector>
 
+#include "core/images.h"
 #include "util/arc.h"
-
-class Image;
 
 /**
  * An Animation is a sequence of bitmap images (called frames) used to creates

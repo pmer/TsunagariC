@@ -27,7 +27,9 @@
 
 #include "bitrecord.h"
 
-BitRecord::BitRecord(size_t length) : states(vector<char>(length)) {}
+BitRecord::BitRecord(size_t length) {
+    states.resize(length);
+}
 
 char& BitRecord::operator[] (size_t idx) {
     return states[idx];

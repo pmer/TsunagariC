@@ -86,7 +86,7 @@ GosuGameWindow::GosuGameWindow()
 {
     Gosu::enableUndocumentedRetrofication();
 
-    gosuToTsunagariKey.reserve(Gosu::ButtonName::NUM_BUTTONS);
+    gosuToTsunagariKey.resize(Gosu::ButtonName::NUM_BUTTONS);
     auto& keys = gosuToTsunagariKey;
     keys[Gosu::ButtonName::KB_ESCAPE] = KBEscape;
     keys[Gosu::ButtonName::KB_LEFT_SHIFT] = KBLeftShift;

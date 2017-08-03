@@ -12,6 +12,7 @@
 
 #include <new>
 
+#include "util/algorithm.h"
 #include "util/assert.h"
 #include "util/likely.h"
 #include "util/move.h"
@@ -73,6 +74,7 @@ class vector {
     size_type size() const noexcept;
     size_type capacity() const noexcept;
 
+    void resize(size_type n);
     void reserve(size_type n);
 
     pointer       data() noexcept;
@@ -119,11 +121,10 @@ class vector {
     template<typename... Args>
     void DoInsertValue(const_iterator position, Args&&... args);
 
+    void DoInsertValuesEnd(size_type n); // Default constructs n values
 
     template<typename... Args>
     void DoInsertValueEnd(Args&&... args);
-
-    void DoInsertValueEnd(const value_type& value);
 
     void DoClearCapacity();
 
@@ -139,20 +140,32 @@ class vector {
 
 template <typename T>
 inline T* move(T* first, T* last, T* dest) {
-    while(first != last)
-        *dest++ = move_(*first++);
+    for (; first != last; ++first) {
+        *dest++ = move_(*first);
+    }
     return dest;
 }
 
 template <typename T>
 inline T* uninitialized_move(T* first, T* last, T* dest) {
-    while(first != last) {
-        ::new ((void*)dest++) T(move_(*first++));
+    for (; first != last; ++dest, ++first) {
+        new (static_cast<void*>(dest)) T(move_(*first));
     }
-
     return dest;
 }
 
+template <typename T, typename Count>
+inline void uninitialized_default_fill_n(T* first, Count n) {
+    for (; n > 0; --n, ++first) {
+        new (static_cast<void*>(first)) T;
+    }
+}
+
+template <typename T>
+inline void destruct(T* first, T* last) {
+    for(; first != last; ++first)
+        (*first).~T();
+}
 
 ///////////////////////////////////////////////////////////////////////
 // vector
@@ -334,6 +347,18 @@ template <typename T>
 inline typename vector<T>::size_type
 vector<T>::capacity() const noexcept {
     return (size_type)(mCapacity - mpBegin);
+}
+
+
+template <typename T>
+inline void vector<T>::resize(size_type n) {
+    if(n > (size_type)(mpEnd - mpBegin)) { // We expect that more often than not, resizes will be upsizes.
+        DoInsertValuesEnd(n - ((size_type) (mpEnd - mpBegin)));
+    }
+    else {
+        destruct(mpBegin + n, mpEnd);
+        mpEnd = mpBegin + n;
+    }
 }
 
 
@@ -676,6 +701,33 @@ inline void vector<T>::DoSwap(this_type& x) {
 
 
 template <typename T>
+void vector<T>::DoInsertValuesEnd(size_type n) {
+    if (n > size_type(mCapacity - mpEnd)) {
+        const size_type nPrevSize = size_type(mpEnd - mpBegin);
+        const size_type nGrowSize = GetNewCapacity(nPrevSize);
+        const size_type nNewSize = max_(nGrowSize, nPrevSize + n);
+        pointer const pNewData = DoAllocate(nNewSize);
+
+        pointer pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewData);
+
+        uninitialized_default_fill_n(pNewEnd, n);
+        pNewEnd += n;
+
+        destruct(mpBegin, mpEnd);
+        DoFree(mpBegin);
+
+        mpBegin = pNewData;
+        mpEnd = pNewEnd;
+        mCapacity = pNewData + nNewSize;
+    }
+    else {
+        uninitialized_default_fill_n(mpEnd, n);
+        mpEnd += n;
+    }
+}
+
+
+template <typename T>
 template<typename... Args>
 void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
     // To consider: It's feasible that the args is from a value_type comes from within the current sequence itself and
@@ -694,7 +746,7 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
         // argument being const value_type& or value_type&&.
         assert_(position < mpEnd);                                // While insert at end() is valid, our design is such that calling code should handle that case before getting here, as our streamlined logic directly doesn't handle this particular case due to resulting negative ranges.
         value_type  value(forward_<Args>(args)...);           // Need to do this before the move_backward below because maybe args refers to something within the moving range.
-        ::new(static_cast<void*>(mpEnd)) value_type(move_(*(mpEnd - 1)));      // mpEnd is uninitialized memory, so we must construct into it instead of move into it like we do with the other elements below.
+        new (static_cast<void*>(mpEnd)) value_type(move_(*(mpEnd - 1)));      // mpEnd is uninitialized memory, so we must construct into it instead of move into it like we do with the other elements below.
 
         // We need to go backward because of potential overlap issues.
         auto first = destPosition, last = mpEnd - 1, resultEnd = mpEnd;
@@ -712,7 +764,7 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
         const size_type nNewSize  = GetNewCapacity(nPrevSize);
         pointer const   pNewData  = DoAllocate(nNewSize);
 
-        ::new((void*)(pNewData + nPosSize)) value_type(forward_<Args>(args)...);                  // Because the old data is potentially being moved rather than copied, we need to move
+        new ((void*)(pNewData + nPosSize)) value_type(forward_<Args>(args)...);                  // Because the old data is potentially being moved rather than copied, we need to move
         pointer pNewEnd = uninitialized_move(mpBegin, destPosition, pNewData);   // the value first, because it might possibly be a reference to the old data being moved.
         pNewEnd = uninitialized_move(destPosition, mpEnd, ++pNewEnd);            // Question: with exceptions disabled, do we asssume all operations are noexcept and thus there's no need for uninitialized_move_ptr_if_noexcept?
 
@@ -736,7 +788,7 @@ void vector<T>::DoInsertValueEnd(Args&&... args) {
     pointer const   pNewData  = DoAllocate(nNewSize);
 
     pointer pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewData);
-    ::new((void*)pNewEnd) value_type(forward_<Args>(args)...);
+    new((void*)pNewEnd) value_type(forward_<Args>(args)...);
     pNewEnd++;
 
     for(auto first = mpBegin, last = mpEnd; first != last; ++first) {
@@ -748,28 +800,6 @@ void vector<T>::DoInsertValueEnd(Args&&... args) {
     mpEnd     = pNewEnd;
     mCapacity = pNewData + nNewSize;
 }
-
-
-template <typename T>
-void vector<T>::DoInsertValueEnd(const value_type& value) {
-    const size_type nPrevSize = size_type(mpEnd - mpBegin);
-    const size_type nNewSize  = GetNewCapacity(nPrevSize);
-    pointer const   pNewData  = DoAllocate(nNewSize);
-
-    pointer pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewData);
-    ::new((void*)pNewEnd) value_type(value);
-    pNewEnd++;
-
-    for(auto first = mpBegin, last = mpEnd; first != last; ++first) {
-        (*first).~T();
-    }
-    DoFree(mpBegin);
-
-    mpBegin   = pNewData;
-    mpEnd     = pNewEnd;
-    mCapacity = pNewData + nNewSize;
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////

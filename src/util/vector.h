@@ -442,7 +442,7 @@ vector<T>::back() const {
 template <typename T>
 inline void vector<T>::push_back(const value_type& value) {
     if(mpEnd < mCapacity) {
-        new((void*)mpEnd++) value_type(value);
+        new ((void*)mpEnd++) value_type(value);
     }
     else {
         DoInsertValueEnd(value);
@@ -491,10 +491,10 @@ vector<T>::emplace(const_iterator position, Args&&... args) {
     const ptrdiff_t n = position - mpBegin; // Save this because we might reallocate.
 
     if((mpEnd == mCapacity) || (position != mpEnd)) {
-        DoInsertValue(position, std::forward<Args>(args)...);
+        DoInsertValue(position, forward_<Args>(args)...);
     }
     else {
-        ::new((void*)mpEnd) value_type(std::forward<Args>(args)...);
+        ::new((void*)mpEnd) value_type(forward_<Args>(args)...);
         ++mpEnd; // Increment this after the construction above in case the construction throws an exception.
     }
 
@@ -505,11 +505,11 @@ template <typename T>
 template<class... Args>
 inline void vector<T>::emplace_back(Args&&... args) {
     if(mpEnd < mCapacity) {
-        ::new((void*)mpEnd) value_type(std::forward<Args>(args)...);  // If value_type has a move constructor, it will use it and this operation may be faster than otherwise.
+        ::new((void*)mpEnd) value_type(forward_<Args>(args)...);  // If value_type has a move constructor, it will use it and this operation may be faster than otherwise.
         ++mpEnd; // Increment this after the construction above in case the construction throws an exception.
     }
     else {
-        DoInsertValueEnd(std::forward<Args>(args)...);
+        DoInsertValueEnd(forward_<Args>(args)...);
     }
 }
 
@@ -695,7 +695,7 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
         // too much for the given platform. An alternative solution may be to specialize this function for the case of the
         // argument being const value_type& or value_type&&.
         assert_(position < mpEnd);                                // While insert at end() is valid, our design is such that calling code should handle that case before getting here, as our streamlined logic directly doesn't handle this particular case due to resulting negative ranges.
-        value_type  value(std::forward<Args>(args)...);           // Need to do this before the move_backward below because maybe args refers to something within the moving range.
+        value_type  value(forward_<Args>(args)...);           // Need to do this before the move_backward below because maybe args refers to something within the moving range.
         ::new(static_cast<void*>(mpEnd)) value_type(move_(*(mpEnd - 1)));      // mpEnd is uninitialized memory, so we must construct into it instead of move into it like we do with the other elements below.
 
         // We need to go backward because of potential overlap issues.
@@ -714,7 +714,7 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
         const size_type nNewSize  = GetNewCapacity(nPrevSize);
         pointer const   pNewData  = DoAllocate(nNewSize);
 
-        ::new((void*)(pNewData + nPosSize)) value_type(std::forward<Args>(args)...);                  // Because the old data is potentially being moved rather than copied, we need to move
+        ::new((void*)(pNewData + nPosSize)) value_type(forward_<Args>(args)...);                  // Because the old data is potentially being moved rather than copied, we need to move
         pointer pNewEnd = uninitialized_move(mpBegin, destPosition, pNewData);   // the value first, because it might possibly be a reference to the old data being moved.
         pNewEnd = uninitialized_move(destPosition, mpEnd, ++pNewEnd);            // Question: with exceptions disabled, do we asssume all operations are noexcept and thus there's no need for uninitialized_move_ptr_if_noexcept?
 
@@ -738,7 +738,7 @@ void vector<T>::DoInsertValueEnd(Args&&... args) {
     pointer const   pNewData  = DoAllocate(nNewSize);
 
     pointer pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewData);
-    ::new((void*)pNewEnd) value_type(std::forward<Args>(args)...);
+    ::new((void*)pNewEnd) value_type(forward_<Args>(args)...);
     pNewEnd++;
 
     for(auto first = mpBegin, last = mpEnd; first != last; ++first) {

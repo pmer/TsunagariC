@@ -27,11 +27,6 @@
 #ifndef SRC_UTIL_MOVE_H_
 #define SRC_UTIL_MOVE_H_
 
-//
-// Move
-//   move_()  same as std::move
-//
-
 template<typename T>
 struct Refless {
     typedef T value;
@@ -45,9 +40,29 @@ struct Refless<T&> {
     typedef T value;
 };
 
+//
+// Move
+//   move_()  same as std::move
+//
+
 template<typename T>
 inline constexpr typename Refless<T>::value&& move_(T&& x) noexcept {
     return static_cast<typename Refless<T>::value&&>(x);
+}
+
+//
+// Forward
+//   forward_()  same as std::forward
+//
+
+template <typename T>
+constexpr T&& forward_(typename Refless<T>::value& x) noexcept {
+    return static_cast<T&&>(x);
+}
+
+template <typename T>
+constexpr T&& forward_(typename Refless<T>::value&& x) noexcept {
+    return static_cast<T&&>(x);
 }
 
 #endif  // SRC_UTIL_MOVE_H_

@@ -34,7 +34,7 @@
 GameWindow::GameWindow() : keysDown(KB_SIZE) {}
 
 void GameWindow::emitKeyDown(KeyboardKey key) {
-    keysDown[key]++;
+    keysDown[key] = true;
 
     if (keysDown[KBEscape] && (keysDown[KBLeftShift] ||
                                keysDown[KBRightShift])) {
@@ -48,7 +48,7 @@ void GameWindow::emitKeyDown(KeyboardKey key) {
 }
 
 void GameWindow::emitKeyUp(KeyboardKey key) {
-    keysDown[key]--;
+    keysDown[key] = false;
 
     if (!keysDown[key]) {
         World::instance().buttonUp(key);

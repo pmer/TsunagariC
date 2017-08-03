@@ -127,7 +127,6 @@ class vector {
     void DoGrow(size_type n);
 
     void DoSwap(this_type& x);
-
 };
 
 

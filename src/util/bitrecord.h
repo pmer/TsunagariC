@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** bitrecord.h                        **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -36,11 +36,11 @@ class BitRecord {
  public:
     BitRecord(size_t length);
 
-    char& operator[] (size_t idx);
+    bool& operator[] (size_t idx);
     vector<size_t> diff(const BitRecord& other);
 
  private:
-    vector<char> states;
+    vector<bool> states;
 };
 
 #endif  // SRC_CORE_BITRECORD_H_

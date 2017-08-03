@@ -56,13 +56,24 @@ inline constexpr typename Refless<T>::value&& move_(T&& x) noexcept {
 //
 
 template <typename T>
-constexpr T&& forward_(typename Refless<T>::value& x) noexcept {
+inline constexpr T&& forward_(typename Refless<T>::value& x) noexcept {
     return static_cast<T&&>(x);
 }
 
 template <typename T>
-constexpr T&& forward_(typename Refless<T>::value&& x) noexcept {
+inline constexpr T&& forward_(typename Refless<T>::value&& x) noexcept {
     return static_cast<T&&>(x);
+}
+
+//
+// Swap
+//   swap_()  same as std::swap
+//
+template <typename T>
+inline void swap_(T& a, T& b) noexcept {
+    T temp(move_(a));
+    a = move_(b);
+    b = move_(temp);
 }
 
 #endif  // SRC_UTIL_MOVE_H_

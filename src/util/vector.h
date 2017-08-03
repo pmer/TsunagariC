@@ -140,8 +140,8 @@ class vector {
 
 template <typename T>
 inline T* move(T* first, T* last, T* dest) {
-    for (; first != last; ++first) {
-        *dest++ = move_(*first);
+    for (; first != last; ++first, ++dest) {
+        *dest = move_(*first);
     }
     return dest;
 }
@@ -163,8 +163,25 @@ inline void uninitialized_default_fill_n(T* first, Count n) {
 
 template <typename T>
 inline void destruct(T* first, T* last) {
-    for(; first != last; ++first)
+    for(; first != last; ++first) {
         (*first).~T();
+    }
+}
+
+template <typename T>
+inline T* uninitialized_copy(T* first, T* last, T* dest) {
+    for(; first != last; ++dest, ++first) {
+        new (static_cast<void*>(dest)) T(*first);
+    }
+    return dest;
+}
+
+template <typename T>
+inline T* move_backward(T* first, T* last, T* resultEnd) {
+    for (; last != first; --resultEnd, --last) {
+        *resultEnd = move_(*last);
+    }
+    return resultEnd;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -222,11 +239,7 @@ inline vector<T>::vector(size_type n) {
     mpEnd     = mpBegin;
     mCapacity = mpBegin + n;
 
-    T* dest = mpBegin;
-    for (; n > 0; --n, ++dest) {
-        new (static_cast<void*>(dest)) T;
-    }
-
+    uninitialized_default_fill_n(mpBegin, n);
     mpEnd = mpBegin + n;
 }
 
@@ -237,15 +250,7 @@ inline vector<T>::vector(const this_type& x) {
     mpEnd     = mpBegin;
     mCapacity = mpBegin + x.size();
 
-    iterator first = x.mpBegin;
-    iterator last = x.mpEnd;
-    iterator dest = mpBegin;
-
-    for(; first != last; ++first, ++dest) {
-        new(static_cast<void*>(&*dest)) value_type(*first);
-    }
-
-    mpEnd = dest;
+    mpEnd = uninitialized_copy(x.mpBegin, x.mpEnd, mpBegin);
 }
 
 
@@ -260,9 +265,7 @@ inline vector<T>::vector(this_type&& x)
 
 template <typename T>
 inline vector<T>::~vector() {
-    for (T* x = mpBegin; x != mpEnd; x++) {
-        (*x).~T();
-    }
+    destruct(mpBegin, mpEnd);
     free(mpBegin);
 }
 
@@ -476,7 +479,7 @@ inline void vector<T>::push_back(const value_type& value) {
 template <typename T>
 inline void vector<T>::push_back(value_type&& value) {
     if (mpEnd < mCapacity) {
-        ::new((void*)mpEnd++) value_type(move_(value));
+        new ((void*)mpEnd++) value_type(move_(value));
     }
     else {
         DoInsertValueEnd(move_(value));
@@ -488,7 +491,7 @@ template <typename T>
 inline typename vector<T>::reference
 vector<T>::push_back() {
     if(mpEnd < mCapacity) {
-        ::new((void*)mpEnd++) value_type();
+        new ((void*)mpEnd++) value_type();
     }
     else {  // Note that in this case we create a temporary, which is less desirable.
         DoInsertValueEnd(value_type());
@@ -600,9 +603,7 @@ vector<T>::erase_unsorted(const_iterator position) {
 
 template <typename T>
 inline void vector<T>::clear() noexcept {
-    for(auto first = mpBegin, last = mpEnd; first != last; ++first) {
-        (*first).~T();
-    }
+    destruct(mpBegin, mpEnd);
     mpEnd = mpBegin;
 }
 
@@ -745,15 +746,9 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
         // too much for the given platform. An alternative solution may be to specialize this function for the case of the
         // argument being const value_type& or value_type&&.
         assert_(position < mpEnd);                                // While insert at end() is valid, our design is such that calling code should handle that case before getting here, as our streamlined logic directly doesn't handle this particular case due to resulting negative ranges.
-        value_type  value(forward_<Args>(args)...);           // Need to do this before the move_backward below because maybe args refers to something within the moving range.
+        value_type value(forward_<Args>(args)...);           // Need to do this before the move_backward below because maybe args refers to something within the moving range.
         new (static_cast<void*>(mpEnd)) value_type(move_(*(mpEnd - 1)));      // mpEnd is uninitialized memory, so we must construct into it instead of move into it like we do with the other elements below.
-
-        // We need to go backward because of potential overlap issues.
-        auto first = destPosition, last = mpEnd - 1, resultEnd = mpEnd;
-        while (last != first) {
-            *--resultEnd = move_(*--last);
-        }
-
+        move_backward(destPosition, mpEnd - 1, mpEnd);           // We need to go backward because of potential overlap issues.
         destPosition->~T();
         ::new(static_cast<void*>(destPosition)) value_type(move_(value));                             // Move the value argument to the given position.
         ++mpEnd;
@@ -768,9 +763,7 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
         pointer pNewEnd = uninitialized_move(mpBegin, destPosition, pNewData);   // the value first, because it might possibly be a reference to the old data being moved.
         pNewEnd = uninitialized_move(destPosition, mpEnd, ++pNewEnd);            // Question: with exceptions disabled, do we asssume all operations are noexcept and thus there's no need for uninitialized_move_ptr_if_noexcept?
 
-        for(auto first = mpBegin, last = mpEnd; first != last; ++first) {
-            (*first).~T();
-        }
+        destruct(mpBegin, mpEnd);
         DoFree(mpBegin);
 
         mpBegin   = pNewData;
@@ -791,9 +784,7 @@ void vector<T>::DoInsertValueEnd(Args&&... args) {
     new((void*)pNewEnd) value_type(forward_<Args>(args)...);
     pNewEnd++;
 
-    for(auto first = mpBegin, last = mpEnd; first != last; ++first) {
-        (*first).~T();
-    }
+    destruct(mpBegin, mpEnd);
     DoFree(mpBegin);
 
     mpBegin   = pNewData;

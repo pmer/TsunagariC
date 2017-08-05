@@ -133,6 +133,7 @@ void SDL2GameWindow::mainLoop() {
         handleEvents();
         World::instance().update(time());
         World::instance().draw();
+        SDL_Delay(16);
     }
 }
 

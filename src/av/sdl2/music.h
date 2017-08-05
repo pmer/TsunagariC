@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** music.h                     **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** music.h                          **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,12 +27,21 @@
 #ifndef SRC_AV_SDL2_MUSIC_H_
 #define SRC_AV_SDL2_MUSIC_H_
 
+#include <string>
+
+#include "cache/cache-template.cpp"
+#include "cache/readercache.h"
 #include "core/music-worker.h"
+#include "util/rc.h"
+
+typedef struct _Mix_Music Mix_Music;
 
 class SDL2Music : public MusicWorker {
  public:
-    void setIntro(const std::string& filename);
-    void setLoop(const std::string& filename);
+    SDL2Music();
+    ~SDL2Music();
+
+    void play(std::string filename);
 
     void stop();
 
@@ -42,9 +51,12 @@ class SDL2Music : public MusicWorker {
 
     void setVolume(double volume);
 
-    void tick();
-
     void garbageCollect();
+
+ private:
+    Rc<Mix_Music> musicInst;
+
+    ReaderCache<Rc<Mix_Music>> songs;
 };
 
 #endif  // SRC_AV_SDL2_MUSIC_H_

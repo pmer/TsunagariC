@@ -163,9 +163,10 @@ void SDL2GameWindow::handleEvent(const SDL_Event& event) {
 void SDL2GameWindow::drawRect(double x1, double x2, double y1, double y2,
               uint32_t argb) {}
 
-void SDL2GameWindow::scale(double x, double y) {}
-void SDL2GameWindow::translate(double x, double y) {}
-void SDL2GameWindow::clip(double x, double y, double width, double height) {}
+void SDL2GameWindow::scale(double x, double y, std::function<void()> op) {}
+void SDL2GameWindow::translate(double x, double y, std::function<void()> op) {}
+void SDL2GameWindow::clip(double x, double y, double width, double height,
+                          std::function<void()> op) {}
 
 void SDL2GameWindow::close() {
     SDL_DestroyWindow(window);

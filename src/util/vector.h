@@ -210,7 +210,7 @@ inline T* vector<T>::DoAllocate(size_type n) {
 template<typename T>
 inline void vector<T>::DoFree(T* p) {
     if (p) {
-        delete[] (char *) p;
+        free(p);
     }
 }
 

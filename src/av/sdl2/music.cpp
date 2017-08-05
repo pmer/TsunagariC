@@ -26,23 +26,109 @@
 
 #include "av/sdl2/music.h"
 
-static SDL2Music globalMusicWorker;
+#include <limits.h>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+
+#include "core/measure.h"
+#include "core/resources.h"
+#include "util/unique.h"
+
+static SDL2Music* globalMusicWorker = nullptr;
 
 MusicWorker& MusicWorker::instance() {
-    return globalMusicWorker;
+    if (globalMusicWorker == nullptr) {
+        globalMusicWorker = new SDL2Music;
+    }
+    return *globalMusicWorker;
 }
 
-void SDL2Music::setIntro(const std::string& filename) {}
-void SDL2Music::setLoop(const std::string& filename) {}
+static Rc<Mix_Music> genSong(const std::string& name) {
+    Unique<Resource> r = Resources::instance().load(name);
+    if (!r) {
+        // Error logged.
+        return Rc<Mix_Music>();
+    }
 
-void SDL2Music::stop() {}
+    assert_(r->size() < INT_MAX);
 
-bool SDL2Music::playing() {}
-void SDL2Music::pause() {}
-void SDL2Music::resume() {}
+    SDL_RWops* ops = SDL_RWFromMem(const_cast<void*>(r->data()),
+                                   static_cast<int>(r->size()));
 
-void SDL2Music::setVolume(double volume) {}
+    new Unique<Resource>(move_(r));  // FIXME: Need to keep memory around.
 
-void SDL2Music::tick() {}
+    TimeMeasure m("Constructed " + name + " as music");
+    Mix_Music* music = Mix_LoadMUS_RW(ops, 1);
 
-void SDL2Music::garbageCollect() {}
+    return Rc<Mix_Music>(music);
+}
+
+
+SDL2Music::SDL2Music() : songs(genSong) {
+    assert_(SDL_Init(SDL_INIT_AUDIO) != -1);
+    assert_(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) != -1);
+}
+
+SDL2Music::~SDL2Music() {
+    stop();
+}
+
+void SDL2Music::play(std::string filepath) {
+    if (path == filepath) {
+        if (Mix_PausedMusic()) {
+            paused = 0;
+            Mix_PlayMusic(musicInst.get(), -1);
+        }
+        return;
+    }
+
+    MusicWorker::play(move_(filepath));
+    TimeMeasure m("Playing " + path);
+    if (musicInst && !Mix_PausedMusic()) {
+        Mix_HaltMusic();
+    }
+    musicInst = path.size() ? songs.lifetimeRequest(path)
+                            : Rc<Mix_Music>();
+    if (musicInst) {
+        Mix_PlayMusic(musicInst.get(), -1);
+        Mix_VolumeMusic(static_cast<int>(volume * 128));
+    }
+}
+
+void SDL2Music::stop() {
+    MusicWorker::stop();
+    if (musicInst) {
+        Mix_HaltMusic();
+    }
+    musicInst = Rc<Mix_Music>();
+}
+
+bool SDL2Music::playing() {
+    return musicInst && Mix_PlayingMusic() != 0;
+}
+
+void SDL2Music::pause() {
+    if (paused == 0 && musicInst) {
+        Mix_PauseMusic();
+    }
+    MusicWorker::pause();
+}
+
+void SDL2Music::resume() {
+    MusicWorker::resume();
+    if (paused == 0 && musicInst) {
+        Mix_PlayMusic(musicInst.get(), -1);
+    }
+}
+
+void SDL2Music::setVolume(double volume) {
+    MusicWorker::setVolume(volume);
+    if (musicInst) {
+        Mix_VolumeMusic(static_cast<int>(volume * 128));
+    }
+}
+
+void SDL2Music::garbageCollect() {
+    songs.garbageCollect();
+}

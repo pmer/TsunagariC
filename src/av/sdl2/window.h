@@ -55,10 +55,10 @@ class SDL2GameWindow : public GameWindow {
     void drawRect(double x1, double x2, double y1, double y2,
             uint32_t argb);
 
-    void scale(double x, double y);
-    void translate(double x, double y);
-    void clip(double x, double y, double width, double height);
-
+    void scale(double x, double y, std::function<void()> op);
+    void translate(double x, double y, std::function<void()> op);
+    void clip(double x, double y, double width, double height,
+                      std::function<void()> op);
     void close();
 
     std::chrono::time_point<std::chrono::steady_clock> start;

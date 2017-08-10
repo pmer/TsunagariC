@@ -68,6 +68,11 @@ static Rc<SDL2Song> genSong(const std::string& name) {
 }
 
 
+SDL2Song::~SDL2Song() {
+    Mix_FreeMusic(mix);
+}
+
+
 SDL2Music::SDL2Music() : songs(genSong) {
     assert_(SDL_Init(SDL_INIT_AUDIO) != -1);
     assert_(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) != -1);
@@ -81,7 +86,7 @@ void SDL2Music::play(std::string filepath) {
     if (path == filepath) {
         if (Mix_PausedMusic()) {
             paused = 0;
-            Mix_PlayMusic(currentMusic->mix.get(), -1);
+            Mix_PlayMusic(currentMusic->mix, -1);
         }
         return;
     }
@@ -94,7 +99,7 @@ void SDL2Music::play(std::string filepath) {
     currentMusic = path.size() ? songs.lifetimeRequest(path)
                                : Rc<SDL2Song>();
     if (currentMusic) {
-        Mix_PlayMusic(currentMusic->mix.get(), -1);
+        Mix_PlayMusic(currentMusic->mix, -1);
         Mix_VolumeMusic(static_cast<int>(volume * 128));
     }
 }
@@ -121,7 +126,7 @@ void SDL2Music::pause() {
 void SDL2Music::resume() {
     MusicWorker::resume();
     if (paused == 0 && currentMusic) {
-        Mix_PlayMusic(currentMusic->mix.get(), -1);
+        Mix_PlayMusic(currentMusic->mix, -1);
     }
 }
 

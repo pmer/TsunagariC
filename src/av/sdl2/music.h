@@ -41,10 +41,12 @@
 typedef struct _Mix_Music Mix_Music;
 
 struct SDL2Song {
+    ~SDL2Song();
+
     // The Mix_Music needs the music data to be kept around for its lifetime.
     Unique<Resource> resource;
 
-    Unique<Mix_Music> mix;
+    Mix_Music* mix;
 };
 
 class SDL2Music : public MusicWorker {

@@ -32,9 +32,20 @@
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
 #include "core/music-worker.h"
+#include "core/resources.h"
 #include "util/rc.h"
+#include "util/unique.h"
 
+// This declaration matches exactly the one found in SDL_mixer.h so in
+// music.cpp we can include both headers without the compiler complaining.
 typedef struct _Mix_Music Mix_Music;
+
+struct SDL2Song {
+    // The Mix_Music needs the music data to be kept around for its lifetime.
+    Unique<Resource> resource;
+
+    Unique<Mix_Music> mix;
+};
 
 class SDL2Music : public MusicWorker {
  public:
@@ -54,9 +65,9 @@ class SDL2Music : public MusicWorker {
     void garbageCollect();
 
  private:
-    Rc<Mix_Music> musicInst;
+    Rc<SDL2Song> currentMusic;
 
-    ReaderCache<Rc<Mix_Music>> songs;
+    ReaderCache<Rc<SDL2Song>> songs;
 };
 
 #endif  // SRC_AV_SDL2_MUSIC_H_

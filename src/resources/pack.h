@@ -44,7 +44,6 @@ struct Free {
 class PackResource : public Resource {
  public:
     PackResource(void* data, size_t size);
-    ~PackResource() = default;
 
     const void* data() const;
     size_t size() const;
@@ -59,15 +58,12 @@ class PackResources : public Resources {
     PackResources();
     ~PackResources() = default;
 
-    void init();
-
     Unique<Resource> load(const std::string& path);
 
  private:
     PackResources(const PackResources&) = delete;
     PackResources& operator=(const PackResources&) = delete;
 
-    bool initialized;
     std::mutex mutex;
     Unique<PackReader> pack;
 };

@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** window.cpp                    **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** window.cpp                       **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -40,11 +40,8 @@
 static SDL2GameWindow globalWindow;
 
 GameWindow* GameWindow::create() {
-    if (globalWindow.init()) {
-        return &globalWindow;
-    } else {
-        return nullptr;
-    }
+    return globalWindow.init() ? &globalWindow
+                               : nullptr;
 }
 
 GameWindow& GameWindow::instance() {
@@ -55,6 +52,10 @@ time_t GameWindow::time() {
     std::chrono::time_point<std::chrono::steady_clock> start = globalWindow.start;
     std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
     return std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+}
+
+SDL_Renderer* SDL2GetRenderer() {
+    return globalWindow.renderer;
 }
 
 

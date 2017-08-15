@@ -29,11 +29,16 @@
 
 #include "core/images.h"
 
+#include "cache/cache-template.cpp"
+#include "cache/readercache.h"
+
 typedef struct SDL_Texture SDL_Texture;
 
 class SDL2Image : public Image {
  public:
-    SDL2Image();
+    explicit SDL2Image(SDL_Texture* texture);
+    ~SDL2Image();
+
     void draw(double dstX, double dstY, double z);
     void drawSubrect(double dstX, double dstY, double z,
                      double srcX, double srcY,
@@ -53,7 +58,7 @@ class SDL2TiledImage: public TiledImage {
 
 class SDL2Images : public Images {
  public:
-    SDL2Images() = default;
+    SDL2Images();
 
     Rc<Image> load(const std::string& path);
 
@@ -65,6 +70,8 @@ class SDL2Images : public Images {
  private:
     SDL2Images(const SDL2Images&) = delete;
     SDL2Images& operator=(const SDL2Images&) = delete;
+
+    ReaderCache<Rc<Image>> images;
 };
 
 #endif  // SRC_AV_SDL2_IMAGE_H_

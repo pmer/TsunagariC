@@ -42,11 +42,11 @@ Images& Images::instance() {
 }
 
 
-static Rc<SDL2Image> genSong(const std::string& name) {
+static Rc<Image> genImage(const std::string& name) {
     Unique<Resource> r = Resources::instance().load(name);
     if (!r) {
         // Error logged.
-        return Rc<SDL2Image>();
+        return Rc<Image>();
     }
 
     assert_(r->size() < INT_MAX);
@@ -56,18 +56,19 @@ static Rc<SDL2Image> genSong(const std::string& name) {
 
     TimeMeasure m("Constructed " + name + " as image");
     SDL_Surface* surface = IMG_Load_RW(ops, 1);
+    SDL_Renderer* renderer = SDL2GetRenderer();
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-    // We need to keep the memory (the resource) around, so put it in a struct.
-    SDL2Image* song = new SDL2Image;
-    song->resource = move_(r);
-    song->mix = music;
-
-    return Rc<SDL2Image>(song);
+    return Rc<Image>(new SDL2Image(texture));
 }
 
 
-SDL2Image::SDL2Image() : Image(16, 16) {}
+SDL2Image::SDL2Image(SDL_Texture* texture) : Image(16, 16), texture(texture) {}
+
+SDL2Image::~SDL2Image() {
+    SDL_DestroyTexture(texture);
+}
+
 void SDL2Image::draw(double dstX, double dstY, double z) {}
 void SDL2Image::drawSubrect(double dstX, double dstY, double z,
                  double srcX, double srcY,
@@ -76,16 +77,15 @@ void SDL2Image::drawSubrect(double dstX, double dstY, double z,
 size_t SDL2TiledImage::size() const { return 500; }
 
 Rc<Image> SDL2TiledImage::operator[](size_t n) const {
-    Rc<Image>* image = new Rc<Image>(new SDL2Image);
+    Rc<Image>* image = new Rc<Image>(new SDL2Image(nullptr));
     return *image;
 }
 
 
+SDL2Images::SDL2Images() : images(genImage) {}
+
 Rc<Image> SDL2Images::load(const std::string& path) {
-    Rc<SDL2Image> texture = path.size() ? images.lifetimeRequest(path)
-                                        : Rc<SDL2Image>();
-    Rc<Image>* image = new Rc<Image>(new SDL2Image);
-    return *image;
+    return images.lifetimeRequest(path);
 }
 
 Rc<TiledImage> SDL2Images::loadTiles(const std::string& path,

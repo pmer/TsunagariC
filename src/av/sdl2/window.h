@@ -65,9 +65,10 @@ class SDL2GameWindow : public GameWindow {
 
     std::chrono::time_point<std::chrono::steady_clock> start;
 
+    SDL_Renderer* renderer;
+
  private:
     SDL_Window* window;
-    SDL_Renderer* renderer;
 };
 
 #endif  // SRC_AV_SDL2_WINDOW_H_

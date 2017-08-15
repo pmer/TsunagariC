@@ -28,6 +28,11 @@
 #define SRC_UTIL_ALGORITHM_H_
 
 template<typename T>
+inline constexpr T min_(T a, T b) {
+    return a < b ? a : b;
+}
+
+template<typename T>
 inline constexpr T max_(T a, T b) {
     return a < b ? b : a;
 }

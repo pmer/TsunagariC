@@ -26,10 +26,44 @@
 
 #include "av/sdl2/images.h"
 
-static SDL2Images globalImages;
+#include <SDL2/SDL_image.h>
+
+#include <limits.h>
+
+#include "core/measure.h"
+#include "core/resources.h"
+
+#include "av/sdl2/window.h"
+
 
 Images& Images::instance() {
-    return globalImages;
+    static SDL2Images* globalImages = new SDL2Images;
+    return *globalImages;
+}
+
+
+static Rc<SDL2Image> genSong(const std::string& name) {
+    Unique<Resource> r = Resources::instance().load(name);
+    if (!r) {
+        // Error logged.
+        return Rc<SDL2Image>();
+    }
+
+    assert_(r->size() < INT_MAX);
+
+    SDL_RWops* ops = SDL_RWFromMem(const_cast<void*>(r->data()),
+                                   static_cast<int>(r->size()));
+
+    TimeMeasure m("Constructed " + name + " as image");
+    SDL_Surface* surface = IMG_Load_RW(ops, 1);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    // We need to keep the memory (the resource) around, so put it in a struct.
+    SDL2Image* song = new SDL2Image;
+    song->resource = move_(r);
+    song->mix = music;
+
+    return Rc<SDL2Image>(song);
 }
 
 
@@ -48,6 +82,8 @@ Rc<Image> SDL2TiledImage::operator[](size_t n) const {
 
 
 Rc<Image> SDL2Images::load(const std::string& path) {
+    Rc<SDL2Image> texture = path.size() ? images.lifetimeRequest(path)
+                                        : Rc<SDL2Image>();
     Rc<Image>* image = new Rc<Image>(new SDL2Image);
     return *image;
 }

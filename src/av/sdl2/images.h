@@ -29,6 +29,8 @@
 
 #include "core/images.h"
 
+typedef struct SDL_Texture SDL_Texture;
+
 class SDL2Image : public Image {
  public:
     SDL2Image();
@@ -36,6 +38,8 @@ class SDL2Image : public Image {
     void drawSubrect(double dstX, double dstY, double z,
                      double srcX, double srcY,
                      double srcW, double srcH);
+
+    SDL_Texture* texture;
 };
 
 

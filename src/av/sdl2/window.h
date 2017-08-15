@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** window.h                    **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** window.h                         **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,6 +35,8 @@
 
 #include "core/window.h"
 
+SDL_Renderer* SDL2GetRenderer();
+
 class SDL2GameWindow : public GameWindow {
  public:
     SDL2GameWindow();
@@ -53,12 +55,12 @@ class SDL2GameWindow : public GameWindow {
     void handleEvent(const SDL_Event& event);
 
     void drawRect(double x1, double x2, double y1, double y2,
-            uint32_t argb);
+                  uint32_t argb);
 
     void scale(double x, double y, std::function<void()> op);
     void translate(double x, double y, std::function<void()> op);
     void clip(double x, double y, double width, double height,
-                      std::function<void()> op);
+              std::function<void()> op);
     void close();
 
     std::chrono::time_point<std::chrono::steady_clock> start;

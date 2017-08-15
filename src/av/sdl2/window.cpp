@@ -150,7 +150,7 @@ void SDL2GameWindow::handleEvent(const SDL_Event& event) {
     case SDL_KEYDOWN: {
         switch (event.key.keysym.sym) {
         case SDLK_ESCAPE:
-            exit(0);
+            //exit(0);
             break;
         }
         break;

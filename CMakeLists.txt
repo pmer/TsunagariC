@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 find_package(PkgConfig REQUIRED)
 find_package(Gosu REQUIRED)
 pkg_search_module(SDL2 REQUIRED SDL2)
+pkg_search_module(SDL2_image REQUIRED SDL2_image)
 pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
 find_package(Threads)
 
@@ -10,6 +11,7 @@ set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES}
     ${GOSU_LIBRARIES}
     ${GOSU_DEPENDENCIES}
     ${SDL2_LIBRARIES}
+    ${SDL2_image_LIBRARIES}
     ${SDL2_mixer_LIBRARIES}
     Threads::Threads
 )
@@ -17,12 +19,14 @@ set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES}
 include_directories(
     ${GOSU_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
+    ${SDL2_image_INCLUDE_DIRS}
     ${SDL2_mixer_INCLUDE_DIRS}
 )
 
 link_directories(
     ${GOSU_LIBRARY_DIRS}
     ${SDL2_LIBRARY_DIRS}
+    ${SDL2_image_LIBRARY_DIRS}
     ${SDL2_mixer_LIBRARY_DIRS}
 )
 

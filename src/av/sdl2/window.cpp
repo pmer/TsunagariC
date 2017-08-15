@@ -129,11 +129,11 @@ void SDL2GameWindow::setCaption(const std::string& caption) {
 
 void SDL2GameWindow::mainLoop() {
     SDL_ShowWindow(window);
-    while (window) {
+    while (window != nullptr) {
         handleEvents();
         World::instance().update(time());
         World::instance().draw();
-        SDL_Delay(16);
+        SDL_RenderPresent(renderer);
     }
 }
 

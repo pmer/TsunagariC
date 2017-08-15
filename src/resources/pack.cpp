@@ -35,10 +35,10 @@
 
 #include "data/data-world.h"
 
-static PackResources globalResources;
 
 Resources& Resources::instance() {
-    return globalResources;
+    static auto globalResources = new PackResources;
+    return *globalResources;
 }
 
 
@@ -54,9 +54,7 @@ size_t PackResource::size() const {
 }
 
 
-PackResources::PackResources() : initialized(false) {}
-
-void PackResources::init() {
+PackResources::PackResources() {
     const std::string& path = DataWorld::instance().datafile;
 
     pack = PackReader::fromFile(path);
@@ -70,11 +68,6 @@ Unique<Resource> PackResources::load(const std::string& path) {
     std::lock_guard<std::mutex> lock(mutex);
 
     TimeMeasure m("Mapped " + path);
-
-    if (!initialized) {
-        initialized = true;
-        init();
-    }
 
     const std::string fullPath = DataWorld::instance().datafile + "/" + path;
 

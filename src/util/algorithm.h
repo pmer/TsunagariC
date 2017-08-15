@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** pack.h                           **
-** Copyright 2016-2017 Paul Merrill **
-*************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** algorithm.h                   **
+** Copyright 2017 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,48 +24,12 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_RESOURCES_PACK_H_
-#define SRC_RESOURCES_PACK_H_
+#ifndef SRC_UTIL_ALGORITHM_H_
+#define SRC_UTIL_ALGORITHM_H_
 
-#include <stdlib.h>
+template<typename T>
+inline constexpr T max_(T a, T b) {
+    return a < b ? b : a;
+}
 
-#include <mutex>
-
-#include "core/resources.h"
-#include "pack/pack-file.h"
-#include "util/unique.h"
-
-struct Free {
-    void operator() (char* ptr) {
-        free(ptr);
-    }
-};
-
-class PackResource : public Resource {
- public:
-    PackResource(void* data, size_t size);
-
-    const void* data() const;
-    size_t size() const;
-
- private:
-    Unique<char, Free> _data;
-    size_t _size;
-};
-
-class PackResources : public Resources {
- public:
-    PackResources();
-    ~PackResources() = default;
-
-    Unique<Resource> load(const std::string& path);
-
- private:
-    PackResources(const PackResources&) = delete;
-    PackResources& operator=(const PackResources&) = delete;
-
-    std::mutex mutex;
-    Unique<PackReader> pack;
-};
-
-#endif  // SRC_RESOURCES_PACK_H_
+#endif  // SRC_UTIL_ALGORITHM_H_

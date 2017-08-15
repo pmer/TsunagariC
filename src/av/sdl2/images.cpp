@@ -37,13 +37,13 @@
 
 
 Images& Images::instance() {
-    static SDL2Images* globalImages = new SDL2Images;
+    static auto globalImages = new SDL2Images;
     return *globalImages;
 }
 
 
-static Rc<Image> genImage(const std::string& name) {
-    Unique<Resource> r = Resources::instance().load(name);
+static Rc<Image> genImage(const std::string& path) {
+    Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
         return Rc<Image>();
@@ -54,30 +54,98 @@ static Rc<Image> genImage(const std::string& name) {
     SDL_RWops* ops = SDL_RWFromMem(const_cast<void*>(r->data()),
                                    static_cast<int>(r->size()));
 
-    TimeMeasure m("Constructed " + name + " as image");
+    TimeMeasure m("Constructed " + path + " as image");
     SDL_Surface* surface = IMG_Load_RW(ops, 1);
     SDL_Renderer* renderer = SDL2GetRenderer();
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-    return Rc<Image>(new SDL2Image(texture));
+    int width;
+    int height;
+    SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+
+    assert_(width <= 4096);
+    assert_(height <= 4096);
+
+    return Rc<Image>(new SDL2Image(texture, width, height));
+}
+
+static Rc<TiledImage> genTiledImage(const std::string& path,
+                                    unsigned tileW, unsigned tileH) {
+    assert_(tileW <= 4096);
+    assert_(tileH <= 4096);
+
+    Unique<Resource> r = Resources::instance().load(path);
+    if (!r) {
+        // Error logged.
+        return Rc<TiledImage>();
+    }
+
+    assert_(r->size() < INT_MAX);
+
+    SDL_RWops* ops = SDL_RWFromMem(const_cast<void*>(r->data()),
+                                   static_cast<int>(r->size()));
+
+    TimeMeasure m("Constructed " + path + " as image");
+    SDL_Surface* surface = IMG_Load_RW(ops, 1);
+    SDL_Renderer* renderer = SDL2GetRenderer();
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    int width;
+    int height;
+    SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+
+    assert_(width <= 4096);
+    assert_(height <= 4096);
+
+    return Rc<TiledImage>(new SDL2TiledImage(texture,
+                                             width, height, tileW, tileH));
 }
 
 
-SDL2Image::SDL2Image(SDL_Texture* texture) : Image(16, 16), texture(texture) {}
+SDL2Texture::SDL2Texture(SDL_Texture* texture) : texture(texture) {}
 
-SDL2Image::~SDL2Image() {
+SDL2Texture::~SDL2Texture() {
     SDL_DestroyTexture(texture);
 }
 
-void SDL2Image::draw(double dstX, double dstY, double z) {}
-void SDL2Image::drawSubrect(double dstX, double dstY, double z,
-                 double srcX, double srcY,
-                 double srcW, double srcH) {}
 
-size_t SDL2TiledImage::size() const { return 500; }
+SDL2Image::SDL2Image(SDL_Texture* texture, int width, int height)
+        : Image(width, height), texture(texture) {}
+
+void SDL2Image::draw(double dstX, double dstY, double z) {}
+
+void SDL2Image::drawSubrect(double dstX, double dstY, double z,
+                            double srcX, double srcY,
+                            double srcW, double srcH) {}
+
+
+SDL2TiledSubImage::SDL2TiledSubImage(Rc<SDL2Texture> texture,
+                                     int width, int height,
+                                     int xOff, int yOff)
+        : Image(width, height), xOff(xOff), yOff(yOff), texture(move_(texture)) {}
+
+void SDL2TiledSubImage::draw(double dstX, double dstY, double z) {}
+
+void SDL2TiledSubImage::drawSubrect(double dstX, double dstY, double z,
+                                    double srcX, double srcY,
+                                    double srcW, double srcH) {}
+
+
+SDL2TiledImage::SDL2TiledImage(SDL_Texture* texture,
+                               int width, int height, int tileW, int tileH)
+        : width(width),
+          height(height), tileW(tileW), tileH(tileH),
+          numTiles((width / tileW) * (height / tileH)),
+          texture(new SDL2Texture(texture)) {}
+
+size_t SDL2TiledImage::size() const { return static_cast<size_t>(numTiles); }
 
 Rc<Image> SDL2TiledImage::operator[](size_t n) const {
-    Rc<Image>* image = new Rc<Image>(new SDL2Image(nullptr));
+    int xOff = (tileW * n) % width;
+    int yOff = (tileW * n) / width;
+    Rc<Image>* image = new Rc<Image>(new SDL2TiledSubImage(texture,
+                                                           tileW, tileH,
+                                                           xOff, yOff));
     return *image;
 }
 
@@ -90,8 +158,15 @@ Rc<Image> SDL2Images::load(const std::string& path) {
 
 Rc<TiledImage> SDL2Images::loadTiles(const std::string& path,
                                      unsigned tileW, unsigned tileH) {
-    Rc<TiledImage>* image = new Rc<TiledImage>(new SDL2TiledImage);
-    return *image;
+    auto tiledImage = tiledImages.lifetimeRequest(path);
+    if (!tiledImage) {
+        tiledImage = genTiledImage(path, tileW, tileH);
+        tiledImages.lifetimePut(path, tiledImage);
+    }
+    return tiledImage;
 }
 
-void SDL2Images::garbageCollect() {}
+void SDL2Images::garbageCollect() {
+    images.garbageCollect();
+    tiledImages.garbageCollect();
+}

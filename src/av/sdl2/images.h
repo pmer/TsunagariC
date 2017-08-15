@@ -34,25 +34,53 @@
 
 typedef struct SDL_Texture SDL_Texture;
 
+struct SDL2Texture {
+    SDL2Texture(SDL_Texture* texture);
+    ~SDL2Texture();
+
+    SDL_Texture* texture;
+};
+
 class SDL2Image : public Image {
  public:
-    explicit SDL2Image(SDL_Texture* texture);
-    ~SDL2Image();
+    SDL2Image(SDL_Texture* texture, int width, int height);
 
     void draw(double dstX, double dstY, double z);
     void drawSubrect(double dstX, double dstY, double z,
                      double srcX, double srcY,
                      double srcW, double srcH);
 
-    SDL_Texture* texture;
+    SDL2Texture texture;
 };
 
+class SDL2TiledSubImage : public Image {
+ public:
+    SDL2TiledSubImage(Rc<SDL2Texture> texture,
+                      int xOff, int yOff, int width, int height);
+
+    void draw(double dstX, double dstY, double z);
+    void drawSubrect(double dstX, double dstY, double z,
+                     double srcX, double srcY,
+                     double srcW, double srcH);
+
+    int xOff, yOff;
+    Rc<SDL2Texture> texture;
+};
 
 class SDL2TiledImage: public TiledImage {
  public:
+    SDL2TiledImage(SDL_Texture* texture,
+                   int width, int height, int tileW, int tileH);
+
     size_t size() const;
 
     Rc<Image> operator[](size_t n) const;
+
+ private:
+    int width, height;
+    int tileW, tileH;
+    int numTiles;
+    Rc<SDL2Texture> texture;
 };
 
 
@@ -72,6 +100,10 @@ class SDL2Images : public Images {
     SDL2Images& operator=(const SDL2Images&) = delete;
 
     ReaderCache<Rc<Image>> images;
+    // We can't use a ReaderCache here because TiledImages are constructed
+    // with three arguments, but a ReaderCache only supports the use of
+    // one.
+    Cache<Rc<TiledImage>> tiledImages;
 };
 
 #endif  // SRC_AV_SDL2_IMAGE_H_

@@ -73,7 +73,7 @@ class GosuImages : public Images {
     Rc<Image> load(const std::string& path);
 
     Rc<TiledImage> loadTiles(const std::string& path,
-                              unsigned tileW, unsigned tileH);
+                             unsigned tileW, unsigned tileH);
 
     void garbageCollect();
 

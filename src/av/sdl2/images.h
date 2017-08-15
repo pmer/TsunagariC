@@ -35,8 +35,13 @@
 typedef struct SDL_Texture SDL_Texture;
 
 struct SDL2Texture {
-    SDL2Texture(SDL_Texture* texture);
+    explicit SDL2Texture(SDL_Texture* texture);
+    SDL2Texture(SDL2Texture&&) = delete;
+    SDL2Texture(const SDL2Texture&) = delete;
     ~SDL2Texture();
+
+    void operator=(SDL2Texture&&) = delete;
+    void operator=(const SDL2Texture&) = delete;
 
     SDL_Texture* texture;
 };
@@ -45,10 +50,10 @@ class SDL2Image : public Image {
  public:
     SDL2Image(SDL_Texture* texture, int width, int height);
 
-    void draw(double dstX, double dstY, double z);
+    void draw(double dstX, double dstY, double z) final;
     void drawSubrect(double dstX, double dstY, double z,
                      double srcX, double srcY,
-                     double srcW, double srcH);
+                     double srcW, double srcH) final;
 
     SDL2Texture texture;
 };
@@ -58,10 +63,10 @@ class SDL2TiledSubImage : public Image {
     SDL2TiledSubImage(Rc<SDL2Texture> texture,
                       int xOff, int yOff, int width, int height);
 
-    void draw(double dstX, double dstY, double z);
+    void draw(double dstX, double dstY, double z) final;
     void drawSubrect(double dstX, double dstY, double z,
                      double srcX, double srcY,
-                     double srcW, double srcH);
+                     double srcW, double srcH) final;
 
     int xOff, yOff;
     Rc<SDL2Texture> texture;
@@ -72,9 +77,9 @@ class SDL2TiledImage: public TiledImage {
     SDL2TiledImage(SDL_Texture* texture,
                    int width, int height, int tileW, int tileH);
 
-    size_t size() const;
+    size_t size() const final;
 
-    Rc<Image> operator[](size_t n) const;
+    Rc<Image> operator[](size_t n) const final;
 
  private:
     int width, height;
@@ -88,17 +93,14 @@ class SDL2Images : public Images {
  public:
     SDL2Images();
 
-    Rc<Image> load(const std::string& path);
+    Rc<Image> load(const std::string& path) final;
 
     Rc<TiledImage> loadTiles(const std::string& path,
-        unsigned tileW, unsigned tileH);
+        unsigned tileW, unsigned tileH) final;
 
-    void garbageCollect();
+    void garbageCollect() final;
 
  private:
-    SDL2Images(const SDL2Images&) = delete;
-    SDL2Images& operator=(const SDL2Images&) = delete;
-
     ReaderCache<Rc<Image>> images;
     // We can't use a ReaderCache here because TiledImages are constructed
     // with three arguments, but a ReaderCache only supports the use of

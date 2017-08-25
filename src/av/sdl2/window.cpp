@@ -34,6 +34,7 @@
 #include "core/log.h"
 #include "core/measure.h"
 #include "core/world.h"
+#include "util/optional.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 
@@ -154,18 +155,38 @@ void SDL2GameWindow::handleEvents() {
 }
 
 void SDL2GameWindow::handleEvent(const SDL_Event& event) {
+    KeyboardKey key;
+
     switch (event.type) {
-    case SDL_KEYDOWN: {
+    case SDL_KEYUP:
+    case SDL_KEYDOWN:
         switch (event.key.keysym.sym) {
-        case SDLK_ESCAPE:
-            //exit(0);
-            break;
+        case SDLK_ESCAPE: key = KBEscape; break;
+        case SDLK_LCTRL: key = KBLeftControl; break;
+        case SDLK_RCTRL: key = KBRightControl; break;
+        case SDLK_LSHIFT: key = KBLeftShift; break;
+        case SDLK_RSHIFT: key = KBRightShift; break;
+        case SDLK_SPACE: key = KBSpace; break;
+        case SDLK_LEFT: key = KBLeftArrow; break;
+        case SDLK_RIGHT: key = KBRightArrow; break;
+        case SDLK_UP: key = KBUpArrow; break;
+        case SDLK_DOWN: key = KBDownArrow; break;
+        default: return;
+        }
+        if (event.type == SDL_KEYUP) {
+            emitKeyUp(key);
+        }
+        else if (event.type == SDL_KEYDOWN) {
+            emitKeyDown(key);
         }
         break;
-    }
+
     case SDL_QUIT:
         exit(0);
-        break;
+        return;
+
+    default:
+        return;
     }
 }
 

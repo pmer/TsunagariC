@@ -141,6 +141,7 @@ void SDL2GameWindow::mainLoop() {
     while (window != nullptr) {
         handleEvents();
         World::instance().update(time());
+        SDL_RenderClear(renderer);
         World::instance().draw();
         SDL_RenderPresent(renderer);
     }

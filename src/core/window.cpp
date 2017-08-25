@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** window.cpp                         **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -34,6 +34,8 @@
 GameWindow::GameWindow() : keysDown(KB_SIZE) {}
 
 void GameWindow::emitKeyDown(KeyboardKey key) {
+    bool wasDown = keysDown[key];
+
     keysDown[key] = true;
 
     if (keysDown[KBEscape] && (keysDown[KBLeftShift] ||
@@ -42,21 +44,23 @@ void GameWindow::emitKeyDown(KeyboardKey key) {
         exit(0);
     }
 
-    if (keysDown[key]) {
+    if (!wasDown) {
         World::instance().buttonDown(key);
     }
 }
 
 void GameWindow::emitKeyUp(KeyboardKey key) {
+    bool wasDown = keysDown[key];
+
     keysDown[key] = false;
 
-    if (!keysDown[key]) {
+    if (wasDown) {
         World::instance().buttonUp(key);
     }
 }
 
 bool GameWindow::isKeyDown(KeyboardKey key) {
-    return keysDown[key] != false;
+    return keysDown[key];
 }
 
 BitRecord GameWindow::getKeysDown() {

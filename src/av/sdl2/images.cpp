@@ -112,11 +112,27 @@ SDL2Texture::~SDL2Texture() {
 SDL2Image::SDL2Image(SDL_Texture* texture, int width, int height)
         : Image(width, height), texture(texture) {}
 
-void SDL2Image::draw(double dstX, double dstY, double z) {}
+void SDL2Image::draw(double dstX, double dstY, double z) {
+    SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
+    rvec2 translation = SDL2GameWindow::instance().translation;
+    rvec2 scaling = SDL2GameWindow::instance().scaling;
+
+    SDL_Rect src{0,
+                 0,
+                 (int)_width,
+                 (int)_height};
+    SDL_Rect dst{(int)((dstX + translation.x) * scaling.x),
+                 (int)((dstY + translation.y) * scaling.y),
+                 (int)(_width * scaling.x),
+                 (int)(_height * scaling.y)};
+    SDL_RenderCopy(renderer, texture.texture, &src, &dst);
+}
 
 void SDL2Image::drawSubrect(double dstX, double dstY, double z,
                             double srcX, double srcY,
-                            double srcW, double srcH) {}
+                            double srcW, double srcH) {
+    assert_(false);
+}
 
 
 SDL2TiledSubImage::SDL2TiledSubImage(Rc<SDL2Texture> texture,

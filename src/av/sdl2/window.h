@@ -47,7 +47,6 @@ class SDL2GameWindow : public GameWindow {
     bool init();
 
     unsigned width() const;
-
     unsigned height() const;
 
     void setCaption(const std::string& caption);
@@ -69,7 +68,8 @@ class SDL2GameWindow : public GameWindow {
     std::chrono::time_point<std::chrono::steady_clock> start;
 
     SDL_Renderer* renderer;
-    ivec2 offset;
+    rvec2 translation;
+    rvec2 scaling;
 
  private:
     void updateTransform();

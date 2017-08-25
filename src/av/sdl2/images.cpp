@@ -123,17 +123,22 @@ SDL2TiledSubImage::SDL2TiledSubImage(Rc<SDL2Texture> texture,
                                      int width, int height,
                                      int xOff, int yOff)
         : Image(width, height),
-          xOff(xOff), yOff(yOff), texture(move_(texture)) {}
+          xOff(xOff), yOff(yOff),
+          texture(move_(texture)) {}
 
 void SDL2TiledSubImage::draw(double dstX, double dstY, double z) {
     SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
-    ivec2 offset = SDL2GameWindow::instance().offset;
+    rvec2 translation = SDL2GameWindow::instance().translation;
+    rvec2 scaling = SDL2GameWindow::instance().scaling;
 
-    SDL_Rect src{xOff, yOff, (int)_width, (int)_height};
-    SDL_Rect dst{(int)dstX + offset.x,
-                 (int)dstY + offset.y,
+    SDL_Rect src{xOff,
+                 yOff,
                  (int)_width,
                  (int)_height};
+    SDL_Rect dst{(int)((dstX + translation.x) * scaling.x),
+                 (int)((dstY + translation.y) * scaling.y),
+                 (int)(_width * scaling.x),
+                 (int)(_height * scaling.y)};
     SDL_RenderCopy(renderer, texture->texture, &src, &dst);
 }
 

@@ -65,7 +65,8 @@ SDL_Renderer* SDL2GetRenderer() {
 
 SDL2GameWindow::SDL2GameWindow()
     : renderer(nullptr),
-      offset(0, 0),
+      translation(0.0, 0.0),
+      scaling(0.0, 0.0),
       window(nullptr),
       transform(Transform::identity()) {}
 
@@ -203,7 +204,8 @@ void SDL2GameWindow::scale(double x, double y, std::function<void()> op) {
 void SDL2GameWindow::translate(double x, double y, std::function<void()> op) {
     Transform prev = transform;
 
-    transform = Transform::translate((float)x, (float)y) * transform;
+    transform = Transform::translate(static_cast<float>(x),
+                                     static_cast<float>(y)) * transform;
     updateTransform();
 
     op();
@@ -227,15 +229,11 @@ void SDL2GameWindow::updateTransform() {
 
     SDL_GetWindowSize(window, &w, &h);
 
-    float xScale = transform[0];
-    float yScale = transform[5];
-    int x = static_cast<int>(transform[12]);
-    int y = static_cast<int>(transform[13]);
+    double xScale = transform[0];
+    double yScale = transform[5];
+    double x = transform[12];
+    double y = transform[13];
 
-    offset = {(int)(x / xScale), (int)(y / yScale)};
-
-    SDL_RenderSetLogicalSize(renderer,
-                             static_cast<int>(w / xScale),
-                             static_cast<int>(h / yScale));
+    translation = {x / xScale, y / yScale};
+    scaling = {xScale, yScale};
 }
-

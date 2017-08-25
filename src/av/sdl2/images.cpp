@@ -119,12 +119,12 @@ void SDL2Image::draw(double dstX, double dstY, double z) {
 
     SDL_Rect src{0,
                  0,
-                 (int)_width,
-                 (int)_height};
-    SDL_Rect dst{(int)((dstX + translation.x) * scaling.x),
-                 (int)((dstY + translation.y) * scaling.y),
-                 (int)(_width * scaling.x),
-                 (int)(_height * scaling.y)};
+                 static_cast<int>(_width),
+                 static_cast<int>(_height)};
+    SDL_Rect dst{static_cast<int>((dstX + translation.x) * scaling.x),
+                 static_cast<int>((dstY + translation.y) * scaling.y),
+                 static_cast<int>(_width * scaling.x),
+                 static_cast<int>(_height * scaling.y)};
     SDL_RenderCopy(renderer, texture.texture, &src, &dst);
 }
 
@@ -149,12 +149,12 @@ void SDL2TiledSubImage::draw(double dstX, double dstY, double z) {
 
     SDL_Rect src{xOff,
                  yOff,
-                 (int)_width,
-                 (int)_height};
-    SDL_Rect dst{(int)((dstX + translation.x) * scaling.x),
-                 (int)((dstY + translation.y) * scaling.y),
-                 (int)(_width * scaling.x),
-                 (int)(_height * scaling.y)};
+                 static_cast<int>(_width),
+                 static_cast<int>(_height)};
+    SDL_Rect dst{static_cast<int>((dstX + translation.x) * scaling.x),
+                 static_cast<int>((dstY + translation.y) * scaling.y),
+                 static_cast<int>(_width * scaling.x),
+                 static_cast<int>(_height * scaling.y)};
     SDL_RenderCopy(renderer, texture->texture, &src, &dst);
 }
 

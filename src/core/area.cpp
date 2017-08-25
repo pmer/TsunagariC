@@ -491,6 +491,12 @@ static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY)
 void Area::drawTiles()
 {
     icube tiles = visibleTiles();
+    tiles.x1 = 0;
+    tiles.y1 = 0;
+    tiles.z1 = 0;
+    tiles.x2 = grid.dim.x - 1;
+    tiles.y2 = grid.dim.y - 1;
+    tiles.z2 = grid.dim.z - 1;
     for (int z = tiles.z1; z < tiles.z2; z++) {
         assert_(0 <= z && z <= grid.dim.z);
         double depth = grid.idx2depth[(size_t)z];

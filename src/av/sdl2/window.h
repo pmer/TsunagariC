@@ -34,11 +34,13 @@
 #include <SDL.h>
 
 #include "core/window.h"
-
-SDL_Renderer* SDL2GetRenderer();
+#include "core/vec.h"
+#include "util/transform.h"
 
 class SDL2GameWindow : public GameWindow {
  public:
+    static SDL2GameWindow& instance();
+
     SDL2GameWindow();
     ~SDL2GameWindow() = default;
 
@@ -61,14 +63,20 @@ class SDL2GameWindow : public GameWindow {
     void translate(double x, double y, std::function<void()> op);
     void clip(double x, double y, double width, double height,
               std::function<void()> op);
+
     void close();
 
     std::chrono::time_point<std::chrono::steady_clock> start;
 
     SDL_Renderer* renderer;
+    ivec2 offset;
+
+ private:
+    void updateTransform();
 
  private:
     SDL_Window* window;
+    Transform transform;
 };
 
 #endif  // SRC_AV_SDL2_WINDOW_H_

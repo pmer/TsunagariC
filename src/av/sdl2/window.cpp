@@ -48,6 +48,10 @@ GameWindow& GameWindow::instance() {
     return globalWindow;
 }
 
+SDL2GameWindow& SDL2GameWindow::instance() {
+    return globalWindow;
+}
+
 time_t GameWindow::time() {
     std::chrono::time_point<std::chrono::steady_clock> start = globalWindow.start;
     std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
@@ -60,8 +64,10 @@ SDL_Renderer* SDL2GetRenderer() {
 
 
 SDL2GameWindow::SDL2GameWindow()
-    : window(nullptr),
-      renderer(nullptr) {}
+    : renderer(nullptr),
+      offset(0, 0),
+      window(nullptr),
+      transform(Transform::identity()) {}
 
 bool SDL2GameWindow::init() {
     {
@@ -88,7 +94,7 @@ bool SDL2GameWindow::init() {
                                   SDL_WINDOWPOS_UNDEFINED,
                                   width, height, flags);
 
-        if (!window) {
+        if (window == nullptr) {
             sdlDie("SDL2GameWindow", "SDL_CreateWindow");
             return false;
         }
@@ -101,7 +107,7 @@ bool SDL2GameWindow::init() {
 
         renderer = SDL_CreateRenderer(window, -1, flags);
 
-        if (!renderer) {
+        if (renderer == nullptr) {
             sdlDie("SDL2GameWindow", "SDL_CreateRenderer");
             return false;
         }
@@ -163,14 +169,73 @@ void SDL2GameWindow::handleEvent(const SDL_Event& event) {
 }
 
 void SDL2GameWindow::drawRect(double x1, double x2, double y1, double y2,
-              uint32_t argb) {}
+              uint32_t argb) {
+    auto a = static_cast<Uint8>((argb >> 24) & 0xFF);
+    auto r = static_cast<Uint8>((argb >> 16) & 0xFF);
+    auto g = static_cast<Uint8>((argb >>  8) & 0xFF);
+    auto b = static_cast<Uint8>((argb >>  0) & 0xFF);
 
-void SDL2GameWindow::scale(double x, double y, std::function<void()> op) {}
-void SDL2GameWindow::translate(double x, double y, std::function<void()> op) {}
+    SDL_Rect rect{static_cast<int>(x1),
+                  static_cast<int>(y1),
+                  static_cast<int>(x2 - x1),
+                  static_cast<int>(y2 - y1)};
+
+    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    SDL_RenderDrawRect(renderer, &rect);
+}
+
+void SDL2GameWindow::scale(double x, double y, std::function<void()> op) {
+    assert_(x == y);
+
+    Transform prev = transform;
+
+    auto factor = static_cast<float>(x);
+
+    transform = Transform::scale(factor) * transform;
+    updateTransform();
+
+    op();
+
+    transform = prev;
+    updateTransform();
+}
+
+void SDL2GameWindow::translate(double x, double y, std::function<void()> op) {
+    Transform prev = transform;
+
+    transform = Transform::translate((float)x, (float)y) * transform;
+    updateTransform();
+
+    op();
+
+    transform = prev;
+    updateTransform();
+}
+
 void SDL2GameWindow::clip(double x, double y, double width, double height,
-                          std::function<void()> op) {}
+                          std::function<void()> op) {
+    op();
+}
 
 void SDL2GameWindow::close() {
     SDL_DestroyWindow(window);
     window = nullptr;
 }
+
+void SDL2GameWindow::updateTransform() {
+    int w, h;
+
+    SDL_GetWindowSize(window, &w, &h);
+
+    float xScale = transform[0];
+    float yScale = transform[5];
+    int x = static_cast<int>(transform[12]);
+    int y = static_cast<int>(transform[13]);
+
+    offset = {(int)(x / xScale), (int)(y / yScale)};
+
+    SDL_RenderSetLogicalSize(renderer,
+                             static_cast<int>(w / xScale),
+                             static_cast<int>(h / yScale));
+}
+

@@ -56,7 +56,7 @@ static Rc<Image> genImage(const std::string& path) {
 
     TimeMeasure m("Constructed " + path + " as image");
     SDL_Surface* surface = IMG_Load_RW(ops, 1);
-    SDL_Renderer* renderer = SDL2GetRenderer();
+    SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
     int width;
@@ -87,7 +87,7 @@ static Rc<TiledImage> genTiledImage(const std::string& path,
 
     TimeMeasure m("Constructed " + path + " as image");
     SDL_Surface* surface = IMG_Load_RW(ops, 1);
-    SDL_Renderer* renderer = SDL2GetRenderer();
+    SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
     int width;
@@ -122,9 +122,20 @@ void SDL2Image::drawSubrect(double dstX, double dstY, double z,
 SDL2TiledSubImage::SDL2TiledSubImage(Rc<SDL2Texture> texture,
                                      int width, int height,
                                      int xOff, int yOff)
-        : Image(width, height), xOff(xOff), yOff(yOff), texture(move_(texture)) {}
+        : Image(width, height),
+          xOff(xOff), yOff(yOff), texture(move_(texture)) {}
 
-void SDL2TiledSubImage::draw(double dstX, double dstY, double z) {}
+void SDL2TiledSubImage::draw(double dstX, double dstY, double z) {
+    SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
+    ivec2 offset = SDL2GameWindow::instance().offset;
+
+    SDL_Rect src{xOff, yOff, (int)_width, (int)_height};
+    SDL_Rect dst{(int)dstX + offset.x,
+                 (int)dstY + offset.y,
+                 (int)_width,
+                 (int)_height};
+    SDL_RenderCopy(renderer, texture->texture, &src, &dst);
+}
 
 void SDL2TiledSubImage::drawSubrect(double dstX, double dstY, double z,
                                     double srcX, double srcY,
@@ -132,17 +143,25 @@ void SDL2TiledSubImage::drawSubrect(double dstX, double dstY, double z,
 
 
 SDL2TiledImage::SDL2TiledImage(SDL_Texture* texture,
-                               int width, int height, int tileW, int tileH)
+                               int width,
+                               int height,
+                               int tileW,
+                               int tileH)
         : width(width),
-          height(height), tileW(tileW), tileH(tileH),
+          height(height),
+          tileW(tileW),
+          tileH(tileH),
           numTiles((width / tileW) * (height / tileH)),
           texture(new SDL2Texture(texture)) {}
 
-size_t SDL2TiledImage::size() const { return static_cast<size_t>(numTiles); }
+size_t SDL2TiledImage::size() const {
+    return static_cast<size_t>(numTiles);
+}
 
 Rc<Image> SDL2TiledImage::operator[](size_t n) const {
-    int xOff = (tileW * n) % width;
-    int yOff = (tileW * n) / width;
+    int xOff = tileW * static_cast<int>(n) % width;
+    int yOff = tileW * static_cast<int>(n) / width * tileH;
+
     Rc<Image>* image = new Rc<Image>(new SDL2TiledSubImage(texture,
                                                            tileW, tileH,
                                                            xOff, yOff));

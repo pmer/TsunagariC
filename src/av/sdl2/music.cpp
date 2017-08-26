@@ -28,9 +28,9 @@
 
 #include <limits.h>
 
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
+#include "av/sdl2/sounds.h"
 #include "core/measure.h"
 #include "core/resources.h"
 #include "util/unique.h"
@@ -74,8 +74,7 @@ SDL2Song::~SDL2Song() {
 
 
 SDL2Music::SDL2Music() : songs(genSong) {
-    assert_(SDL_Init(SDL_INIT_AUDIO) != -1);
-    assert_(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) != -1);
+    SDL2OpenAudio();
 }
 
 SDL2Music::~SDL2Music() {

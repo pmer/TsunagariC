@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** sounds.h                    **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** sounds.h                         **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,10 +27,28 @@
 #ifndef SRC_AV_SDL2_SOUNDS_H_
 #define SRC_AV_SDL2_SOUNDS_H_
 
+#include <SDL2/SDL_mixer.h>
+
+#include "cache/cache-template.cpp"
+#include "cache/readercache.h"
 #include "core/sounds.h"
+#include "core/resources.h"
+
+void SDL2OpenAudio();
+
+struct SDL2Sample {
+    ~SDL2Sample();
+
+    // The Mix_Chunk needs the music data to be kept around for its lifetime.
+    Unique<Resource> resource;
+
+    Mix_Chunk* chunk;
+};
 
 class SDL2SoundInstance : public SoundInstance {
  public:
+    SDL2SoundInstance(int channel);
+
     bool playing();
     void stop();
 
@@ -41,20 +59,37 @@ class SDL2SoundInstance : public SoundInstance {
     void volume(double volume);
     void pan(double pan);
     void speed(double speed);
+
+    void setDone();
+
+ private:
+    int channel;
+    enum {
+        S_PLAYING,
+        S_PAUSED,
+        S_DONE
+    } state;
 };
 
 
 class SDL2Sounds : public Sounds {
  public:
-    SDL2Sounds() = default;
+    static SDL2Sounds& instance();
+
+    SDL2Sounds();
 
     Rc<SoundInstance> play(const std::string& path);
 
     void garbageCollect();
 
+    void setDone(int channel);
+
  private:
     SDL2Sounds(const SDL2Sounds&) = delete;
     SDL2Sounds& operator=(const SDL2Sounds&) = delete;
+
+    ReaderCache<Rc<SDL2Sample>> samples;
+    vector<Rc<SoundInstance>> channels;
 };
 
 #endif  // SRC_AV_SDL2_SOUNDS_H_

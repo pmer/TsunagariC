@@ -187,7 +187,6 @@ bool parseCommandLine(int argc, char* argv[]) {
     cmd.insert("",   "--halt-fatal",   "",                "Stop engine only on fatal errors");
     cmd.insert("",   "--halt-script",  "",                "Stop engine on script errors");
     cmd.insert("",   "--halt-error",   "",                "Stop engine on all errors");
-    cmd.insert("",   "--no-audio",     "",                "Disable audio");
     cmd.insert("",   "--volume-music", "<0-100>",         "Set music volume");
     cmd.insert("",   "--volume-sound", "<0-100>",         "Set sound effects volume");
     cmd.insert("",   "--query",        "",                "Query compiled-in engine defaults");

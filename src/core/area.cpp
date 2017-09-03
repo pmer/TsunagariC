@@ -65,26 +65,21 @@ Area::Area(Player* player,
       colorOverlayARGB(0),
       beenFocused(false),
       redraw(true),
-      descriptor(descriptor)
-{
+      descriptor(descriptor) {
     grid.dim = ivec3(0, 0, 0);
     grid.tileDim = ivec2(0, 0);
     grid.loopX = false;
     grid.loopY = false;
 }
 
-Area::~Area()
-{
-}
+Area::~Area() {}
 
-bool Area::init()
-{
+bool Area::init() {
     // Abstract method.
     return false;
 }
 
-void Area::focus()
-{
+void Area::focus() {
     if (!beenFocused) {
         beenFocused = true;
         if (dataArea) {
@@ -101,8 +96,7 @@ void Area::focus()
     }
 }
 
-void Area::buttonDown(KeyboardKey key)
-{
+void Area::buttonDown(KeyboardKey key) {
     switch (key) {
     case KBLeftArrow:
         player->startMovement(ivec2(-1, 0));
@@ -124,8 +118,7 @@ void Area::buttonDown(KeyboardKey key)
     }
 }
 
-void Area::buttonUp(KeyboardKey key)
-{
+void Area::buttonUp(KeyboardKey key) {
     switch (key) {
     case KBLeftArrow:
         player->stopMovement(ivec2(-1, 0));
@@ -144,8 +137,7 @@ void Area::buttonUp(KeyboardKey key)
     }
 }
 
-void Area::draw()
-{
+void Area::draw() {
     icube tiles = visibleTiles();
     int maxZ = grid.dim.z;
 
@@ -160,8 +152,7 @@ void Area::draw()
     redraw = false;
 }
 
-bool Area::needsRedraw() const
-{
+bool Area::needsRedraw() const {
     if (redraw) {
         return true;
     }
@@ -205,13 +196,11 @@ bool Area::needsRedraw() const
     return false;
 }
 
-void Area::requestRedraw()
-{
+void Area::requestRedraw() {
     redraw = true;
 }
 
-void Area::tick(time_t dt)
-{
+void Area::tick(time_t dt) {
     if (dataArea) {
         dataArea->tick(dt);
     }
@@ -245,8 +234,7 @@ void Area::tick(time_t dt)
     Viewport::instance().tick(dt);
 }
 
-void Area::turn()
-{
+void Area::turn() {
     if (dataArea) {
         dataArea->turn();
     }
@@ -268,51 +256,42 @@ void Area::turn()
 }
 
 
-uint32_t Area::getColorOverlay()
-{
+uint32_t Area::getColorOverlay() {
     return colorOverlayARGB;
 }
 
-void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
-{
+void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b) {
     colorOverlayARGB = (uint32_t)(a << 24) + (uint32_t)(r << 16) +
         (uint32_t)(g << 8) + (uint32_t)b;
     redraw = true;
 }
 
 
-const Tile* Area::getTile(icoord phys) const
-{
+const Tile* Area::getTile(icoord phys) const {
     return grid.getTile(phys);
 }
 
-const Tile* Area::getTile(vicoord virt) const
-{
+const Tile* Area::getTile(vicoord virt) const {
     return grid.getTile(virt);
 }
 
-const Tile* Area::getTile(rcoord virt) const
-{
+const Tile* Area::getTile(rcoord virt) const {
     return grid.getTile(virt);
 }
 
-Tile* Area::getTile(icoord phys)
-{
+Tile* Area::getTile(icoord phys) {
     return grid.getTile(phys);
 }
 
-Tile* Area::getTile(vicoord virt)
-{
+Tile* Area::getTile(vicoord virt) {
     return grid.getTile(virt);
 }
 
-Tile* Area::getTile(rcoord virt)
-{
+Tile* Area::getTile(rcoord virt) {
     return grid.getTile(virt);
 }
 
-TileSet* Area::getTileSet(const std::string& imagePath)
-{
+TileSet* Area::getTileSet(const std::string& imagePath) {
     std::map<std::string, TileSet>::iterator it;
     it = tileSets.find(imagePath);
     if (it == tileSets.end()) {
@@ -323,18 +302,15 @@ TileSet* Area::getTileSet(const std::string& imagePath)
 }
 
 
-ivec3 Area::getDimensions() const
-{
+ivec3 Area::getDimensions() const {
     return grid.dim;
 }
 
-ivec2 Area::getTileDimensions() const
-{
+ivec2 Area::getTileDimensions() const {
     return grid.tileDim;
 }
 
-icube Area::visibleTiles() const
-{
+icube Area::visibleTiles() const {
     Viewport& viewport = Viewport::instance();
 
     rvec2 screen = viewport.getVirtRes();
@@ -357,46 +333,39 @@ icube Area::visibleTiles() const
     return icube{x1, y1, 0, x2, y2, grid.dim.z};
 }
 
-bool Area::inBounds(icoord phys) const
-{
+bool Area::inBounds(icoord phys) const {
     return grid.inBounds(phys);
 }
 
-bool Area::inBounds(vicoord virt) const
-{
+bool Area::inBounds(vicoord virt) const {
     return grid.inBounds(virt);
 }
 
-bool Area::inBounds(rcoord virt) const
-{
+bool Area::inBounds(rcoord virt) const {
     return grid.inBounds(virt);
 }
 
-bool Area::inBounds(Entity* ent) const
-{
+bool Area::inBounds(Entity* ent) const {
     return inBounds(ent->getPixelCoord());
 }
 
 
 
-bool Area::loopsInX() const
-{
+bool Area::loopsInX() const {
     return grid.loopX;
 }
 
-bool Area::loopsInY() const
-{
+bool Area::loopsInY() const {
     return grid.loopY;
 }
 
-const std::string Area::getDescriptor() const
-{
+const std::string Area::getDescriptor() const {
     return descriptor;
 }
 
 Rc<NPC> Area::spawnNPC(const std::string& descriptor,
-    vicoord coord, const std::string& phase)
-{
+                       vicoord coord,
+                       const std::string& phase) {
     auto c = Rc<NPC>(new NPC);
     if (!c->init(descriptor, phase)) {
         // Error logged.
@@ -409,8 +378,8 @@ Rc<NPC> Area::spawnNPC(const std::string& descriptor,
 }
 
 Rc<Overlay> Area::spawnOverlay(const std::string& descriptor,
-    vicoord coord, const std::string& phase)
-{
+                               vicoord coord,
+                               const std::string& phase) {
     auto o = Rc<Overlay>(new Overlay);
     if (!o->init(descriptor, phase)) {
         // Error logged.
@@ -422,66 +391,54 @@ Rc<Overlay> Area::spawnOverlay(const std::string& descriptor,
     return o;
 }
 
-void Area::insert(Rc<Character> c)
-{
+void Area::insert(Rc<Character> c) {
     characters.insert(c);
 }
 
-void Area::insert(Rc<Overlay> o)
-{
+void Area::insert(Rc<Overlay> o) {
     overlays.insert(o);
 }
 
 
-vicoord Area::phys2virt_vi(icoord phys) const
-{
+vicoord Area::phys2virt_vi(icoord phys) const {
     return grid.phys2virt_vi(phys);
 }
 
-rcoord Area::phys2virt_r(icoord phys) const
-{
+rcoord Area::phys2virt_r(icoord phys) const {
     return grid.phys2virt_r(phys);
 }
 
-icoord Area::virt2phys(vicoord virt) const
-{
+icoord Area::virt2phys(vicoord virt) const {
     return grid.virt2phys(virt);
 }
 
-icoord Area::virt2phys(rcoord virt) const
-{
+icoord Area::virt2phys(rcoord virt) const {
     return grid.virt2phys(virt);
 }
 
-rcoord Area::virt2virt(vicoord virt) const
-{
+rcoord Area::virt2virt(vicoord virt) const {
     return grid.virt2virt(virt);
 }
 
-vicoord Area::virt2virt(rcoord virt) const
-{
+vicoord Area::virt2virt(rcoord virt) const {
     return grid.virt2virt(virt);
 }
 
-DataArea* Area::getDataArea()
-{
+DataArea* Area::getDataArea() {
     return dataArea;
 }
 
-int Area::depthIndex(double depth) const
-{
+int Area::depthIndex(double depth) const {
     return grid.depthIndex(depth);
 }
 
-double Area::indexDepth(int idx) const
-{
+double Area::indexDepth(int idx) const {
     return grid.indexDepth(idx);
 }
 
 
 
-static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY)
-{
+static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY) {
     TileType* type = (TileType*)tile.parent;
     if (type) {
         time_t now = World::instance().time();
@@ -497,8 +454,7 @@ static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY)
     }
 }
 
-void Area::drawTiles(const icube& tiles, int z)
-{
+void Area::drawTiles(const icube& tiles, int z) {
     double depth = grid.idx2depth[(size_t)z];
 
     for (int y = tiles.y1; y < tiles.y2; y++) {
@@ -510,8 +466,7 @@ void Area::drawTiles(const icube& tiles, int z)
     }
 }
 
-void Area::drawEntities(const icube& tiles, int z)
-{
+void Area::drawEntities(const icube& tiles, int z) {
     double depth = grid.idx2depth[(size_t)z];
 
     for (auto& character : characters) {

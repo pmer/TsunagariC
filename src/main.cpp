@@ -109,8 +109,5 @@ int main(int argc, char** argv) {
 
     window->mainLoop();
 
-    // Cleanup
-    delete window;
-
     return 0;
 }

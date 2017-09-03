@@ -183,6 +183,7 @@ void SDL2GameWindow::handleEvent(const SDL_Event& event) {
         break;
 
     case SDL_QUIT:
+        SDL_DestroyWindow(window);
         exit(0);
         return;
 

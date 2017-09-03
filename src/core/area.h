@@ -162,8 +162,8 @@ class Area {
     double indexDepth(int idx) const;
 
     //! Calculate frame to show for each type of tile
-    void drawTiles();
-    void drawEntities();
+    void drawTiles(const icube& tiles, int z);
+    void drawEntities(const icube& tiles, int z);
 
  protected:
     DataArea* dataArea;

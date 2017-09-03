@@ -146,8 +146,17 @@ void Area::buttonUp(KeyboardKey key)
 
 void Area::draw()
 {
-    drawTiles();
-    drawEntities();
+    icube tiles = visibleTiles();
+    int maxZ = grid.dim.z;
+
+    assert_(tiles.z1 == 0);
+    assert_(tiles.z2 == maxZ);
+
+    for (int z = 0; z < maxZ; z++) {
+        drawTiles(tiles, z);
+        drawEntities(tiles, z);
+    }
+
     redraw = false;
 }
 
@@ -488,35 +497,36 @@ static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY)
     }
 }
 
-void Area::drawTiles()
+void Area::drawTiles(const icube& tiles, int z)
 {
-    icube tiles = visibleTiles();
-    tiles.x1 = 0;
-    tiles.y1 = 0;
-    tiles.z1 = 0;
-    tiles.x2 = grid.dim.x - 1;
-    tiles.y2 = grid.dim.y - 1;
-    tiles.z2 = grid.dim.z - 1;
-    for (int z = tiles.z1; z < tiles.z2; z++) {
-        assert_(0 <= z && z <= grid.dim.z);
-        double depth = grid.idx2depth[(size_t)z];
-        for (int y = tiles.y1; y < tiles.y2; y++) {
-            for (int x = tiles.x1; x < tiles.x2; x++) {
-                Tile* tile = getTile(icoord(x, y, z));
-                // We are certain the Tile exists.
-                drawTile(*tile, x, y, depth, grid.tileDim.y);
-            }
+    double depth = grid.idx2depth[(size_t)z];
+
+    for (int y = tiles.y1; y < tiles.y2; y++) {
+        for (int x = tiles.x1; x < tiles.x2; x++) {
+            Tile* tile = getTile(icoord(x, y, z));
+            // We are certain the Tile exists.
+            drawTile(*tile, x, y, depth, grid.tileDim.y);
         }
     }
 }
 
-void Area::drawEntities()
+void Area::drawEntities(const icube& tiles, int z)
 {
+    double depth = grid.idx2depth[(size_t)z];
+
     for (auto& character : characters) {
-        character->draw();
+        if (character->getTileCoords_i().z == z) {
+            character->draw();
+        }
     }
+
     for (auto& overlay : overlays) {
-        overlay->draw();
+        if (overlay->getPixelCoord().z == depth) {
+            overlay->draw();
+        }
     }
-    player->draw();
+
+    if (player->getTileCoords_i().z == z) {
+        player->draw();
+    }
 }

@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 
     parseConfig(CLIENT_CONF_PATH);
     if (!parseCommandLine(argc, argv)) {
-        Log::fatal("Main", "parseCommandLine");
+        // Error already logged.
         return 1;
     }
     if (!conf.validate(CLIENT_CONF_PATH)) {

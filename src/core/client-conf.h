@@ -40,13 +40,6 @@ enum movement_mode_t {
     NOTILE
 };
 
-//! Halting Mode
-enum halting_mode_t {
-    HALT_FATAL,
-    HALT_SCRIPT,
-    HALT_ERROR
-};
-
 //! Engine-wide user-confurable values.
 struct Conf {
     Conf();
@@ -58,7 +51,6 @@ struct Conf {
 
     verbosity_t verbosity;
     movement_mode_t moveMode;
-    halting_mode_t halting;
     ivec2 windowSize;
     bool fullscreen;
     int musicVolume;

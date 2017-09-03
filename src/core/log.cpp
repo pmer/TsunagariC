@@ -91,10 +91,7 @@ void Log::info(std::string domain, std::string msg) {
 }
 
 void Log::err(std::string domain, std::string msg) {
-    if (conf.halting == HALT_ERROR) {
-        Log::fatal(domain, msg);
-    }
-    else if (verb > V_QUIET) {
+    if (verb > V_QUIET) {
         {
             std::unique_lock<std::mutex> lock(stdoutMutex);
 

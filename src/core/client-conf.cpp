@@ -55,8 +55,6 @@ static void defaultsQuery() {
         << CLIENT_CONF_PATH << std::endl;
     std::cerr << "DEF_ENGINE_VERBOSITY:                "
         << DEF_ENGINE_VERBOSITY << std::endl;
-    std::cerr << "DEF_ENGINE_HALTING:                  "
-        << DEF_ENGINE_HALTING << std::endl;
     std::cerr << "DEF_WINDOW_WIDTH:                    "
         << DEF_WINDOW_WIDTH << std::endl;
     std::cerr << "DEF_WINDOW_HEIGHT:                   "
@@ -87,7 +85,6 @@ bool parseConfig(const std::string& filename) {
     }
 
     conf.verbosity = DEF_ENGINE_VERBOSITY;
-    conf.halting = DEF_ENGINE_HALTING;
     conf.windowSize = {DEF_WINDOW_WIDTH, DEF_WINDOW_HEIGHT};
     conf.fullscreen = DEF_WINDOW_FULLSCREEN;
     conf.musicVolume = 100;
@@ -109,19 +106,6 @@ bool parseConfig(const std::string& filename) {
                 conf.verbosity = V_VERBOSE;
             } else {
                 Log::err(filename, "Unknown value for \"engine.verbosity\", using default");
-            }
-        }
-
-        if (engine->hasString("halting")) {
-            std::string halting = engine->stringAt("halting");
-            if (halting == "fatal") {
-                conf.halting = HALT_FATAL;
-            } else if (halting == "script") {
-                conf.halting = HALT_SCRIPT;
-            } else if (halting == "error") {
-                conf.halting = HALT_ERROR;
-            } else {
-                Log::err(filename, "Unknown value for \"enginehalting\", using default");
             }
         }
     }
@@ -184,14 +168,11 @@ bool parseCommandLine(int argc, char* argv[]) {
     cmd.insert("-s", "--size",         "<WxH>",           "Window dimensions");
     cmd.insert("-f", "--fullscreen",   "",                "Run in fullscreen mode");
     cmd.insert("-w", "--window",       "",                "Run in windowed mode");
-    cmd.insert("",   "--halt-fatal",   "",                "Stop engine only on fatal errors");
-    cmd.insert("",   "--halt-script",  "",                "Stop engine on script errors");
-    cmd.insert("",   "--halt-error",   "",                "Stop engine on all errors");
     cmd.insert("",   "--volume-music", "<0-100>",         "Set music volume");
     cmd.insert("",   "--volume-sound", "<0-100>",         "Set sound effects volume");
     cmd.insert("",   "--query",        "",                "Query compiled-in engine defaults");
     cmd.insert("",   "--version",      "",                "Print the engine version string");
-    
+
     if (!cmd.parse()) {
         cmd.usage();
         return false;
@@ -233,23 +214,6 @@ bool parseCommandLine(int argc, char* argv[]) {
     }
     if (verbcount > 1) {
         Log::err("cmdline", "multiple verbosity flags on cmdline, using most verbose");
-    }
-
-    int haltcount = 0;
-    if (cmd.check("--halt-fatal")) {
-        conf.halting = HALT_FATAL;
-        haltcount++;
-    }
-    if (cmd.check("--halt-script")) {
-        conf.halting = HALT_SCRIPT;
-        haltcount++;
-    }
-    if (cmd.check("--halt-error")) {
-        conf.halting = HALT_ERROR;
-        haltcount++;
-    }
-    if (haltcount > 1) {
-        Log::err("cmdline", "multiple halting flags on cmdline, using most stringent");
     }
 
     if (cmd.check("--volume-music")) {

@@ -40,7 +40,6 @@
 
 // === Client.json Default Values ===
     #define DEF_ENGINE_VERBOSITY  V_VERBOSE
-    #define DEF_ENGINE_HALTING    HALT_FATAL
     #define DEF_WINDOW_WIDTH      640
     #define DEF_WINDOW_HEIGHT     480
     #define DEF_WINDOW_FULLSCREEN false

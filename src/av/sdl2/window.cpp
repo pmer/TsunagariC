@@ -141,6 +141,7 @@ void SDL2GameWindow::mainLoop() {
     while (window != nullptr) {
         handleEvents();
         World::instance().update(time());
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
         SDL_RenderClear(renderer);
         World::instance().draw();
         SDL_RenderPresent(renderer);
@@ -205,7 +206,8 @@ void SDL2GameWindow::drawRect(double x1, double x2, double y1, double y2,
                   static_cast<int>(y2 - y1)};
 
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
-    SDL_RenderDrawRect(renderer, &rect);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(renderer, &rect);
 }
 
 void SDL2GameWindow::scale(double x, double y, std::function<void()> op) {

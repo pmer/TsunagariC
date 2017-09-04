@@ -126,6 +126,29 @@ void World::draw() {
 
     GameWindow& window = GameWindow::instance();
 
+    pushLetterbox([&] {
+        Viewport& view = Viewport::instance();
+
+        // Zoom and pan the Area to fit on-screen.
+        rvec2 padding = view.getLetterboxOffset();
+        window.translate(-padding.x, -padding.y, [&] {
+            rvec2 scale = view.getScale();
+            window.scale(scale.x, scale.y, [&] {
+                rvec2 scroll = view.getMapOffset();
+                window.translate(-scroll.x, -scroll.y, [&] {
+                    area->draw();
+                });
+            });
+        });
+
+        uint32_t colorOverlayARGB = area->getColorOverlay();
+        if ((colorOverlayARGB & 0xFF000000) != 0) {
+            unsigned ww = window.width();
+            unsigned wh = window.height();
+            window.drawRect(0, ww, 0, wh, colorOverlayARGB);
+        }
+    });
+
     if (paused) {
         unsigned ww = window.width();
         unsigned wh = window.height();
@@ -143,29 +166,6 @@ void World::draw() {
             }
         }
     }
-
-    pushLetterbox([&] {
-        uint32_t colorOverlayARGB = area->getColorOverlay();
-        if ((colorOverlayARGB & 0xFF000000) != 0) {
-            unsigned ww = window.width();
-            unsigned wh = window.height();
-            window.drawRect(0, ww, 0, wh, colorOverlayARGB);
-        }
-
-        Viewport& view = Viewport::instance();
-
-        // Zoom and pan the Area to fit on-screen.
-        rvec2 padding = view.getLetterboxOffset();
-        window.translate(-padding.x, -padding.y, [&] {
-            rvec2 scale = view.getScale();
-            window.scale(scale.x, scale.y, [&] {
-                rvec2 scroll = view.getMapOffset();
-                window.translate(-scroll.x, -scroll.y, [&] {
-                    area->draw();
-                });
-            });
-        });
-    });
 }
 
 bool World::needsRedraw() const {

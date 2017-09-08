@@ -96,7 +96,7 @@ static bool createArchive(const std::string& archivePath,
         addPath(pack.get(), inputPath);
     }
 
-    uiShowWritingArchive(archivePath.c_str());
+    uiShowWritingArchive(archivePath);
 
     return pack->writeToFile(archivePath);
 }
@@ -109,7 +109,7 @@ static bool listArchive(const std::string& archivePath) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
 
-            uiShowListingEntry(blobPath.c_str(), blobSize);
+            uiShowListingEntry(blobPath, blobSize);
         }
         return true;
     } else {

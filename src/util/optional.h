@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** optional.h                  **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** optional.h                       **
+** Copyright 2016-2017 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,6 +29,10 @@
 
 #include "util/assert.h"
 #include "util/move.h"
+
+// TODO: Don't initialize x if it doesn't exist.
+// To do this, make x a char* and use pointer aliasing, or investigate how
+// std::optional does it.
 
 template<typename T>
 class Optional {

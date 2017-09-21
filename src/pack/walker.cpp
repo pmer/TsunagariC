@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** pool.h                      **
+** walker.cpp                  **
 ** Copyright 2017 Paul Merrill **
 ********************************/
 
@@ -24,22 +24,43 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_POOL_H_
-#define SRC_PACK_POOL_H_
+#include "pack/walker.h"
 
-#include <functional>
-#include <string>
+#include <algorithm>
 
+#include "os/os.h"
+#include "pack/pool.h"
+#include "util/unique.h"
 
-class Pool {
- public:
-    static const size_t ONE_PER_CORE = 0;
-
-    static Pool* makePool(std::string name,
-                          size_t workerLimit = ONE_PER_CORE);
-    virtual ~Pool() = default;
-
-    virtual void schedule(std::function<void()> job) = 0;
+struct WalkContext {
+    Unique<Pool> pool;
+    std::function<void(std::string)> op;
 };
 
-#endif  // SRC_PACK_POOL_H_
+static void walkPath(WalkContext& ctx, std::string path) {
+    if (isDir(path)) {
+        vector<std::string> names = listDir(path);
+        std::sort(names.begin(), names.end());
+        for (auto& name : names) {
+            std::string child = path + dirSeparator + name;
+            ctx.pool->schedule([&ctx, child] {
+                walkPath(ctx, child);
+            });
+        }
+    } else {
+        ctx.op(path);
+    }
+}
+
+void walk(vector<std::string> paths, std::function<void(std::string)> op) {
+    WalkContext ctx{
+        Pool::makePool("walk"),
+        move_(op)
+    };
+
+    for (auto& path : paths) {
+        ctx.pool->schedule([&] {
+            walkPath(ctx, move_(path));
+        });
+    }
+}

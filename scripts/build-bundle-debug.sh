@@ -2,7 +2,7 @@
 here="$PWD/$(dirname $0)/.."
 root="$here/.."
 rm -rf "$root/Tsungari.app"
-cp -a "$root/build-debug/Tsunagari.app" "$root"
+cp -a "$root/build-mac-debug/Tsunagari.app" "$root"
 mkdir -p "$root/Tsunagari.app/Contents/Resources"
 cp "$root/bin/client.json" \
    "$root/bin/testing.world" \

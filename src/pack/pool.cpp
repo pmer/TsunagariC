@@ -36,26 +36,39 @@
 
 class PoolImpl : public Pool {
  public:
-    ~PoolImpl();
+    ~PoolImpl() final;
 
-    void schedule(std::function<void()> job);
+    void schedule(std::function<void()> job) final;
 
     std::string name;
 
     size_t workerLimit;
     vector<std::thread> workers;
+    int jobsRunning;
 
     // Empty jobs are the signal to quit.
     std::deque<std::function<void()>> jobs;
 
-    std::condition_variable available;
-    std::mutex access;
+ public:
+    // Protects access to all above variables and to jobsChanged.
+    std::mutex mainMutex;
+
+    // Protects access to finished.
+    std::mutex finishedMutex;
+
+    // Signaled when a job is added.
+    std::condition_variable jobsChanged;
+
+    // Signaled when all jobs are finished.
+    std::condition_variable finished;
 };
 
 Pool* Pool::makePool(std::string name, size_t workerLimit) {
-    PoolImpl* pool = new PoolImpl;
-    pool->name = name;
-    pool->workerLimit = workerLimit;
+    auto pool = new PoolImpl;
+    pool->name = move_(name);
+    pool->workerLimit = workerLimit > 0 ? workerLimit
+                                        : std::thread::hardware_concurrency();
+    pool->jobsRunning = 0;
     return pool;
 }
 
@@ -64,49 +77,64 @@ static void runJobs(PoolImpl* pool) {
 
     do {
         {
-            std::unique_lock<std::mutex> lock(pool->access);
-            while (pool->jobs.empty()) {
-                pool->available.wait(lock);
-            }
+            std::unique_lock<std::mutex> lock(pool->mainMutex);
+
+            pool->jobsChanged.wait(lock, [&]{ return !pool->jobs.empty(); });
 
             job = move_(pool->jobs.front());
             pool->jobs.pop_front();
+
+            pool->jobsRunning += 1;
         }
 
         if (job) {
             job();
         }
+
+        {
+            std::unique_lock<std::mutex> lock(pool->mainMutex);
+
+            pool->jobsRunning -= 1;
+
+            if (pool->jobsRunning == 0 && pool->jobs.empty()) {
+                // Notify the PoolImpl destructor.
+                pool->finished.notify_one();
+            }
+        }
+
     } while (job);
 }
 
 static void startWorker(PoolImpl* pool) {
     if (pool->workers.size() < pool->workerLimit) {
-        if (pool->workers.size() < std::thread::hardware_concurrency()) {
-            pool->workers.push_back(std::thread(runJobs, pool));
-        }
+        pool->workers.push_back(std::thread(runJobs, pool));
     }
 }
 
 void PoolImpl::schedule(std::function<void()> job) {
-    startWorker(this);
-
     {
-        std::unique_lock<std::mutex> lock(access);
+        std::lock_guard<std::mutex> lock(mainMutex);
+        startWorker(this);
         jobs.push_back(job);
     }
-    available.notify_one();
+    jobsChanged.notify_one();
 }
 
 PoolImpl::~PoolImpl() {
     {
-        std::unique_lock<std::mutex> lock(access);
+        std::unique_lock<std::mutex> lock(finishedMutex);
+
+        finished.wait(lock, [&]{ return jobsRunning == 0 && jobs.empty(); });
+
+        std::unique_lock<std::mutex> lock2(mainMutex);
+
         for (size_t i = 0; i < workers.size(); i++) {
             // Send over empty jobs.
-            jobs.push_back(std::function<void()>());
+            jobs.emplace_back();
         }
     }
 
-    available.notify_all();
+    jobsChanged.notify_all();
 
     for (auto& worker : workers) {
         worker.join();

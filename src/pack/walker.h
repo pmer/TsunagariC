@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** pool.h                      **
+** walker.h                    **
 ** Copyright 2017 Paul Merrill **
 ********************************/
 
@@ -24,22 +24,17 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_POOL_H_
-#define SRC_PACK_POOL_H_
+#ifndef SRC_PACK_WALKER_H_
+#define SRC_PACK_WALKER_H_
 
 #include <functional>
 #include <string>
 
+#include "util/vector.h"
 
-class Pool {
- public:
-    static const size_t ONE_PER_CORE = 0;
+// Recursively walk the file system under the following paths, calling op on
+// each regular file (non-directory) found. Uses one thread per logical core, so
+// op can be called multiple times in parallel.
+void walk(vector<std::string> paths, std::function<void(std::string)> op);
 
-    static Pool* makePool(std::string name,
-                          size_t workerLimit = ONE_PER_CORE);
-    virtual ~Pool() = default;
-
-    virtual void schedule(std::function<void()> job) = 0;
-};
-
-#endif  // SRC_PACK_POOL_H_
+#endif  // SRC_PACK_WALKER_H_

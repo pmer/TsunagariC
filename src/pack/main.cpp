@@ -31,11 +31,13 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <mutex>
 #include <unordered_set>
 
 #include "os/os.h"
 #include "pack/pack-file.h"
 #include "pack/pool.h"
+#include "pack/walker.h"
 #include "pack/ui.h"
 #include "util/move.h"
 #include "util/optional.h"
@@ -50,6 +52,11 @@ static void usage() {
 }
 
 
+struct CreateArchiveContext {
+    Unique<PackWriter> pack;
+    std::mutex packMutex;
+};
+
 static void slurp(const std::string& path, uint64_t* size, void** data) {
     *size = getFileSize(path);
     *data = new char*[*size];
@@ -58,47 +65,36 @@ static void slurp(const std::string& path, uint64_t* size, void** data) {
     fclose(f);
 }
 
-static void addPath(PackWriter* pack, std::string path);
-
-static void addFile(PackWriter* pack, std::string path) {
+static void addFile(CreateArchiveContext& ctx, std::string path) {
     uiShowAddingFile(path);
 
     uint64_t size;
     void* data;
     slurp(path, &size, &data);
-    pack->addBlob(move_(path), size, data);
-}
 
-static void addDir(PackWriter* pack, std::string path) {
-    vector<std::string> names = listDir(path);
-    std::sort(names.begin(), names.end());
-    for (auto& name : names) {
-        addPath(pack, path + dirSeparator + name);
-    }
-}
-
-static void addPath(PackWriter* pack, std::string path) {
-    if (isDir(path)) {
-        addDir(pack, path);
-    } else {
-        addFile(pack, path);
-    }
+    std::lock_guard<std::mutex> guard(ctx.packMutex);
+    ctx.pack->addBlob(move_(path), size, data);
 }
 
 template<typename Iterator>
 static bool createArchive(const std::string& archivePath,
                           Iterator inputsBegin,
                           Iterator inputsEnd) {
-    Unique<PackWriter> pack = PackWriter::make();
+    CreateArchiveContext ctx;
+    ctx.pack = PackWriter::make();
 
+    vector<std::string> paths;
     for (; inputsBegin != inputsEnd; ++inputsBegin) {
-        const std::string& inputPath = *inputsBegin;
-        addPath(pack.get(), inputPath);
+        paths.emplace_back(*inputsBegin);
     }
+
+    walk(move_(paths), [&](std::string path) {
+        addFile(ctx, move_(path));
+    });
 
     uiShowWritingArchive(archivePath);
 
-    return pack->writeToFile(archivePath);
+    return ctx.pack->writeToFile(archivePath);
 }
 
 static bool listArchive(const std::string& archivePath) {

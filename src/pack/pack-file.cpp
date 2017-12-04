@@ -119,6 +119,7 @@ Unique<PackReader> PackReader::fromFile(const std::string& path) {
     reader->fd = open(path.c_str(), O_RDONLY);
 
     if (reader->fd == -1) {
+        delete reader;
         return Unique<PackReader>();
     }
 
@@ -128,10 +129,12 @@ Unique<PackReader> PackReader::fromFile(const std::string& path) {
     read(fd, &header, sizeof(header));
 
     if (memcmp(header.magic, PACK_MAGIC, sizeof(header.magic)) != 0) {
+        delete reader;
         return Unique<PackReader>();
     }
 
     if (header.version != PACK_VERSION) {
+        delete reader;
         return Unique<PackReader>();
     }
 

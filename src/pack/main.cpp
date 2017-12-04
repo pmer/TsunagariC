@@ -47,8 +47,8 @@ const char* exe = nullptr;
 
 static void usage() {
     fprintf(stderr, "usage: %s create <output-archive> [input-file]...\n", exe);
-    fprintf(stderr, "       %s list <archive>\n", exe);
-    fprintf(stderr, "       %s extract <archive>\n", exe);
+    fprintf(stderr, "       %s list <input-archive>\n", exe);
+    fprintf(stderr, "       %s extract <input-archive>\n", exe);
 }
 
 

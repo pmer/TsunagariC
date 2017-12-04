@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** gosu-cbuffer.cpp                   **
-** Copyright 2011-2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2016-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -30,26 +30,20 @@
 #include "av/gosu/gosu-cbuffer.h"
 
 GosuCBuffer::GosuCBuffer(const void* data, size_t size)
-    : _data(data), _size(size)
-{
-}
+    : _data(data), _size(size) {}
 
-size_t GosuCBuffer::size() const
-{
+size_t GosuCBuffer::size() const {
     return _size;
 }
 
-void GosuCBuffer::resize(size_t)
-{
+void GosuCBuffer::resize(size_t) {
     // NOOP
 }
 
-void GosuCBuffer::read(size_t offset, size_t length, void* destBuffer) const
-{
+void GosuCBuffer::read(size_t offset, size_t length, void* destBuffer) const {
     memcpy(destBuffer, (const char*)_data + offset, length);
 }
 
-void GosuCBuffer::write(size_t, size_t, const void*)
-{
+void GosuCBuffer::write(size_t, size_t, const void*) {
     // NOOP
 }

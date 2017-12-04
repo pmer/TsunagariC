@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** gosu-cbuffer.h                     **
-** Copyright 2011-2015 PariahSoft LLC **
-** Copyright 2016      Paul Merrill   **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -39,9 +39,8 @@
  * See http://www.libgosu.org/cpp/class_gosu_1_1_buffer.html
  * See http://www.libgosu.org/cpp/class_gosu_1_1_resource.html
  */
-class GosuCBuffer : public Gosu::Resource
-{
-public:
+class GosuCBuffer : public Gosu::Resource {
+ public:
     GosuCBuffer(const void* data, size_t size);
     ~GosuCBuffer() = default;
 
@@ -50,7 +49,7 @@ public:
     void read(size_t offset, size_t length, void* destBuffer) const;
     void write(size_t, size_t, const void*);  // NOOP
 
-private:
+ private:
     const void* _data;
     size_t _size;
 };

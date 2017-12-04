@@ -46,7 +46,7 @@ class Optional {
 
     Optional(Optional<T>&& other) : exists(other.exists) {
         if (exists) {
-            x = other.x;
+            x = move_(other.x);
         }
         other.exists = false;
     }

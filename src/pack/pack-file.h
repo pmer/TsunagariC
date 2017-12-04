@@ -46,7 +46,7 @@ class PackReader {
 
     virtual BlobIndex size() const = 0;
 
-    virtual BlobIndex findIndex(const std::string& path) const = 0;
+    virtual BlobIndex findIndex(const std::string& path) = 0;
 
     virtual std::string getBlobPath(BlobIndex index) const = 0;
     virtual BlobSize getBlobSize(BlobIndex index) const = 0;

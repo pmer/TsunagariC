@@ -182,8 +182,10 @@ class PackReaderImpl : public PackReader {
 
     vector<void*> getBlobDatas(vector<BlobIndex> indicies);
 
+ public:
     void constructLookups();
 
+ public:
     MappedFile file;
 
     // Pointers into `file`.

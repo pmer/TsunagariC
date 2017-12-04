@@ -106,6 +106,8 @@ class PackReaderImpl : public PackReader {
 
     vector<void*> getBlobDatas(vector<BlobIndex> indicies);
 
+    void constructLookups(PackReaderImpl* reader);
+
     char* map;
     size_t mapLen;
 
@@ -116,6 +118,7 @@ class PackReaderImpl : public PackReader {
     BlobMetadata* metadatas;
     uint64_t* dataOffsets;
 
+    bool lookupsConstructed = false;
     std::unordered_map<std::string, BlobIndex> lookups;
 };
 
@@ -177,14 +180,6 @@ Unique<PackReader> PackReader::fromFile(const std::string& path) {
     reader->dataOffsets = reinterpret_cast<uint64_t*>(reader->map + offset);
     offset += blobCount * sizeof(uint64_t);
 
-    for (PackReader::BlobIndex i = 0; i < blobCount; i++) {
-        uint64_t pathBegin = reader->pathOffsets[i];
-        uint64_t pathEnd = reader->pathOffsets[i + 1];
-        std::string blobPath(reader->paths + pathBegin,
-                             reader->paths + pathEnd);
-        reader->lookups[blobPath] = i;
-    }
-
     return Unique<PackReader>(reader);
 }
 
@@ -197,6 +192,11 @@ PackReader::BlobIndex PackReaderImpl::size() const {
 }
 
 PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) const {
+    if (!lookupsConstructed) {
+        lookupsConstructed = true;
+        constructLookups();
+    }
+
     auto it = lookups.find(path);
     if (it == lookups.end()) {
         return BLOB_NOT_FOUND;
@@ -228,6 +228,15 @@ vector<void*> PackReaderImpl::getBlobDatas(vector<BlobIndex> indicies) {
     }
 
     return datas;
+}
+
+void PackReaderImpl::constructLookups(PackReaderImpl* reader) {
+    for (PackReader::BlobIndex i = 0; i < blobCount; i++) {
+        uint64_t pathBegin = pathOffsets[i];
+        uint64_t pathEnd = pathOffsets[i + 1];
+        std::string blobPath(paths + pathBegin, paths + pathEnd);
+        lookups[blobPath] = i;
+    }
 }
 
 

@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/uio.h>
 #include <unistd.h>
 
@@ -104,67 +106,82 @@ class PackReaderImpl : public PackReader {
 
     vector<void*> getBlobDatas(vector<BlobIndex> indicies);
 
-    int fd;
-    HeaderBlock header;
-    Unique<PathOffset> pathOffsets;
-    Unique<char> paths;
-    Unique<BlobMetadata> metadatas;
-    Unique<uint64_t> dataOffsets;
+    char* map;
+    size_t mapLen;
+
+    // Pointers into `map`.
+    HeaderBlock* header;
+    PathOffset* pathOffsets;
+    char* paths;
+    BlobMetadata* metadatas;
+    uint64_t* dataOffsets;
+
     std::unordered_map<std::string, BlobIndex> lookups;
 };
 
 Unique<PackReader> PackReader::fromFile(const std::string& path) {
     PackReaderImpl* reader = new PackReaderImpl;
 
-    reader->fd = open(path.c_str(), O_RDONLY);
-
-    if (reader->fd == -1) {
+    int fd = open(path.c_str(), O_RDONLY);
+    if (fd == -1) {
         delete reader;
         return Unique<PackReader>();
     }
 
-    int fd = reader->fd;
-    HeaderBlock& header = reader->header;
+    struct stat st;
+    fstat(fd, &st);
 
-    read(fd, &header, sizeof(header));
-
-    if (memcmp(header.magic, PACK_MAGIC, sizeof(header.magic)) != 0) {
+    if (st.st_size == 0) {
         delete reader;
         return Unique<PackReader>();
     }
 
-    if (header.version != PACK_VERSION) {
+    reader->map = reinterpret_cast<char*>(mmap(nullptr, st.st_size, PROT_READ, MAP_SHARED, fd, 0));
+    reader->mapLen = st.st_size;
+
+    if (reader->map == MAP_FAILED) {
         delete reader;
         return Unique<PackReader>();
     }
 
-    uint64_t blobCount = reader->header.blobCount;
+    size_t offset = 0;
 
-    reader->pathOffsets = new PathOffset[blobCount + 1];
-    reader->paths = new char[header.pathsBlockSize];
-    reader->metadatas = new BlobMetadata[blobCount];
-    reader->dataOffsets = new uint64_t[blobCount];
+    reader->header = reinterpret_cast<HeaderBlock*>(reader->map + offset);
+    offset += sizeof(*reader->header);
 
-    uint64_t pathOffsetsBlockSize = blobCount * sizeof(PathOffset);
-    uint64_t pathsBlockSize = header.pathsBlockSize;
-    uint64_t metadatasBlockSize = blobCount * sizeof(BlobMetadata);
-    uint64_t dataOffsetsBlockSize = blobCount * sizeof(uint64_t);
+    if (memcmp(reader->header->magic,
+               PACK_MAGIC,
+               sizeof(reader->header->magic)) != 0) {
+        munmap(reader->map, reader->mapLen);
+        delete reader;
+        return Unique<PackReader>();
+    }
 
-    read(fd, reader->pathOffsets.get(), pathOffsetsBlockSize);
-    read(fd, const_cast<char*>(reader->paths.get()), pathsBlockSize);
-    read(fd, reader->metadatas.get(), metadatasBlockSize);
-    read(fd, reader->dataOffsets.get(), dataOffsetsBlockSize);
+    if (reader->header->version != PACK_VERSION) {
+        munmap(reader->map, reader->mapLen);
+        delete reader;
+        return Unique<PackReader>();
+    }
 
-    // Add an extra element to pathOffsets that holds the end position of the
-    // last path.
-    reader->pathOffsets.get()[blobCount] = pathsBlockSize;
+    uint64_t blobCount = reader->header->blobCount;
+
+    reader->pathOffsets = reinterpret_cast<PathOffset*>(reader->map + offset);
+    offset += (blobCount + 1) * sizeof(PathOffset);
+
+    reader->paths = reader->map + offset;
+    offset += reader->header->pathsBlockSize;
+
+    reader->metadatas = reinterpret_cast<BlobMetadata*>(reader->map + offset);
+    offset += blobCount * sizeof(BlobMetadata);
+
+    reader->dataOffsets = reinterpret_cast<uint64_t*>(reader->map + offset);
+    offset += blobCount * sizeof(uint64_t);
 
     for (PackReader::BlobIndex i = 0; i < blobCount; i++) {
-        uint64_t pathBegin = reader->pathOffsets.get()[i];
-        uint64_t pathEnd = reader->pathOffsets.get()[i + 1];
-        std::string blobPath = std::string(
-                reader->paths.get() + pathBegin,
-                reader->paths.get() + pathEnd);
+        uint64_t pathBegin = reader->pathOffsets[i];
+        uint64_t pathEnd = reader->pathOffsets[i + 1];
+        std::string blobPath(reader->paths + pathBegin,
+                             reader->paths + pathEnd);
         reader->lookups[blobPath] = i;
     }
 
@@ -172,11 +189,11 @@ Unique<PackReader> PackReader::fromFile(const std::string& path) {
 }
 
 PackReaderImpl::~PackReaderImpl() {
-    close(fd);
+    munmap(map, mapLen);
 }
 
 PackReader::BlobIndex PackReaderImpl::size() const {
-    return header.blobCount;
+    return header->blobCount;
 }
 
 PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) const {
@@ -189,48 +206,26 @@ PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) const {
 }
 
 std::string PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const {
-    uint64_t begin = pathOffsets.get()[index];
-    uint64_t end = pathOffsets.get()[index + 1];
-    return std::string(paths.get() + begin, paths.get() + end);
+    uint64_t begin = pathOffsets[index];
+    uint64_t end = pathOffsets[index + 1];
+    return std::string(paths + begin, paths + end);
 }
 
 uint64_t PackReaderImpl::getBlobSize(PackReader::BlobIndex index) const {
-    return metadatas.get()[index].uncompressedSize;
+    return metadatas[index].uncompressedSize;
 }
 
 void* PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
-    uint64_t size = getBlobSize(index);
-    void* data = malloc(size);
-    uint64_t offset = dataOffsets.get()[index];
-    pread(fd, data, size, static_cast<off_t>(offset));
-    return data;
+    uint64_t offset = dataOffsets[index];
+    return map + offset;
 }
 
 vector<void*> PackReaderImpl::getBlobDatas(vector<BlobIndex> indicies) {
-    size_t count = indicies.size();
-    size_t totalSize = 0;
-
     vector<void*> datas;
-    iovec* iov = new iovec[count];
 
-    for (size_t i = 0; i < count; i++) {
-        uint64_t size = getBlobSize(static_cast<BlobIndex>(i));
-        void* data = malloc(size);
-
-        datas.push_back(data);
-        iov[i].iov_base = data;
-        iov[i].iov_len = size;
-
-        totalSize += size;
+    for (BlobIndex i : indicies) {
+        datas.push_back(map + dataOffsets[i]);
     }
-
-    size_t offset = dataOffsets.get()[indicies[0]];
-    lseek(fd, static_cast<off_t>(offset), SEEK_SET);
-
-    /* ssize_t s = */ readv(fd, iov, static_cast<int>(count));
-    // TODO: compare s with totalSize, throw exception if not equal?
-
-    delete[] iov;
 
     return datas;
 }
@@ -261,7 +256,7 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
     }
 
     // Determine block offsets.
-    uint64_t pathOffsetsBlockSize = blobCount * sizeof(PathOffset);
+    uint64_t pathOffsetsBlockSize = (blobCount + 1) * sizeof(PathOffset);
     uint64_t pathsBlockSize = 0;
     uint64_t metadataBlockSize = blobCount * sizeof(BlobMetadata);
     uint64_t dataOffsetsBlockSize = blobCount * sizeof(uint64_t);
@@ -300,7 +295,7 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
     vector<uint64_t> dataOffsetsBlock;
     vector<iovec> ios;
 
-    pathOffsetsBlock.reserve(blobCount);
+    pathOffsetsBlock.reserve(blobCount + 1);
     pathsBlock.reserve(pathsBlockSize);
     metadatasBlock.reserve(blobCount);
     ios.reserve(5 + blobCount);
@@ -310,6 +305,7 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
         pathOffsetsBlock.push_back(pathOffset);
         pathOffset += blob.path.size();
     }
+    pathOffsetsBlock.push_back(pathOffset);
 
     for (auto& blob : blobs) {
         pathsBlock += blob.path;

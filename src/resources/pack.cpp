@@ -46,7 +46,7 @@ PackResource::PackResource(void* data, size_t size)
     : _data(static_cast<char*>(data)), _size(size) {}
 
 const void* PackResource::data() const {
-    return _data.get();
+    return _data;
 }
 
 size_t PackResource::size() const {

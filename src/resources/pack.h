@@ -35,12 +35,6 @@
 #include "pack/pack-file.h"
 #include "util/unique.h"
 
-struct Free {
-    void operator() (char* ptr) {
-        free(ptr);
-    }
-};
-
 class PackResource : public Resource {
  public:
     PackResource(void* data, size_t size);
@@ -49,7 +43,7 @@ class PackResource : public Resource {
     size_t size() const;
 
  private:
-    Unique<char, Free> _data;
+    char* _data;
     size_t _size;
 };
 

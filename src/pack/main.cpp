@@ -101,12 +101,18 @@ static bool listArchive(const std::string& archivePath) {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
+        std::string output;
+
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             std::string blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
 
-            uiShowListingEntry(blobPath, blobSize);
+            output.append(blobPath);
+            output.append(": ");
+            output.append(std::to_string(blobSize));
+            output.append(" bytes\n");
         }
+        printf("%s", output.c_str());
         return true;
     } else {
         fprintf(stderr, "%s: %s: not found\n", exe, archivePath.c_str());

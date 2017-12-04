@@ -52,7 +52,6 @@ class PackReader {
     virtual BlobSize getBlobSize(BlobIndex index) const = 0;
     virtual void* getBlobData(BlobIndex index) = 0;
 
-    // indicies must be monotonic & contiguous: e.g. 4, 5, 6, 7
     virtual vector<void*> getBlobDatas(vector<BlobIndex> indicies) = 0;
 };
 

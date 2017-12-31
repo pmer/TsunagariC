@@ -136,15 +136,30 @@ void SDL2GameWindow::setCaption(const std::string& caption) {
     SDL_SetWindowTitle(window, caption.c_str());
 }
 
+static int getRefreshRate(SDL_Window* window) {
+    // SDL_GetWindowDisplayIndex computes which display the window is on each
+    // time.
+    int display = SDL_GetWindowDisplayIndex(window);
+    SDL_DisplayMode mode;
+    SDL_GetCurrentDisplayMode(display, &mode);
+    return mode.refresh_rate;
+}
+
 void SDL2GameWindow::mainLoop() {
     SDL_ShowWindow(window);
     while (window != nullptr) {
         handleEvents();
         World::instance().update(time());
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
-        SDL_RenderClear(renderer);
-        World::instance().draw();
-        SDL_RenderPresent(renderer);
+        if (World::instance().needsRedraw()) {
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
+            SDL_RenderClear(renderer);
+            World::instance().draw();
+            SDL_RenderPresent(renderer);
+        } else {
+            // TODO: Question: How do we handle freesync and gsync?
+            std::chrono::duration<float> frameLength(1.0 / getRefreshRate(window));
+            std::this_thread::sleep_for(frameLength);
+        }
     }
 }
 

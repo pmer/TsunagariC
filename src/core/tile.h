@@ -207,7 +207,6 @@ class Tile : public TileBase {
      * @param facing  facing vector
      */
     icoord moveDest(icoord here, ivec2 facing) const;
-    Tile* offset(int x, int y) const;
 
     Optional<Exit> getNormalExit() const;
     void setNormalExit(Exit exit);

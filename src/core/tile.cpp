@@ -154,8 +154,9 @@ icoord Tile::moveDest(icoord here, ivec2 facing) const {
     icoord dest = here + icoord(facing.x, facing.y, 0);
 
     Optional<double> layermod = layermodAt(facing);
-    if (layermod)
+    if (layermod) {
         dest = area->virt2phys(vicoord(dest.x, dest.y, *layermod));
+    }
     return dest;
 }
 

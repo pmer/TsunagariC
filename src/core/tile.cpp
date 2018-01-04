@@ -144,11 +144,7 @@ void TileBase::setType(TileType* type) {
  */
 Tile::Tile() : entCnt(0) {}
 
-Tile::Tile(Area* area)
-        : TileBase(), area(area), entCnt(0) {
-    memset(exits, 0, sizeof(exits));
-    memset(layermods, 0, sizeof(layermods));
-}
+Tile::Tile(Area* area) : area(area), entCnt(0) {}
 
 icoord Tile::moveDest(icoord here, ivec2 facing) const {
     icoord dest = here + icoord(facing.x, facing.y, 0);

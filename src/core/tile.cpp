@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** tile.cpp                           **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -144,8 +144,8 @@ void TileBase::setType(TileType* type) {
  */
 Tile::Tile() : entCnt(0) {}
 
-Tile::Tile(Area* area, int x, int y, int z)
-        : TileBase(), area(area), x(x), y(y), z(z), entCnt(0) {
+Tile::Tile(Area* area)
+        : TileBase(), area(area), entCnt(0) {
     memset(exits, 0, sizeof(exits));
     memset(layermods, 0, sizeof(layermods));
 }

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** area-json.cpp                      **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -123,7 +123,7 @@ void AreaJSON::allocateMapLayer() {
 
     for (int y = 0; y < dim.y; y++) {
         for (int x = 0; x < dim.x; x++) {
-            grid.grid.emplace_back(this, x, y, dim.z);
+            grid.grid.emplace_back(this);
         }
     }
 

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** tile.h                             **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -194,7 +194,7 @@ class TileBase {
 class Tile : public TileBase {
  public:
     Tile(); // Should not be used. Wanted by std::containers.
-    Tile(Area* area, int x, int y, int z);
+    Tile(Area* area);
 
     /**
      * Gets the correct destination for an Entity wanting to
@@ -221,13 +221,6 @@ class Tile : public TileBase {
  public:
     Area* area;
 
-    /*
-     * The grid-space coordinates of this Tile.
-     *
-     * Looping Areas utilize area-space components. These
-     * cannot be losslessly transformed into area-space.
-     */
-    int x, y, z;
     Optional<Exit> exits[EXITS_LENGTH];
     Optional<double> layermods[EXITS_LENGTH];
     int entCnt; //!< Number of entities on this Tile.

@@ -239,7 +239,6 @@ class TileType : public TileBase {
 
  public:
     Animation anim; //! Graphics for tiles of this type.
-    vector<Tile*> allOfType;
 };
 
 class TileSet {

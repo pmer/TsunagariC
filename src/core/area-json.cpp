@@ -540,7 +540,6 @@ bool AreaJSON::processLayerData(JSONArrayPtr arr) {
         if (gid > 0) {
             TileType* type = gids[(size_t)gid];
             Tile& tile = grid.grid[(z * grid.dim.y + y) * grid.dim.x + x];
-            type->allOfType.push_back(&tile);
             tile.parent = type;
         }
 

@@ -209,8 +209,6 @@ class Tile : public TileBase {
     icoord moveDest(icoord here, ivec2 facing) const;
     Tile* offset(int x, int y) const;
 
-    double getZ() const;
-
     Optional<Exit> getNormalExit() const;
     void setNormalExit(Exit exit);
 

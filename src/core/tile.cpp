@@ -164,11 +164,6 @@ Tile* Tile::offset(int x, int y) const {
     return area->getTile(icoord(this->x + x, this->y + y, z));
 }
 
-double Tile::getZ() const {
-    vicoord vi = area->phys2virt_vi(icoord(x, y, z));
-    return vi.z;
-}
-
 Optional<Exit> Tile::getNormalExit() const {
     return exits[EXIT_NORMAL];
 }

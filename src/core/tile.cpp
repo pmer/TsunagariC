@@ -160,14 +160,6 @@ icoord Tile::moveDest(icoord here, ivec2 facing) const {
     return dest;
 }
 
-Optional<Exit> Tile::getNormalExit() const {
-    return exits[EXIT_NORMAL];
-}
-
-void Tile::setNormalExit(Exit exit) {
-    exits[EXIT_NORMAL] = exit;
-}
-
 Optional<Exit> Tile::exitAt(ivec2 dir) const {
     int idx = ivec2_to_dir(dir);
     return idx == -1 ? Optional<Exit>() : exits[idx];

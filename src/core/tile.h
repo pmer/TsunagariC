@@ -208,9 +208,6 @@ class Tile : public TileBase {
      */
     icoord moveDest(icoord here, ivec2 facing) const;
 
-    Optional<Exit> getNormalExit() const;
-    void setNormalExit(Exit exit);
-
     Optional<Exit> exitAt(ivec2 dir) const;
     Optional<double> layermodAt(ivec2 dir) const;
 

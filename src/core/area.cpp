@@ -428,15 +428,6 @@ DataArea* Area::getDataArea() {
     return dataArea;
 }
 
-int Area::depthIndex(double depth) const {
-    return grid.depthIndex(depth);
-}
-
-double Area::indexDepth(int idx) const {
-    return grid.indexDepth(idx);
-}
-
-
 
 static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY) {
     TileType* type = (TileType*)tile.parent;

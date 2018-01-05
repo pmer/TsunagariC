@@ -157,10 +157,6 @@ class Area {
 
 
  protected:
-    // Convert between virtual and physical map depths.
-    int depthIndex(double depth) const;
-    double indexDepth(int idx) const;
-
     //! Calculate frame to show for each type of tile
     void drawTiles(const icube& tiles, int z);
     void drawEntities(const icube& tiles, int z);

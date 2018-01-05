@@ -37,14 +37,15 @@
 #include "core/images.h"
 #include "core/jsons.h"
 #include "core/log.h"
+#include "core/measure.h"
 #include "core/resources.h"
-#include "util/string2.h"
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"
 #include "util/assert.h"
 #include "util/move.h"
 #include "util/optional.h"
+#include "util/string2.h"
 #include "util/vector.h"
 
 #ifdef _WIN32
@@ -109,6 +110,7 @@ AreaJSON::AreaJSON(Player* player, const std::string& descriptor)
 }
 
 bool AreaJSON::init() {
+    TimeMeasure m("Constructed " + descriptor + " as area-json");
     return processDescriptor();
 }
 

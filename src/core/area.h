@@ -130,11 +130,11 @@ class Area {
     const std::string getDescriptor() const;
 
     // Create an NPC and insert it into the Area.
-    Rc<NPC> spawnNPC(const std::string& descriptor,
-        vicoord coord, const std::string& phase);
+    Rc<NPC> spawnNPC(const std::string& descriptor, vicoord coord,
+                     const std::string& phase);
     // Create an Overlay and insert it into the Area.
-    Rc<Overlay> spawnOverlay(const std::string& descriptor,
-        vicoord coord, const std::string& phase);
+    Rc<Overlay> spawnOverlay(const std::string& descriptor, vicoord coord,
+                             const std::string& phase);
 
     // Insert a Character into the Area.
     void insert(Rc<Character> c);

@@ -7,7 +7,6 @@ set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
     ${CMAKE_CURRENT_LIST_DIR}/character.cpp
     ${CMAKE_CURRENT_LIST_DIR}/client-conf.cpp
     ${CMAKE_CURRENT_LIST_DIR}/cooldown.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/dtds.cpp
     ${CMAKE_CURRENT_LIST_DIR}/entity.cpp
     ${CMAKE_CURRENT_LIST_DIR}/formatter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/images.cpp

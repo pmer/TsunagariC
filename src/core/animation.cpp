@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** animation.cpp                      **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -68,7 +68,7 @@ bool Animation::needsRedraw(time_t now) const {
 }
 
 Image* Animation::frame(time_t now) {
-    if (frames.size() == 0) {
+    if (frames.empty()) {
         return nullptr;
     }
     if (frames.size() == 1) {

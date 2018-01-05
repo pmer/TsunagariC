@@ -171,15 +171,12 @@ class Area {
     Player* player;
     uint32_t colorOverlayARGB;
 
-    typedef std::set<Rc<Character>> CharacterSet;
-    CharacterSet characters;
-    typedef std::set<Rc<Overlay>> OverlaySet;
-    OverlaySet overlays;
+    std::set<Rc<Character>> characters;
+    std::set<Rc<Overlay>> overlays;
 
     TileGrid<Tile> grid;
 
-    typedef std::map<std::string, TileSet> tilesets_t;
-    tilesets_t tileSets;
+    std::map<std::string, TileSet> tileSets;
 
 
     std::string name, author;

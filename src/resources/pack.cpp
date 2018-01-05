@@ -67,7 +67,7 @@ PackResources::PackResources() {
 Unique<Resource> PackResources::load(const std::string& path) {
     std::lock_guard<std::mutex> lock(mutex);
 
-    TimeMeasure m("Mapped " + path);
+    //TimeMeasure m("Mapped " + path);
 
     const std::string fullPath = DataWorld::instance().datafile + "/" + path;
 

@@ -781,8 +781,7 @@ static bool isIntegerOrPlus(const std::string& s) {
 
     int state = space;
 
-    for (size_t i = 0; i < s.size(); i++) {
-        char c = s[i];
+    for (char c : s) {
         if (state == space) {
                if (isspace(c)) continue;
                else state++;

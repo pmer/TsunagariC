@@ -34,7 +34,7 @@
 
 class BitRecord {
  public:
-    BitRecord(size_t length);
+    explicit BitRecord(size_t length);
 
     bool& operator[] (size_t idx);
     vector<size_t> diff(const BitRecord& other);

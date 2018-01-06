@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** animation.h                        **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2017 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -91,6 +91,11 @@ class Animation {
      * @now current time in milliseconds
      */
     Image* frame(time_t now);
+
+    /**
+     * Returns the last image that should have been displayed.
+     */
+    Image* frame() const;
 
  private:
     typedef vector<Rc<Image>> ImageVec;

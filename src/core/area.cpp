@@ -182,12 +182,21 @@ bool Area::needsRedraw() const {
     }
 
     // Do any on-screen tile types need to update their animations?
+    BitRecord tileTypes(static_cast<size_t>(maxTileTypeId));
+
     for (int z = tiles.z1; z < tiles.z2; z++) {
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {
                 const Tile* tile = getTile(icoord(x, y, z));
                 const TileType* type = tile->getType();
-                if (type && type->needsRedraw()) {
+                if (!type) {
+                    continue;
+                }
+                if (tileTypes[type->id]) {
+                    continue;
+                }
+                tileTypes[type->id] = true;
+                if (type->needsRedraw()) {
                     return true;
                 }
             }
@@ -429,30 +438,35 @@ DataArea* Area::getDataArea() {
 }
 
 
-static void drawTile(Tile& tile, int x, int y, double depth, int tileDimY) {
-    TileType* type = (TileType*)tile.parent;
-    if (type) {
-        time_t now = World::instance().time();
-        Image* img = type->anim.frame(now);
-        if (img) {
-            rvec2 drawPos(
-                    double(x * (int)img->width()),
-                    double(y * (int)img->height())
-            );
-            double zOffset = drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
-            img->draw(drawPos.x, drawPos.y, depth + zOffset);
-        }
+static void drawTile(const TileType* type, int x, int y, double depth, int tileDimY) {
+    Image* img = type->anim.frame();
+    if (img) {
+        rvec2 drawPos(
+                double(x * (int)img->width()),
+                double(y * (int)img->height())
+        );
+        double zOffset = drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
+        img->draw(drawPos.x, drawPos.y, depth + zOffset);
     }
 }
 
 void Area::drawTiles(const icube& tiles, int z) {
+    time_t now = World::instance().time();
+    BitRecord tilesAnimated(static_cast<size_t>(maxTileTypeId));
     double depth = grid.idx2depth[(size_t)z];
 
     for (int y = tiles.y1; y < tiles.y2; y++) {
         for (int x = tiles.x1; x < tiles.x2; x++) {
             Tile* tile = getTile(icoord(x, y, z));
             // We are certain the Tile exists.
-            drawTile(*tile, x, y, depth, grid.tileDim.y);
+            TileType* type = tile->getType();
+            if (!type) {
+                continue;
+            }
+            if (!tilesAnimated[type->id]) {
+                type->anim.frame(now);
+            }
+            drawTile(type, x, y, depth, grid.tileDim.y);
         }
     }
 }

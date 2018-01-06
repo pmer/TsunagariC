@@ -80,3 +80,14 @@ Image* Animation::frame(time_t now) {
 
     return frames[frameShowing].get();
 }
+
+Image* Animation::frame() const {
+    if (frames.empty()) {
+        return nullptr;
+    }
+    if (frames.size() == 1) {
+        return frames[0].get();
+    }
+
+    return frames[frameShowing].get();
+}

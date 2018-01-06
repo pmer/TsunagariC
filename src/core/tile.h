@@ -238,8 +238,13 @@ class TileType : public TileBase {
     bool needsRedraw() const;
 
  public:
+    // Graphical details.
     int id;
     Animation anim; //! Graphics for tiles of this type.
+
+    // Object details.
+    //unsigned flags;
+    //DataArea::TileScript enterScript, leaveScript, useScript;
 };
 
 extern int maxTileTypeId;

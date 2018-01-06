@@ -35,6 +35,7 @@
 #include "core/images.h"
 #include "core/jsons.h"
 #include "core/log.h"
+#include "core/measure.h"
 #include "core/music.h"
 #include "core/player.h"
 #include "core/resources.h"
@@ -122,6 +123,8 @@ void World::buttonUp(KeyboardKey key) {
 }
 
 void World::draw() {
+    //TimeMeasure m("Drew world");
+
     redraw = false;
 
     GameWindow& window = GameWindow::instance();

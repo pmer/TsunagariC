@@ -238,8 +238,11 @@ class TileType : public TileBase {
     bool needsRedraw() const;
 
  public:
+    int id;
     Animation anim; //! Graphics for tiles of this type.
 };
+
+extern int maxTileTypeId;
 
 class TileSet {
  public:

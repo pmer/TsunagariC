@@ -197,7 +197,10 @@ void Tile::runUseScript(Entity* triggeredBy) {
 /*
  * TILETYPE
  */
+int maxTileTypeId = 0;
+
 TileType::TileType(const Rc<Image>& img) {
+    id = maxTileTypeId++;
     anim = Animation(img);
 }
 

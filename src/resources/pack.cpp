@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** pack.cpp                         **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********

@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** resources.cpp                 **
-** Copyright 2015 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** resources.cpp                    **
+** Copyright 2015 Michael Reiley    **
+** Copyright 2015-2018 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,6 @@
 
 #include "core/resources.h"
 
-std::string Resource::asString() const
-{
-    return std::string((char*)data(), size());
+std::string Resource::asString() const {
+    return std::string(static_cast<const char*>(data()), size());
 }

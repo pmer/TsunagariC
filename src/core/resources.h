@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** resources.h                        **
-** Copyright 2011-2015 PariahSoft LLC **
+** Copyright 2011-2015 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -31,9 +32,8 @@
 
 #include "util/unique.h"
 
-class Resource
-{
-public:
+class Resource {
+ public:
     virtual ~Resource() = default;
 
     virtual const void* data() const = 0;
@@ -41,10 +41,10 @@ public:
 
     std::string asString() const;
 
-protected:
+ protected:
     Resource() = default;
 
-private:
+ private:
     Resource(const Resource&) = delete;
     Resource& operator=(const Resource&) = delete;
 };
@@ -54,9 +54,8 @@ private:
  * Provides data and resource extraction for a World.
  * Each World comes bundled with associated data.
  */
-class Resources
-{
-public:
+class Resources {
+ public:
     //! Acquire the global Resources object.
     static Resources& instance();
 
@@ -66,10 +65,10 @@ public:
     //! Returns nullptr if the resource does not exist.
     virtual Unique<Resource> load(const std::string& path) = 0;
 
-protected:
+ protected:
     Resources() = default;
 
-private:
+ private:
     Resources(const Resources&) = delete;
     Resources(Resources&&) = delete;
     Resources& operator=(const Resources&) = delete;

@@ -83,7 +83,7 @@ Unique<Resource> PackResources::load(const std::string& path) {
     // Will it fit in memory?
     if (blobSize > std::numeric_limits<size_t>::max()) {
         Log::err("PackResources", Formatter("%: file too large") % fullPath);
-        return Unique<Resource>();;
+        return Unique<Resource>();
     }
 
     void* blobData = pack->getBlobData(index);

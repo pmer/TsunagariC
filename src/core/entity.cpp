@@ -84,7 +84,6 @@ void Entity::draw(DisplayList* display) {
     }
 
     time_t now = World::instance().time();
-    Image* img = phase->frame(now);
 
     // Don't add to DisplayList if not on-screen.
     display->items.push_back(DisplayItem{phase->frame(now),

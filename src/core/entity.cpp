@@ -85,7 +85,8 @@ void Entity::draw(DisplayList* display) {
 
     time_t now = World::instance().time();
 
-    // Don't add to DisplayList if not on-screen.
+    // TODO: Don't add to DisplayList if not on-screen.
+
     display->items.push_back(DisplayItem{phase->frame(now),
                                          rvec2(doff.x + r.x,
                                                doff.y + r.y)});

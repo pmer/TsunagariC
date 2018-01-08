@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** world.cpp                          **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -32,6 +32,7 @@
 #include "core/area.h"
 #include "core/area-json.h"
 #include "core/client-conf.h"
+#include "core/display-list.h"
 #include "core/images.h"
 #include "core/jsons.h"
 #include "core/log.h"
@@ -56,7 +57,7 @@ World& World::instance() {
 World::World()
     : player(new Player),
       lastTime(0), total(0), alive(false), redraw(false),
-      userPaused(false), paused(0) {}
+      paused(0) {}
 
 bool World::init() {
     alive = true;
@@ -94,8 +95,7 @@ time_t World::time() const {
 void World::buttonDown(KeyboardKey key) {
     switch (key) {
     case KBEscape:
-        userPaused = !userPaused;
-        setPaused(userPaused);
+        setPaused(paused == 0);
         redraw = true;
         break;
     default:
@@ -125,49 +125,57 @@ void World::buttonUp(KeyboardKey key) {
 void World::draw() {
     //TimeMeasure m("Drew world");
 
+    GameWindow& window = GameWindow::instance();
+    Viewport& view = Viewport::instance();
+
     redraw = false;
 
-    GameWindow& window = GameWindow::instance();
+    // Construct DisplayList.
+    DisplayList display;
+    display.padding = view.getLetterboxOffset();
+    display.scale = view.getScale();
+    display.scroll = view.getMapOffset();
 
+    area->draw(&display);
+
+    display.colorOverlayARGB = area->getColorOverlay();
+    display.paused = paused > 0;
+
+    // Present DisplayList.
     pushLetterbox([&] {
-        Viewport& view = Viewport::instance();
-
         // Zoom and pan the Area to fit on-screen.
-        rvec2 padding = view.getLetterboxOffset();
-        rvec2 scale = view.getScale();
-        rvec2 scroll = view.getMapOffset();
-
-        window.translate(-padding.x, -padding.y, [&] {
-            window.scale(scale.x, scale.y, [&] {
-                window.translate(-scroll.x, -scroll.y, [&] {
-                    area->draw();
+        window.translate(-display.padding.x, -display.padding.y, [&] {
+            window.scale(display.scale.x, display.scale.y, [&] {
+                window.translate(-display.scroll.x, -display.scroll.y, [&] {
+                    for (auto& item : display.items) {
+                        item.image->draw(item.destination.x,
+                                         item.destination.y,
+                                         item.destination.z);
+                    }
                 });
             });
         });
 
-        uint32_t colorOverlayARGB = area->getColorOverlay();
-        if ((colorOverlayARGB & 0xFF000000) != 0) {
+        if ((display.colorOverlayARGB & 0xFF000000) != 0) {
             unsigned ww = window.width();
             unsigned wh = window.height();
-            window.drawRect(0, ww, 0, wh, colorOverlayARGB);
+            window.drawRect(0, ww, 0, wh, display.colorOverlayARGB);
         }
     });
 
-    if (paused) {
+    if (display.paused) {
         unsigned ww = window.width();
         unsigned wh = window.height();
         window.drawRect(0, ww, 0, wh, 0x7F000000);
 
-        if (userPaused) {
-            if (!pauseInfo) {
-                pauseInfo = Images::instance().load("resource/pause_overlay.png");
-            }
-            if (pauseInfo) {
-                unsigned iw = pauseInfo->width();
-                unsigned ih = pauseInfo->height();
-                double top = std::numeric_limits<double>::max();
-                pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
-            }
+        if (!pauseInfo) {
+            pauseInfo = Images::instance().load("resource/pause_overlay.png");
+        }
+        if (pauseInfo) {
+            unsigned iw = pauseInfo->width();
+            unsigned ih = pauseInfo->height();
+            double top = std::numeric_limits<double>::max();
+            pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
         }
     }
 }

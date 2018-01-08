@@ -33,6 +33,7 @@
 
 #include "core/algorithm.h"
 #include "core/client-conf.h"
+#include "core/display-list.h"
 #include "core/entity.h"
 #include "core/formatter.h"
 #include "core/log.h"
@@ -71,8 +72,6 @@ Area::Area(Player* player,
     grid.loopX = false;
     grid.loopY = false;
 }
-
-Area::~Area() {}
 
 bool Area::init() {
     // Abstract method.
@@ -137,7 +136,7 @@ void Area::buttonUp(KeyboardKey key) {
     }
 }
 
-void Area::draw() {
+void Area::draw(DisplayList* display) {
     icube tiles = visibleTiles();
     int maxZ = grid.dim.z;
 
@@ -145,8 +144,8 @@ void Area::draw() {
     assert_(tiles.z2 == maxZ);
 
     for (int z = 0; z < maxZ; z++) {
-        drawTiles(tiles, z);
-        drawEntities(tiles, z);
+        drawTiles(display, tiles, z);
+        drawEntities(display, tiles, z);
     }
 
     redraw = false;
@@ -438,19 +437,21 @@ DataArea* Area::getDataArea() {
 }
 
 
-static void drawTile(const TileType* type, int x, int y, double depth, int tileDimY) {
+static void drawTile(DisplayList* display, const TileType* type,
+                     int x, int y, double depth, int tileDimY) {
     Image* img = type->anim.frame();
     if (img) {
-        rvec2 drawPos(
+        rvec3 drawPos(
                 double(x * (int)img->width()),
-                double(y * (int)img->height())
+                double(y * (int)img->height()),
+                0
         );
-        double zOffset = drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
-        img->draw(drawPos.x, drawPos.y, depth + zOffset);
+        drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
+        display->items.push_back(DisplayItem{img, drawPos});
     }
 }
 
-void Area::drawTiles(const icube& tiles, int z) {
+void Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     time_t now = World::instance().time();
     BitRecord tilesAnimated(static_cast<size_t>(maxTileTypeId));
     double depth = grid.idx2depth[(size_t)z];
@@ -466,27 +467,27 @@ void Area::drawTiles(const icube& tiles, int z) {
             if (!tilesAnimated[type->id]) {
                 type->anim.frame(now);
             }
-            drawTile(type, x, y, depth, grid.tileDim.y);
+            drawTile(display, type, x, y, depth, grid.tileDim.y);
         }
     }
 }
 
-void Area::drawEntities(const icube& tiles, int z) {
+void Area::drawEntities(DisplayList* display, const icube& tiles, int z) {
     double depth = grid.idx2depth[(size_t)z];
 
     for (auto& character : characters) {
         if (character->getTileCoords_i().z == z) {
-            character->draw();
+            character->draw(display);
         }
     }
 
     for (auto& overlay : overlays) {
         if (overlay->getPixelCoord().z == depth) {
-            overlay->draw();
+            overlay->draw(display);
         }
     }
 
     if (player->getTileCoords_i().z == z) {
-        player->draw();
+        player->draw(display);
     }
 }

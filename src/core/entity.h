@@ -38,6 +38,7 @@
 
 class Animation;
 class Area;
+struct DisplayList;
 class Image;
 class Tile;
 class TiledImage;
@@ -60,20 +61,19 @@ enum SetPhaseResult {
     down, left, right) along with static standing-still images for each
     direction.
 */
-class Entity
-{
-public:
+class Entity {
+ public:
     Entity();
-    virtual ~Entity();
+    virtual ~Entity() = default;
 
     //! Entity initializer
     virtual bool init(const std::string& descriptor,
-        const std::string& initialPhase);
+                      const std::string& initialPhase);
 
     //! Entity destroyer.
     virtual void destroy();
 
-    void draw();
+    void draw(DisplayList* display);
     bool needsRedraw(const icube& visiblePixels) const;
     bool isDead() const;
 
@@ -141,7 +141,7 @@ public:
     //            tileExitScript;
 
 
-protected:
+ protected:
     //! Precalculate various drawing measurements.
     void calcDraw();
 
@@ -171,7 +171,7 @@ protected:
     // bool setScript(const std::string& trigger, ScriptRef& script);
 
 
-protected:
+ protected:
     typedef std::map<std::string, Animation> AnimationMap;
 
 

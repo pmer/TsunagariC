@@ -29,6 +29,7 @@
 
 #include "core/area.h"
 #include "core/client-conf.h"
+#include "core/display-list.h"
 #include "core/entity.h"
 #include "core/images.h"
 #include "core/jsons.h"
@@ -59,49 +60,40 @@ Entity::Entity()
       moving(false),
       phase(nullptr),
       phaseName(""),
-      facing(0, 0)
-{
-}
-
-Entity::~Entity()
-{
-}
+      facing(0, 0) {}
 
 bool Entity::init(const std::string& descriptor,
-        const std::string& initialPhase)
-{
+                  const std::string& initialPhase) {
     this->descriptor = descriptor;
     CHECK(processDescriptor());
     setPhase(initialPhase);
     return true;
 }
 
-void Entity::destroy()
-{
+void Entity::destroy() {
     dead = true;
     if (area) {
         area->requestRedraw();
     }
 }
 
-void Entity::draw()
-{
+void Entity::draw(DisplayList* display) {
     redraw = false;
-    if (!phase)
+    if (!phase) {
         return;
+    }
 
     time_t now = World::instance().time();
     Image* img = phase->frame(now);
 
-    img->draw(
-        doff.x + r.x,
-        doff.y + r.y,
-        r.z
-    );
+    // Don't add to DisplayList if not on-screen.
+    display->items.push_back(DisplayItem{phase->frame(now),
+                                         rvec3(doff.x + r.x,
+                                               doff.y + r.y,
+                                               r.z)});
 }
 
-bool Entity::needsRedraw(const icube& visiblePixels) const
-{
+bool Entity::needsRedraw(const icube& visiblePixels) const {
     time_t now = World::instance().time();
 
     // Don't need to redraw
@@ -120,33 +112,28 @@ bool Entity::needsRedraw(const icube& visiblePixels) const
     return true;
 }
 
-bool Entity::isDead() const
-{
+bool Entity::isDead() const {
     return dead;
 }
 
 
-void Entity::tick(time_t dt)
-{
+void Entity::tick(time_t dt) {
     for (auto& fn : onTickFns) {
         fn(dt);
     }
 }
 
-void Entity::turn()
-{
+void Entity::turn() {
     for (auto& fn : onTurnFns) {
         fn();
     }
 }
 
-const std::string Entity::getFacing() const
-{
+const std::string Entity::getFacing() const {
     return directionStr(facing);
 }
 
-bool Entity::setPhase(const std::string& name)
-{
+bool Entity::setPhase(const std::string& name) {
     enum SetPhaseResult res;
     res = _setPhase(name);
     if (res == PHASE_NOTFOUND) {
@@ -158,67 +145,55 @@ bool Entity::setPhase(const std::string& name)
     return res == PHASE_CHANGED;
 }
 
-std::string Entity::getPhase() const
-{
+std::string Entity::getPhase() const {
     return phaseName;
 }
 
-ivec2 Entity::getImageSize() const
-{
+ivec2 Entity::getImageSize() const {
     return imgsz;
 }
 
-void Entity::setAnimationStanding()
-{
+void Entity::setAnimationStanding() {
     setPhase(getFacing());
 }
 
-void Entity::setAnimationMoving()
-{
+void Entity::setAnimationMoving() {
     setPhase("moving " + getFacing());
 }
 
 
-rcoord Entity::getPixelCoord() const
-{
+rcoord Entity::getPixelCoord() const {
     return r;
 }
 
-bool Entity::isMoving() const
-{
+bool Entity::isMoving() const {
     return moving;
 }
 
-Area* Entity::getArea()
-{
+Area* Entity::getArea() {
     return area;
 }
 
-void Entity::setArea(Area* area)
-{
+void Entity::setArea(Area* area) {
     this->area = area;
     calcDraw();
-    setSpeedMultiplier(speedMul); // Calculate new speed based on tile size.
+    setSpeedMultiplier(speedMul);  // Calculate new speed based on tile size.
 }
 
-double Entity::getSpeedInPixels() const
-{
+double Entity::getSpeedInPixels() const {
     double tileWidth = area->getTileDimensions().x;
     return getSpeedInTiles() * tileWidth;
 }
 
-double Entity::getSpeedInTiles() const
-{
+double Entity::getSpeedInTiles() const {
     return baseSpeed * speedMul;
 }
 
-double Entity::getSpeedMultiplier() const
-{
+double Entity::getSpeedMultiplier() const {
     return speedMul;
 }
 
-void Entity::setSpeedMultiplier(double multiplier)
-{
+void Entity::setSpeedMultiplier(double multiplier) {
     speedMul = multiplier;
     if (area) {
         assert_(area->getTileDimensions().x == area->getTileDimensions().y);
@@ -227,28 +202,23 @@ void Entity::setSpeedMultiplier(double multiplier)
     }
 }
 
-void Entity::setFrozen(bool b)
-{
+void Entity::setFrozen(bool b) {
     frozen = b;
 }
 
-bool Entity::getFrozen()
-{
+bool Entity::getFrozen() {
     return frozen;
 }
 
-void Entity::attach(OnTickFn fn)
-{
+void Entity::attach(OnTickFn fn) {
     onTickFns.push_back(fn);
 }
 
-void Entity::attach(OnTurnFn fn)
-{
+void Entity::attach(OnTurnFn fn) {
     onTurnFns.push_back(fn);
 }
 
-void Entity::calcDraw()
-{
+void Entity::calcDraw() {
     if (area) {
         ivec2 tile = area->getTileDimensions();
 
@@ -259,8 +229,7 @@ void Entity::calcDraw()
     }
 }
 
-ivec2 Entity::setFacing(ivec2 facing)
-{
+ivec2 Entity::setFacing(ivec2 facing) {
     this->facing = ivec2(
         bound(facing.x, -1, 1),
         bound(facing.y, -1, 1)
@@ -268,13 +237,11 @@ ivec2 Entity::setFacing(ivec2 facing)
     return this->facing;
 }
 
-const std::string& Entity::directionStr(ivec2 facing) const
-{
+const std::string& Entity::directionStr(ivec2 facing) const {
     return directions[facing.y+1][facing.x+1];
 }
 
-enum SetPhaseResult Entity::_setPhase(const std::string& name)
-{
+enum SetPhaseResult Entity::_setPhase(const std::string& name) {
     AnimationMap::iterator it;
     it = phases.find(name);
     if (it == phases.end()) {
@@ -292,8 +259,7 @@ enum SetPhaseResult Entity::_setPhase(const std::string& name)
     return PHASE_NOTCHANGED;
 }
 
-void Entity::setDestinationCoordinate(rcoord destCoord)
-{
+void Entity::setDestinationCoordinate(rcoord destCoord) {
     // Set z right away so that we're on-level with the square we're
     // entering.
     r.z = destCoord.z;
@@ -302,8 +268,7 @@ void Entity::setDestinationCoordinate(rcoord destCoord)
     angleToDest = atan2(destCoord.y - r.y, destCoord.x - r.x);
 }
 
-void Entity::moveTowardDestination(time_t dt)
-{
+void Entity::moveTowardDestination(time_t dt) {
     if (!moving) {
         return;
     }
@@ -336,8 +301,7 @@ void Entity::moveTowardDestination(time_t dt)
     }
 }
 
-void Entity::arrived()
-{
+void Entity::arrived() {
     // for (auto& fn : onArrivedFns)
     //     fn();
 }
@@ -501,8 +465,7 @@ bool Entity::processScript(std::string& /*name*/, std::string path) {
 }
 
 /*
-bool Entity::setScript(const std::string& trigger, ScriptRef& script)
-{
+bool Entity::setScript(const std::string& trigger, ScriptRef& script) {
     if (trigger == "on_tick") {
         tickScript = script;
         return true;

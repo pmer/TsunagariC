@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** area.h                             **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -45,6 +45,7 @@
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
 
 class Character;
+struct DisplayList;
 class NPC;
 class Overlay;
 class Player;
@@ -63,7 +64,7 @@ class Player;
 class Area {
  public:
     Area(Player* player, const std::string& filename);
-    virtual ~Area();
+    virtual ~Area() = default;
 
     //! Parse the file specified in the constructor, generating a full Area
     //! object. Must be called before use.
@@ -77,7 +78,7 @@ class Area {
     void buttonUp(KeyboardKey key);
 
     //! Renders all visible Tiles and Entities within this Area.
-    void draw();
+    void draw(DisplayList* display);
 
     //! If false, drawing might be skipped. Saves CPU cycles when idle.
     bool needsRedraw() const;
@@ -158,8 +159,8 @@ class Area {
 
  protected:
     //! Calculate frame to show for each type of tile
-    void drawTiles(const icube& tiles, int z);
-    void drawEntities(const icube& tiles, int z);
+    void drawTiles(DisplayList* display, const icube& tiles, int z);
+    void drawEntities(DisplayList* display, const icube& tiles, int z);
 
  protected:
     DataArea* dataArea;

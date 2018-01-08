@@ -441,12 +441,11 @@ static void drawTile(DisplayList* display, const TileType* type,
                      int x, int y, double depth, int tileDimY) {
     Image* img = type->anim.frame();
     if (img) {
-        rvec3 drawPos(
+        rvec2 drawPos(
                 double(x * (int)img->width()),
-                double(y * (int)img->height()),
-                0
+                double(y * (int)img->height())
         );
-        drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
+        //drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
         display->items.push_back(DisplayItem{img, drawPos});
     }
 }

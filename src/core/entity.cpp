@@ -87,9 +87,8 @@ void Entity::draw(DisplayList* display) {
 
     // Don't add to DisplayList if not on-screen.
     display->items.push_back(DisplayItem{phase->frame(now),
-                                         rvec3(doff.x + r.x,
-                                               doff.y + r.y,
-                                               r.z)});
+                                         rvec2(doff.x + r.x,
+                                               doff.y + r.y)});
 }
 
 bool Entity::needsRedraw(const icube& visiblePixels) const {

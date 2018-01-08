@@ -76,7 +76,7 @@ void displayListPresent(DisplayList* display) {
                     for (auto& item : display->items) {
                         item.image->draw(item.destination.x,
                                          item.destination.y,
-                                         item.destination.z);
+                                         0.0);
                     }
                 });
             });

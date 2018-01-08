@@ -33,7 +33,7 @@
 
 struct DisplayItem {
     Image* image;  // TODO: Move to ImageKey.
-    rvec3 destination;  // TODO: Remove z. Move to float.
+    rvec2 destination;  // TODO: Move to float.
 };
 
 struct DisplayList {

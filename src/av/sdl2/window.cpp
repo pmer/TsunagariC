@@ -31,6 +31,7 @@
 
 #include "av/sdl2/error.h"
 #include "core/client-conf.h"
+#include "core/display-list.h"
 #include "core/log.h"
 #include "core/measure.h"
 #include "core/world.h"
@@ -146,14 +147,23 @@ static int getRefreshRate(SDL_Window* window) {
 }
 
 void SDL2GameWindow::mainLoop() {
+    DisplayList display;
+
     SDL_ShowWindow(window);
+
     while (window != nullptr) {
         handleEvents();
+
         World::instance().update(time());
+
         if (World::instance().needsRedraw()) {
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
             SDL_RenderClear(renderer);
-            World::instance().draw();
+
+            display.items.clear();
+            World::instance().draw(&display);
+            displayListPresent(&display);
+
             SDL_RenderPresent(renderer);
         } else {
             // TODO: Question: How do we handle freesync and gsync?

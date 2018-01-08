@@ -122,62 +122,25 @@ void World::buttonUp(KeyboardKey key) {
     }
 }
 
-void World::draw() {
+void World::draw(DisplayList* display) {
     //TimeMeasure m("Drew world");
 
-    GameWindow& window = GameWindow::instance();
     Viewport& view = Viewport::instance();
 
     redraw = false;
 
-    // Construct DisplayList.
-    DisplayList display;
-    display.padding = view.getLetterboxOffset();
-    display.scale = view.getScale();
-    display.scroll = view.getMapOffset();
+    display->loopX = area->loopsInX();
+    display->loopY = area->loopsInY();
 
-    area->draw(&display);
+    display->padding = view.getLetterboxOffset();
+    display->scale = view.getScale();
+    display->scroll = view.getMapOffset();
+    display->size = view.getPhysRes();
 
-    display.colorOverlayARGB = area->getColorOverlay();
-    display.paused = paused > 0;
+    display->colorOverlayARGB = area->getColorOverlay();
+    display->paused = paused > 0;
 
-    // Present DisplayList.
-    pushLetterbox([&] {
-        // Zoom and pan the Area to fit on-screen.
-        window.translate(-display.padding.x, -display.padding.y, [&] {
-            window.scale(display.scale.x, display.scale.y, [&] {
-                window.translate(-display.scroll.x, -display.scroll.y, [&] {
-                    for (auto& item : display.items) {
-                        item.image->draw(item.destination.x,
-                                         item.destination.y,
-                                         item.destination.z);
-                    }
-                });
-            });
-        });
-
-        if ((display.colorOverlayARGB & 0xFF000000) != 0) {
-            unsigned ww = window.width();
-            unsigned wh = window.height();
-            window.drawRect(0, ww, 0, wh, display.colorOverlayARGB);
-        }
-    });
-
-    if (display.paused) {
-        unsigned ww = window.width();
-        unsigned wh = window.height();
-        window.drawRect(0, ww, 0, wh, 0x7F000000);
-
-        if (!pauseInfo) {
-            pauseInfo = Images::instance().load("resource/pause_overlay.png");
-        }
-        if (pauseInfo) {
-            unsigned iw = pauseInfo->width();
-            unsigned ih = pauseInfo->height();
-            double top = std::numeric_limits<double>::max();
-            pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
-        }
-    }
+    area->draw(display);
 }
 
 bool World::needsRedraw() const {
@@ -308,36 +271,4 @@ time_t World::calculateDt(time_t now) {
     time_t dt = now - lastTime;
     lastTime = now;
     return dt;
-}
-
-void World::pushLetterbox(std::function<void()> op) {
-    GameWindow& window = GameWindow::instance();
-    Viewport& view = Viewport::instance();
-
-    // Aspect ratio correction.
-    rvec2 sz = view.getPhysRes();
-    rvec2 lb = -1 * view.getLetterboxOffset();
-
-    window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y, [&] {
-        // Map bounds.
-        rvec2 scale = view.getScale();
-        rvec2 virtScroll = view.getMapOffset();
-        rvec2 padding = view.getLetterboxOffset();
-
-        rvec2 physScroll = -1 * virtScroll * scale + padding;
-
-        bool loopX = area->loopsInX();
-        bool loopY = area->loopsInY();
-
-        if (!loopX && physScroll.x > 0) {
-            // Boxes on left-right.
-            window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x, op);
-        }
-        if (!loopY && physScroll.y > 0) {
-            // Boxes on top-bottom.
-            window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y, op);
-        }
-
-        op();
-    });
 }

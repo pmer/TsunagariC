@@ -39,6 +39,7 @@
 #include "util/unique.h"
 
 class Area;
+struct DisplayList;
 class Image;
 class Player;
 
@@ -77,7 +78,7 @@ class World {
     /**
      * Draw game state to the screen.
      */
-    void draw();
+    void draw(DisplayList* display);
 
     /**
      * Do we need to redraw the screen?

@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** display-list.h                **
-** Copyright 2018 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** display-list.h              **
+** Copyright 2018 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,14 +37,19 @@ struct DisplayItem {
 };
 
 struct DisplayList {
+    bool loopX, loopY;
+
     rvec2 padding;
     rvec2 scale;
     rvec2 scroll;
+    rvec2 size;
 
     vector<DisplayItem> items;
 
     uint32_t colorOverlayARGB;
     bool paused;  // TODO: Move to colorOverlay & overlay.
 };
+
+void displayListPresent(DisplayList* display);
 
 #endif  // SRC_CORE_DISPLAY_LIST_H_

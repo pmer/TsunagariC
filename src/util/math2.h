@@ -28,7 +28,17 @@
 #ifndef SRC_UTIL_MATH_H_
 #define SRC_UTIL_MATH_H_
 
-template<class T>
+template<typename T>
+static T max(T a, T b) {
+    return a < b ? b : a;
+}
+
+template<typename T>
+static T min(T a, T b) {
+    return a < b ? a : b;
+}
+
+template<typename T>
 static T bound(T value, T min, T max) {
     if (value < min) {
         return min;
@@ -39,7 +49,7 @@ static T bound(T value, T min, T max) {
     }
 }
 
-template<class T>
+template<typename T>
 static T wrap(T min, T value, T max) {
     while (value < min) {
         value += max;

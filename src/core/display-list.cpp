@@ -28,6 +28,7 @@
 
 #include "core/display-list.h"
 #include "core/window.h"
+#include "util/math2.h"
 
 static void pushLetterbox(DisplayList* display, std::function<void()> op) {
     GameWindow& window = GameWindow::instance();
@@ -36,25 +37,32 @@ static void pushLetterbox(DisplayList* display, std::function<void()> op) {
     rvec2 sz = display->size;
     rvec2 lb = -1 * display->padding;
 
-    window.clip(lb.x, lb.y, sz.x - 2 * lb.x, sz.y - 2 * lb.y, [&] {
-        // Map bounds.
-        rvec2 scale = display->scale;
-        rvec2 virtScroll = display->scroll;
-        rvec2 padding = display->padding;
+    // Map bounds.
+    rvec2 scale = display->scale;
+    rvec2 virtScroll = display->scroll;
+    rvec2 padding = display->padding;
 
-        rvec2 physScroll = -1 * virtScroll * scale + padding;
+    rvec2 physScroll = -1 * virtScroll * scale + padding;
 
-        if (!display->loopX && physScroll.x > 0) {
-            // Boxes on left-right.
-            window.clip(physScroll.x, 0, sz.x - 2 * physScroll.x, sz.x, op);
-        }
-        if (!display->loopY && physScroll.y > 0) {
-            // Boxes on top-bottom.
-            window.clip(0, physScroll.y, sz.x, sz.y - 2 * physScroll.y, op);
-        }
+    double x = lb.x;
+    double y = lb.y;
+    double width = sz.x - 2 * lb.x;
+    double height = sz.y - 2 * lb.y;
 
-        op();
-    });
+    if (!display->loopX && physScroll.x > 0) {
+        // Boxes on left-right.
+        x = max(x, physScroll.x);
+        width = min(width, sz.x - 2 * physScroll.x);
+        height = min(height, sz.x);
+    }
+    if (!display->loopY && physScroll.y > 0) {
+        // Boxes on top-bottom.
+        y = max(y, physScroll.y);
+        width = min(width, sz.x);
+        height = min(height, sz.y - 2 * physScroll.y);
+    }
+
+    window.clip(x, y, width, height, op);
 }
 
 void displayListPresent(DisplayList* display) {

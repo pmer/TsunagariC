@@ -165,6 +165,8 @@ void SDL2GameWindow::mainLoop() {
             displayListPresent(&display);
 
             SDL_RenderPresent(renderer);
+
+            // TODO: Detect dropped frames.
         } else {
             // TODO: Question: How do we handle freesync and gsync?
             std::chrono::duration<float> frameLength(1.0 / getRefreshRate(window));

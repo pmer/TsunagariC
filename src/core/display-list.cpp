@@ -25,6 +25,7 @@
 // **********
 
 #include <functional>
+#include <limits>
 
 #include "core/display-list.h"
 #include "core/window.h"

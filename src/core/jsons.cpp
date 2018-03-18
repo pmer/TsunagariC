@@ -259,7 +259,7 @@ static JSONObjectRef genJSON(const std::string& path) {
     if (!r) {
         return JSONObjectRef();
     }
-    std::string json = r->asString();
+    std::string json(static_cast<const char*>(r->data()), r->size());
 
     TimeMeasure m("Constructed " + path + " as json");
 

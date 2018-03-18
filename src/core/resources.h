@@ -39,8 +39,6 @@ class Resource {
     virtual const void* data() const = 0;
     virtual size_t size() const = 0;
 
-    std::string asString() const;
-
  protected:
     Resource() = default;
 

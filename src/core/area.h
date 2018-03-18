@@ -28,9 +28,9 @@
 #ifndef SRC_CORE_AREA_H_
 #define SRC_CORE_AREA_H_
 
-#include <map>
-#include <set>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "core/entity.h"
 #include "core/tile.h"
@@ -163,12 +163,12 @@ class Area {
     Player* player;
     uint32_t colorOverlayARGB;
 
-    std::set<Rc<Character>> characters;
-    std::set<Rc<Overlay>> overlays;
+    std::unordered_set<Rc<Character>> characters;
+    std::unordered_set<Rc<Overlay>> overlays;
 
     TileGrid<Tile> grid;
 
-    std::map<std::string, TileSet> tileSets;
+    std::unordered_map<std::string, TileSet> tileSets;
 
 
     std::string name, author;

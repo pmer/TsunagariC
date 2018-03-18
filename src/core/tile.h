@@ -157,7 +157,6 @@ class FlagManip {
 */
 class Exit {
  public:
-    Exit() = default;
     Exit(std::string area, int x, int y, double z);
 
  public:

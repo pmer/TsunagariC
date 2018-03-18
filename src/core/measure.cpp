@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** measure.cpp                   **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** measure.cpp                      **
+** Copyright 2016-2018 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -70,16 +70,15 @@ TimeMeasure::TimeMeasure(std::string description) {
 }
 
 TimeMeasure::~TimeMeasure() {
-    TimeMeasureImpl impl = *this->impl;
-    delete this->impl;
-
 #ifdef __APPLE__
-    kdebug_signpost_end(impl.signpost, 0, 0, 0, 0);
+    kdebug_signpost_end(impl->signpost, 0, 0, 0, 0);
 #endif
 
     std::chrono::time_point<std::chrono::system_clock> end;
     end = std::chrono::system_clock::now();
 
-    std::chrono::duration<double> elapsed_seconds = end - impl.start;
-    Log::info("Measure", impl.description + " took " + std::to_string(elapsed_seconds.count()) + " seconds");
+    std::chrono::duration<double> elapsed_seconds = end - impl->start;
+    Log::info("Measure", impl->description + " took " + std::to_string(elapsed_seconds.count()) + " seconds");
+
+    delete impl;
 }

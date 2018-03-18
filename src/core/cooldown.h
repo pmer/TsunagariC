@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** cooldown.h                    **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** cooldown.h                       **
+** Copyright 2014 Michael Reiley    **
+** Copyright 2014-2018 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef COOLDOWN_H
-#define COOLDOWN_H
+#ifndef SRC_CORE_COOLDOWN_H_
+#define SRC_CORE_COOLDOWN_H_
 
 #include <time.h>
 
@@ -36,7 +36,7 @@
  * of all until told to wrap() each one.
  */
 class Cooldown {
-public:
+ public:
     Cooldown();
     Cooldown(time_t duration);
 
@@ -68,8 +68,8 @@ public:
      */
     void wrap();
 
-private:
+ private:
     time_t duration, passed;
 };
 
-#endif
+#endif  // SRC_CORE_COOLDOWN_H_

@@ -24,6 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
+#ifndef NDEBUG
+
 #include "assert.h"
 
 #include <stdio.h>
@@ -32,3 +34,5 @@ void assert__(const char *func, const char *file, int line, const char *expr) {
     printf("Assertion failed: %s, function %s, file %s, line %d\n",
            expr, func, file, line);
 }
+
+#endif

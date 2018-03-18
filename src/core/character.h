@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** character.h                        **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef CHARACTER_H
-#define CHARACTER_H
+#ifndef SRC_CORE_CHARACTER_H_
+#define SRC_CORE_CHARACTER_H_
 
 #include <time.h>
 
@@ -37,11 +37,10 @@
 
 class Tile;
 
-class Character : public Entity
-{
-public:
+class Character : public Entity {
+ public:
     Character();
-    virtual ~Character();
+    virtual ~Character() = default;
 
     virtual void tick(time_t dt);
     virtual void turn();
@@ -68,7 +67,7 @@ public:
     //! Initiate a movement within the Area.
     void moveByTile(ivec2 delta);
 
-protected:
+ protected:
     //! Indicates which coordinate we will move into if we proceed in
     //! direction specified.
     icoord moveDest(ivec2 facing);
@@ -88,7 +87,7 @@ protected:
     void runTileExitScript();
     void runTileEntryScript();
 
-protected:
+ protected:
     unsigned nowalkFlags;
     unsigned nowalkExempt;
 
@@ -98,4 +97,4 @@ protected:
     Optional<Exit> destExit;
 };
 
-#endif
+#endif  // SRC_CORE_CHARACTER_H_

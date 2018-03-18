@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** character.cpp                      **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -40,8 +40,6 @@ Character::Character()
 {
     enterTile();
 }
-
-Character::~Character() {}
 
 void Character::tick(time_t dt)
 {

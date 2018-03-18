@@ -381,7 +381,7 @@ Rc<NPC> Area::spawnNPC(const std::string& descriptor,
     }
     c->setArea(this);
     c->setTileCoords(coord);
-    insert(c);
+    characters.insert(c);
     return c;
 }
 
@@ -395,16 +395,8 @@ Rc<Overlay> Area::spawnOverlay(const std::string& descriptor,
     }
     o->setArea(this);
     o->teleport(coord);
-    insert(o);
-    return o;
-}
-
-void Area::insert(Rc<Character> c) {
-    characters.insert(c);
-}
-
-void Area::insert(Rc<Overlay> o) {
     overlays.insert(o);
+    return o;
 }
 
 

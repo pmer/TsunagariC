@@ -137,11 +137,6 @@ class Area {
     Rc<Overlay> spawnOverlay(const std::string& descriptor, vicoord coord,
                              const std::string& phase);
 
-    // Insert a Character into the Area.
-    void insert(Rc<Character> c);
-    // Insert an Overlay into the Area.
-    void insert(Rc<Overlay> o);
-
     // Convert between virtual and physical map coordinates. Physical
     // coordinates are the physical indexes into the Tile matrix. Layer
     // depth is represented by an arbirarily chosen integer in the physical

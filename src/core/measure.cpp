@@ -36,10 +36,10 @@
 #include <sys/kdebug_signpost.h>
 #include <unordered_map>
 
-static int nextSignpost = 0;
-static std::unordered_map<std::string,int> signposts;
+static uint32_t nextSignpost = 0;
+static std::unordered_map<std::string,uint32_t> signposts;
 
-int getSignpost(std::string description) {
+uint32_t getSignpost(std::string description) {
     if (signposts.find(description) != signposts.end()) {
         return signposts[description];
     } else {
@@ -55,7 +55,7 @@ struct TimeMeasureImpl {
     std::string description;
     std::chrono::time_point<std::chrono::system_clock> start;
 #ifdef __APPLE__
-    int signpost;
+    uint32_t signpost;
 #endif
 };
 

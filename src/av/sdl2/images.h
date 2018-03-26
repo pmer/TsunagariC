@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** images.h                         **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -82,8 +82,10 @@ class SDL2TiledImage: public TiledImage {
     Rc<Image> operator[](size_t n) const final;
 
  private:
-    int width, height;
-    int tileW, tileH;
+    int width;
+    /*int height;*/
+    int tileW;
+    int tileH;
     int numTiles;
     Rc<SDL2Texture> texture;
 };

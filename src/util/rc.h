@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** rc.h                          **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** rc.h                               **
+** Copyright 2017-2018 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -304,5 +304,15 @@ using Rc = SharedPtr<T, NonAtomic>;
 
 template<typename T>
 using CompactRc = CompactSharedPtr<T, NonAtomic>;
+
+// Allow use in std::unordered_map and std::unordered_set.
+namespace std {
+    template<typename T, typename AtomicClass>
+    struct hash<SharedPtr<T, AtomicClass>> {
+        size_t operator()(const SharedPtr<T, AtomicClass>& p) {
+            return hash<T*>()(p.get());
+        }
+    };
+}
 
 #endif  // SRC_UTIL_RC_H_

@@ -72,12 +72,10 @@ bool World::init() {
         return false;
     }
 
-    Area* area = getArea(gameStart.area);
-    if (area == nullptr) {
+    if (!focusArea(gameStart.area, gameStart.coords)) {
         Log::fatal("World", "failed to load initial Area");
         return false;
     }
-    focusArea(area, gameStart.coords);
 
     Viewport::instance().setSize(parameters.viewportResolution);
     Viewport::instance().trackEntity(player.get());
@@ -170,34 +168,37 @@ void World::turn() {
     }
 }
 
-Area* World::getArea(const std::string& filename) {
+bool World::focusArea(const std::string& filename, vicoord playerPos) {
     AreaMap::iterator entry = areas.find(filename);
     if (entry != areas.end()) {
-        return entry->second;
+        Area* rawArea = entry->second.get();
+        focusArea(rawArea, playerPos);
+        return true;
     }
 
-    Area* newArea = makeAreaFromJSON(player.get(), filename);
+    Unique<Area> newArea = makeAreaFromJSON(player.get(), filename);
+    if (!newArea) {
+        return false;
+    }
 
     if (!newArea->init()) {
-        newArea = nullptr;
+        return false;
     }
-
-    areas[filename] = newArea;
 
     DataArea* dataArea = DataWorld::instance().area(filename);
-    if (dataArea) {
-        dataArea->area = newArea;
+    if (!dataArea) {
+        return false;
     }
 
-    return newArea;
-}
+    Area* rawArea = newArea.get();
+    dataArea->area = rawArea;  // FIXME: Pass Area by parameter, not
+                               // member variable so we can avoid this
+                               // pointer.
+    areas[filename] = move_(newArea);
 
-Area* World::getFocusedArea() {
-    return area;
-}
+    focusArea(rawArea, playerPos);
 
-void World::focusArea(Area* area, int x, int y, double z) {
-    focusArea(area, vicoord(x, y, z));
+    return true;
 }
 
 void World::focusArea(Area* area, vicoord playerPos) {

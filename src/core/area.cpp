@@ -300,7 +300,7 @@ Tile* Area::getTile(rcoord virt) {
 }
 
 TileSet* Area::getTileSet(const std::string& imagePath) {
-    std::map<std::string, TileSet>::iterator it;
+    std::unordered_map<std::string, TileSet>::iterator it;
     it = tileSets.find(imagePath);
     if (it == tileSets.end()) {
         Log::err("Area", "tileset " + imagePath + " not found");

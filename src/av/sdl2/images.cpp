@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** images.cpp                       **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -98,7 +98,10 @@ static Rc<TiledImage> genTiledImage(const std::string& path,
     assert_(height <= 4096);
 
     return Rc<TiledImage>(new SDL2TiledImage(texture,
-                                             width, height, tileW, tileH));
+                                             width,
+                                             height,
+                                             static_cast<int>(tileW),
+                                             static_cast<int>(tileH)));
 }
 
 
@@ -110,9 +113,11 @@ SDL2Texture::~SDL2Texture() {
 
 
 SDL2Image::SDL2Image(SDL_Texture* texture, int width, int height)
-        : Image(width, height), texture(texture) {}
+        : Image(static_cast<unsigned int>(width),
+                static_cast<unsigned int>(height)),
+          texture(texture) {}
 
-void SDL2Image::draw(double dstX, double dstY, double z) {
+void SDL2Image::draw(double dstX, double dstY, double /*z*/) {
     SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
     rvec2 translation = SDL2GameWindow::instance().translation;
     rvec2 scaling = SDL2GameWindow::instance().scaling;
@@ -128,9 +133,9 @@ void SDL2Image::draw(double dstX, double dstY, double z) {
     SDL_RenderCopy(renderer, texture.texture, &src, &dst);
 }
 
-void SDL2Image::drawSubrect(double dstX, double dstY, double z,
-                            double srcX, double srcY,
-                            double srcW, double srcH) {
+void SDL2Image::drawSubrect(double /*dstX*/, double /*dstY*/, double /*z*/,
+                            double /*srcX*/, double /*srcY*/,
+                            double /*srcW*/, double /*srcH*/) {
     assert_(false);
 }
 
@@ -138,11 +143,12 @@ void SDL2Image::drawSubrect(double dstX, double dstY, double z,
 SDL2TiledSubImage::SDL2TiledSubImage(Rc<SDL2Texture> texture,
                                      int width, int height,
                                      int xOff, int yOff)
-        : Image(width, height),
+        : Image(static_cast<unsigned int>(width),
+                static_cast<unsigned int>(height)),
           xOff(xOff), yOff(yOff),
           texture(move_(texture)) {}
 
-void SDL2TiledSubImage::draw(double dstX, double dstY, double z) {
+void SDL2TiledSubImage::draw(double dstX, double dstY, double /*z*/) {
     SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
     rvec2 translation = SDL2GameWindow::instance().translation;
     rvec2 scaling = SDL2GameWindow::instance().scaling;
@@ -158,9 +164,12 @@ void SDL2TiledSubImage::draw(double dstX, double dstY, double z) {
     SDL_RenderCopy(renderer, texture->texture, &src, &dst);
 }
 
-void SDL2TiledSubImage::drawSubrect(double dstX, double dstY, double z,
-                                    double srcX, double srcY,
-                                    double srcW, double srcH) {}
+void SDL2TiledSubImage::drawSubrect(double /*dstX*/, double /*dstY*/,
+                                    double /*z*/,
+                                    double /*srcX*/, double /*srcY*/,
+                                    double /*srcW*/, double /*srcH*/) {
+    assert_(false);
+}
 
 
 SDL2TiledImage::SDL2TiledImage(SDL_Texture* texture,
@@ -169,7 +178,7 @@ SDL2TiledImage::SDL2TiledImage(SDL_Texture* texture,
                                int tileW,
                                int tileH)
         : width(width),
-          height(height),
+          /*height(height),*/
           tileW(tileW),
           tileH(tileH),
           numTiles((width / tileW) * (height / tileH)),

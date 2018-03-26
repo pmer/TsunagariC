@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** world.h                            **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -111,21 +111,10 @@ class World {
     void turn();
 
     /**
-     * Create a new Area object, loading from the appropriate files. If
-     * the Area has already been loaded previously, return that instance.
-     */
-    Area* getArea(const std::string& filename);
-
-    /**
-     * Returns the currently focused Area.
-     */
-    Area* getFocusedArea();
-
-    /**
      * Switch the game to a new Area, moving the player to the specified
      * position in the Area.
      */
-    void focusArea(Area* area, int x, int y, double z);
+    bool focusArea(const std::string& filename, vicoord playerPos);
     void focusArea(Area* area, vicoord playerPos);
 
     void setPaused(bool b);
@@ -155,7 +144,7 @@ class World {
     void pushLetterbox(std::function<void()> op);
 
  protected:
-    typedef std::map<std::string, Area*> AreaMap;
+    typedef std::map<std::string, Unique<Area>> AreaMap;
 
     Rc<Image> pauseInfo;
 

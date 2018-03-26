@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** sounds.cpp                       **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -147,13 +147,20 @@ Rc<SoundInstance> SDL2Sounds::play(const std::string& path) {
         // Error logged.
         return Rc<SoundInstance>();
     }
+
     int channel = Mix_PlayChannel(-1, sample->chunk, 0);
+    assert_(channel >= 0);
+
     Rc<SoundInstance> sound(new SDL2SoundInstance(channel));
-    channels.reserve(channel + 1);
-    for (int i = channels.size(); i <= channel + 1; i++) {
+
+    channels.reserve(static_cast<size_t>(channel + 1));
+    for (size_t i = channels.size();
+         i <= static_cast<size_t>(channel) + 1;
+         i++) {
         channels.push_back();
     }
-    channels[channel] = sound;
+    channels[static_cast<size_t>(channel)] = sound;
+
     return sound;
 }
 
@@ -162,12 +169,14 @@ void SDL2Sounds::garbageCollect() {
 }
 
 void SDL2Sounds::setDone(int channel) {
-    assert_(channels.size() > channel);
+    assert_(channel >= 0);
+    assert_(channels.size() > static_cast<size_t>(channel));
 
     // `channels` needs to be an Rc<SoundInstance> so the reference counter on
     // the sound can be shared with clients of the Sounds interface (from
     // core/sounds.h). Unfortunately, that means we need to reinterpret_cast the
     // Rc to get access to setDone().
-    auto instance = reinterpret_cast<Rc<SDL2SoundInstance>*>(&channels[channel]);
+    auto instance = reinterpret_cast<Rc<SDL2SoundInstance>*>(
+            &channels[static_cast<size_t>(channel)]);
     (*instance)->setDone();
 }

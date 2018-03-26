@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** player.h                           **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef SRC_CORE_PLAYER_H_
+#define SRC_CORE_PLAYER_H_
 
 #include "core/character.h"
 #include "core/vec.h"
@@ -34,9 +34,8 @@
 
 class Exit;
 
-class Player : public Character
-{
-public:
+class Player : public Character {
+ public:
     static Player& instance();
 
     Player();
@@ -55,12 +54,12 @@ public:
 
     void setFrozen(bool b);
 
-protected:
+ protected:
     void arrived();
 
     void takeExit(const Exit& exit);
 
-private:
+ private:
     //! Stores intent to move continuously in some direction.
     ivec2 velocity;
 
@@ -69,4 +68,4 @@ private:
     vector<ivec2> movements;
 };
 
-#endif
+#endif  // SRC_CORE_PLAYER_H_

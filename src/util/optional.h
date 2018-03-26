@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** optional.h                       **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -30,70 +30,101 @@
 #include "util/assert.h"
 #include "util/move.h"
 
-// TODO: Don't initialize x if it doesn't exist.
-// To do this, make x a char* and use pointer aliasing, or investigate how
-// std::optional does it.
-
 template<typename T>
 class Optional {
-    T x;
+    union {
+        T x;
+        char null;
+    };
     bool exists;
 
  public:
-    explicit Optional() : x(), exists(false) {}
+    explicit Optional() noexcept : null(), exists(false) {}
     explicit Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
-    explicit Optional(const T& x) : x(x), exists(true) {}
+    explicit Optional(const T& x) noexcept : x(x), exists(true) {}
 
-    Optional(Optional<T>&& other) : exists(other.exists) {
+    Optional(Optional<T>&& other) noexcept : null(), exists(other.exists) {
         if (exists) {
             x = move_(other.x);
+            other.x.~T();
         }
         other.exists = false;
     }
-    Optional(const Optional<T>& other) : exists(other.exists) {
+    Optional(const Optional<T>& other) noexcept : null(), exists(other.exists) {
         if (exists) {
             x = other.x;
         }
     }
 
-    Optional& operator=(const T &x) {
-        this->x = x;
+    ~Optional() {
+        if (exists) {
+            x.~T();
+        }
+    }
+
+    inline Optional& operator=(const T &x) {
+        if (exists) {
+            this->x = x;
+        }
+        else {
+            new (&this->x) T(x);
+        }
         exists = true;
         return *this;
     }
 
-    Optional& operator=(Optional<T>&& other) {
-        if (other.exists) {
-            x = move_(other.x);
+    inline Optional& operator=(Optional<T>&& other) {
+        if (exists) {
+            if (other.exists) {
+                x = move_(other.x);
+            }
+            else {
+                x.~T();
+            }
+        }
+        else {
+            if (other.exists) {
+                new (&x) T(other.x);
+            }
         }
         exists = other.exists;
         other.exists = false;
         return *this;
     }
-    Optional& operator=(const Optional<T>& other) {
-        if (other.exists) {
-            x = move_(other.x);
+    inline Optional& operator=(const Optional<T>& other) {
+        if (exists) {
+            if (other.exists) {
+                x = move_(other.x);
+            }
+            else {
+                x.~T();
+            }
+        }
+        else {
+            if (other.exists) {
+                new (&x) T(other.x);
+            }
         }
         exists = other.exists;
         return *this;
     }
 
-    operator bool() const { return exists; }
+    inline operator bool() const { return exists; }
 
-    const T* operator->() const { assert_(exists); return &x; }
-    const T& operator*() const { assert_(exists); return x; }
+    inline const T* operator->() const { assert_(exists); return &x; }
+    inline const T& operator*() const { assert_(exists); return x; }
 
-    T* operator->() { assert_(exists); return &x; }
-    T& operator*() { assert_(exists); return x; }
+    inline T* operator->() { assert_(exists); return &x; }
+    inline T& operator*() { assert_(exists); return x; }
 
-    bool operator==(const Optional<T>& other) {
+    inline bool operator==(const Optional<T>& other) const {
         if (exists != other.exists) {
             return false;
         }
         if (!exists) {
             return true;
         }
-        return exists ? x == other.x : true;
+        return x == other.x;
     }
 };
 

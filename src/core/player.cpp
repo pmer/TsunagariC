@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** player.cpp                         **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,6 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <algorithm>
-
 #include "core/area.h"
 #include "core/client-conf.h"
 #include "core/entity.h"
@@ -40,27 +38,23 @@
 
 static Player* globalPlayer = nullptr;
 
-Player& Player::instance()
-{
+Player& Player::instance() {
     return *globalPlayer;
 }
 
 
 Player::Player()
-    : Character(), velocity(0, 0)
-{
+        : Character(), velocity(0, 0) {
     globalPlayer = this;
     nowalkFlags = TILE_NOWALK | TILE_NOWALK_PLAYER;
     nowalkExempt = TILE_NOWALK_EXIT;
 }
 
-void Player::destroy()
-{
+void Player::destroy() {
     Log::fatal("Player", "destroy(): Player should not be destroyed");
 }
 
-void Player::startMovement(ivec2 delta)
-{
+void Player::startMovement(ivec2 delta) {
     switch (conf.moveMode) {
     case TURN:
         moveByTile(delta);
@@ -76,13 +70,17 @@ void Player::startMovement(ivec2 delta)
     }
 }
 
-void Player::stopMovement(ivec2 delta)
-{
+void Player::stopMovement(ivec2 delta) {
     switch (conf.moveMode) {
     case TURN:
         break;
     case TILE:
-        movements.erase(std::find(movements.begin(), movements.end(), delta));
+        for (auto it = movements.begin(); it != movements.end(); ++it) {
+            if (*it == delta) {
+                movements.erase_unsorted(it);
+                break;
+            }
+        }
         velocity = movements.size() ?
                    movements.back() :
                ivec2(0, 0);
@@ -96,8 +94,7 @@ void Player::stopMovement(ivec2 delta)
     }
 }
 
-void Player::moveByTile(ivec2 delta)
-{
+void Player::moveByTile(ivec2 delta) {
     if (frozen) {
         return;
     }
@@ -120,16 +117,14 @@ void Player::moveByTile(ivec2 delta)
     World::instance().turn();
 }
 
-void Player::useTile()
-{
+void Player::useTile() {
     Tile* t = area->getTile(moveDest(facing));
     if (t) {
         t->runUseScript(this);
     }
 }
 
-void Player::setFrozen(bool b)
-{
+void Player::setFrozen(bool b) {
     World& world = World::instance();
 
     if (b) {
@@ -145,8 +140,7 @@ void Player::setFrozen(bool b)
     }
 }
 
-void Player::arrived()
-{
+void Player::arrived() {
     Entity::arrived();
 
     if (destExit) {
@@ -159,14 +153,9 @@ void Player::arrived()
     }
 }
 
-void Player::takeExit(const Exit& exit)
-{
+void Player::takeExit(const Exit& exit) {
     World& world = World::instance();
-    Area* newArea = world.getArea(exit.area);
-    if (newArea) {
-        world.focusArea(newArea, exit.coords);
-    }
-    else {
+    if (!world.focusArea(exit.area, exit.coords)) {
         // Roll back movement if exit failed to open.
         setTileCoords(fromCoord);
         Log::err("Exit", exit.area + ": failed to load properly");

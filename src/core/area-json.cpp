@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** area-json.cpp                      **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -98,8 +98,8 @@ class AreaJSON : public Area {
 };
 
 
-Area* makeAreaFromJSON(Player* player, const std::string& filename) {
-    return new AreaJSON(player, filename);
+Unique<Area> makeAreaFromJSON(Player* player, const std::string& filename) {
+    return Unique<Area>(new AreaJSON(player, filename));
 }
 
 

@@ -309,7 +309,7 @@ using CompactRc = CompactSharedPtr<T, NonAtomic>;
 namespace std {
     template<typename T, typename AtomicClass>
     struct hash<SharedPtr<T, AtomicClass>> {
-        size_t operator()(const SharedPtr<T, AtomicClass>& p) {
+        size_t operator()(const SharedPtr<T, AtomicClass>& p) const {
             return hash<T*>()(p.get());
         }
     };

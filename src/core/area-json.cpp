@@ -33,11 +33,13 @@
 #include <string>
 
 #include "core/area.h"
+#include "core/character.h"
 #include "core/entity.h"
 #include "core/images.h"
 #include "core/jsons.h"
 #include "core/log.h"
 #include "core/measure.h"
+#include "core/overlay.h"
 #include "core/resources.h"
 #include "core/tile.h"
 #include "core/window.h"

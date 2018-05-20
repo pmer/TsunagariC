@@ -51,6 +51,10 @@ class NullGameWindow : public GameWindow {
     void mainLoop() final {
         using namespace std::chrono;
 
+        time_point<steady_clock> last;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
         while (true) {
             auto now = steady_clock::now();
             double time = duration_cast<milliseconds>(now - last).count();
@@ -64,6 +68,7 @@ class NullGameWindow : public GameWindow {
 
             last = now;
         }
+#pragma clang diagnostic pop
     }
 
     void drawRect(double, double, double, double, uint32_t) final {}
@@ -73,20 +78,13 @@ class NullGameWindow : public GameWindow {
     void clip(double, double, double, double, std::function<void()>) final {}
 
     void close() final {}
-
-    std::chrono::time_point<std::chrono::steady_clock> start;
-    std::chrono::time_point<std::chrono::steady_clock> last;
 };
 
 
 static NullGameWindow globalWindow;
 
 GameWindow* GameWindow::create() {
-    if (globalWindow.init()) {
-        return &globalWindow;
-    } else {
-        return nullptr;
-    }
+    return &globalWindow;
 }
 
 GameWindow& GameWindow::instance() {
@@ -97,7 +95,6 @@ GameWindow& GameWindow::instance() {
 time_t GameWindow::time() {
     using namespace std::chrono;
 
-    auto start = globalWindow.start;
     auto now = steady_clock::now();
-    return duration_cast<milliseconds>(now - start).count();
+    return now.time_since_epoch().count() / 1000000;
 }

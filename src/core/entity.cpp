@@ -160,10 +160,6 @@ rcoord Entity::getPixelCoord() const {
     return r;
 }
 
-bool Entity::isMoving() const {
-    return moving;
-}
-
 Area* Entity::getArea() {
     return area;
 }

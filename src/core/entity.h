@@ -100,10 +100,6 @@ class Entity {
     //! Tile the Entity is standing on.
     rcoord getPixelCoord() const;
 
-    //! Indicates whether we are in the middle of transitioning between
-    //! tiles.
-    bool isMoving() const;
-
 
     //! Gets the Entity's current Area.
     Area* getArea();

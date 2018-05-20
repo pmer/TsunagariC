@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** window.cpp                  **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** window.cpp                       **
+** Copyright 2016-2018 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,23 +31,24 @@
 #include "core/window.h"
 
 #include "core/client-conf.h"
+#include "core/display-list.h"
 #include "core/world.h"
 
 class NullGameWindow : public GameWindow {
  public:
     bool init() { return true; }
 
-    unsigned width() const {
+    unsigned width() const final {
         return static_cast<unsigned>(conf.windowSize.x);
     }
 
-    unsigned height() const {
+    unsigned height() const final {
         return static_cast<unsigned>(conf.windowSize.y);
     }
 
-    void setCaption(const std::string&) {}
+    void setCaption(const std::string&) final {}
 
-    void mainLoop() {
+    void mainLoop() final {
         using namespace std::chrono;
 
         while (true) {
@@ -55,7 +56,8 @@ class NullGameWindow : public GameWindow {
             double time = duration_cast<milliseconds>(now - last).count();
 
             World::instance().update(static_cast<time_t>(time));
-            World::instance().draw();
+            DisplayList dl;
+            World::instance().draw(&dl);
 
             auto nextFrame = last + microseconds(1000000)/60;
             std::this_thread::sleep_until(nextFrame);
@@ -64,13 +66,13 @@ class NullGameWindow : public GameWindow {
         }
     }
 
-    void drawRect(double, double, double, double, uint32_t) {}
+    void drawRect(double, double, double, double, uint32_t) final {}
 
-    void scale(double, double, std::function<void()>) {}
-    void translate(double, double, std::function<void()>) {}
-    void clip(double, double, double, double, std::function<void()>) {}
+    void scale(double, double, std::function<void()>) final {}
+    void translate(double, double, std::function<void()>) final {}
+    void clip(double, double, double, double, std::function<void()>) final {}
 
-    void close() {}
+    void close() final {}
 
     std::chrono::time_point<std::chrono::steady_clock> start;
     std::chrono::time_point<std::chrono::steady_clock> last;

@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** readercache.h                      **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -32,13 +32,12 @@
 
 #include "cache/cache.h"
 
-template<class T>
+template<typename T>
+using GenFn = T (*)(const std::string& name);
+
+template<typename T, GenFn<T> fn>
 class ReaderCache {
  public:
-    typedef T (*GenFn)(const std::string& name);
-
-    ReaderCache(GenFn fn) : fn(fn) {}
-
     T momentaryRequest(const std::string& name) {
         T t = cache.momentaryRequest(name);
         if (t) {
@@ -66,8 +65,6 @@ class ReaderCache {
     }
 
  private:
-    GenFn fn;
-
     Cache<T> cache;
 };
 

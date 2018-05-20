@@ -138,16 +138,16 @@ class JSONDocImpl : public JSONObjectImpl {
     void* objectAddr;
 };
 
+static JSONObjectRef genJSON(const std::string& path);
+
 class JSONsImpl : public JSONs {
  public:
-    JSONsImpl();
-
     JSONObjectRef load(const std::string& path) final;
 
     void garbageCollect() final;
 
  private:
-    ReaderCache<JSONObjectRef> documents;
+    ReaderCache<JSONObjectRef, genJSON> documents;
 };
 
 
@@ -286,14 +286,12 @@ static JSONObjectRef genJSON(const std::string& path) {
     }
 }
 
-JSONsImpl::JSONsImpl() : documents(genJSON) {}
-
 JSONObjectRef JSONsImpl::load(const std::string& path) {
     return documents.lifetimeRequest(path);
 }
 
 JSONObjectPtr JSONs::parse(std::string data) {
-    return JSONObjectPtr(new JSONDocImpl(data));
+    return JSONObjectPtr(new JSONDocImpl(move_(data)));
 }
 
 void JSONsImpl::garbageCollect() {

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** gosu-music.cpp                     **
 ** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2015-2016 Paul Merrill   **
+** Copyright 2015-2018 Paul Merrill   **
 ***************************************/
 
 // **********

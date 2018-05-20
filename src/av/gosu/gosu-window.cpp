@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** gosu-window.cpp                    **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -39,7 +39,6 @@
 // Garbage collection called every X milliseconds
 #define GC_CALL_PERIOD 10 * 1000
 
-#ifdef BACKEND_GOSU
 static GosuGameWindow* globalWindow = nullptr;
 
 GameWindow* GameWindow::create()
@@ -57,7 +56,6 @@ time_t GameWindow::time()
 {
     return (time_t)Gosu::milliseconds();
 }
-#endif
 
 namespace Gosu {
     /**

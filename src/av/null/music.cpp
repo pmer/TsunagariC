@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** music.cpp                   **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** music.cpp                        **
+** Copyright 2016-2018 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,20 +28,16 @@
 
 class NullMusic : public MusicWorker {
  public:
-    void setIntro(const std::string&) {}
-    void setLoop(const std::string&) {}
+    void stop() final {}
 
-    void stop() {}
+    void pause() final {}
+    void resume() final {}
 
-    bool playing() { return paused == 0; }
-    void pause() {}
-    void resume() {}
-
-    void setVolume(double) {}
+    void setVolume(double) final {}
 
     void tick() {}
 
-    void garbageCollect() {}
+    void garbageCollect() final {}
 };
 
 

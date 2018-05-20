@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** sounds.cpp                       **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -28,26 +28,26 @@
 
 class NullSoundInstance : public SoundInstance {
  public:
-    bool playing() { return false; }
-    void stop() {}
+    bool playing() final { return false; }
+    void stop() final {}
 
-    bool paused() { return false; }
-    void pause() {}
-    void resume() {}
+    bool paused() final { return false; }
+    void pause() final {}
+    void resume() final {}
 
-    void volume(double) {}
-    void pan(double) {}
-    void speed(double) {}
+    void volume(double) final {}
+    void pan(double) final {}
+    void speed(double) final {}
 };
 
 
 class NullSounds : public Sounds {
  public:
-    Rc<SoundInstance> play(const std::string&) {
+    Rc<SoundInstance> play(const std::string&) final {
         return Rc<SoundInstance>();
     }
 
-    void garbageCollect() {}
+    void garbageCollect() final {}
 };
 
 

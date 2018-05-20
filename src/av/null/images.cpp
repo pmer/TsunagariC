@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** images.cpp                       **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -24,24 +24,22 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <limits.h>
-
 #include "core/images.h"
 
 class NullImage : public Image {
  public:
     NullImage() : Image(0, 0) {}
 
-    void draw(double, double, double) {}
-    void drawSubrect(double, double, double, double, double, double, double) {}
+    void draw(double, double, double) final {}
+    void drawSubrect(double, double, double, double, double, double, double) final {}
 };
 
 
 class NullTiledImage: public TiledImage {
  public:
-    size_t size() const { return 1000; }
+    size_t size() const final { return 1000; }
 
-    Rc<Image> operator[](size_t) const {
+    Rc<Image> operator[](size_t) const final {
         return Rc<Image>(new NullImage);
     }
 };
@@ -49,15 +47,15 @@ class NullTiledImage: public TiledImage {
 
 class NullImages : public Images {
  public:
-    Rc<Image> load(const std::string&) {
+    Rc<Image> load(const std::string&) final {
         return Rc<Image>();
     }
 
-    Rc<TiledImage> loadTiles(const std::string&, unsigned, unsigned) {
+    Rc<TiledImage> loadTiles(const std::string&, unsigned, unsigned) final {
         return Rc<TiledImage>(new NullTiledImage);
     }
 
-    void garbageCollect() {}
+    void garbageCollect() final {}
 };
 
 

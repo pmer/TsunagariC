@@ -39,7 +39,7 @@ class Player : public Character {
     static Player& instance();
 
     Player();
-    void destroy();
+    void destroy() final;
 
     //! Smooth continuous movement.
     void startMovement(ivec2 delta);
@@ -52,10 +52,10 @@ class Player : public Character {
     //! Try to use an object in front of the player.
     void useTile();
 
-    void setFrozen(bool b);
+    void setFrozen(bool b) final;
 
  protected:
-    void arrived();
+    void arrived() final;
 
     void takeExit(const Exit& exit);
 

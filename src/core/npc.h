@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** npc.h                              **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,18 +25,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef NPC_H
-#define NPC_H
+#ifndef SRC_CORE_NPC_H_
+#define SRC_CORE_NPC_H_
 
 #include "core/character.h"
 
-class NPC : public Character
-{
-public:
-    NPC();
-
-protected:
-    void arrived();
+class NPC : public Character {
+ protected:
+    void arrived() final;
 };
 
-#endif
+#endif  // SRC_CORE_NPC_H_

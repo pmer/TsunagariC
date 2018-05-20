@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** gosu-sounds.cpp                    **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -38,13 +38,11 @@
 
 #include "av/gosu/gosu-cbuffer.h"
 
-#ifdef BACKEND_GOSU
 static GosuSounds globalSounds;
 
 Sounds& Sounds::instance() {
     return globalSounds;
 }
-#endif
 
 GosuSoundInstance::GosuSoundInstance(Gosu::SampleInstance instance)
     : instance(instance) {

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** gosu-images.cpp                    **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -40,13 +40,11 @@
 #include "core/window.h"
 #include "util/unique.h"
 
-#ifdef BACKEND_GOSU
 static GosuImages globalImages;
 
 Images& Images::instance() {
     return globalImages;
 }
-#endif
 
 static Gosu::Graphics& graphics() {
     static GameWindow& window = GameWindow::instance();

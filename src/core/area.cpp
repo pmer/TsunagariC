@@ -262,8 +262,8 @@ uint32_t Area::getColorOverlay() {
 }
 
 void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b) {
-    colorOverlayARGB = (uint32_t)(a << 24) + (uint32_t)(r << 16) +
-        (uint32_t)(g << 8) + (uint32_t)b;
+    colorOverlayARGB = (uint32_t)(a << 24u) + (uint32_t)(r << 16u) +
+        (uint32_t)(g << 8u) + (uint32_t)b;
     redraw = true;
 }
 
@@ -419,7 +419,7 @@ DataArea* Area::getDataArea() {
 
 
 static void drawTile(DisplayList* display, const TileType* type,
-                     int x, int y, double depth, int tileDimY) {
+                     int x, int y /*, double depth, int tileDimY */) {
     Image* img = type->anim.frame();
     if (img) {
         rvec2 drawPos(
@@ -434,7 +434,7 @@ static void drawTile(DisplayList* display, const TileType* type,
 void Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     time_t now = World::instance().time();
     BitRecord tilesAnimated(static_cast<size_t>(maxTileTypeId));
-    double depth = grid.idx2depth[(size_t)z];
+    // double depth = grid.idx2depth[(size_t)z];
 
     for (int y = tiles.y1; y < tiles.y2; y++) {
         for (int x = tiles.x1; x < tiles.x2; x++) {
@@ -447,7 +447,7 @@ void Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
             if (!tilesAnimated[type->id]) {
                 type->anim.frame(now);
             }
-            drawTile(display, type, x, y, depth, grid.tileDim.y);
+            drawTile(display, type, x, y /*, depth, grid.tileDim.y */);
         }
     }
 }

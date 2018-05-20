@@ -56,7 +56,6 @@ Entity::Entity()
       area(nullptr),
       r(0.0, 0.0, 0.0),
       frozen(false),
-      speedMul(1.0),
       moving(false),
       phase(nullptr),
       phaseName(""),
@@ -144,10 +143,6 @@ bool Entity::setPhase(const std::string& name) {
     return res == PHASE_CHANGED;
 }
 
-std::string Entity::getPhase() const {
-    return phaseName;
-}
-
 ivec2 Entity::getImageSize() const {
     return imgsz;
 }
@@ -176,7 +171,6 @@ Area* Entity::getArea() {
 void Entity::setArea(Area* area) {
     this->area = area;
     calcDraw();
-    setSpeedMultiplier(speedMul);  // Calculate new speed based on tile size.
 }
 
 double Entity::getSpeedInPixels() const {
@@ -185,28 +179,11 @@ double Entity::getSpeedInPixels() const {
 }
 
 double Entity::getSpeedInTiles() const {
-    return baseSpeed * speedMul;
-}
-
-double Entity::getSpeedMultiplier() const {
-    return speedMul;
-}
-
-void Entity::setSpeedMultiplier(double multiplier) {
-    speedMul = multiplier;
-    if (area) {
-        assert_(area->getTileDimensions().x == area->getTileDimensions().y);
-        double tilesPerMillisecond = area->getTileDimensions().x / 1000.0;
-        speed = baseSpeed * speedMul * tilesPerMillisecond;
-    }
+    return baseSpeed;
 }
 
 void Entity::setFrozen(bool b) {
     frozen = b;
-}
-
-bool Entity::getFrozen() {
-    return frozen;
 }
 
 void Entity::attach(OnTickFn fn) {
@@ -318,7 +295,6 @@ bool Entity::processDescriptor() {
 
     if (doc->hasDouble("speed")) {
         baseSpeed = doc->doubleAt("speed");
-        setSpeedMultiplier(speedMul);  // Calculate speed from tile size.
     }
     if (doc->hasObject("sprite")) {
         CHECK(processSprite(doc->objectAt("sprite")));

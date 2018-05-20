@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** entity.h                           **
 ** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef ENTITY_H
-#define ENTITY_H
+#ifndef SRC_CORE_ENTITY_H_
+#define SRC_CORE_ENTITY_H_
 
 #include <functional>
 #include <map>
@@ -90,8 +90,6 @@ class Entity {
     //! different.
     bool setPhase(const std::string& name);
 
-    std::string getPhase() const;
-
     ivec2 getImageSize() const;
 
     void setAnimationStanding();
@@ -120,14 +118,8 @@ class Entity {
     //! Gets speed in tiles per second.
     double getSpeedInTiles() const;
 
-    //! Gets speed multiplier.
-    double getSpeedMultiplier() const;
-    //! Sets speed multiplier.
-    void setSpeedMultiplier(double multiplier);
-
 
     virtual void setFrozen(bool b);
-    bool getFrozen();
 
 
     typedef std::function<void (time_t)> OnTickFn;
@@ -191,7 +183,6 @@ class Entity {
     bool frozen;
 
     double baseSpeed; //!< Original speed, specified in descriptor.
-    double speedMul;  //!< Speed multiplier.
     double speed;     //!< Effective speed = original speed * multiplier
 
     //! True if currently moving to a new coordinate in an Area.
@@ -214,4 +205,4 @@ class Entity {
     vector<OnTurnFn> onTurnFns;
 };
 
-#endif
+#endif  // SRC_CORE_ENTITY_H_

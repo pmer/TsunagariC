@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** client-conf.h                      **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -43,11 +43,6 @@ enum movement_mode_t {
 //! Engine-wide user-confurable values.
 struct Conf {
     Conf();
-
-    /**
-     * Check for missing required configuration variables.
-     */
-    bool validate(const std::string& filename);
 
     verbosity_t verbosity;
     movement_mode_t moveMode;

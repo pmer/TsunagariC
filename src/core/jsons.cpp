@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** jsons.cpp                        **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -36,6 +36,7 @@
 
 #include "cache/cache-template.cpp"
 #include "cache/readercache.h"
+#include "core/log.h"
 #include "core/measure.h"
 #include "core/resources.h"
 #include "util/move.h"
@@ -49,29 +50,30 @@ typedef RJDocument::ValueType::ConstArray RJArray;
 
 class JSONObjectImpl : public JSONObject {
  public:
-    virtual ~JSONObjectImpl() = default;
+    ~JSONObjectImpl() override = default;
 
-    vector<std::string> names() const;
+    vector<std::string> names() const final;
 
-    bool hasBool(const std::string& name) const;
-    bool hasInt(const std::string& name) const;
-    bool hasUnsigned(const std::string& name) const;
-    bool hasDouble(const std::string& name) const;
-    bool hasString(const std::string& name) const;
-    bool hasObject(const std::string& name) const;
-    bool hasArray(const std::string& name) const;
+    bool hasBool(const std::string& name) const final;
+    bool hasInt(const std::string& name) const final;
+    bool hasUnsigned(const std::string& name) const final;
+    bool hasDouble(const std::string& name) const final;
+    bool hasString(const std::string& name) const final;
+    bool hasObject(const std::string& name) const final;
+    bool hasArray(const std::string& name) const final;
 
-    bool hasStringDouble(const std::string& name) const;
+    bool hasStringDouble(const std::string& name) const final;
 
-    bool boolAt(const std::string& name) const;
-    int intAt(const std::string& name) const;
-    unsigned unsignedAt(const std::string& name) const;
-    double doubleAt(const std::string& name) const;
-    std::string stringAt(const std::string& name) const;
-    JSONObjectPtr objectAt(const std::string& name) const;
-    JSONArrayPtr arrayAt(const std::string& name) const;
+    bool boolAt(const std::string& name) const final;
+    int intAt(const std::string& name) const final;
+    int intAt(const std::string& name, int lowerBound, int upperBound) const final;
+    unsigned unsignedAt(const std::string& name) const final;
+    double doubleAt(const std::string& name) const final;
+    std::string stringAt(const std::string& name) const final;
+    JSONObjectPtr objectAt(const std::string& name) const final;
+    JSONArrayPtr arrayAt(const std::string& name) const final;
 
-    double stringDoubleAt(const std::string& name) const;
+    double stringDoubleAt(const std::string& name) const final;
 
  protected:
     JSONObjectImpl() = default;
@@ -81,10 +83,10 @@ class JSONObjectImpl : public JSONObject {
 
 class JSONObjectReal : public JSONObjectImpl {
  public:
-    JSONObjectReal(const RJObject object);
+    explicit JSONObjectReal(RJObject object);
 
  protected:
-    const RJObject& get() const;
+    const RJObject& get() const final;
 
  private:
     const RJObject object;
@@ -94,23 +96,23 @@ class JSONArrayImpl : public JSONArray {
  public:
     explicit JSONArrayImpl(RJArray array);
 
-    size_t size() const;
+    size_t size() const final;
 
-    bool isBool(size_t index) const;
-    bool isInt(size_t index) const;
-    bool isUnsigned(size_t index) const;
-    bool isDouble(size_t index) const;
-    bool isString(size_t index) const;
-    bool isObject(size_t index) const;
-    bool isArray(size_t index) const;
+    bool isBool(size_t index) const final;
+    bool isInt(size_t index) const final;
+    bool isUnsigned(size_t index) const final;
+    bool isDouble(size_t index) const final;
+    bool isString(size_t index) const final;
+    bool isObject(size_t index) const final;
+    bool isArray(size_t index) const final;
 
-    bool boolAt(size_t index) const;
-    int intAt(size_t index) const;
-    unsigned unsignedAt(size_t index) const;
-    double doubleAt(size_t index) const;
-    std::string stringAt(size_t index) const;
-    JSONObjectPtr objectAt(size_t index) const;
-    JSONArrayPtr arrayAt(size_t index) const;
+    bool boolAt(size_t index) const final;
+    int intAt(size_t index) const final;
+    unsigned unsignedAt(size_t index) const final;
+    double doubleAt(size_t index) const final;
+    std::string stringAt(size_t index) const final;
+    JSONObjectPtr objectAt(size_t index) const final;
+    JSONArrayPtr arrayAt(size_t index) const final;
 
  private:
     const RJArray::PlainType& at(size_t index) const;
@@ -127,7 +129,7 @@ class JSONDocImpl : public JSONObjectImpl {
     bool isValid() const;
 
  protected:
-    const RJObject& get() const;
+    const RJObject& get() const final;
 
  private:
     std::string json;
@@ -140,9 +142,9 @@ class JSONsImpl : public JSONs {
  public:
     JSONsImpl();
 
-    JSONObjectRef load(const std::string& path);
+    JSONObjectRef load(const std::string& path) final;
 
-    void garbageCollect();
+    void garbageCollect() final;
 
  private:
     ReaderCache<JSONObjectRef> documents;
@@ -193,6 +195,16 @@ bool JSONObjectImpl::hasStringDouble(const std::string& name) const { return get
 
 bool JSONObjectImpl::boolAt(const std::string& name) const { return get()[name].GetBool(); }
 int JSONObjectImpl::intAt(const std::string& name) const { return get()[name].GetInt(); }
+int JSONObjectImpl::intAt(const std::string& name, int lowerBound, int upperBound) const {
+    int i = get()[name].GetInt();
+    if (i < lowerBound) {
+        Log::fatal("JSONObject::intAt", "Value out of range");
+    }
+    if (i > upperBound) {
+        Log::fatal("JSONObject::intAt", "Value out of range");
+    }
+    return i;
+}
 unsigned JSONObjectImpl::unsignedAt(const std::string& name) const { return get()[name].GetUint(); }
 double JSONObjectImpl::doubleAt(const std::string& name) const { return get()[name].GetDouble(); }
 std::string JSONObjectImpl::stringAt(const std::string& name) const { return get()[name].GetString(); }

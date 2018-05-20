@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** client-conf.cpp                    **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -32,7 +32,6 @@
 #include "config.h"
 #include "core/jsons.h"
 #include "nbcl/nbcl.h"
-#include "util/math2.h"
 #include "util/move.h"
 #include "util/string2.h"
 #include "util/vector.h"
@@ -43,10 +42,6 @@ Conf conf; // Project-wide global configuration.
 Conf::Conf() {
     persistInit = 0;
     persistCons = 0;
-}
-
-bool Conf::validate(const std::string& filename) {
-    return true;
 }
 
 /* Output compiled-in engine defaults. */
@@ -114,10 +109,10 @@ bool parseConfig(const std::string& filename) {
         JSONObjectPtr window = doc->objectAt("window");
 
         if (window->hasUnsigned("width")) {
-            conf.windowSize.x = window->unsignedAt("width");
+            conf.windowSize.x = window->intAt("width", 1, 100000);
         }
         if (window->hasUnsigned("height")) {
-            conf.windowSize.y = window->unsignedAt("height");
+            conf.windowSize.y = window->intAt("height", 1, 100000);
         }
         if (window->hasBool("fullscreen")) {
             conf.fullscreen = window->boolAt("fullscreen");
@@ -128,12 +123,10 @@ bool parseConfig(const std::string& filename) {
         JSONObjectPtr audio = doc->objectAt("audio");
 
         if (audio->hasUnsigned("musicvolume")) {
-            unsigned volume = audio->unsignedAt("musicvolume");
-            conf.musicVolume = bound(volume, 0u, 100u);
+            conf.musicVolume = audio->intAt("musicvolume", 0, 100);
         }
         if (audio->hasUnsigned("soundvolume")) {
-            unsigned volume = audio->unsignedAt("soundvolume");
-            conf.soundVolume = bound(volume, 0u, 100u);
+            conf.soundVolume = audio->intAt("soundvolume", 0, 100);
         }
     }
 
@@ -144,7 +137,7 @@ bool parseConfig(const std::string& filename) {
             conf.cacheEnabled = cache->boolAt("enabled");
         }
         if (cache->hasUnsigned("ttl")) {
-            conf.cacheEnabled = cache->unsignedAt("ttl");
+            conf.cacheEnabled = !!cache->unsignedAt("ttl");
         }
     }
 

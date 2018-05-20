@@ -73,10 +73,6 @@ int main(int argc, char** argv) {
         // Error already logged.
         return 1;
     }
-    if (!conf.validate(CLIENT_CONF_PATH)) {
-        Log::fatal("Main", "Conf::validate");
-        return 1;
-    }
 
     Log::setVerbosity(conf.verbosity);
     Log::info("Main", Formatter("Starting %") % TSUNAGARI_RELEASE_VERSION);

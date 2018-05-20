@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** jsons.h                          **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2018 Paul Merrill **
 *************************************/
 
 // **********
@@ -42,6 +42,8 @@ typedef Rc<const JSONObject> JSONObjectRef;
 
 class JSONObject {
  public:
+    JSONObject(const JSONObject& other) = delete;
+
     virtual ~JSONObject() = default;
 
     virtual vector<std::string> names() const = 0;
@@ -58,6 +60,8 @@ class JSONObject {
 
     virtual bool boolAt(const std::string& name) const = 0;
     virtual int intAt(const std::string& name) const = 0;
+    virtual int intAt(const std::string& name, int lowerBound, int upperBound)
+        const = 0;
     virtual unsigned unsignedAt(const std::string& name) const = 0;
     virtual double doubleAt(const std::string& name) const = 0;
     virtual std::string stringAt(const std::string& name) const = 0;
@@ -68,11 +72,12 @@ class JSONObject {
 
  protected:
     JSONObject() = default;
-    JSONObject(const JSONObject& other) = delete;
 };
 
 class JSONArray {
  public:
+    JSONArray(const JSONArray& other) = delete;
+
     virtual ~JSONArray() = default;
 
     virtual size_t size() const = 0;
@@ -95,13 +100,17 @@ class JSONArray {
 
  protected:
     JSONArray() = default;
-    JSONArray(const JSONArray& other) = delete;
 };
 
 class JSONs {
  public:
     //! Acquire the global JSONs object.
     static JSONs& instance();
+
+    JSONs(const JSONs&) = delete;
+    JSONs(JSONs&&) = delete;
+    JSONs& operator=(const JSONs&) = delete;
+    JSONs& operator=(JSONs&&) = delete;
 
     virtual ~JSONs() = default;
 
@@ -116,12 +125,6 @@ class JSONs {
 
  protected:
     JSONs() = default;
-
- private:
-    JSONs(const JSONs&) = delete;
-    JSONs(JSONs&&) = delete;
-    JSONs& operator=(const JSONs&) = delete;
-    JSONs& operator=(JSONs&&) = delete;
 };
 
 #endif  // SRC_CORE_JSONS_H_

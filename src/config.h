@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** config.h                           **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,26 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CONFIG_H_
-#define SRC_CONFIG_H_
-
-#include "core/client-conf.h"
-
 /* Release version. */
 #define TSUNAGARI_RELEASE_VERSION "Tsunagari Tile Engine AlphaP4 Revision 4"
 
-// === Required Data Paths ===
-    /* Tsunagari config file. */
-    #define CLIENT_CONF_PATH "./client.json"
-// ===
-
-// === Client.json Default Values ===
-    #define DEF_ENGINE_VERBOSITY  V_VERBOSE
-    #define DEF_WINDOW_WIDTH      640
-    #define DEF_WINDOW_HEIGHT     480
-    #define DEF_WINDOW_FULLSCREEN false
-    #define DEF_CACHE_ENABLED     true
-    #define DEF_CACHE_TTL         300
-// ===
-
-#endif  // SRC_CONFIG_H_
+/* Tsunagari config file. */
+#define CLIENT_CONF_PATH "./client.json"

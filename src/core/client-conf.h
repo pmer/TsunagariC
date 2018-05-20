@@ -42,18 +42,16 @@ enum movement_mode_t {
 
 //! Engine-wide user-confurable values.
 struct Conf {
-    Conf();
-
-    verbosity_t verbosity;
+    verbosity_t verbosity = V_VERBOSE;
     movement_mode_t moveMode;
-    ivec2 windowSize;
-    bool fullscreen;
-    int musicVolume;
-    int soundVolume;
-    bool cacheEnabled;
-    int cacheTTL;
-    int persistInit;
-    int persistCons;
+    ivec2 windowSize = {640, 480};
+    bool fullscreen = false;
+    int musicVolume = 100;
+    int soundVolume = 100;
+    bool cacheEnabled = true;
+    int cacheTTL = 300;
+    int persistInit = 0;
+    int persistCons = 0;
 };
 extern Conf conf;
 

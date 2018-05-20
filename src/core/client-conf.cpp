@@ -38,36 +38,12 @@
 
 Conf conf; // Project-wide global configuration.
 
-// Initialize and set configuration defaults.
-Conf::Conf() {
-    persistInit = 0;
-    persistCons = 0;
-}
-
-/* Output compiled-in engine defaults. */
-static void defaultsQuery() {
-    std::cerr << "CLIENT_CONF_PATH:                    "
-        << CLIENT_CONF_PATH << std::endl;
-    std::cerr << "DEF_ENGINE_VERBOSITY:                "
-        << DEF_ENGINE_VERBOSITY << std::endl;
-    std::cerr << "DEF_WINDOW_WIDTH:                    "
-        << DEF_WINDOW_WIDTH << std::endl;
-    std::cerr << "DEF_WINDOW_HEIGHT:                   "
-        << DEF_WINDOW_HEIGHT << std::endl;
-    std::cerr << "DEF_WINDOW_FULLSCREEN:               "
-        << DEF_WINDOW_FULLSCREEN << std::endl;
-    std::cerr << "DEF_CACHE_ENABLED:                   "
-        << DEF_CACHE_ENABLED << std::endl;
-    std::cerr << "DEF_CACHE_TTL:                       "
-        << DEF_CACHE_TTL << std::endl;
-}
-
 // Parse and process the client config file, and set configuration defaults for
 // missing options.
 bool parseConfig(const std::string& filename) {
     std::string file = slurp(filename);
 
-    if (file.size() == 0) {
+    if (file.empty()) {
         Log::err(filename, "Could not find " + filename);
         return false;
     }
@@ -78,15 +54,6 @@ bool parseConfig(const std::string& filename) {
         Log::err(filename, "Could not parse " + filename);
         return false;
     }
-
-    conf.verbosity = DEF_ENGINE_VERBOSITY;
-    conf.windowSize = {DEF_WINDOW_WIDTH, DEF_WINDOW_HEIGHT};
-    conf.fullscreen = DEF_WINDOW_FULLSCREEN;
-    conf.musicVolume = 100;
-    conf.soundVolume = 100;
-    conf.cacheEnabled = DEF_CACHE_ENABLED;
-    conf.cacheEnabled = DEF_CACHE_TTL != 0;
-    conf.cacheTTL = DEF_CACHE_TTL;
 
     if (doc->hasObject("engine")) {
         JSONObjectPtr engine = doc->objectAt("engine");
@@ -137,7 +104,7 @@ bool parseConfig(const std::string& filename) {
             conf.cacheEnabled = cache->boolAt("enabled");
         }
         if (cache->hasUnsigned("ttl")) {
-            conf.cacheEnabled = !!cache->unsignedAt("ttl");
+            conf.cacheEnabled = cache->unsignedAt("ttl") != 0;
         }
     }
 
@@ -163,7 +130,6 @@ bool parseCommandLine(int argc, char* argv[]) {
     cmd.insert("-w", "--window",       "",                "Run in windowed mode");
     cmd.insert("",   "--volume-music", "<0-100>",         "Set music volume");
     cmd.insert("",   "--volume-sound", "<0-100>",         "Set sound effects volume");
-    cmd.insert("",   "--query",        "",                "Query compiled-in engine defaults");
     cmd.insert("",   "--version",      "",                "Print the engine version string");
 
     if (!cmd.parse()) {
@@ -178,11 +144,6 @@ bool parseCommandLine(int argc, char* argv[]) {
 
     if (cmd.check("--version")) {
         std::cout << TSUNAGARI_RELEASE_VERSION << std::endl;
-        return false;
-    }
-
-    if (cmd.check("--query")) {
-        defaultsQuery();
         return false;
     }
 

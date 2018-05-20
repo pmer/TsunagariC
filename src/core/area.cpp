@@ -29,8 +29,6 @@
 
 #include <math.h>
 
-#include <algorithm>
-
 #include "core/algorithm.h"
 #include "core/client-conf.h"
 #include "core/display-list.h"

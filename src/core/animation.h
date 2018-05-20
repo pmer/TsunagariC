@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** animation.h                        **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -57,7 +57,7 @@ class Animation {
      *
      * @param frame static image
      */
-    Animation(Rc<Image> frame);
+    explicit Animation(Rc<Image> frame);
 
     /**
      * Constructs a Animation from a list of frames.

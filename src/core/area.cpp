@@ -71,11 +71,6 @@ Area::Area(Player* player,
     grid.loopY = false;
 }
 
-bool Area::init() {
-    // Abstract method.
-    return false;
-}
-
 void Area::focus() {
     if (!beenFocused) {
         beenFocused = true;

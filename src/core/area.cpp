@@ -360,10 +360,6 @@ bool Area::loopsInY() const {
     return grid.loopY;
 }
 
-const std::string Area::getDescriptor() const {
-    return descriptor;
-}
-
 Rc<NPC> Area::spawnNPC(const std::string& descriptor,
                        vicoord coord,
                        const std::string& phase) {

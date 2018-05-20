@@ -128,8 +128,6 @@ class Area {
     bool loopsInX() const;
     bool loopsInY() const;
 
-    const std::string getDescriptor() const;
-
     // Create an NPC and insert it into the Area.
     Rc<NPC> spawnNPC(const std::string& descriptor, vicoord coord,
                      const std::string& phase);

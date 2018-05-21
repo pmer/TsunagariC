@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** main.cpp                           **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2018 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -69,10 +69,6 @@ int main(int argc, char** argv) {
 #endif
 
     parseConfig(CLIENT_CONF_PATH);
-    if (!parseCommandLine(argc, argv)) {
-        // Error already logged.
-        return 1;
-    }
 
     Log::setVerbosity(conf.verbosity);
     Log::info("Main", Formatter("Starting %") % TSUNAGARI_RELEASE_VERSION);

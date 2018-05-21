@@ -56,6 +56,5 @@ struct Conf {
 extern Conf conf;
 
 bool parseConfig(const std::string& filename);
-bool parseCommandLine(int argc, char* argv[]);
 
 #endif

@@ -31,7 +31,6 @@
 
 #include "config.h"
 #include "core/jsons.h"
-#include "nbcl/nbcl.h"
 #include "util/move.h"
 #include "util/string2.h"
 #include "util/vector.h"
@@ -106,115 +105,6 @@ bool parseConfig(const std::string& filename) {
         if (cache->hasUnsigned("ttl")) {
             conf.cacheEnabled = cache->unsignedAt("ttl") != 0;
         }
-    }
-
-    return true;
-}
-
-// Parse and process command line options and arguments.
-bool parseCommandLine(int argc, char* argv[]) {
-    NBCL cmd(argc, argv);
-
-    cmd.setStrayArgsDesc("[WORLD FILE]");
-
-    cmd.insert("-h", "--help",         "",                "Display this help message");
-    cmd.insert("-c", "--config",       "<config file>",   "Client config file to use");
-    cmd.insert("-p", "--datapath",     "<file,file,...>", "Prepend zips to data path");
-    cmd.insert("-q", "--quiet",        "",                "Display only fatal errors");
-    cmd.insert("-n", "--normal",       "",                "Display all errors");
-    cmd.insert("-v", "--verbose",      "",                "Display additional information");
-    cmd.insert("-t", "--cache-ttl",    "<seconds>",       "Cache time-to-live in seconds");
-    cmd.insert("-m", "--cache-size",   "<megabytes>",     "Cache size in megabytes");
-    cmd.insert("-s", "--size",         "<WxH>",           "Window dimensions");
-    cmd.insert("-f", "--fullscreen",   "",                "Run in fullscreen mode");
-    cmd.insert("-w", "--window",       "",                "Run in windowed mode");
-    cmd.insert("",   "--volume-music", "<0-100>",         "Set music volume");
-    cmd.insert("",   "--volume-sound", "<0-100>",         "Set sound effects volume");
-    cmd.insert("",   "--version",      "",                "Print the engine version string");
-
-    if (!cmd.parse()) {
-        cmd.usage();
-        return false;
-    }
-
-    if (cmd.check("--help")) {
-        cmd.usage();
-        return false;
-    }
-
-    if (cmd.check("--version")) {
-        std::cout << TSUNAGARI_RELEASE_VERSION << std::endl;
-        return false;
-    }
-
-    if (cmd.check("--config")) {
-        if (!parseConfig(cmd.get("--config"))) {
-            return false;
-        }
-    }
-
-    int verbcount = 0;
-    if (cmd.check("--quiet")) {
-        conf.verbosity = V_QUIET;
-        verbcount++;
-    }
-    if (cmd.check("--normal")) {
-        conf.verbosity = V_NORMAL;
-        verbcount++;
-    }
-    if (cmd.check("--verbose")) {
-        conf.verbosity = V_VERBOSE;
-        verbcount++;
-    }
-    if (verbcount > 1) {
-        Log::err("cmdline", "multiple verbosity flags on cmdline, using most verbose");
-    }
-
-    if (cmd.check("--volume-music")) {
-        conf.musicVolume = parseInt100(cmd.get("--volume-music"));
-    }
-
-    if (cmd.check("--volume-sound")) {
-        conf.soundVolume = parseInt100(cmd.get("--volume-sound"));
-    }
-
-    if (cmd.check("--cache-ttl")) {
-        if (!parseUInt(cmd.get("--cache-ttl"), &conf.cacheTTL)) {
-            Log::fatal("cmdline", "invalid argument for --cache-ttl");
-            return false;
-        }
-        if (conf.cacheTTL == 0) {
-            conf.cacheEnabled = false;
-        }
-    }
-
-    if (cmd.check("--size")) {
-        vector<std::string> dim = splitStr(cmd.get("--size"), "x");
-        if (dim.size() != 2) {
-            Log::fatal("cmdline", "invalid argument for -s/--size");
-            return false;
-        }
-        if (!parseUInt(dim[0], &conf.windowSize.x)) {
-            Log::fatal("cmdline", "invalid argument for -s/--size");
-            return false;
-        }
-        if (!parseUInt(dim[1], &conf.windowSize.y)) {
-            Log::fatal("cmdline", "invalid argument for -s/--size");
-            return false;
-        }
-    }
-
-    if (cmd.check("--fullscreen") && cmd.check("--window")) {
-        Log::fatal("cmdline", "-f/--fullscreen and -w/--window mutually exclusive");
-        return false;
-    }
-
-    if (cmd.check("--fullscreen")) {
-        conf.fullscreen = true;
-    }
-
-    if (cmd.check("--window")) {
-        conf.fullscreen = false;
     }
 
     return true;

@@ -27,8 +27,6 @@
 
 #include "core/client-conf.h"
 
-#include <iostream>
-
 #include "config.h"
 #include "core/jsons.h"
 #include "util/move.h"

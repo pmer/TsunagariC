@@ -72,6 +72,8 @@ class SDL2SoundInstance : public SoundInstance {
 };
 
 
+Rc<SDL2Sample> genSample(const std::string& name);
+
 class SDL2Sounds : public Sounds {
  public:
     static SDL2Sounds& instance();
@@ -88,7 +90,7 @@ class SDL2Sounds : public Sounds {
     SDL2Sounds(const SDL2Sounds&) = delete;
     SDL2Sounds& operator=(const SDL2Sounds&) = delete;
 
-    ReaderCache<Rc<SDL2Sample>> samples;
+    ReaderCache<Rc<SDL2Sample>, genSample> samples;
     vector<Rc<SoundInstance>> channels;
 };
 

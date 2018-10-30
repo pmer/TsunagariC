@@ -91,10 +91,10 @@ class SDL2TiledImage: public TiledImage {
 };
 
 
+Rc<Image> genImage(const std::string& path);
+
 class SDL2Images : public Images {
  public:
-    SDL2Images();
-
     Rc<Image> load(const std::string& path) final;
 
     Rc<TiledImage> loadTiles(const std::string& path,
@@ -103,7 +103,7 @@ class SDL2Images : public Images {
     void garbageCollect() final;
 
  private:
-    ReaderCache<Rc<Image>> images;
+    ReaderCache<Rc<Image>, genImage> images;
     // We can't use a ReaderCache here because TiledImages are constructed
     // with three arguments, but a ReaderCache only supports the use of
     // one.

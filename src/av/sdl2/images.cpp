@@ -42,7 +42,7 @@ Images& Images::instance() {
 }
 
 
-static Rc<Image> genImage(const std::string& path) {
+Rc<Image> genImage(const std::string& path) {
     Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
@@ -198,8 +198,6 @@ Rc<Image> SDL2TiledImage::operator[](size_t n) const {
     return *image;
 }
 
-
-SDL2Images::SDL2Images() : images(genImage) {}
 
 Rc<Image> SDL2Images::load(const std::string& path) {
     return images.lifetimeRequest(path);

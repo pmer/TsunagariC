@@ -69,10 +69,10 @@ vector<std::string> listDir(const std::string& path) {
     vector<std::string> names;
 
     if ((dir = opendir(path.c_str())) == nullptr) {
-        return vector<std::string>();
+        return names;
     }
 
-    while ((entry = readdir(dir))) {
+    while ((entry = readdir(dir)) != nullptr) {
         if (entry->d_ino == 0) {
             // Ignore unlinked files.
             continue;
@@ -85,7 +85,7 @@ vector<std::string> listDir(const std::string& path) {
             // Ignore odd files.
             continue;
         }
-        names.emplace_back(entry->d_name);
+        names.push_back(entry->d_name);
     }
 
     closedir(dir);

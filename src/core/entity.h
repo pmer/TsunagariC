@@ -178,8 +178,8 @@ class Entity {
 
     bool frozen;
 
-    double baseSpeed; //!< Original speed, specified in descriptor.
-    double speed;     //!< Effective speed = original speed * multiplier
+    double tilesPerSecond;
+    double pixelsPerSecond;
 
     //! True if currently moving to a new coordinate in an Area.
     bool moving;

@@ -167,6 +167,9 @@ Area* Entity::getArea() {
 void Entity::setArea(Area* area) {
     this->area = area;
     calcDraw();
+
+    assert_(area->getTileDimensions().x == area->getTileDimensions().y);
+    pixelsPerSecond = tilesPerSecond * area->getTileDimensions().x;
 }
 
 double Entity::getSpeedInPixels() const {
@@ -175,7 +178,7 @@ double Entity::getSpeedInPixels() const {
 }
 
 double Entity::getSpeedInTiles() const {
-    return baseSpeed;
+    return tilesPerSecond;
 }
 
 void Entity::setFrozen(bool b) {
@@ -247,7 +250,7 @@ void Entity::moveTowardDestination(time_t dt) {
 
     redraw = true;
 
-    double traveledPixels = speed * (double)dt;
+    double traveledPixels = pixelsPerSecond * (double)dt / 1000.0;
     double toDestPixels = r.distanceTo(destCoord);
     if (toDestPixels > traveledPixels) {
         // The destination has not been reached yet.
@@ -290,7 +293,12 @@ bool Entity::processDescriptor() {
     }
 
     if (doc->hasDouble("speed")) {
-        baseSpeed = doc->doubleAt("speed");
+        tilesPerSecond = doc->doubleAt("speed");
+
+        if (area) {
+            assert_(area->getTileDimensions().x == area->getTileDimensions().y);
+            pixelsPerSecond = tilesPerSecond * area->getTileDimensions().x;
+        }
     }
     if (doc->hasObject("sprite")) {
         CHECK(processSprite(doc->objectAt("sprite")));

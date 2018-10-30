@@ -109,7 +109,7 @@ void SDL2SoundInstance::setDone() {
 }
 
 
-static Rc<SDL2Sample> genSample(const std::string& name) {
+Rc<SDL2Sample> genSample(const std::string& name) {
     Unique<Resource> r = Resources::instance().load(name);
     if (!r) {
         // Error logged.
@@ -136,7 +136,7 @@ static void channelFinished(int channel) {
     globalSounds->setDone(channel);
 }
 
-SDL2Sounds::SDL2Sounds() : samples(genSample) {
+SDL2Sounds::SDL2Sounds() {
     SDL2OpenAudio();
     Mix_ChannelFinished(channelFinished);
 }
@@ -149,7 +149,11 @@ Rc<SoundInstance> SDL2Sounds::play(const std::string& path) {
     }
 
     int channel = Mix_PlayChannel(-1, sample->chunk, 0);
-    assert_(channel >= 0);
+
+    if (channel < 0) {
+        // Maybe there are too many sounds playing at once right now.
+        return Rc<SoundInstance>();
+    }
 
     Rc<SoundInstance> sound(new SDL2SoundInstance(channel));
 

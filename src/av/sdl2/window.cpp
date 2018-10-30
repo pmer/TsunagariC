@@ -60,11 +60,6 @@ time_t GameWindow::time() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 }
 
-SDL_Renderer* SDL2GetRenderer() {
-    return globalWindow.renderer;
-}
-
-
 SDL2GameWindow::SDL2GameWindow()
     : renderer(nullptr),
       translation(0.0, 0.0),

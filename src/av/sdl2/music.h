@@ -49,6 +49,8 @@ struct SDL2Song {
     Mix_Music* mix;
 };
 
+Rc<SDL2Song> genSong(const std::string& name);
+
 class SDL2Music : public MusicWorker {
  public:
     SDL2Music();
@@ -69,7 +71,7 @@ class SDL2Music : public MusicWorker {
  private:
     Rc<SDL2Song> currentMusic;
 
-    ReaderCache<Rc<SDL2Song>> songs;
+    ReaderCache<Rc<SDL2Song>, genSong> songs;
 };
 
 #endif  // SRC_AV_SDL2_MUSIC_H_

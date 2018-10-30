@@ -44,7 +44,7 @@ MusicWorker& MusicWorker::instance() {
     return *globalMusicWorker;
 }
 
-static Rc<SDL2Song> genSong(const std::string& name) {
+Rc<SDL2Song> genSong(const std::string& name) {
     Unique<Resource> r = Resources::instance().load(name);
     if (!r) {
         // Error logged.
@@ -73,7 +73,7 @@ SDL2Song::~SDL2Song() {
 }
 
 
-SDL2Music::SDL2Music() : songs(genSong) {
+SDL2Music::SDL2Music() {
     SDL2OpenAudio();
 }
 

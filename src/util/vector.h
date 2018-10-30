@@ -1,13 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Electronic Arts Inc. All rights reserved.
-// Copyright 2017 Paul Merrill
+// Copyright 2017-2018 Paul Merrill
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef SRC_UTIL_VECTOR_H_
 #define SRC_UTIL_VECTOR_H_
 
 
-#include <stddef.h>
+//#include <stddef.h>
 #include <stdlib.h>
 
 #include <new>
@@ -515,7 +515,7 @@ template<typename T>
 template<class... Args>
 inline typename vector<T>::iterator
 vector<T>::emplace(const_iterator position, Args&&... args) {
-    const ptrdiff_t n = position - mpBegin; // Save this because we might reallocate.
+    const T* n = position - mpBegin; // Save this because we might reallocate.
 
     if ((mpEnd == mCapacity) || (position != mpEnd)) {
         DoInsertValue(position, forward_<Args>(args)...);

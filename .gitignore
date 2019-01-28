@@ -15,3 +15,4 @@ data/*.world
 
 .idea
 cmake-build-debug
+build

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** os/windows.h                       **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -24,8 +24,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 // **********
-
-#ifdef _WIN32
 
 #ifndef SRC_OS_WINDOWS_H_
 #define SRC_OS_WINDOWS_H_
@@ -58,5 +56,3 @@ void wFixConsole();
 void wMessageBox(const std::string& title, const std::string& text);
 
 #endif  // SRC_OS_WINDOWS_H_
-
-#endif  // _WIN32

@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** main.cpp                         **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -28,7 +28,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <mutex>
@@ -142,8 +141,13 @@ static void createDirs(const std::string& path) {
 static void putFile(const std::string& path, uint64_t size, void* data) {
     createDirs(path);
 
-    int fd = open(path.c_str(), O_WRONLY | O_NONBLOCK | O_CREAT | O_TRUNC | O_CLOEXEC, 0777);
-    write(fd, data, size);
+	// FIXME: Use native IO.
+	FILE* f = fopen(path.c_str(), "w");
+	if (!f) {
+		// TODO: Propagate error up.
+	}
+	fwrite(data, size, 1, f);
+	fclose(f);
 }
 
 static bool extractArchive(const std::string& archivePath) {

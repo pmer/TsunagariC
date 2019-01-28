@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** main.cpp                           **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -40,7 +40,7 @@
 #include "data/data-world.h"
 
 #ifdef _WIN32
-  #include "os/os-windows.h"
+  #include "os/windows.h"
 #endif
 
 #ifdef __APPLE__

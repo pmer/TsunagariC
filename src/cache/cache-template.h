@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** cache-template.cpp                 **
+** cache-template.h                   **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********

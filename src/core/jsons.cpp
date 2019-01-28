@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** jsons.cpp                        **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -34,7 +34,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/reader.h"
 
-#include "cache/cache-template.cpp"
+#include "cache/cache-template.h"
 #include "cache/readercache.h"
 #include "core/log.h"
 #include "core/measure.h"

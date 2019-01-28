@@ -1,5 +1,0 @@
-set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
-    ${CMAKE_CURRENT_LIST_DIR}/data-area.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/data-world.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/inprogress.cpp
-)

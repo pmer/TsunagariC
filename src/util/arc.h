@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** arc.h                         **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** arc.h                              **
+** Copyright 2017-2019 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -54,8 +54,9 @@ struct Atomic {
     size_t get() { return x; }
 };
 
-template<typename T>
-using Arc = SharedPtr<T, Atomic>;
+// FIXME: The symbol Arc already exists in Windows. Rename?
+//template<typename T>
+//using Arc = SharedPtr<T, Atomic>;
 
 template<typename T>
 using CompactArc = CompactSharedPtr<T, Atomic>;

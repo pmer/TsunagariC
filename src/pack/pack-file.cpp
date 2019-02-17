@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** pack-file.cpp                    **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -26,20 +26,16 @@
 
 #include "pack/pack-file.h"
 
-#include <fcntl.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/uio.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <string>
 #include <unordered_map>
 
+#include "os/os.h"
 #include "pack/file-type.h"
 #include "util/move.h"
 #include "util/optional.h"
@@ -91,82 +87,6 @@ static bool operator<(const Blob& a, const Blob& b) {
     } else {
         return a.path < b.path;
     }
-}
-
-
-class MappedFile {
- public:
-    static Optional<MappedFile> fromPath(const std::string& path);
-
-    MappedFile();
-    MappedFile(MappedFile&& other);
-    MappedFile(const MappedFile& other) = delete;
-    MappedFile(char* map, size_t len);
-    ~MappedFile();
-
-    MappedFile& operator=(MappedFile&& other);
-
-    template<typename T>
-    const T at(size_t offset) const {
-        return reinterpret_cast<T>(map + offset);
-    }
-
- private:
-    char* map;
-    size_t len;
-};
-
-Optional<MappedFile> MappedFile::fromPath(const std::string& path) {
-    int fd = open(path.c_str(), O_RDONLY);
-    if (fd == -1) {
-        return Optional<MappedFile>();
-    }
-
-    struct stat st;
-    fstat(fd, &st);
-
-    if (st.st_size == 0) {
-        return Optional<MappedFile>();
-    }
-
-    // Cannot open files >4 GB on 32-bit operating systems since they will fail
-    // the mmap.
-    if (sizeof(long long) > sizeof(size_t)) {
-        if (st.st_size > static_cast<long long>(SIZE_MAX)) {
-            return Optional<MappedFile>();
-        }
-    }
-
-    char* map = reinterpret_cast<char*>(mmap(nullptr,
-                                             static_cast<size_t>(st.st_size),
-                                             PROT_READ, MAP_SHARED, fd, 0));
-    size_t len = static_cast<size_t>(st.st_size);
-
-    if (map == MAP_FAILED) {
-        return Optional<MappedFile>();
-    }
-
-    return Optional<MappedFile>(MappedFile(map, len));
-}
-
-MappedFile::MappedFile() : map(reinterpret_cast<char*>(MAP_FAILED)), len(0) {}
-
-MappedFile::MappedFile(MappedFile&& other) { *this = move_(other); }
-
-MappedFile::MappedFile(char* map, size_t len) : map(map), len(len) {}
-
-MappedFile::~MappedFile() {
-    if (map != MAP_FAILED) {
-        munmap(map, len);
-    }
-}
-
-MappedFile& MappedFile::operator=(MappedFile&& other) {
-    map = other.map;
-    len = other.len;
-    other.map = reinterpret_cast<char*>(MAP_FAILED);
-    other.len = 0;
-    return *this;
 }
 
 

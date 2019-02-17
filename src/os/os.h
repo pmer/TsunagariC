@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** os/os.h                            **
-** Copyright 2016-2017 Paul Merrill   **
+** Copyright 2016-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -48,5 +48,11 @@ enum TermColor {
 };
 
 void setTermColor(TermColor color);
+
+#ifdef _WIN32
+#include "windows.h"
+#elif
+#include "unix.h"
+#endif
 
 #endif  // SRC_OS_OS_H_

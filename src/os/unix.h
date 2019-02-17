@@ -1,9 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** os/windows.h                       **
-** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2019 Paul Merrill   **
-***************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** os/unix.h                     **
+** Copyright 2019 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,13 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_WINDOWS_H_
-#define SRC_OS_WINDOWS_H_
-
-#include <string>
-
-#define UNICODE
-#include <Windows.h>
+#ifndef SRC_OS_UNIX_H_
+#define SRC_OS_UNIX_H_
 
 #include "util/optional.h"
 
@@ -42,29 +36,19 @@ class MappedFile {
 	MappedFile();
 	MappedFile(MappedFile&& other);
 	MappedFile(const MappedFile& other) = delete;
+	MappedFile(char* map, size_t len);
 	~MappedFile();
 
 	MappedFile& operator=(MappedFile&& other);
 
 	template<typename T>
 	const T at(size_t offset) const {
-		return reinterpret_cast<T>(data + offset);
+		return reinterpret_cast<T>(map + offset);
 	}
 
  private:
-	 HANDLE file;
-	 HANDLE mapping;
-	 void* data;
+	char* map;
+	size_t len;
 };
 
-/* Visual C++ ignorantly assumes that all programs will use either a console OR
- * a window. Our program needs a window and an optional console. When Tsunagari
- * is run from the command line, this function forces Windows to reattach a
- * console to its process. Otherwise it does nothing.
- */
-void wFixConsole();
-
-// Simple wrapper to create a halting (modal) message box.
-void wMessageBox(const std::string& title, const std::string& text);
-
-#endif  // SRC_OS_WINDOWS_H_
+#endif  // SRC_OS_UNIX_H_

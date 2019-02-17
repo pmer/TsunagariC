@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.10)
 
 option(AV_NULL "Disable audio and video output")
 option(AV_SDL2 "Use SDL2 for audio and video output")
-option(AV_GOSU "Use SDL2 for audio and video output")
+option(AV_GOSU "Use Gosu for audio and video output")
 
 if(NOT AV_SDL2 AND NOT AV_GOSU)
     set(AV_NULL ON)

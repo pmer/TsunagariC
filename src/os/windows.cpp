@@ -28,12 +28,8 @@
 
 #include "os/windows.h"
 
-#define UNICODE
-#include <Windows.h>
-
 #include <string>
 
-#include "core/window.h"
 #include "core/world.h"
 #include "os/os.h"
 #include "util/vector.h"
@@ -68,4 +64,59 @@ void wMessageBox(const std::string& title, const std::string& text) {
 
 void setTermColor(TermColor color) {
     // TODO
+}
+
+Optional<MappedFile> MappedFile::fromPath(const std::string& path) {
+	HANDLE file = CreateFile(path.c_str, GENERIC_READ, 0, NULL, OPEN_ALWAYS,
+						     FILE_ATTRIBUTE_NORMAL, NULL);
+	if (file == INVALID_HANDLE_VALUE) {
+		return Optional<MappedFile>();
+	}
+
+	HANDLE mapping = CreateFileMapping(file, NULL, PAGE_READONLY, 0, 0, NULL);
+	if (mapping == NULL) {
+		CloseHandle(file);
+		return Optional<MappedFile>();
+	}
+
+	void* data = MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
+	if (data == NULL) {
+		CloseHandle(mapping);
+		CloseHandle(file);
+		return Optional<MappedFile>();
+	}
+
+	MappedFile m;
+	m.file = file;
+	m.mapping = mapping;
+	m.data = data;
+	return Optional<MappedFile>(m);
+}
+
+MappedFile::MappedFile()
+	: file(INVALID_HANDLE_VALUE),
+	  mapping(NULL),
+	  data(NULL) {}
+
+MappedFile::MappedFile(MappedFile&& other) { *this = move_(other); }
+
+MappedFile::~MappedFile() {
+	if (data) {
+		UnmapViewOfFile(data);
+	}
+	if (mapping) {
+		CloseHandle(mapping);
+	}
+	if (file != INVALID_HANDLE_VALUE) {
+		CloseHandle(file);
+	}
+}
+
+MappedFile& MappedFile::operator=(MappedFile&& other) {
+	file = other.file;
+	mapping = other.mapping;
+	data = other.data;
+	other.file = INVALID_HANDLE_VALUE;
+	other.mapping = NULL;
+	other.data = NULL;
 }

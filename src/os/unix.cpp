@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** os/unix.cpp                      **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -32,8 +32,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/dir.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/uio.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -127,4 +129,61 @@ void setTermColor(TermColor color) {
         std::cout << escape << "[31m";
         break;
     }
+}
+
+Optional<MappedFile> MappedFile::fromPath(const std::string& path) {
+	int fd = open(path.c_str(), O_RDONLY);
+	if (fd == -1) {
+		return Optional<MappedFile>();
+	}
+
+	struct stat st;
+	fstat(fd, &st);
+
+	if (st.st_size == 0) {
+		close(fd);
+		return Optional<MappedFile>();
+	}
+
+	// Cannot open files >4 GB on 32-bit operating systems since they will fail
+	// the mmap.
+	if (sizeof(long long) > sizeof(size_t)) {
+		if (st.st_size > static_cast<long long>(SIZE_MAX)) {
+			close(fd);
+			return Optional<MappedFile>();
+		}
+	}
+
+	char* map = reinterpret_cast<char*>(mmap(nullptr,
+		static_cast<size_t>(st.st_size),
+		PROT_READ, MAP_SHARED, fd, 0));
+	size_t len = static_cast<size_t>(st.st_size);
+
+	if (map == MAP_FAILED) {
+		close(fd);
+		return Optional<MappedFile>();
+	}
+
+	// FIXME: Close the fd now or at destruction?
+	return Optional<MappedFile>(MappedFile(map, len));
+}
+
+MappedFile::MappedFile() : map(reinterpret_cast<char*>(MAP_FAILED)), len(0) {}
+
+MappedFile::MappedFile(MappedFile&& other) { *this = move_(other); }
+
+MappedFile::MappedFile(char* map, size_t len) : map(map), len(len) {}
+
+MappedFile::~MappedFile() {
+	if (map != MAP_FAILED) {
+		munmap(map, len);
+	}
+}
+
+MappedFile& MappedFile::operator=(MappedFile&& other) {
+	map = other.map;
+	len = other.len;
+	other.map = reinterpret_cast<char*>(MAP_FAILED);
+	other.len = 0;
+	return *this;
 }

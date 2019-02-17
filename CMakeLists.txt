@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
+project(TsunagariEngine
+    DESCRIPTION "Tile-based video game engine"
+    HOMEPAGE_URL "https://github.com/pmer/TsunagariC"
+    LANGUAGES CXX
+)
 
 
 #

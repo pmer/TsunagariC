@@ -104,8 +104,6 @@ target_sources(tsunagari
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/client-conf.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/cooldown.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/cooldown.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/dtds.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/dtds.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/entity.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/entity.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/formatter.cpp
@@ -128,7 +126,6 @@ target_sources(tsunagari
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/overlay.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/player.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/player.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/resources.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/resources.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/sounds.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/sounds.h

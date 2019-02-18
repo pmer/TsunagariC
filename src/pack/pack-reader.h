@@ -1,6 +1,6 @@
 /*************************************
 ** Tsunagari Tile Engine            **
-** pack.h                           **
+** pack-reader.h                    **
 ** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
@@ -24,42 +24,35 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_RESOURCES_PACK_H_
-#define SRC_RESOURCES_PACK_H_
+#ifndef SRC_PACK_PACK_READER_H_
+#define SRC_PACK_PACK_READER_H_
 
-#include <stdlib.h>
+#include <stdint.h>
 
-#include <mutex>
+#include <string>
 
-#include "core/resources.h"
-#include "pack/pack-reader.h"
 #include "util/unique.h"
+#include "util/vector.h"
 
-class PackResource : public Resource {
+class PackReader {
  public:
-    PackResource(void* data, size_t size);
+    typedef uint64_t BlobIndex;
+    typedef uint64_t BlobSize;
 
-    const void* data() const;
-    size_t size() const;
+    static constexpr BlobIndex BLOB_NOT_FOUND = UINT64_MAX;
 
- private:
-    char* _data;
-    size_t _size;
+    static Unique<PackReader> fromFile(const std::string& path);
+    virtual ~PackReader() = default;
+
+    virtual BlobIndex size() const = 0;
+
+    virtual BlobIndex findIndex(const std::string& path) = 0;
+
+    virtual std::string getBlobPath(BlobIndex index) const = 0;
+    virtual BlobSize getBlobSize(BlobIndex index) const = 0;
+    virtual void* getBlobData(BlobIndex index) = 0;
+
+    virtual vector<void*> getBlobDatas(vector<BlobIndex> indicies) = 0;
 };
 
-class PackResources : public Resources {
- public:
-    PackResources();
-    ~PackResources() = default;
-
-    Unique<Resource> load(const std::string& path);
-
- private:
-    PackResources(const PackResources&) = delete;
-    PackResources& operator=(const PackResources&) = delete;
-
-    std::mutex mutex;
-    Unique<PackReader> pack;
-};
-
-#endif  // SRC_RESOURCES_PACK_H_
+#endif  // SRC_PACK_PACK_READER_H_

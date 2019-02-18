@@ -34,7 +34,8 @@
 #include <unordered_set>
 
 #include "os/os.h"
-#include "pack/pack-file.h"
+#include "pack/pack-reader.h"
+#include "pack/pack-writer.h"
 #include "pack/pool.h"
 #include "pack/walker.h"
 #include "pack/ui.h"

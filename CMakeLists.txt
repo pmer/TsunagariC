@@ -199,16 +199,18 @@ endif()
 target_sources(tsunagari
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-file.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-file.h
+    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.cpp
+    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.h
 )
 
 target_sources(pack-tool
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/main.cpp
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-file.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-file.h
+    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.cpp
+    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.h
+    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-writer.cpp
+    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-writer.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pool.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pool.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/ui-log.cpp

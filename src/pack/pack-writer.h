@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
-** pack-file.h                      **
-** Copyright 2016-2017 Paul Merrill **
+** pack-writer.h                    **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -24,36 +24,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_PACK_FILE_H_
-#define SRC_PACK_PACK_FILE_H_
+#ifndef SRC_PACK_PACK_WRITER_H_
+#define SRC_PACK_PACK_WRITER_H_
 
 #include <stdint.h>
 
 #include <string>
 
 #include "util/unique.h"
-#include "util/vector.h"
-
-class PackReader {
- public:
-    typedef uint64_t BlobIndex;
-    typedef uint64_t BlobSize;
-
-    static constexpr BlobIndex BLOB_NOT_FOUND = UINT64_MAX;
-
-    static Unique<PackReader> fromFile(const std::string& path);
-    virtual ~PackReader() = default;
-
-    virtual BlobIndex size() const = 0;
-
-    virtual BlobIndex findIndex(const std::string& path) = 0;
-
-    virtual std::string getBlobPath(BlobIndex index) const = 0;
-    virtual BlobSize getBlobSize(BlobIndex index) const = 0;
-    virtual void* getBlobData(BlobIndex index) = 0;
-
-    virtual vector<void*> getBlobDatas(vector<BlobIndex> indicies) = 0;
-};
 
 class PackWriter {
  public:
@@ -67,4 +45,4 @@ class PackWriter {
     virtual void addBlob(std::string path, BlobSize size, const void* data) = 0;
 };
 
-#endif  // SRC_PACK_PACK_FILE_H_
+#endif  // SRC_PACK_PACK_WRITER_H_

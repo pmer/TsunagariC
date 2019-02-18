@@ -1,6 +1,6 @@
 /*************************************
 ** Tsunagari Tile Engine            **
-** pack-file.cpp                    **
+** pack-reader.cpp                  **
 ** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
@@ -24,23 +24,17 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "pack/pack-file.h"
+#include "pack/pack-reader.h"
 
 #include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
-#include <algorithm>
 #include <string>
 #include <unordered_map>
 
 #include "os/os.h"
-#include "pack/file-type.h"
 #include "util/move.h"
 #include "util/optional.h"
-#include "util/unique.h"
-#include "util/vector.h"
 
 //                                       "T   s    u    n    a   g    a   r"
 static constexpr uint8_t PACK_MAGIC[8] = {84, 115, 117, 110, 97, 103, 97, 114};
@@ -70,25 +64,6 @@ struct BlobMetadata {
     PackReader::BlobSize compressedSize;
     BlobCompressionType compressionType;
 };
-
-struct Blob {
-    std::string path;
-    PackWriter::BlobSize size;
-    const void* data;
-};
-
-static bool operator<(const Blob& a, const Blob& b) {
-    FileType typeA = determineFileType(a.path);
-    FileType typeB = determineFileType(b.path);
-    if (typeA < typeB) {
-        return true;
-    } else if (typeA > typeB) {
-        return false;
-    } else {
-        return a.path < b.path;
-    }
-}
-
 
 class PackReaderImpl : public PackReader {
  public:
@@ -210,124 +185,4 @@ void PackReaderImpl::constructLookups() {
         std::string blobPath(paths + pathBegin, paths + pathEnd);
         lookups[blobPath] = i;
     }
-}
-
-
-class PackWriterImpl : public PackWriter {
- public:
-    bool writeToFile(const std::string& path);
-
-    void addBlob(std::string path, uint64_t size, const void* data);
-
- private:
-    vector<Blob> blobs;
-    bool sorted = true;
-};
-
-Unique<PackWriter> PackWriter::make() {
-    return Unique<PackWriter>(new PackWriterImpl);
-}
-
-bool PackWriterImpl::writeToFile(const std::string &path) {
-    size_t blobCount = blobs.size();
-
-    // Sort blobs by size (smallest first).
-    if (!sorted) {
-        sorted = true;
-        std::sort(blobs.begin(), blobs.end());
-    }
-
-    // Determine block offsets.
-    uint64_t pathOffsetsBlockSize = (blobCount + 1) * sizeof(PathOffset);
-    uint64_t pathsBlockSize = 0;
-    uint64_t metadataBlockSize = blobCount * sizeof(BlobMetadata);
-    uint64_t dataOffsetsBlockSize = blobCount * sizeof(uint64_t);
-
-    for (auto& blob : blobs) {
-        pathsBlockSize += blob.path.size();
-    }
-
-    // Construct blocks.
-    HeaderBlock headerBlock = {
-        {PACK_MAGIC[0], PACK_MAGIC[1], PACK_MAGIC[2], PACK_MAGIC[3],
-         PACK_MAGIC[4], PACK_MAGIC[5], PACK_MAGIC[6], PACK_MAGIC[7]},
-
-        PACK_VERSION, {0, 0, 0, 0, 0, 0, 0},
-
-        // blobCount
-        static_cast<uint64_t>(blobCount),
-
-        // We write blocks contiguously (well, so far we do).
-
-        // pathOffsetsBlockOffset
-        sizeof(HeaderBlock),
-        // pathsBlockOffset
-        sizeof(HeaderBlock) + pathOffsetsBlockSize,
-        // pathsBlockSize
-        pathsBlockSize,
-        // metadataBlockOffset
-        sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize,
-        // dataOffsetsBlockOffset
-        sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize + metadataBlockSize,
-    };
-
-    vector<PathOffset> pathOffsetsBlock;
-    std::string pathsBlock;
-    vector<BlobMetadata> metadatasBlock;
-    vector<uint64_t> dataOffsetsBlock;
-    vector<iovec> ios;
-
-    pathOffsetsBlock.reserve(blobCount + 1);
-    pathsBlock.reserve(pathsBlockSize);
-    metadatasBlock.reserve(blobCount);
-    ios.reserve(5 + blobCount);
-
-    PathOffset pathOffset = 0;
-    for (auto& blob : blobs) {
-        pathOffsetsBlock.push_back(pathOffset);
-        pathOffset += blob.path.size();
-    }
-    pathOffsetsBlock.push_back(pathOffset);
-
-    for (auto& blob : blobs) {
-        pathsBlock += blob.path;
-    }
-
-    for (auto& blob : blobs) {
-        BlobMetadata metadata = {
-            blob.size,
-            blob.size,
-            BLOB_COMPRESSION_NONE
-        };
-        metadatasBlock.push_back(metadata);
-    }
-
-    // Blob data starts immediately after the data offset block.
-    uint64_t dataOffset = headerBlock.dataOffsetsBlockOffset + dataOffsetsBlockSize;
-    for (auto& blob : blobs) {
-        dataOffsetsBlock.push_back(dataOffset);
-        dataOffset += blob.size;
-    }
-
-    // Build IO vector.
-    ios.push_back({&headerBlock, sizeof(headerBlock)});
-    ios.push_back({pathOffsetsBlock.data(), pathOffsetsBlockSize});
-    ios.push_back({const_cast<char*>(pathsBlock.data()), pathsBlockSize});
-    ios.push_back({metadatasBlock.data(), metadataBlockSize});
-    ios.push_back({dataOffsetsBlock.data(), dataOffsetsBlockSize});
-    for (auto& blob : blobs) {
-        ios.push_back({const_cast<void*>(blob.data), blob.size});
-    }
-
-    // Write file.
-    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
-    writev(fd, ios.data(), static_cast<int>(ios.size()));
-    close(fd);
-
-    return true;
-}
-
-void PackWriterImpl::addBlob(std::string path, uint64_t size, const void *data) {
-    blobs.push_back({path, size, data});
-    sorted = false;
 }

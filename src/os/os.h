@@ -51,7 +51,7 @@ void setTermColor(TermColor color);
 
 #ifdef _WIN32
 #include "windows.h"
-#elif
+#else
 #include "unix.h"
 #endif
 

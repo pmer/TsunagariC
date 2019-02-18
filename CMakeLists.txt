@@ -257,6 +257,15 @@ target_sources(pack-tool
 
 
 #
+# Source groups for IDEs
+#
+
+get_target_property(TSUNAGARI_SOURCES tsunagari SOURCES)
+get_target_property(PACK_TOOL_SOURCES pack-tool SOURCES)
+source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${TSUNAGARI_SOURCES} ${PACK_TOOL_SOURCES})
+
+
+#
 # Compilation options
 #
 

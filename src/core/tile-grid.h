@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** tile-grid.h                        **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -149,12 +149,12 @@ const T* TileGrid<T>::getTile(icoord phys) const {
 
 template<typename T>
 const T* TileGrid<T>::getTile(vicoord virt) const {
-    return getTile(virt);
+    return getTile(virt2phys(virt));
 }
 
 template<typename T>
 const T* TileGrid<T>::getTile(rcoord virt) const {
-    return getTile(virt);
+    return getTile(virt2phys(virt));
 }
 
 

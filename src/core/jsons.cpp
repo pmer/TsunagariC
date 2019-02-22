@@ -25,7 +25,6 @@
 // **********
 
 #define RAPIDJSON_HAS_STDSTRING 1
-#define RAPIDJSON_SSE42 1
 
 #include "core/jsons.h"
 

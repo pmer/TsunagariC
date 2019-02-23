@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** music.h                          **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -29,7 +29,7 @@
 
 #include <string>
 
-#include "cache/cache-template.cpp"
+#include "cache/cache-template.h"
 #include "cache/readercache.h"
 #include "core/music-worker.h"
 #include "core/resources.h"

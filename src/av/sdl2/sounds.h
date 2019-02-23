@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** sounds.h                         **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -29,7 +29,7 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include "cache/cache-template.cpp"
+#include "cache/cache-template.h"
 #include "cache/readercache.h"
 #include "core/sounds.h"
 #include "core/resources.h"

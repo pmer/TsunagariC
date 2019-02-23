@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** images.h                         **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -29,7 +29,7 @@
 
 #include "core/images.h"
 
-#include "cache/cache-template.cpp"
+#include "cache/cache-template.h"
 #include "cache/readercache.h"
 
 typedef struct SDL_Texture SDL_Texture;

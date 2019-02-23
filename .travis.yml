@@ -30,5 +30,7 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake ..
-  - cmake --build .
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then /usr/bin/cmake ..; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then /usr/bin/cmake --build .; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake ..; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake --build .; fi

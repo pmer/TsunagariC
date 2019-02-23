@@ -31,6 +31,12 @@ Current features include:
 
 Requirements:
 
+| NAME        | LICENSE     | LINK                   |
+| ----------- | ----------- | ---------------------- |
+| SDL2        | zlib        | http://www.libsdl.org  |
+
+or
+
 | NAME        | LICENSE     | LINK                          |
 | ----------- | ----------- | ----------------------------- |
 | libgosu     | MIT         | http://github.com/gosu/gosu/  |

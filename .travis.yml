@@ -9,9 +9,13 @@ matrix:
 addons:
   apt:
     sources:
+      - sourceline: "deb http://mirrors.kernel.org/ubuntu/ bionic main"
       - sourceline: "deb http://ftp.debian.org/debian stretch-backports main"
     packages:
       - cmake/stretch-backports
+      - libjsoncpp1/bionic
+      - libstdc++6/bionic
+      - libuv1/bionic
 # FIXME: Homebrew is out of date on Travis. Uncomment when it has CMake 3.13.
 # homebrew:
 #   packages:

@@ -95,6 +95,38 @@ vector<std::string> listDir(const std::string& path) {
     return names;
 }
 
+bool writeFile(const std::string& path, size_t length, void* data) {
+    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+    if (fd == -1) {
+        return false;
+    }
+    ssize_t written = write(fd, data, length);
+    if (written != length) {
+        close(fd);
+        return false;
+    }
+    close(fd);
+    return true;
+}
+
+bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void** datas) {
+    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+    if (fd == -1) {
+        return false;
+    }
+    for (size_t i = 0; i < count; i++) {
+        size_t length = lengths[i];
+        void* data = datas[i];
+        ssize_t written = write(fd, data, length);
+        if (written != length) {
+            close(fd);
+            return false;
+        }
+    }
+    close(fd);
+    return false;
+}
+
 static bool isaTTY() {
     static bool checked = false;
     static bool tty = false;

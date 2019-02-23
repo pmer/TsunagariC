@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <string>
 
+#include "os/os.h"
 #include "pack/file-type.h"
 #include "pack/pack-reader.h"
 #include "util/vector.h"
@@ -145,12 +146,10 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
     std::string pathsBlock;
     vector<BlobMetadata> metadatasBlock;
     vector<uint64_t> dataOffsetsBlock;
-    vector<iovec> ios;
 
     pathOffsetsBlock.reserve(blobCount + 1);
     pathsBlock.reserve(pathsBlockSize);
     metadatasBlock.reserve(blobCount);
-    ios.reserve(5 + blobCount);
 
     PathOffset pathOffset = 0;
     for (auto& blob : blobs) {
@@ -180,21 +179,31 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
     }
 
     // Build IO vector.
-    ios.push_back({&headerBlock, sizeof(headerBlock)});
-    ios.push_back({pathOffsetsBlock.data(), pathOffsetsBlockSize});
-    ios.push_back({const_cast<char*>(pathsBlock.data()), pathsBlockSize});
-    ios.push_back({metadatasBlock.data(), metadataBlockSize});
-    ios.push_back({dataOffsetsBlock.data(), dataOffsetsBlockSize});
+    vector<size_t> writeLengths;
+    vector<void*> writeDatas;
+
+    writeLengths.reserve(5 + blobCount);
+    writeDatas.reserve(5 + blobCount);
+
+    writeLengths.push_back(sizeof(headerBlock));
+    writeLengths.push_back(pathOffsetsBlockSize);
+    writeLengths.push_back(pathsBlockSize);
+    writeLengths.push_back(metadataBlockSize);
+    writeLengths.push_back(dataOffsetsBlockSize);
+
+    writeDatas.push_back(&headerBlock);
+    writeDatas.push_back(pathOffsetsBlock.data());
+    writeDatas.push_back(const_cast<char*>(pathsBlock.data()));
+    writeDatas.push_back(metadatasBlock.data());
+    writeDatas.push_back(dataOffsetsBlock.data());
+
     for (auto& blob : blobs) {
-        ios.push_back({const_cast<void*>(blob.data), blob.size});
+        writeLengths.push_back(blob.size);
+        writeDatas.push_back(const_cast<void*>(blob.data));
     }
 
     // Write file.
-    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
-    writev(fd, ios.data(), static_cast<int>(ios.size()));
-    close(fd);
-
-    return true;
+    return writeFileVec(path, writeLengths.size(), writeLengths.data(), writeDatas.data());
 }
 
 void PackWriterImpl::addBlob(std::string path, uint64_t size, const void *data) {

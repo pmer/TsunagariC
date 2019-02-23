@@ -11,7 +11,7 @@ addons:
     sources:
       - sourceline: "deb http://ftp.debian.org/debian stretch-backports main"
     packages:
-      - cmake
+      - cmake/stretch-backports
 # FIXME: Homebrew is out of date on Travis. Uncomment when it has CMake 3.13.
 # homebrew:
 #   packages:

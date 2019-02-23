@@ -9,6 +9,7 @@ jobs:
           apk add git cmake make g++
       - checkout
       - run: |
+          git submodule update --init --recursive &&
           mkdir build &&
           cd build &&
           cmake .. &&
@@ -21,9 +22,10 @@ jobs:
       - run: |
           echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list &&
           apt-get update &&
-          apt-get install git cmake/stretch-backports libuv1/stretch-backports make g++
+          apt-get install -y git cmake/stretch-backports libuv1/stretch-backports make g++
       - checkout
       - run: |
+          git submodule update --init --recursive &&
           mkdir build &&
           cd build &&
           cmake .. &&
@@ -35,9 +37,10 @@ jobs:
     steps:
       - run: |
           apt-get update &&
-          apt-get install git cmake make g++
+          apt-get install -y git cmake make g++
       - checkout
       - run: |
+          git submodule update --init --recursive &&
           mkdir build &&
           cd build &&
           cmake .. &&
@@ -48,23 +51,10 @@ jobs:
       - image: fedora:30
     steps:
       - run: |
-          dnf install git cmake make gcc-c++
+          dnf install -y git cmake make gcc-c++
       - checkout
       - run: |
-          mkdir build &&
-          cd build &&
-          cmake .. &&
-          cmake --build .
-
-  build_void:
-    docker:
-      - image: voidlinux/voidlinux:latest
-    steps:
-      - run: |
-          xbps-install -S &&
-          xbps-install git cmake make gcc
-      - checkout
-      - run: |
+          git submodule update --init --recursive &&
           mkdir build &&
           cd build &&
           cmake .. &&
@@ -76,13 +66,30 @@ jobs:
     steps:
       - run: |
           pacman -Sy &&
-          pacman -S git cmake make gcc
+          pacman -S --noconfirm git cmake make gcc
       - checkout
       - run: |
+          git submodule update --init --recursive &&
           mkdir build &&
           cd build &&
           cmake .. &&
           cmake --build .
+
+# FIXME: The first run step fails with an error on "/bin/sh -eo pipefail".
+#  build_void:
+#    docker:
+#      - image: voidlinux/voidlinux:latest
+#    steps:
+#      - run: |
+#          xbps-install -S &&
+#          xbps-install git cmake make gcc
+#      - checkout
+#      - run: |
+#          git submodule update --init --recursive &&
+#          mkdir build &&
+#          cd build &&
+#          cmake .. &&
+#          cmake --build .
 
 workflows:
   version: 2

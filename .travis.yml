@@ -9,7 +9,7 @@ matrix:
 addons:
   apt:
     sources:
-      - sourceline: 'deb http://mirrors.kernel.org/ubuntu/ bionic main'
+      - sourceline: 'deb http://mirrors.kernel.org/ubuntu/ bionic main universe'
       - sourceline: 'deb http://ftp.debian.org/debian stretch-backports main'
     packages:
       - debian-archive-keyring/bionic

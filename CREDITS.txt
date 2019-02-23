@@ -6,7 +6,7 @@ attributed in the distributions of the below mentioned primary dependencies.
 
 === Tsunagari Tile Engine ===
 
-Copyright (c) 2011-2016:
+Copyright (c) 2011-2019:
 	Michael Reiley
 	Paul Merrill
 
@@ -29,7 +29,7 @@ License:
 
 === LibGosu ===
 
-Copyright (c) 2004-2016:
+Copyright (c) 2004-2019:
 	Julian Raschke
 	Jan Lücker
 	All contributors.

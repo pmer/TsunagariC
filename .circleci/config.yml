@@ -1,21 +1,7 @@
 version: 2.1
 
 jobs:
-  build_alpine:
-    docker:
-      - image: alpine:3.9
-    steps:
-      - run: |
-          apk add git cmake make g++
-      - checkout
-      - run: |
-          git submodule update --init --recursive &&
-          mkdir build &&
-          cd build &&
-          cmake .. &&
-          cmake --build .
-
-  build_debian:
+  build_debian_9:
     docker:
       - image: debian:9-slim
     steps:
@@ -31,7 +17,7 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  build_ubuntu:
+  build_ubuntu_1904:
     docker:
       - image: ubuntu:19.04
     steps:
@@ -46,7 +32,7 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  build_fedora:
+  build_fedora_30:
     docker:
       - image: fedora:30
     steps:
@@ -60,7 +46,7 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  build_arch:
+  build_arch_latest:
     docker:
       - image: archlinux/base:latest
     steps:
@@ -76,7 +62,7 @@ jobs:
           cmake --build .
 
 # FIXME: The first run step fails with an error on "/bin/sh -eo pipefail".
-#  build_void:
+#  build_void_latest:
 #    docker:
 #      - image: voidlinux/voidlinux:latest
 #    steps:
@@ -91,13 +77,27 @@ jobs:
 #          cmake .. &&
 #          cmake --build .
 
+  build_alpine_3.9:
+    docker:
+      - image: alpine:3.9
+    steps:
+      - run: |
+          apk add git cmake make g++
+      - checkout
+      - run: |
+          git submodule update --init --recursive &&
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
 workflows:
   version: 2
   build_all:
     jobs:
-      - build_debian
-      - build_ubuntu
-      - build_fedora
-      - build_arch
-      - build_alpine
-#     - build_void
+      - build_debian_9
+      - build_ubuntu_1904
+      - build_fedora_30
+      - build_arch_latest
+#     - build_void_latest
+      - build_alpine_3.9

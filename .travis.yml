@@ -13,9 +13,9 @@ addons:
       - sourceline: 'deb http://mirrors.kernel.org/ubuntu/ bionic main'
       - sourceline: 'deb http://ftp.debian.org/debian stretch-backports main'
     packages:
-      - libjsoncpp1/bionic
-      - libstdc++6/bionic
-      - libuv1/bionic
+      - libjsoncpp1/bionic  # For Debian stretch-backport's CMake 3.13
+      - libstdc++6/bionic   # For Debian stretch-backport's CMake 3.13
+      - libuv1/bionic       # For Debian stretch-backport's CMake 3.13
 # FIXME: Homebrew is out of date on Travis. Uncomment when it has CMake 3.13.
 # homebrew:
 #   packages:

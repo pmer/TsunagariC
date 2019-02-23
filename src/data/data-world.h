@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** world.h                            **
-** Copyright 2014      PariahSoft LLC **
-** Copyright 2016-2017 Paul Merrill   **
+** data-world.h                       **
+** Copyright 2014      Michael Reiley **
+** Copyright 2014-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,8 +28,8 @@
 #ifndef SRC_DATA_DATA_WORLD_H_
 #define SRC_DATA_DATA_WORLD_H_
 
-#include <map>
 #include <string>
+#include <unordered_map>
 
 #include "core/client-conf.h"
 #include "data/data-area.h"
@@ -39,7 +39,7 @@ class DataWorld {
  public:
     static DataWorld& instance();
 
-    virtual ~DataWorld();
+    virtual ~DataWorld() = default;
 
     //! After the engine has booted, initialize the world.
     virtual bool init() = 0;
@@ -69,9 +69,9 @@ class DataWorld {
     std::string datafile;
 
  protected:
-    DataWorld();
+    DataWorld() = default;
 
-    std::map<std::string,Unique<DataArea>> areas;
+    std::unordered_map<std::string,Unique<DataArea>> areas;
 
  private:
     DataWorld(const DataWorld&) = delete;

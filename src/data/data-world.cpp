@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** data-world.cpp                     **
-** Copyright 2014      PariahSoft LLC **
-** Copyright 2016-2017 Paul Merrill   **
+** Copyright 2014      Michael Reiley **
+** Copyright 2014-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -26,9 +26,6 @@
 // **********
 
 #include "data/data-world.h"
-
-DataWorld::DataWorld() {}
-DataWorld::~DataWorld() {}
 
 DataArea* DataWorld::area(const std::string& areaName) {
     return &*areas[areaName];

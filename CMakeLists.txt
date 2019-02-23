@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 project(TsunagariEngine
     DESCRIPTION "Tile-based video game engine"
     HOMEPAGE_URL "https://github.com/pmer/TsunagariC"
@@ -34,7 +34,7 @@ add_executable(pack-tool)
 #
 
 target_include_directories(tsunagari
-    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/deps/rapidjson/include
+    PUBLIC deps/rapidjson/include
 )
 
 
@@ -42,221 +42,221 @@ target_include_directories(tsunagari
 # Sources in src
 #
 
-target_include_directories(tsunagari PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src)
-target_include_directories(pack-tool PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src)
+target_include_directories(tsunagari PUBLIC src)
+target_include_directories(pack-tool PUBLIC src)
 
 target_sources(tsunagari
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/config.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
+    PUBLIC  src/config.h
+    PRIVATE src/main.cpp
 )
 
 if(AV_NULL)
     target_sources(tsunagari
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/av/null/images.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/null/music.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/null/sounds.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/null/window.cpp
+        PRIVATE src/av/null/images.cpp
+                src/av/null/music.cpp
+                src/av/null/sounds.cpp
+                src/av/null/window.cpp
     )
 endif()
 
 if(AV_SDL2)
     target_sources(tsunagari
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/error.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/error.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/images.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/images.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/music.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/music.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/sounds.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/sounds.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/window.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/sdl2/window.h
+        PRIVATE src/av/sdl2/error.cpp
+                src/av/sdl2/error.h
+                src/av/sdl2/images.cpp
+                src/av/sdl2/images.h
+                src/av/sdl2/music.cpp
+                src/av/sdl2/music.h
+                src/av/sdl2/sounds.cpp
+                src/av/sdl2/sounds.h
+                src/av/sdl2/window.cpp
+                src/av/sdl2/window.h
     )
 endif()
 
 if(AV_GOSU)
     target_sources(tsunagari
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/cbuffer.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/cbuffer.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/images.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/images.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/music.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/music.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/sounds.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/sounds.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/window.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/window.h
+        PRIVATE src/av/gosu/cbuffer.cpp
+                src/av/gosu/cbuffer.h
+                src/av/gosu/images.cpp
+                src/av/gosu/images.h
+                src/av/gosu/music.cpp
+                src/av/gosu/music.h
+                src/av/gosu/sounds.cpp
+                src/av/gosu/sounds.h
+                src/av/gosu/window.cpp
+                src/av/gosu/window.h
     )
 endif()
 
 target_sources(tsunagari
-    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src/cache/cache-template.h
-    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src/cache/cache.h
-    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src/cache/readercache.h
+    PUBLIC src/cache/cache-template.h
+    PUBLIC src/cache/cache.h
+    PUBLIC src/cache/readercache.h
 )
 
 target_sources(tsunagari
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/algorithm.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/animation.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/animation.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/area.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/area.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/area-json.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/area-json.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/character.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/character.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/client-conf.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/client-conf.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/cooldown.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/cooldown.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/display-list.cpp
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/display-list.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/entity.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/entity.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/formatter.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/formatter.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/images.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/images.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/jsons.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/jsons.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/log.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/log.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/measure.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/measure.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/music-impl.cpp
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/music-worker.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/music-worker.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/music.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/npc.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/npc.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/overlay.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/overlay.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/player.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/player.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/resources.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/sounds.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/sounds.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/tile.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/tile.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/tile-grid.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/viewport.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/viewport.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/window.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/window.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/world.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/world.h
+    PUBLIC  src/core/algorithm.h
+    PRIVATE src/core/animation.cpp
+    PUBLIC  src/core/animation.h
+    PRIVATE src/core/area.cpp
+    PUBLIC  src/core/area.h
+    PRIVATE src/core/area-json.cpp
+    PUBLIC  src/core/area-json.h
+    PRIVATE src/core/character.cpp
+    PUBLIC  src/core/character.h
+    PRIVATE src/core/client-conf.cpp
+    PUBLIC  src/core/client-conf.h
+    PRIVATE src/core/cooldown.cpp
+    PUBLIC  src/core/cooldown.h
+    PRIVATE src/core/display-list.cpp
+    PRIVATE src/core/display-list.h
+    PRIVATE src/core/entity.cpp
+    PUBLIC  src/core/entity.h
+    PRIVATE src/core/formatter.cpp
+    PUBLIC  src/core/formatter.h
+    PRIVATE src/core/images.cpp
+    PUBLIC  src/core/images.h
+    PRIVATE src/core/jsons.cpp
+    PUBLIC  src/core/jsons.h
+    PRIVATE src/core/log.cpp
+    PUBLIC  src/core/log.h
+    PRIVATE src/core/measure.cpp
+    PUBLIC  src/core/measure.h
+    PRIVATE src/core/music-impl.cpp
+    PRIVATE src/core/music-worker.cpp
+    PUBLIC  src/core/music-worker.h
+    PUBLIC  src/core/music.h
+    PRIVATE src/core/npc.cpp
+    PUBLIC  src/core/npc.h
+    PRIVATE src/core/overlay.cpp
+    PUBLIC  src/core/overlay.h
+    PRIVATE src/core/player.cpp
+    PUBLIC  src/core/player.h
+    PUBLIC  src/core/resources.h
+    PRIVATE src/core/sounds.cpp
+    PUBLIC  src/core/sounds.h
+    PRIVATE src/core/tile.cpp
+    PUBLIC  src/core/tile.h
+    PUBLIC  src/core/tile-grid.h
+    PRIVATE src/core/viewport.cpp
+    PUBLIC  src/core/viewport.h
+    PRIVATE src/core/window.cpp
+    PUBLIC  src/core/window.h
+    PRIVATE src/core/world.cpp
+    PUBLIC  src/core/world.h
 )
 
 target_sources(tsunagari
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/data/data-area.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/data/data-area.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/data/data-world.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/data/data-world.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/data/inprogress.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/data/inprogress.h
+    PRIVATE src/data/data-area.cpp
+    PUBLIC  src/data/data-area.h
+    PRIVATE src/data/data-world.cpp
+    PUBLIC  src/data/data-world.h
+    PRIVATE src/data/inprogress.cpp
+    PUBLIC  src/data/inprogress.h
 )
 
 target_sources(tsunagari
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/nbcl/nbcl.cpp
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/nbcl/nbcl.h
+    PRIVATE src/nbcl/nbcl.cpp
+    PRIVATE src/nbcl/nbcl.h
 )
 
 if (WIN32)
     target_sources(tsunagari
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/os.h
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/os/windows.cpp
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/windows.h
+        PUBLIC  src/os/os.h
+        PRIVATE src/os/windows.cpp
+        PUBLIC  src/os/windows.h
     )
     target_sources(pack-tool
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/os.h
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/os/windows.cpp
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/windows.h
+        PUBLIC  src/os/os.h
+        PRIVATE src/os/windows.cpp
+        PUBLIC  src/os/windows.h
     )
 elseif(APPLE)
     target_sources(tsunagari
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/os/mac-gui.mm
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/mac-gui.h
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/os.h
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.cpp
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.h
+        PRIVATE src/os/mac-gui.mm
+        PUBLIC  src/os/mac-gui.h
+        PUBLIC  src/os/os.h
+        PRIVATE src/os/unix.cpp
+        PUBLIC  src/os/unix.h
     )
     target_sources(pack-tool
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/os.h
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.cpp
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.h
+        PUBLIC  src/os/os.h
+        PRIVATE src/os/unix.cpp
+        PUBLIC  src/os/unix.h
     )
 else()
     target_sources(tsunagari
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/os.h
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.cpp
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.h
+        PUBLIC  src/os/os.h
+        PRIVATE src/os/unix.cpp
+        PUBLIC  src/os/unix.h
     )
     target_sources(pack-tool
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/os.h
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.cpp
-        PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/os/unix.h
+        PUBLIC  src/os/os.h
+        PRIVATE src/os/unix.cpp
+        PUBLIC  src/os/unix.h
     )
 endif()
 
 target_sources(tsunagari
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.h
+    PRIVATE src/pack/file-type.cpp
+    PUBLIC  src/pack/file-type.h
+    PRIVATE src/pack/pack-reader.cpp
+    PUBLIC  src/pack/pack-reader.h
 )
 
 target_sources(pack-tool
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/file-type.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/main.cpp
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-reader.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-writer.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pack-writer.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/pool.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/pool.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/ui-log.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/ui.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/pack/walker.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/pack/walker.h
+    PRIVATE src/pack/file-type.cpp
+    PUBLIC  src/pack/file-type.h
+    PRIVATE src/pack/main.cpp
+    PRIVATE src/pack/pack-reader.cpp
+    PUBLIC  src/pack/pack-reader.h
+    PRIVATE src/pack/pack-writer.cpp
+    PUBLIC  src/pack/pack-writer.h
+    PRIVATE src/pack/pool.cpp
+    PUBLIC  src/pack/pool.h
+    PRIVATE src/pack/ui-log.cpp
+    PUBLIC  src/pack/ui.h
+    PRIVATE src/pack/walker.cpp
+    PUBLIC  src/pack/walker.h
 )
 
 target_sources(tsunagari
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/resources/pack.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/resources/pack.h
+    PRIVATE src/resources/pack.cpp
+    PUBLIC  src/resources/pack.h
 )
 
 target_sources(tsunagari
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/algorithm.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/arc.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/assert.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/assert.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/bitrecord.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/bitrecord.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/dispatch-queue-impl.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/dispatch-queue-impl.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/dispatch-queue.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/dispatch-queue.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/likely.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/math2.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/meta.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/move.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/optional.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/random.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/random.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/rc.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/safe-heap.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/string2.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/string2.h
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/transform.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/transform.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/unique.h
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/vector.h
+    PUBLIC  src/util/algorithm.h
+    PUBLIC  src/util/arc.h
+    PRIVATE src/util/assert.cpp
+    PUBLIC  src/util/assert.h
+    PRIVATE src/util/bitrecord.cpp
+    PUBLIC  src/util/bitrecord.h
+    PRIVATE src/util/dispatch-queue-impl.cpp
+    PUBLIC  src/util/dispatch-queue-impl.h
+    PRIVATE src/util/dispatch-queue.cpp
+    PUBLIC  src/util/dispatch-queue.h
+    PUBLIC  src/util/likely.h
+    PUBLIC  src/util/math2.h
+    PUBLIC  src/util/meta.h
+    PUBLIC  src/util/move.h
+    PUBLIC  src/util/optional.h
+    PRIVATE src/util/random.cpp
+    PUBLIC  src/util/random.h
+    PUBLIC  src/util/rc.h
+    PUBLIC  src/util/safe-heap.h
+    PRIVATE src/util/string2.cpp
+    PUBLIC  src/util/string2.h
+    PRIVATE src/util/transform.cpp
+    PUBLIC  src/util/transform.h
+    PUBLIC  src/util/unique.h
+    PUBLIC  src/util/vector.h
 )
 
 target_sources(pack-tool
-    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/util/assert.cpp
-    PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/util/assert.h
+    PRIVATE src/util/assert.cpp
+    PUBLIC  src/util/assert.h
 )
 
 
@@ -266,7 +266,7 @@ target_sources(pack-tool
 
 get_target_property(TSUNAGARI_SOURCES tsunagari SOURCES)
 get_target_property(PACK_TOOL_SOURCES pack-tool SOURCES)
-source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${TSUNAGARI_SOURCES} ${PACK_TOOL_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${TSUNAGARI_SOURCES} ${PACK_TOOL_SOURCES})
 
 
 #

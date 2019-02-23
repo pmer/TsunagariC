@@ -1,0 +1,96 @@
+version: 2.1
+
+jobs:
+  build_alpine:
+    docker:
+      - image: alpine:3.9
+    steps:
+      - run: |
+          apk add git cmake make g++
+      - checkout
+      - run: |
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
+  build_debian:
+    docker:
+      - image: debian:9-slim
+    steps:
+      - run: |
+          echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list &&
+          apt-get update &&
+          apt-get install git cmake/stretch-backports libuv1/stretch-backports make g++
+      - checkout
+      - run: |
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
+  build_ubuntu:
+    docker:
+      - image: ubuntu:19.04
+    steps:
+      - run: |
+          apt-get update &&
+          apt-get install git cmake make g++
+      - checkout
+      - run: |
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
+  build_fedora:
+    docker:
+      - image: fedora:30
+    steps:
+      - run: |
+          dnf install git cmake make gcc-c++
+      - checkout
+      - run: |
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
+  build_void:
+    docker:
+      - image: voidlinux/voidlinux:latest
+    steps:
+      - run: |
+          xbps-install -S &&
+          xbps-install git cmake make gcc
+      - checkout
+      - run: |
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
+  build_arch:
+    docker:
+      - image: archlinux/base:latest
+    steps:
+      - run: |
+          pacman -Sy &&
+          pacman -S git cmake make gcc
+      - checkout
+      - run: |
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
+workflows:
+  version: 2
+  build_all:
+    jobs:
+      - build_debian
+      - build_ubuntu
+      - build_fedora
+      - build_arch
+      - build_void
+      - build_alpine

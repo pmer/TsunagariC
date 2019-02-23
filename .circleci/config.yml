@@ -17,7 +17,7 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  build_ubuntu_1904:
+  build_ubuntu_19_04:
     docker:
       - image: ubuntu:19.04
     steps:
@@ -77,7 +77,7 @@ jobs:
 #          cmake .. &&
 #          cmake --build .
 
-  build_alpine_3.9:
+  build_alpine_3_9:
     docker:
       - image: alpine:3.9
     steps:
@@ -96,8 +96,8 @@ workflows:
   build_all:
     jobs:
       - build_debian_9
-      - build_ubuntu_1904
+      - build_ubuntu_19_04
       - build_fedora_30
       - build_arch_latest
 #     - build_void_latest
-      - build_alpine_3.9
+      - build_alpine_3_9

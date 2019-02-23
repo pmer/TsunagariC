@@ -33,7 +33,7 @@ bool operator<(const TaskContext& lhs, const TaskContext& rhs) {
 
 DispatchQueueImpl::DispatchQueueImpl() {
     unsigned n = std::thread::hardware_concurrency();
-    n = 1;  // debug, and to help with MusicWorker until better mechanism for series-of-tasks implemented
+    //n = 1;  // debug, and to help with MusicWorker until better mechanism for series-of-tasks implemented
     for (unsigned i = 0; i < n; i++) {
         std::thread thread(&DispatchQueueImpl::runTasks, this);
         threads.emplace_back(move_(thread));

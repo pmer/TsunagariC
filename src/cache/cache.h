@@ -48,7 +48,6 @@ class Cache {
     struct CacheEntry {
         T resource;
         time_t lastUsed;  // time in milliseconds
-        size_t memoryUsed;
     };
 
     typedef std::map<const std::string, CacheEntry> CacheMap;

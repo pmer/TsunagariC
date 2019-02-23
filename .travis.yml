@@ -1,14 +1,15 @@
 language: cpp
 
-#matrix:
-#  - os: linux
-#    dist: xenial
-os: osx
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+    - os: osx
 
 addons:
   apt:
     sources:
-      - sourceline: "deb http://mirrors.kernel.org/ubuntu/ disco main"
+      - sourceline: "deb http://ftp.debian.org/debian stretch-backports main"
     packages:
       - cmake
 # FIXME: Homebrew is out of date on Travis. Uncomment when it has CMake 3.13.

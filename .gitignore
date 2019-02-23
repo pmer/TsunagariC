@@ -1,9 +1,6 @@
 notes.txt
 doc/notes/
 
-*.o
-src/tsunagari
-
 data/*.zip
 data/*.world
 
@@ -14,5 +11,5 @@ data/*.world
 *.swp
 
 .idea
-cmake-build-debug
-build
+cmake-build*
+build*

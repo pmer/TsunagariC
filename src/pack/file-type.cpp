@@ -39,6 +39,9 @@ static const std::string mediaExtensions[] = {
 
 FileType determineFileType(const std::string& path) {
     auto dot = path.rfind('.');
+    if (dot == -1) {
+        return FT_UNKNOWN;
+    }
     std::string extension = path.substr(dot);
     for (auto& textExtension : textExtensions) {
         if (extension == textExtension) {

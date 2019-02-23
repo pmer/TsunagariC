@@ -1,8 +1,10 @@
 language: cpp
 
-os:
-  - linux
-  - osx
+matrix:
+  - os: linux
+    dist: xenial
+  - os: osx
+    osx_image: xcode10.1
 
 addons:
   apt:

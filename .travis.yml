@@ -4,6 +4,16 @@ os:
   - linux
   - osx
 
+addons:
+  apt:
+    sources:
+      - sourceline: "deb http://mirrors.kernel.org/ubuntu/ disco main"
+    packages:
+      - cmake
+  homebrew:
+    packages:
+      - cmake
+
 script:
   - mkdir build
   - cd build

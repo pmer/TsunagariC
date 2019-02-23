@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-sounds.h                      **
+** music.h                            **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,56 +25,43 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_AV_GOSU_GOSU_SOUNDS_H_
-#define SRC_AV_GOSU_GOSU_SOUNDS_H_
+#ifndef SRC_AV_GOSU_GOSU_MUSIC_H_
+#define SRC_AV_GOSU_GOSU_MUSIC_H_
 
-#include <Gosu/Audio.hpp>
+#include <string>
 
-#include "cache/cache-template.cpp"
+#include "cache/cache-template.h"
 #include "cache/readercache.h"
-#include "core/sounds.h"
+#include "core/music-worker.h"
+#include "util/rc.h"
 
-class GosuSoundInstance : public SoundInstance {
+namespace Gosu {
+    class Song;
+}
+
+Rc<Gosu::Song> genSong(const std::string& name);
+
+class GosuMusic : public MusicWorker {
  public:
-    GosuSoundInstance(Gosu::SampleInstance instance);
+    GosuMusic() = default;
+    ~GosuMusic();
 
-    ~GosuSoundInstance() = default;
+    void play(std::string filename);
 
-    bool playing();
     void stop();
 
-    bool paused();
+    bool playing();
     void pause();
     void resume();
 
-    void volume(double volume);
-    void pan(double pan);
-    void speed(double speed);
-
- private:
-    GosuSoundInstance() = delete;
-    GosuSoundInstance(const GosuSoundInstance&) = delete;
-    GosuSoundInstance& operator=(const GosuSoundInstance&) = delete;
-
-    Gosu::SampleInstance instance;
-};
-
-
-class GosuSounds : public Sounds {
- public:
-    GosuSounds();
-
-    ~GosuSounds() = default;
-
-    Rc<SoundInstance> play(const std::string& path);
+    void setVolume(double volume);
 
     void garbageCollect();
 
  private:
-    GosuSounds(const GosuSounds&) = delete;
-    GosuSounds& operator=(const GosuSounds&) = delete;
+    Rc<Gosu::Song> musicInst;
 
-    ReaderCache<Rc<Gosu::Sample>> samples;
+    ReaderCache<Rc<Gosu::Song>, genSong> songs;
 };
 
-#endif  // SRC_AV_GOSU_GOSU_SOUNDS_H_
+#endif  // SRC_AV_GOSU_GOSU_MUSIC_H_

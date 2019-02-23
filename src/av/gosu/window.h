@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-window.h                      **
+** window.h                           **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_WINDOW_H
-#define GOSU_WINDOW_H
+#ifndef SRC_AV_GOSU_WINDOW_H_
+#define SRC_AV_GOSU_WINDOW_H_
 
 #include <functional>
 #include <map>
@@ -34,6 +34,7 @@
 
 #include <Gosu/Window.hpp>  // for Gosu::Window
 
+#include "core/display-list.h"
 #include "core/window.h"
 #include "util/vector.h"
 
@@ -93,6 +94,8 @@ protected:
 
     std::map<Gosu::Button, keystate> keystates;
     vector<KeyboardKey> gosuToTsunagariKey;
+
+    DisplayList display;
 };
 
-#endif
+#endif  // SRC_AV_GOSU_WINDOW_H_

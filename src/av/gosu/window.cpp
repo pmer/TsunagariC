@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-window.cpp                    **
+** window.cpp                         **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,11 +25,11 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "av/gosu/window.h"
+
 #include <Gosu/Graphics.hpp>  // for Gosu::Graphics
 #include <Gosu/Timing.hpp>
 #include <Gosu/Utility.hpp>
-
-#include "av/gosu/gosu-window.h"
 
 #include "core/client-conf.h"
 #include "core/world.h"
@@ -41,19 +41,16 @@
 
 static GosuGameWindow* globalWindow = nullptr;
 
-GameWindow* GameWindow::create()
-{
+GameWindow* GameWindow::create() {
     globalWindow = new GosuGameWindow();
     return globalWindow;
 }
 
-GameWindow& GameWindow::instance()
-{
+GameWindow& GameWindow::instance() {
     return *globalWindow;
 }
 
-time_t GameWindow::time()
-{
+time_t GameWindow::time() {
     return (time_t)Gosu::milliseconds();
 }
 
@@ -98,23 +95,19 @@ GosuGameWindow::GosuGameWindow()
     keys[Gosu::ButtonName::KB_DOWN] = KBDownArrow;
 }
 
-unsigned GosuGameWindow::width() const
-{
+unsigned GosuGameWindow::width() const {
     return graphics().width();
 }
 
-unsigned GosuGameWindow::height() const
-{
+unsigned GosuGameWindow::height() const {
     return graphics().height();
 }
 
-void GosuGameWindow::setCaption(const std::string& caption)
-{
+void GosuGameWindow::setCaption(const std::string& caption) {
     Gosu::Window::set_caption(caption);
 }
 
-void GosuGameWindow::button_down(const Gosu::Button btn)
-{
+void GosuGameWindow::button_down(const Gosu::Button btn) {
     now = this->time();
     if (keystates.find(btn) == keystates.end()) {
         keystate& state = keystates[btn];
@@ -132,8 +125,7 @@ void GosuGameWindow::button_down(const Gosu::Button btn)
     }
 }
 
-void GosuGameWindow::button_up(const Gosu::Button btn)
-{
+void GosuGameWindow::button_up(const Gosu::Button btn) {
     keystates.erase(btn);
 
     auto mapped = gosuToTsunagariKey[btn.id()];
@@ -142,18 +134,17 @@ void GosuGameWindow::button_up(const Gosu::Button btn)
     }
 }
 
-void GosuGameWindow::draw()
-{
-    World::instance().draw();
+void GosuGameWindow::draw() {
+    display.items.clear();
+    World::instance().draw(&display);
+    // TODO
 }
 
-bool GosuGameWindow::needs_redraw() const
-{
+bool GosuGameWindow::needs_redraw() const {
     return World::instance().needsRedraw();
 }
 
-void GosuGameWindow::update()
-{
+void GosuGameWindow::update() {
     now = this->time();
 
     if (conf.moveMode == TURN) {
@@ -167,14 +158,12 @@ void GosuGameWindow::update()
     }
 }
 
-void GosuGameWindow::mainLoop()
-{
+void GosuGameWindow::mainLoop() {
     show();
 }
 
 void GosuGameWindow::drawRect(double x1, double x2, double y1, double y2,
-        uint32_t argb)
-{
+        uint32_t argb) {
     Gosu::Color c(argb);
     double top = std::numeric_limits<double>::max();
     graphics().draw_quad(
@@ -186,30 +175,25 @@ void GosuGameWindow::drawRect(double x1, double x2, double y1, double y2,
     );
 }
 
-void GosuGameWindow::scale(double x, double y, std::function<void()> op)
-{
+void GosuGameWindow::scale(double x, double y, std::function<void()> op) {
     graphics().transform(Gosu::scale(x, y), op);
 }
 
-void GosuGameWindow::translate(double x, double y, std::function<void()> op)
-{
+void GosuGameWindow::translate(double x, double y, std::function<void()> op) {
     graphics().transform(Gosu::translate(x, y), op);
 }
 
 void GosuGameWindow::clip(double x, double y, double width, double height,
-                          std::function<void()> op)
-{
+                          std::function<void()> op) {
     graphics().clip_to(x, y, width, height, op);
 }
 
-void GosuGameWindow::close()
-{
+void GosuGameWindow::close() {
     Gosu::Window::close();
 }
 
 
-void GosuGameWindow::handleKeyboardInput(time_t now)
-{
+void GosuGameWindow::handleKeyboardInput(time_t now) {
     std::map<Gosu::Button, keystate>::iterator it;
 
     // Persistent input handling code

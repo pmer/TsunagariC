@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-cbuffer.h                     **
+** cbuffer.cpp                        **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,33 +25,25 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef GOSU_CBUFFER_H
-#define GOSU_CBUFFER_H
+#include <string.h>
 
-#include <Gosu/IO.hpp>
+#include "av/gosu/cbuffer.h"
 
-/**
- * Similar to Gosu::Buffer, but can be constructed around pre-existing C void*.
- * The memory is not copied. Also, this is a read-only implementation. If you
- * attempt to create a Gosu::Writer around this, it will fail.
- *
- * See Gosu/IO.hpp and GosuImpl/IO.cpp from Gosu
- * See http://www.libgosu.org/cpp/class_gosu_1_1_buffer.html
- * See http://www.libgosu.org/cpp/class_gosu_1_1_resource.html
- */
-class GosuCBuffer : public Gosu::Resource {
- public:
-    GosuCBuffer(const void* data, size_t size);
-    ~GosuCBuffer() = default;
+GosuCBuffer::GosuCBuffer(const void* data, size_t size)
+    : _data(data), _size(size) {}
 
-    size_t size() const;
-    void resize(size_t);  // NOOP
-    void read(size_t offset, size_t length, void* destBuffer) const;
-    void write(size_t, size_t, const void*);  // NOOP
+size_t GosuCBuffer::size() const {
+    return _size;
+}
 
- private:
-    const void* _data;
-    size_t _size;
-};
+void GosuCBuffer::resize(size_t) {
+    // NOOP
+}
 
-#endif
+void GosuCBuffer::read(size_t offset, size_t length, void* destBuffer) const {
+    memcpy(destBuffer, (const char*)_data + offset, length);
+}
+
+void GosuCBuffer::write(size_t, size_t, const void*) {
+    // NOOP
+}

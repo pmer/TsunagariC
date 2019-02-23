@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-music.h                       **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016      Paul Merrill   **
+** sounds.h                           **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,41 +25,57 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_AV_GOSU_GOSU_MUSIC_H_
-#define SRC_AV_GOSU_GOSU_MUSIC_H_
+#ifndef SRC_AV_GOSU_GOSU_SOUNDS_H_
+#define SRC_AV_GOSU_GOSU_SOUNDS_H_
 
-#include <string>
+#include <Gosu/Audio.hpp>
 
-#include "cache/cache-template.cpp"
+#include "cache/cache-template.h"
 #include "cache/readercache.h"
-#include "core/music-worker.h"
-#include "util/rc.h"
+#include "core/sounds.h"
 
-namespace Gosu {
-    class Song;
-}
-
-class GosuMusic : public MusicWorker {
+class GosuSoundInstance : public SoundInstance {
  public:
-    GosuMusic();
-    ~GosuMusic();
+    GosuSoundInstance(Gosu::Channel instance);
 
-    void play(std::string filename);
-
-    void stop();
+    ~GosuSoundInstance() = default;
 
     bool playing();
+    void stop();
+
+    bool paused();
     void pause();
     void resume();
 
-    void setVolume(double volume);
+    void volume(double volume);
+    void pan(double pan);
+    void speed(double speed);
+
+ private:
+    GosuSoundInstance() = delete;
+    GosuSoundInstance(const GosuSoundInstance&) = delete;
+    GosuSoundInstance& operator=(const GosuSoundInstance&) = delete;
+
+    Gosu::Channel instance;
+};
+
+
+Rc<Gosu::Sample> genSample(const std::string& name);
+
+class GosuSounds : public Sounds {
+ public:
+    GosuSounds() = default;
+    ~GosuSounds() = default;
+
+    Rc<SoundInstance> play(const std::string& path);
 
     void garbageCollect();
 
  private:
-    Rc<Gosu::Song> musicInst;
+    GosuSounds(const GosuSounds&) = delete;
+    GosuSounds& operator=(const GosuSounds&) = delete;
 
-    ReaderCache<Rc<Gosu::Song>> songs;
+    ReaderCache<Rc<Gosu::Sample>, genSample> samples;
 };
 
-#endif  // SRC_AV_GOSU_GOSU_MUSIC_H_
+#endif  // SRC_AV_GOSU_GOSU_SOUNDS_H_

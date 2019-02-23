@@ -76,16 +76,16 @@ endif()
 
 if(AV_GOSU)
     target_sources(tsunagari
-        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-cbuffer.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-cbuffer.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-images.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-images.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-music.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-music.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-sounds.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-sounds.h
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-window.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/gosu-window.h
+        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/cbuffer.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/cbuffer.h
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/images.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/images.h
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/music.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/music.h
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/sounds.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/sounds.h
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/window.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/src/av/gosu/window.h
     )
 endif()
 
@@ -109,6 +109,8 @@ target_sources(tsunagari
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/client-conf.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/cooldown.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/cooldown.h
+    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/display-list.cpp
+    PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/display-list.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/entity.cpp
     PUBLIC  ${CMAKE_CURRENT_LIST_DIR}/src/core/entity.h
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/core/formatter.cpp

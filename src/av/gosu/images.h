@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-images.h                      **
+** images.h                           **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -30,7 +30,7 @@
 
 #include <Gosu/Image.hpp>
 
-#include "cache/cache-template.cpp"
+#include "cache/cache-template.h"
 #include "cache/readercache.h"
 #include "core/images.h"
 #include "util/move.h"
@@ -65,9 +65,11 @@ class GosuTiledImage: public TiledImage {
 };
 
 
+Rc<Image> genImage(const std::string& path);
+
 class GosuImages : public Images {
  public:
-    GosuImages();
+    GosuImages() = default;
     ~GosuImages() = default;
 
     Rc<Image> load(const std::string& path);
@@ -81,7 +83,7 @@ class GosuImages : public Images {
     GosuImages(const GosuImages&) = delete;
     GosuImages& operator=(const GosuImages&) = delete;
 
-    ReaderCache<Rc<Image>> images;
+    ReaderCache<Rc<Image>, genImage> images;
     // We can't use a ReaderCache here because TiledImages are constructed
     // with three arguments, but a ReaderCache only supports the use of
     // one.

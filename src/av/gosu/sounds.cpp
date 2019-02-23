@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-sounds.cpp                    **
+** sounds.cpp                         **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,7 +25,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "gosu-sounds.h"
+#include "av/gosu/sounds.h"
 
 #include "core/client-conf.h"
 #include "core/formatter.h"
@@ -36,7 +36,7 @@
 #include "util/math2.h"
 #include "util/unique.h"
 
-#include "av/gosu/gosu-cbuffer.h"
+#include "av/gosu/cbuffer.h"
 
 static GosuSounds globalSounds;
 
@@ -44,7 +44,7 @@ Sounds& Sounds::instance() {
     return globalSounds;
 }
 
-GosuSoundInstance::GosuSoundInstance(Gosu::SampleInstance instance)
+GosuSoundInstance::GosuSoundInstance(Gosu::Channel instance)
     : instance(instance) {
     volume(1.0);
 }
@@ -78,7 +78,7 @@ void GosuSoundInstance::volume(double attemptedVolume) {
                 ) % attemptedVolume % volume);
     }
     assert_(0 <= conf.soundVolume && conf.soundVolume <= 100);
-    instance.change_volume(volume * conf.soundVolume / 100.0);
+    instance.set_volume(volume * conf.soundVolume / 100.0);
 }
 
 void GosuSoundInstance::pan(double attemptedPan) {
@@ -89,7 +89,7 @@ void GosuSoundInstance::pan(double attemptedPan) {
                 "Attempted to set pan to %, setting it to %"
                 ) % attemptedPan % pan);
     }
-    instance.change_pan(pan);
+    instance.set_pan(pan);
 }
 
 void GosuSoundInstance::speed(double attemptedSpeed) {
@@ -100,11 +100,11 @@ void GosuSoundInstance::speed(double attemptedSpeed) {
                 "Attempted to set speed to %, setting it to %"
                 ) % attemptedSpeed % speed);
     }
-    instance.change_speed(speed);
+    instance.set_speed(speed);
 }
 
 
-static Rc<Gosu::Sample> genSample(const std::string& path) {
+Rc<Gosu::Sample> genSample(const std::string& path) {
     Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
@@ -115,8 +115,6 @@ static Rc<Gosu::Sample> genSample(const std::string& path) {
     TimeMeasure m("Constructed " + path + " as sample");
     return Rc<Gosu::Sample>(new Gosu::Sample(buffer.front_reader()));
 }
-
-GosuSounds::GosuSounds() : samples(genSample) {}
 
 Rc<SoundInstance> GosuSounds::play(const std::string& path) {
     auto sample = samples.lifetimeRequest(path);

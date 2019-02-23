@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-music.cpp                     **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2015-2018 Paul Merrill   **
+** music.cpp                          **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,7 +25,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "av/gosu/gosu-music.h"
+#include "av/gosu/music.h"
 
 #include <Gosu/Audio.hpp>
 
@@ -34,7 +34,7 @@
 #include "util/move.h"
 #include "util/unique.h"
 
-#include "av/gosu/gosu-cbuffer.h"
+#include "av/gosu/cbuffer.h"
 
 static GosuMusic globalMusicWorker;
 
@@ -42,7 +42,7 @@ MusicWorker& MusicWorker::instance() {
     return globalMusicWorker;
 }
 
-static Rc<Gosu::Song> genSong(const std::string& name) {
+Rc<Gosu::Song> genSong(const std::string& name) {
     Unique<Resource> r = Resources::instance().load(name);
     if (!r) {
         // Error logged.
@@ -54,8 +54,6 @@ static Rc<Gosu::Song> genSong(const std::string& name) {
     return Rc<Gosu::Song>(new Gosu::Song(buffer.front_reader()));
 }
 
-
-GosuMusic::GosuMusic() : songs(genSong) {}
 
 GosuMusic::~GosuMusic() {
     stop();
@@ -78,7 +76,7 @@ void GosuMusic::play(std::string filepath) {
     musicInst = path.size() ? songs.lifetimeRequest(path)
                             : Rc<Gosu::Song>();
     musicInst->play(true);
-    musicInst->change_volume(volume);
+    musicInst->set_volume(volume);
 }
 
 bool GosuMusic::playing() {
@@ -110,7 +108,7 @@ void GosuMusic::resume() {
 void GosuMusic::setVolume(double level) {
     MusicWorker::setVolume(level);
     if (musicInst) {
-        musicInst->change_volume(volume);
+        musicInst->set_volume(volume);
     }
 }
 

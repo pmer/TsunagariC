@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** gosu-images.cpp                    **
+** images.cpp                         **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,14 +25,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "av/gosu/gosu-images.h"
+#include "av/gosu/images.h"
 
 #include <Gosu/Bitmap.hpp>
 #include <Gosu/Graphics.hpp>
 #include <Gosu/Image.hpp>
 
-#include "av/gosu/gosu-cbuffer.h"
-#include "av/gosu/gosu-window.h"
+#include "av/gosu/cbuffer.h"
+#include "av/gosu/window.h"
 #include "core/formatter.h"
 #include "core/images.h"
 #include "core/measure.h"
@@ -83,7 +83,7 @@ Rc<Image> GosuTiledImage::operator[](size_t n) const {
 }
 
 
-static Rc<Image> genImage(const std::string& path) {
+Rc<Image> genImage(const std::string& path) {
     Unique<Resource> r = Resources::instance().load(path);
     if (!r) {
         // Error logged.
@@ -134,8 +134,6 @@ static Rc<TiledImage> genTiledImage(const std::string& path,
     return Rc<TiledImage>(new GosuTiledImage(move_(images)));
 }
 
-
-GosuImages::GosuImages() : images(genImage) {}
 
 Rc<Image> GosuImages::load(const std::string& path) {
     return images.lifetimeRequest(path);

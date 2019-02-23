@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build_debian_9:
+  debian_9:
     docker:
       - image: debian:9-slim
     steps:
@@ -17,7 +17,7 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  build_ubuntu_19_04:
+  ubuntu_19_04:
     docker:
       - image: ubuntu:19.04
     steps:
@@ -32,7 +32,7 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  build_fedora_30:
+  fedora_30:
     docker:
       - image: fedora:30
     steps:
@@ -46,7 +46,7 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  build_arch_latest:
+  arch_latest:
     docker:
       - image: archlinux/base:latest
     steps:
@@ -62,7 +62,7 @@ jobs:
           cmake --build .
 
 # FIXME: The first run step fails with an error on "/bin/sh -eo pipefail".
-#  build_void_latest:
+#  void_latest:
 #    docker:
 #      - image: voidlinux/voidlinux:latest
 #    steps:
@@ -77,7 +77,7 @@ jobs:
 #          cmake .. &&
 #          cmake --build .
 
-  build_alpine_3_9:
+  alpine_3_9:
     docker:
       - image: alpine:3.9
     steps:
@@ -95,9 +95,9 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - build_debian_9
-      - build_ubuntu_19_04
-      - build_fedora_30
-      - build_arch_latest
-#     - build_void_latest
-      - build_alpine_3_9
+      - debian_9
+      - ubuntu_19_04
+      - fedora_30
+      - arch_latest
+#     - void_latest
+      - alpine_3_9

@@ -11,9 +11,8 @@ addons:
     sources:
       - sourceline: 'deb http://mirrors.kernel.org/ubuntu/ bionic main'
       - sourceline: 'deb http://ftp.debian.org/debian stretch-backports main'
-        key_url: 'https://ftp-master.debian.org/keys/archive-key-9.asc'
     packages:
-      - cmake/stretch-backports
+      - debian-archive-keyring/bionic
       - libjsoncpp1/bionic
       - libstdc++6/bionic
       - libuv1/bionic
@@ -26,6 +25,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
 
 install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -yq --no-install-suggests --no-install-recommends install cmake/stretch-backports; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade cmake; fi
 
 script:

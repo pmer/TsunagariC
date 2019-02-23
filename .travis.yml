@@ -9,8 +9,9 @@ matrix:
 addons:
   apt:
     sources:
-      - sourceline: "deb http://mirrors.kernel.org/ubuntu/ bionic main"
-      - sourceline: "deb http://ftp.debian.org/debian stretch-backports main"
+      - sourceline: 'deb http://mirrors.kernel.org/ubuntu/ bionic main'
+      - sourceline: 'deb http://ftp.debian.org/debian stretch-backports main'
+        key_url: 'https://ftp-master.debian.org/keys/archive-key-9.asc'
     packages:
       - cmake/stretch-backports
       - libjsoncpp1/bionic

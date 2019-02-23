@@ -1,9 +1,7 @@
 language: cpp
 
-matrix:
-  include:
-    - os: osx
-      osx_image: xcode10.1
+os: osx
+osx_image: xcode10.1
 
 #FIXME: Homebrew is out of date on Travis. Uncomment when it has CMake 3.13.
 #addons:

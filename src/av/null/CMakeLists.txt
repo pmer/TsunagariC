@@ -1,6 +1,0 @@
-set(TSUNAGARIC_SOURCES ${TSUNAGARIC_SOURCES}
-    ${CMAKE_CURRENT_LIST_DIR}/images.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/music.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/sounds.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/window.cpp
-)

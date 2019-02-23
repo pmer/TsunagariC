@@ -1,0 +1,10 @@
+image:
+  - Ubuntu1804
+  - Visual Studio 2017
+
+build_script:
+  - mkdir build
+  - cd build
+  - sh: cmake ..
+  - cmd: cmake .. -G 'Visual Studio 15 2017'
+  - cmake --build .

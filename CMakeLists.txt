@@ -313,7 +313,7 @@ if(AV_SDL2)
                 ${SDL2_mixer_INCLUDE_DIRS}
     )
 
-    target_link_directories(
+    target_link_directories(tsunagari
         PRIVATE ${SDL2_LIBRARY_DIRS}
                 ${SDL2_image_LIBRARY_DIRS}
                 ${SDL2_mixer_LIBRARY_DIRS}

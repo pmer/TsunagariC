@@ -99,5 +99,5 @@ workflows:
       - build_ubuntu
       - build_fedora
       - build_arch
-      - build_void
       - build_alpine
+#     - build_void

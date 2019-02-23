@@ -4,7 +4,6 @@ language: cpp
 #  - os: linux
 #    dist: xenial
 os: osx
-osx_image: xcode10.1
 
 addons:
   apt:
@@ -12,9 +11,16 @@ addons:
       - sourceline: "deb http://mirrors.kernel.org/ubuntu/ disco main"
     packages:
       - cmake
-  homebrew:
-    packages:
-      - cmake
+# FIXME: Homebrew is out of date on Travis. Uncomment when it has CMake 3.13.
+# homebrew:
+#   packages:
+#     - cmake
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake; fi
 
 script:
   - mkdir build

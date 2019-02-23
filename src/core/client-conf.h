@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** client-conf.h                      **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -48,7 +48,6 @@ struct Conf {
     bool fullscreen = false;
     int musicVolume = 100;
     int soundVolume = 100;
-    bool cacheEnabled = true;
     int cacheTTL = 300;
     int persistInit = 0;
     int persistCons = 0;

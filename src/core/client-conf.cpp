@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** client-conf.cpp                    **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -97,11 +97,8 @@ bool parseConfig(const std::string& filename) {
     if (doc->hasObject("cache")) {
         JSONObjectPtr cache = doc->objectAt("cache");
 
-        if (cache->hasBool("enabled")) {
-            conf.cacheEnabled = cache->boolAt("enabled");
-        }
         if (cache->hasUnsigned("ttl")) {
-            conf.cacheEnabled = cache->unsignedAt("ttl") != 0;
+            conf.cacheTTL = cache->unsignedAt("ttl") != 0;
         }
     }
 

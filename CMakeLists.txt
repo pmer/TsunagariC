@@ -288,11 +288,6 @@ if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
     endif()
 endif()
 
-if($ENV{TRAVIS})
-    target_compile_definitions(tsunagari PUBLIC  TRAVIS)
-    target_compile_definitions(pack-tool PRIVATE TRAVIS)
-endif()
-
 
 #
 # Linking and externally-managed dependencies

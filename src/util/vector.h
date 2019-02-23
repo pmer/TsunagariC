@@ -547,7 +547,7 @@ vector<T>::insert(const_iterator position, const T& value) {
     assert_(position >= mpBegin && position <= mpEnd);
 
     // We implment a quick pathway for the case that the insertion position is at the end and we have free capacity for it.
-    const ptrdiff_t n = position - mpBegin; // Save this because we might reallocate.
+    const size_t n = position - mpBegin; // Save this because we might reallocate.
 
     if ((mpEnd == mCapacity) || (position != mpEnd)) {
         DoInsertValue(position, value);

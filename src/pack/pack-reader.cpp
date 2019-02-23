@@ -131,7 +131,7 @@ Unique<PackReader> PackReader::fromFile(const std::string& path) {
     offset += blobCount * sizeof(BlobMetadata);
 
     reader->dataOffsets = reader->file.at<uint64_t*>(offset);
-    offset += blobCount * sizeof(uint64_t);
+    //offset += blobCount * sizeof(uint64_t);
 
     return Unique<PackReader>(reader);
 }

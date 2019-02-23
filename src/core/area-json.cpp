@@ -151,6 +151,7 @@ bool AreaJSON::processDescriptor() {
 
     CHECK(doc->hasArray("tilesets"));
     const JSONArrayPtr tilesets = doc->arrayAt("tilesets");
+    CHECK(tilesets->size() > 0);
 
     for (size_t i = 0; i < tilesets->size(); i++) {
         CHECK(tilesets->isObject(i));
@@ -159,6 +160,7 @@ bool AreaJSON::processDescriptor() {
 
     CHECK(doc->hasArray("layers"));
     const JSONArrayPtr layers = doc->arrayAt("layers");
+    CHECK(layers->size() > 0);
 
     for (size_t i = 0; i < layers->size(); i++) {
         CHECK(layers->isObject(i));
@@ -295,6 +297,8 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
     tilex = obj->unsignedAt("tilewidth");
     tiley = obj->unsignedAt("tileheight");
 
+    CHECK(tilex > 0 && tiley > 0);
+
     if (grid.tileDim && grid.tileDim != ivec2(tilex, tiley)) {
         Log::err(descriptor,
                  "Tileset's width/height contradict earlier <layer>");
@@ -353,8 +357,11 @@ bool AreaJSON::processTileSetFile(JSONObjectRef obj,
 
             // Initialize a default TileType, we'll build on that.
             TileType* type = new TileType((*img.get())[id]);
-            CHECK(processTileType(move_(tileProperties),
-                                  *type, img, id));
+            if (!processTileType(move_(tileProperties),
+                                 *type, img, id)) {
+                delete type;
+                return false;
+            }
             // "gid" is the global area-wide id of the tile.
             size_t gid = (size_t)id + (size_t)firstGid;
             delete gids[gid];  // "vanilla" type
@@ -636,7 +643,7 @@ bool AreaJSON::processObject(JSONObjectPtr obj) {
     //assert_(0 <= z && z < dim.z);
 
     // Gather object properties now. Assign them to tiles later.
-    bool wwide[5], hwide[5];  // Wide exit in dimensions: width, height
+    bool wwide[5] = {}, hwide[5] = {};  // Wide exit in width or height.
 
     DataArea::TileScript enterScript = nullptr,
                          leaveScript = nullptr,

@@ -78,6 +78,7 @@ void Cache<T>::momentaryPut(const std::string& name, T data){
     entry.resource = data;
     time_t now = World::instance().time();
     entry.lastUsed = now;
+    entry.memoryUsed = 0;
     map[name] = entry;
 }
 
@@ -89,6 +90,7 @@ void Cache<T>::lifetimePut(const std::string& name, T data) {
     CacheEntry entry;
     entry.resource = data;
     entry.lastUsed = IN_USE_NOW;
+    entry.memoryUsed = 0;
     map[name] = entry;
 }
 

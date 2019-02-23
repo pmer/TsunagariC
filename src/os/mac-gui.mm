@@ -52,6 +52,7 @@ void macSetWorkingDirectory() {
     chdir("Contents/Resources");
 
     [appPath release];
+    CFRelease(url);
 }
 
 void macMessageBox(const char* title, const char* msg) {

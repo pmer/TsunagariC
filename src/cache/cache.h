@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** cache.h                            **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,7 +28,7 @@
 #ifndef SRC_CACHE_CACHE_H_
 #define SRC_CACHE_CACHE_H_
 
-#include <map>
+#include <unordered_map>
 #include <string>
 
 template<class T>
@@ -50,7 +50,7 @@ class Cache {
         time_t lastUsed;  // time in milliseconds
     };
 
-    typedef std::map<const std::string, CacheEntry> CacheMap;
+    typedef std::unordered_map<std::string, CacheEntry> CacheMap;
     typedef typename CacheMap::iterator CacheMapIter;
     CacheMap map;
 };

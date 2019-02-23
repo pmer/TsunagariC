@@ -114,6 +114,32 @@ bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void**
     if (fd == -1) {
         return false;
     }
+
+    ssize_t total = 0;
+    vector<iovec> ios;
+
+    ios.reserve(count);
+    for (size_t i = 0; i < count; i++) {
+        total += lengths[i];
+        ios.push_back({datas[i], lengths[i]});
+    }
+
+    ssize_t written = writev(fd, ios.data(), static_cast<int>(ios.size()));
+    if (written != total) {
+        close(fd);
+        return false;
+    }
+
+    close(fd);
+    return true;
+}
+
+/*
+bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void** datas) {
+    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+    if (fd == -1) {
+        return false;
+    }
     for (size_t i = 0; i < count; i++) {
         size_t length = lengths[i];
         void* data = datas[i];
@@ -124,8 +150,9 @@ bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void**
         }
     }
     close(fd);
-    return false;
+    return true;
 }
+*/
 
 static bool isaTTY() {
     static bool checked = false;

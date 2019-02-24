@@ -32,6 +32,7 @@
 
 #include "core/world.h"
 #include "os/os.h"
+#include "util/move.h"
 #include "util/vector.h"
 
 void wFixConsole() {
@@ -67,7 +68,7 @@ void setTermColor(TermColor color) {
 }
 
 Optional<MappedFile> MappedFile::fromPath(const std::string& path) {
-    HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, NULL, OPEN_ALWAYS,
+    HANDLE file = CreateFile(widen(path).c_str(), GENERIC_READ, 0, NULL, OPEN_ALWAYS,
                              FILE_ATTRIBUTE_NORMAL, NULL);
     if (file == INVALID_HANDLE_VALUE) {
         return Optional<MappedFile>();
@@ -90,7 +91,7 @@ Optional<MappedFile> MappedFile::fromPath(const std::string& path) {
     m.file = file;
     m.mapping = mapping;
     m.data = static_cast<char*>(data);
-    return Optional<MappedFile>(m);
+    return Optional<MappedFile>(move_(m));
 }
 
 MappedFile::MappedFile()
@@ -119,4 +120,5 @@ MappedFile& MappedFile::operator=(MappedFile&& other) {
     other.file = INVALID_HANDLE_VALUE;
     other.mapping = NULL;
     other.data = NULL;
+    return *this;
 }

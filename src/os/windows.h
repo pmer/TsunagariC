@@ -37,24 +37,24 @@
 
 class MappedFile {
  public:
-	static Optional<MappedFile> fromPath(const std::string& path);
+    static Optional<MappedFile> fromPath(const std::string& path);
 
-	MappedFile();
-	MappedFile(MappedFile&& other);
-	MappedFile(const MappedFile& other) = delete;
-	~MappedFile();
+    MappedFile();
+    MappedFile(MappedFile&& other);
+    MappedFile(const MappedFile& other) = delete;
+    ~MappedFile();
 
-	MappedFile& operator=(MappedFile&& other);
+    MappedFile& operator=(MappedFile&& other);
 
-	template<typename T>
-	const T at(size_t offset) const {
-		return reinterpret_cast<T>(data + offset);
-	}
+    template<typename T>
+    const T at(size_t offset) const {
+        return reinterpret_cast<T>(data + offset);
+    }
 
  private:
-	 HANDLE file;
-	 HANDLE mapping;
-	 void* data;
+    HANDLE file;
+    HANDLE mapping;
+    char* data;
 };
 
 /* Visual C++ ignorantly assumes that all programs will use either a console OR

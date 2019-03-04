@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** resources.h                        **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef RESOURCES_H
-#define RESOURCES_H
+#ifndef SRC_CORE_RESOURCES_H_
+#define SRC_CORE_RESOURCES_H_
 
 #include <string>
 
@@ -73,4 +73,4 @@ class Resources {
     Resources& operator=(Resources&&) = delete;
 };
 
-#endif
+#endif  // SRC_CORE_RESOURCES_H_

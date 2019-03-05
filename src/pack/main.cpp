@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <algorithm>
 #include <mutex>
 
 #include "os/os.h"

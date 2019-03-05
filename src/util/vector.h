@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Electronic Arts Inc. All rights reserved.
-// Copyright 2017-2018 Paul Merrill
+// Copyright 2017-2019 Paul Merrill
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef SRC_UTIL_VECTOR_H_
@@ -102,6 +102,8 @@ class vector {
     iterator insert(const_iterator position, const T& value);
     iterator insert(const_iterator position, T&& value);
 
+    void append(const T* range, size_t n);
+    
     iterator erase(const_iterator position);
     iterator erase_unsorted(const_iterator position);         // Same as erase, except it doesn't preserve order, but is faster because it simply copies the last item in the vector over the erased position.
 
@@ -109,8 +111,6 @@ class vector {
     void reset_lose_memory() noexcept;                       // This is a unilateral reset to an initially empty state. No destructors are called, no deallocation occurs.
 
  protected:
-    struct should_copy_tag{}; struct should_move_tag : public should_copy_tag{};
-
     template<typename InputIterator>
     void DoAssign(InputIterator first, InputIterator last);
 
@@ -119,6 +119,8 @@ class vector {
 
     void DoInsertValuesEnd(size_type n); // Default constructs n values
 
+    void DoInsertValuesEnd(const T* range, size_type n);
+    
     template<typename... Args>
     void DoInsertValueEnd(Args&&... args);
 
@@ -512,6 +514,12 @@ inline void vector<T>::pop_back() {
 
 
 template<typename T>
+inline void vector<T>::append(const T* range, size_t n) {
+    DoInsertValuesEnd(range, n);
+}
+
+
+template<typename T>
 template<class... Args>
 inline typename vector<T>::iterator
 vector<T>::emplace(const_iterator position, Args&&... args) {
@@ -725,6 +733,31 @@ void vector<T>::DoInsertValuesEnd(size_type n) {
     else {
         uninitialized_default_fill_n(mpEnd, n);
         mpEnd += n;
+    }
+}
+
+
+template<typename T>
+void vector<T>::DoInsertValuesEnd(const T* range, size_type n) {
+    if (n > size_type(mCapacity - mpEnd)) {
+        size_type nPrevSize = size_type(mpEnd - mpBegin);
+        size_type nGrowSize = GetNewCapacity(nPrevSize);
+        size_type nNewSize = max_(nGrowSize, nPrevSize + n);
+        T* pNewData = DoAllocate(nNewSize);
+        T* pNewEnd = pNewData;
+
+        pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewEnd);
+        pNewEnd = uninitialized_copy(const_cast<T*>(range), const_cast<T*>(range + n), pNewEnd);
+
+        destruct(mpBegin, mpEnd);
+        DoFree(mpBegin);
+
+        mpBegin = pNewData;
+        mpEnd = pNewEnd;
+        mCapacity = pNewData + nNewSize;
+    }
+    else {
+        mpEnd = uninitialized_copy(const_cast<T*>(range), const_cast<T*>(range + n), mpEnd);
     }
 }
 

@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** pack.h                           **
-** Copyright 2016-2019 Paul Merrill **
-*************************************/
+/********************************
+** Tsunagari Tile Engine       **
+** string-view.h               **
+** Copyright 2019 Paul Merrill **
+*********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,42 +24,36 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_RESOURCES_PACK_H_
-#define SRC_RESOURCES_PACK_H_
+#ifndef SRC_UTIL_STRING_VIEW_H_
+#define SRC_UTIL_STRING_VIEW_H_
 
-#include <stdlib.h>
+#include <stddef.h>
 
-#include <mutex>
+#include "util/optional.h"
 
-#include "core/resources.h"
-#include "pack/pack-reader.h"
-#include "util/unique.h"
-
-class PackResource : public Resource {
+class StringView {
  public:
-    PackResource(void* data, size_t size);
+    StringView() = default;
+    StringView(const char* data) noexcept;
+    StringView(const char* data, size_t size) noexcept;
+    StringView(const StringView& s) = default;
+    ~StringView() = default;
 
-    const void* data() const;
-    size_t size() const;
+    StringView& operator=(const StringView& s) = default;
 
- private:
-    char* _data;
-    size_t _size;
+    bool operator==(const StringView s) const noexcept;
+    bool operator!=(const StringView s) const noexcept;
+    bool operator<(const StringView s) const noexcept;
+    bool operator>(const StringView s) const noexcept;
+
+    Optional<size_t> find(char needle) const noexcept;
+    Optional<size_t> rfind(char needle) const noexcept;
+    StringView substr(size_t from) const noexcept;
+    StringView substr(size_t from, size_t to) const noexcept;
+
+ public:
+    const char* data;
+    size_t size;
 };
 
-class PackResources : public Resources {
- public:
-    PackResources();
-    ~PackResources() = default;
-
-    Unique<Resource> load(const std::string& path);
-
- private:
-    PackResources(const PackResources&) = delete;
-    PackResources& operator=(const PackResources&) = delete;
-
-    std::mutex mutex;
-    Unique<PackReader> pack;
-};
-
-#endif  // SRC_RESOURCES_PACK_H_
+#endif  // SRC_UTIL_STRING_VIEW_H_

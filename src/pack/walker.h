@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** walker.h                    **
-** Copyright 2017 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** walker.h                         **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,13 +28,13 @@
 #define SRC_PACK_WALKER_H_
 
 #include <functional>
-#include <string>
 
+#include "util/string-view.h"
 #include "util/vector.h"
 
 // Recursively walk the file system under the following paths, calling op on
 // each regular file (non-directory) found. Uses one thread per logical core, so
 // op can be called multiple times in parallel.
-void walk(vector<std::string> paths, std::function<void(std::string)> op);
+void walk(vector<StringView> paths, std::function<void(StringView)> op);
 
 #endif  // SRC_PACK_WALKER_H_

@@ -29,11 +29,11 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <string>
 
 #include "os/os.h"
 #include "pack/file-type.h"
 #include "pack/pack-reader.h"
+#include "util/string.h"
 #include "util/vector.h"
 
 //                                       "T   s    u    n    a   g    a   r"
@@ -66,7 +66,7 @@ struct BlobMetadata {
 };
 
 struct Blob {
-    std::string path;
+    String path;
     PackWriter::BlobSize size;
     const void* data;
 };
@@ -86,9 +86,9 @@ static bool operator<(const Blob& a, const Blob& b) {
 
 class PackWriterImpl : public PackWriter {
  public:
-    bool writeToFile(const std::string& path);
+    bool writeToFile(StringView path);
 
-    void addBlob(std::string path, uint64_t size, const void* data);
+    void addBlob(String path, BlobSize size, const void* data);
 
  private:
     vector<Blob> blobs;
@@ -99,7 +99,7 @@ Unique<PackWriter> PackWriter::make() {
     return Unique<PackWriter>(new PackWriterImpl);
 }
 
-bool PackWriterImpl::writeToFile(const std::string &path) {
+bool PackWriterImpl::writeToFile(StringView path) {
     size_t blobCount = blobs.size();
 
     // Sort blobs by size (smallest first).
@@ -143,7 +143,7 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
     };
 
     vector<PathOffset> pathOffsetsBlock;
-    std::string pathsBlock;
+    String pathsBlock;
     vector<BlobMetadata> metadatasBlock;
     vector<uint64_t> dataOffsetsBlock;
 
@@ -159,7 +159,7 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
     pathOffsetsBlock.push_back(pathOffset);
 
     for (auto& blob : blobs) {
-        pathsBlock += blob.path;
+        pathsBlock << blob.path;
     }
 
     for (auto& blob : blobs) {
@@ -206,7 +206,7 @@ bool PackWriterImpl::writeToFile(const std::string &path) {
     return writeFileVec(path, writeLengths.size(), writeLengths.data(), writeDatas.data());
 }
 
-void PackWriterImpl::addBlob(std::string path, uint64_t size, const void *data) {
-    blobs.push_back({path, size, data});
+void PackWriterImpl::addBlob(String path, BlobSize size, const void *data) {
+    blobs.push_back({move_(path), size, data});
     sorted = false;
 }

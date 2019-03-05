@@ -33,6 +33,7 @@
 
 #include "core/client-conf.h"
 #include "data/data-area.h"
+#include "util/string-view.h"
 #include "util/unique.h"
 
 class DataWorld {
@@ -66,7 +67,7 @@ class DataWorld {
             vicoord coords;
         } gameStart;
     } parameters;
-    std::string datafile;
+    StringView datafile;
 
  protected:
     DataWorld() = default;

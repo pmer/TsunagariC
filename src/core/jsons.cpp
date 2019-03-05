@@ -39,6 +39,7 @@
 #include "core/measure.h"
 #include "core/resources.h"
 #include "util/move.h"
+#include "util/string-view-std.h"
 #include "util/string2.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
@@ -266,11 +267,13 @@ const RJObject& JSONDocImpl::get() const {
 
 
 static JSONObjectRef genJSON(const std::string& path) {
-    Unique<Resource> r = Resources::instance().load(path);
+    StringView path_ = stringViewFromStdString(path);
+
+    Optional<StringView> r = resourceLoad(path_);
     if (!r) {
         return JSONObjectRef();
     }
-    std::string json(static_cast<const char*>(r->data()), r->size());
+    std::string json(static_cast<const char*>(r->data), r->size);
 
     TimeMeasure m("Constructed " + path + " as json");
 

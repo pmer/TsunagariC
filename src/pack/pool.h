@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** pool.h                      **
-** Copyright 2017 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** pool.h                           **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,14 +28,14 @@
 #define SRC_PACK_POOL_H_
 
 #include <functional>
-#include <string>
 
+#include "util/string.h"
 
 class Pool {
  public:
     static const size_t ONE_PER_CORE = 0;
 
-    static Pool* makePool(std::string name,
+    static Pool* makePool(String name,
                           size_t workerLimit = ONE_PER_CORE);
     virtual ~Pool() = default;
 

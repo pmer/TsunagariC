@@ -29,18 +29,17 @@
 
 #include <stdint.h>
 
-#include <string>
-
+#include "util/string.h"
 #include "util/vector.h"
 
 extern char dirSeparator;
 
-uint64_t getFileSize(const std::string& path);
-bool writeFile(const std::string& path, size_t length, void* data);
-bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void** datas);
-bool isDir(const std::string& path);
-void makeDirectory(const std::string& path);
-vector<std::string> listDir(const std::string& path);
+Optional<uint64_t> getFileSize(String&& path);
+bool writeFile(String&& path, size_t length, void* data);
+bool writeFileVec(String&& path, size_t count, size_t* lengths, void** datas);
+bool isDir(String&& path);
+void makeDirectory(String&& path);
+vector<String> listDir(String&& path);
 
 enum TermColor {
     TC_RESET,

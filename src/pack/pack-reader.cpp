@@ -69,9 +69,9 @@ class PackReaderImpl : public PackReader {
  public:
     BlobIndex size() const;
 
-    BlobIndex findIndex(const std::string& path);
+    BlobIndex findIndex(StringView path);
 
-    std::string getBlobPath(BlobIndex index) const;
+    StringView getBlobPath(BlobIndex index) const;
     uint64_t getBlobSize(BlobIndex index) const;
     void* getBlobData(BlobIndex index);
 
@@ -91,10 +91,10 @@ class PackReaderImpl : public PackReader {
     const uint64_t* dataOffsets;
 
     bool lookupsConstructed = false;
-    std::unordered_map<std::string, BlobIndex> lookups;
+    std::unordered_map<StringView, BlobIndex> lookups;
 };
 
-Unique<PackReader> PackReader::fromFile(const std::string& path) {
+Unique<PackReader> PackReader::fromFile(StringView path) {
     Optional<MappedFile> maybeFile = MappedFile::fromPath(path);
     if (!maybeFile) {
         return Unique<PackReader>();
@@ -140,7 +140,7 @@ PackReader::BlobIndex PackReaderImpl::size() const {
     return header->blobCount;
 }
 
-PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) {
+PackReader::BlobIndex PackReaderImpl::findIndex(StringView path) {
     if (!lookupsConstructed) {
         lookupsConstructed = true;
         constructLookups();
@@ -154,10 +154,10 @@ PackReader::BlobIndex PackReaderImpl::findIndex(const std::string& path) {
     }
 }
 
-std::string PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const {
+StringView PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const {
     uint64_t begin = pathOffsets[index];
     uint64_t end = pathOffsets[index + 1];
-    return std::string(paths + begin, paths + end);
+    return StringView(paths + begin, end - begin);
 }
 
 uint64_t PackReaderImpl::getBlobSize(PackReader::BlobIndex index) const {
@@ -182,7 +182,7 @@ void PackReaderImpl::constructLookups() {
     for (PackReader::BlobIndex i = 0; i < header->blobCount; i++) {
         uint64_t pathBegin = pathOffsets[i];
         uint64_t pathEnd = pathOffsets[i + 1];
-        std::string blobPath(paths + pathBegin, paths + pathEnd);
+        StringView blobPath(paths + pathBegin, pathEnd - pathBegin);
         lookups[blobPath] = i;
     }
 }

@@ -29,8 +29,8 @@
 
 #include <stdint.h>
 
-#include <string>
-
+#include "util/string-view-hash.h"
+#include "util/string-view.h"
 #include "util/unique.h"
 #include "util/vector.h"
 
@@ -41,14 +41,14 @@ class PackReader {
 
     static constexpr BlobIndex BLOB_NOT_FOUND = UINT64_MAX;
 
-    static Unique<PackReader> fromFile(const std::string& path);
+    static Unique<PackReader> fromFile(StringView path);
     virtual ~PackReader() = default;
 
     virtual BlobIndex size() const = 0;
 
-    virtual BlobIndex findIndex(const std::string& path) = 0;
+    virtual BlobIndex findIndex(StringView path) = 0;
 
-    virtual std::string getBlobPath(BlobIndex index) const = 0;
+    virtual StringView getBlobPath(BlobIndex index) const = 0;
     virtual BlobSize getBlobSize(BlobIndex index) const = 0;
     virtual void* getBlobData(BlobIndex index) = 0;
 

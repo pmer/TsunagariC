@@ -29,8 +29,8 @@
 
 #include <stdint.h>
 
-#include <string>
-
+#include "util/string-view.h"
+#include "util/string.h"
 #include "util/unique.h"
 
 class PackWriter {
@@ -40,9 +40,9 @@ class PackWriter {
     static Unique<PackWriter> make();
     virtual ~PackWriter() = default;
 
-    virtual bool writeToFile(const std::string& path) = 0;
+    virtual bool writeToFile(StringView path) = 0;
 
-    virtual void addBlob(std::string path, BlobSize size, const void* data) = 0;
+    virtual void addBlob(String path, BlobSize size, const void* data) = 0;
 };
 
 #endif  // SRC_PACK_PACK_WRITER_H_

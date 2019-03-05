@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** ui-log.cpp                       **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -26,31 +26,59 @@
 
 #include "pack/ui.h"
 
+#include <mutex>
+
 #include "pack/pool.h"
+#include "util/string.h"
 #include "util/unique.h"
 
 static Unique<Pool> pool(Pool::makePool("ui", 1));
+static std::mutex mutex;
+static bool scheduled = false;
+static String buf;
 
-void uiShowAddingFile(const std::string& path) {
-    pool->schedule([=] {
-        printf("Adding %s\n", path.c_str());
-    });
+static void flush() {
+    std::lock_guard<std::mutex> lock(mutex);
+    printf("%s", buf.null().get());
+    buf.clear();
+    scheduled = false;
 }
 
-void uiShowWritingArchive(const std::string& archivePath) {
-    pool->schedule([=] {
-        printf("Writing to %s\n", archivePath.c_str());
-    });
+static void scheduleMessage(StringView message) {
+    std::lock_guard<std::mutex> lock(mutex);
+    buf << message;
+    if (!scheduled) {
+        pool->schedule(flush);
+        scheduled = true;
+    }
 }
 
-void uiShowListingEntry(const std::string& blobPath, uint64_t blobSize) {
-    pool->schedule([=] {
-        printf("%s: %llu bytes\n", blobPath.c_str(), blobSize);
-    });
+void uiShowSkippedMissingFile(StringView path) {
+    String message;
+    message << "Skipped " << path << ": file not found\n";
+    scheduleMessage(message);
 }
 
-void uiShowExtractingFile(const std::string& blobPath, uint64_t blobSize) {
-    pool->schedule([=] {
-        printf("Extracting %s: %llu bytes\n", blobPath.c_str(), blobSize);
-    });
+void uiShowAddedFile(StringView path, size_t size) {
+    String message;
+    message << "Added " << path << ": " << size << " bytes\n";
+    scheduleMessage(message);
+}
+
+void uiShowWritingArchive(StringView archivePath) {
+    String message;
+    message << "Writing to " << archivePath << "\n";
+    scheduleMessage(message);
+}
+
+void uiShowListingEntry(StringView blobPath, uint64_t blobSize) {
+    String message;
+    message << blobPath << ": " << blobSize << " bytes\n";
+    scheduleMessage(message);
+}
+
+void uiShowExtractingFile(StringView blobPath, uint64_t blobSize) {
+    String message;
+    message << "Extracting " << blobPath << ": " << blobSize << " bytes\n";
+    scheduleMessage(move_(message));
 }

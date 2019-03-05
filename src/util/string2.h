@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** string2.h                          **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -30,6 +30,7 @@
 
 #include <string>
 
+#include "util/string-view.h"
 #include "util/vector.h"
 
 //! Returns true if the string contains only digits, whitespace, and minus.
@@ -67,6 +68,6 @@ vector<int> parseRanges(const std::string& format);
 //! Convert an integer to a representative string.
 std::string itostr(int in);
 
-std::string slurp(const std::string& filename);
+std::string slurp(StringView filename);
 
 #endif  // SRC_UTIL_STRING2_H_

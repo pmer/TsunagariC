@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** file-type.h                 **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** file-type.h                      **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,7 @@
 #ifndef SRC_PACK_FILE_TYPE_H_
 #define SRC_PACK_FILE_TYPE_H_
 
-#include <string>
+#include "util/string-view.h"
 
 enum FileType {
     FT_TEXT,
@@ -35,6 +35,6 @@ enum FileType {
     FT_MEDIA
 };
 
-FileType determineFileType(const std::string& path);
+FileType determineFileType(StringView path);
 
 #endif  // SRC_PACK_FILE_TYPE_H_

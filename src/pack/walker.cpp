@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** walker.cpp                  **
-** Copyright 2017 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** walker.cpp                       **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,18 +31,20 @@
 #include "os/os.h"
 #include "pack/pool.h"
 #include "util/unique.h"
+#include "util/string-view.h"
 
 struct WalkContext {
     Unique<Pool> pool;
-    std::function<void(std::string)> op;
+    std::function<void(StringView)> op;
 };
 
-static void walkPath(WalkContext& ctx, std::string path) {
+static void walkPath(WalkContext& ctx, StringView path) {
     if (isDir(path)) {
-        vector<std::string> names = listDir(path);
+        vector<String> names = listDir(path);
         std::sort(names.begin(), names.end());
         for (auto& name : names) {
-            std::string child = path + dirSeparator + name;
+            String child;
+            child << path << dirSeparator << name;
             ctx.pool->schedule([&ctx, child] {
                 walkPath(ctx, child);
             });
@@ -52,7 +54,7 @@ static void walkPath(WalkContext& ctx, std::string path) {
     }
 }
 
-void walk(vector<std::string> paths, std::function<void(std::string)> op) {
+void walk(vector<StringView> paths, std::function<void(StringView)> op) {
     WalkContext ctx{
         Pool::makePool("walk"),
         move_(op)
@@ -60,7 +62,7 @@ void walk(vector<std::string> paths, std::function<void(std::string)> op) {
 
     for (auto& path : paths) {
         ctx.pool->schedule([&] {
-            walkPath(ctx, move_(path));
+            walkPath(ctx, path);
         });
     }
 }

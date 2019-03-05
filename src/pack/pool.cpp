@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** pool.cpp                    **
-** Copyright 2017 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** pool.cpp                         **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,6 +32,7 @@
 #include <thread>
 
 #include "util/move.h"
+#include "util/string.h"
 #include "util/vector.h"
 
 class PoolImpl : public Pool {
@@ -40,7 +41,7 @@ class PoolImpl : public Pool {
 
     void schedule(std::function<void()> job) final;
 
-    std::string name;
+    String name;
 
     size_t workerLimit;
     vector<std::thread> workers;
@@ -63,7 +64,7 @@ class PoolImpl : public Pool {
     std::condition_variable finished;
 };
 
-Pool* Pool::makePool(std::string name, size_t workerLimit) {
+Pool* Pool::makePool(String name, size_t workerLimit) {
     auto pool = new PoolImpl;
     pool->name = move_(name);
     pool->workerLimit = workerLimit > 0 ? workerLimit

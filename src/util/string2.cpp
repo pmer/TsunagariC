@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** string2.cpp                        **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -37,6 +37,8 @@
 
 #include "core/log.h"
 #include "util/math2.h"
+#include "util/string-view-std.h"
+#include "util/string-view.h"
 
 /**
  * Matches regex /\s*-?\d+/
@@ -264,8 +266,8 @@ std::string itostr(int in) {
     return out.str();
 }
 
-std::string slurp(const std::string& filename) {
-    std::ifstream in(filename);
+std::string slurp(StringView filename) {
+    std::ifstream in(to_string(filename));
     std::stringstream sstr;
     sstr << in.rdbuf();
     return sstr.str();

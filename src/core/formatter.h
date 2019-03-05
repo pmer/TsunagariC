@@ -1,9 +1,9 @@
-/***********************************
-** Tsunagari Tile Engine          **
-** formatter.h                    **
-** Copyright 2013 PariahSoft LLC  **
-** Copyright 2016 Paul Merrill    **
-***********************************/
+/**************************************
+** Tsunagari Tile Engine             **
+** formatter.h                       **
+** Copyright 2013      Michael Riley **
+** Copyright 2013-2019 Paul Merrill  **
+**************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,10 +25,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef FORMATTER_H
-#define FORMATTER_H
+#ifndef SRC_CORE_FORMATTER_H_
+#define SRC_CORE_FORMATTER_H_
 
-#include <string.h>
+#include <stddef.h>
 
 #include <string>
 
@@ -41,9 +41,9 @@
  *   Log::info(Formatter("coordinates are: % %") % x % y);
  */
 class Formatter {
-public:
+ public:
     Formatter(std::string format);
-    ~Formatter();
+    ~Formatter() = default;
 
     template<class T>
     Formatter& operator %(T data)
@@ -58,7 +58,7 @@ public:
 
     operator const std::string&();
 
-private:
+ private:
     template<class T>
     std::string format(const T data);
 
@@ -68,4 +68,4 @@ private:
     size_t pos;
 };
 
-#endif
+#endif  // SRC_CORE_FORMATTER_H_

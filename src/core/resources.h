@@ -28,49 +28,14 @@
 #ifndef SRC_CORE_RESOURCES_H_
 #define SRC_CORE_RESOURCES_H_
 
-#include <string>
-
-#include "util/unique.h"
-
-class Resource {
- public:
-    virtual ~Resource() = default;
-
-    virtual const void* data() const = 0;
-    virtual size_t size() const = 0;
-
- protected:
-    Resource() = default;
-
- private:
-    Resource(const Resource&) = delete;
-    Resource& operator=(const Resource&) = delete;
-};
-
+#include "util/string-view.h"
 
 /**
  * Provides data and resource extraction for a World.
  * Each World comes bundled with associated data.
  */
-class Resources {
- public:
-    //! Acquire the global Resources object.
-    static Resources& instance();
 
-    virtual ~Resources() = default;
-
-    //! Load a resource from the file at the given path.
-    //! Returns nullptr if the resource does not exist.
-    virtual Unique<Resource> load(const std::string& path) = 0;
-
- protected:
-    Resources() = default;
-
- private:
-    Resources(const Resources&) = delete;
-    Resources(Resources&&) = delete;
-    Resources& operator=(const Resources&) = delete;
-    Resources& operator=(Resources&&) = delete;
-};
+//! Load a resource from the file at the given path.
+Optional<StringView> resourceLoad(StringView path);
 
 #endif  // SRC_CORE_RESOURCES_H_

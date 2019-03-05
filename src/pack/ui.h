@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** ui.h                        **
-** Copyright 2017 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** ui.h                             **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,13 +27,14 @@
 #ifndef SRC_PACK_UI_H_
 #define SRC_PACK_UI_H_
 
-#include <stddef.h>
+#include <stdint.h>
 
-#include <string>
+#include "util/string-view.h"
 
-void uiShowAddingFile(const std::string& path);
-void uiShowWritingArchive(const std::string& arhivePath);
-void uiShowListingEntry(const std::string& blobPath, uint64_t blobSize);
-void uiShowExtractingFile(const std::string& blobPath, uint64_t blogSize);
+void uiShowSkippedMissingFile(StringView path);
+void uiShowAddedFile(StringView path, size_t size);
+void uiShowWritingArchive(StringView arhivePath);
+void uiShowListingEntry(StringView blobPath, uint64_t blobSize);
+void uiShowExtractingFile(StringView blobPath, uint64_t blogSize);
 
 #endif  // SRC_PACK_UI_H_

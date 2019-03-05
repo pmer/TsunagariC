@@ -41,36 +41,37 @@
 #include <iostream>
 #include <string>
 
+#include "util/string-view-std.h"
 #include "util/vector.h"
 
 char dirSeparator = '/';
 
-uint64_t getFileSize(const std::string& path) {
+Optional<uint64_t> getFileSize(String&& path) {
     struct stat status;
-    if (stat(path.c_str(), &status)) {
-        return SIZE_MAX;
+    if (stat(path.null(), &status)) {
+        return Optional<uint64_t>();
     }
-    return static_cast<uint64_t>(status.st_size);
+    return Optional<uint64_t>(static_cast<uint64_t>(status.st_size));
 }
 
-bool isDir(const std::string& path) {
+bool isDir(String&& path) {
     struct stat status;
-    if (stat(path.c_str(), &status)) {
+    if (stat(path.null(), &status)) {
         return false;
     }
     return S_ISDIR(status.st_mode);
 }
 
-void makeDirectory(const std::string& path) {
-    mkdir(path.c_str(), 0777);
+void makeDirectory(String&& path) {
+    mkdir(path.null(), 0777);
 }
 
-vector<std::string> listDir(const std::string& path) {
+vector<String> listDir(String&& path) {
     DIR* dir = nullptr;
     struct dirent* entry = nullptr;
-    vector<std::string> names;
+    vector<String> names;
 
-    if ((dir = opendir(path.c_str())) == nullptr) {
+    if ((dir = opendir(path.null())) == nullptr) {
         return names;
     }
 
@@ -95,8 +96,8 @@ vector<std::string> listDir(const std::string& path) {
     return names;
 }
 
-bool writeFile(const std::string& path, size_t length, void* data) {
-    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+bool writeFile(String&& path, size_t length, void* data) {
+    int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
     if (fd == -1) {
         return false;
     }
@@ -109,8 +110,8 @@ bool writeFile(const std::string& path, size_t length, void* data) {
     return true;
 }
 
-bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void** datas) {
-    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+bool writeFileVec(String&& path, size_t count, size_t* lengths, void** datas) {
+    int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
     if (fd == -1) {
         return false;
     }
@@ -135,8 +136,8 @@ bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void**
 }
 
 /*
-bool writeFileVec(const std::string& path, size_t count, size_t* lengths, void** datas) {
-    int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+bool writeFileVec(String&& path, size_t count, size_t* lengths, void** datas) {
+    int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
     if (fd == -1) {
         return false;
     }
@@ -190,8 +191,8 @@ void setTermColor(TermColor color) {
     }
 }
 
-Optional<MappedFile> MappedFile::fromPath(const std::string& path) {
-	int fd = open(path.c_str(), O_RDONLY);
+Optional<MappedFile> MappedFile::fromPath(String&& path) {
+	int fd = open(path.null(), O_RDONLY);
 	if (fd == -1) {
 		return Optional<MappedFile>();
 	}

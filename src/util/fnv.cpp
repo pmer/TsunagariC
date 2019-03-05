@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** os/unix.h                     **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** fnv.cpp                     **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,32 +24,39 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_UNIX_H_
-#define SRC_OS_UNIX_H_
+#include <stdint.h>
 
-#include "util/optional.h"
-#include "util/string.h"
+#include "util/fnv.h"
 
-class MappedFile {
- public:
-	static Optional<MappedFile> fromPath(String&& path);
+#if __SIZEOF_SIZE_T__ == 4
 
-	MappedFile();
-	MappedFile(MappedFile&& other);
-	MappedFile(const MappedFile& other) = delete;
-	MappedFile(char* map, size_t len);
-	~MappedFile();
+size_t fnvHash(const char* data, size_t size) {
+    size_t hash = 0x811c9dc5;
 
-	MappedFile& operator=(MappedFile&& other);
+    const uint8_t* begin = (const uint8_t*)data;
+    const uint8_t* end = begin + size;
 
-	template<typename T>
-	const T at(size_t offset) const {
-		return reinterpret_cast<T>(map + offset);
-	}
+    while (begin < end) {
+        hash ^= (size_t)*begin++;
+        hash += (hash<<1) + (hash<<4) + (hash<<7) + (hash<<8) + (hash<<24);
+    }
+    return hash;
+}
 
- private:
-	char* map;
-	size_t len;
-};
+#elif __SIZEOF_SIZE_T__ == 8
 
-#endif  // SRC_OS_UNIX_H_
+size_t fnvHash(const char* data, size_t size) {
+    size_t hash = 0xcbf29ce484222325;
+
+    const uint8_t* begin = (const uint8_t*)data;
+    const uint8_t* end = begin + size;
+    
+    while (begin < end) {
+        hash ^= (size_t)*begin++;
+        hash += (hash << 1) + (hash << 4) + (hash << 5) +
+                (hash << 7) + (hash << 8) + (hash << 40);
+    }
+    return hash;
+}
+
+#endif

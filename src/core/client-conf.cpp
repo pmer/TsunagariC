@@ -28,8 +28,10 @@
 #include "core/client-conf.h"
 
 #include "config.h"
+#include "core/formatter.h"
 #include "core/jsons.h"
 #include "util/move.h"
+#include "util/string-view-std.h"
 #include "util/string2.h"
 #include "util/vector.h"
 
@@ -37,18 +39,18 @@ Conf conf; // Project-wide global configuration.
 
 // Parse and process the client config file, and set configuration defaults for
 // missing options.
-bool parseConfig(const std::string& filename) {
+bool parseConfig(StringView filename) {
     std::string file = slurp(filename);
 
     if (file.empty()) {
-        Log::err(filename, "Could not find " + filename);
+        Log::err(to_string(filename), Formatter("Could not find ") % filename);
         return false;
     }
 
     JSONObjectPtr doc = JSONs::parse(move_(file));
 
     if (!doc) {
-        Log::err(filename, "Could not parse " + filename);
+        Log::err(to_string(filename), Formatter("Could not parse ") % filename);
         return false;
     }
 
@@ -64,7 +66,7 @@ bool parseConfig(const std::string& filename) {
             } else if (verbosity == "verbose") {
                 conf.verbosity = V_VERBOSE;
             } else {
-                Log::err(filename, "Unknown value for \"engine.verbosity\", using default");
+                Log::err(to_string(filename), "Unknown value for \"engine.verbosity\", using default");
             }
         }
     }

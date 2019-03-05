@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** pack.cpp                         **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -24,7 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "resources/pack.h"
+#include "core/resources.h"
 
 #include <limits>
 #include <mutex>
@@ -35,58 +35,61 @@
 
 #include "data/data-world.h"
 
+#include "pack/pack-reader.h"
 
-Resources& Resources::instance() {
-    static auto globalResources = new PackResources;
-    return *globalResources;
-}
+#include "util/string-view-std.h"
+#include "util/unique.h"
 
+static std::mutex mutex;
+static Unique<PackReader> pack;
 
-PackResource::PackResource(void* data, size_t size)
-    : _data(static_cast<char*>(data)), _size(size) {}
+static bool openPackFile() {
+    StringView path = DataWorld::instance().datafile;
 
-const void* PackResource::data() const {
-    return _data;
-}
-
-size_t PackResource::size() const {
-    return _size;
-}
-
-
-PackResources::PackResources() {
-    const std::string& path = DataWorld::instance().datafile;
+    //TimeMeasure m("Opened " + path);
 
     pack = PackReader::fromFile(path);
     if (!pack) {
         Log::fatal("PackResources",
                    Formatter("%: could not open archive") % path);
+        return false;
     }
+
+    return true;
 }
 
-Unique<Resource> PackResources::load(const std::string& path) {
+static std::string getFullPath(StringView path) {
+    std::string fullPath = to_string(DataWorld::instance().datafile);
+    fullPath.append("/")
+            .append(path.data, path.size);
+    return fullPath;
+}
+
+Optional<StringView> resourceLoad(StringView path) {
     std::lock_guard<std::mutex> lock(mutex);
 
-    //TimeMeasure m("Mapped " + path);
-
-    const std::string fullPath = DataWorld::instance().datafile + "/" + path;
+    if (!openPackFile()) {
+        return Optional<StringView>();
+    }
 
     PackReader::BlobIndex index = pack->findIndex(path);
 
     if (index == PackReader::BLOB_NOT_FOUND) {
-        Log::err("PackResources", Formatter("%: file missing") % fullPath);
-        return Unique<Resource>();
+        Log::err("PackResources",
+                 Formatter("%: file missing") % getFullPath(path));
+        return Optional<StringView>();
     }
 
     uint64_t blobSize = pack->getBlobSize(index);
 
     // Will it fit in memory?
     if (blobSize > std::numeric_limits<size_t>::max()) {
-        Log::err("PackResources", Formatter("%: file too large") % fullPath);
-        return Unique<Resource>();
+        Log::err("PackResources",
+                 Formatter("%: file too large") % getFullPath(path));
+        return Optional<StringView>();
     }
 
-    void* blobData = pack->getBlobData(index);
+    void* data = pack->getBlobData(index);
 
-    return Unique<Resource>(new PackResource(blobData, blobSize));
+    return Optional<StringView>(StringView(static_cast<char*>(data), blobSize));
 }

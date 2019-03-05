@@ -223,7 +223,6 @@ target_sources(pack-tool
 
 target_sources(tsunagari
     PRIVATE src/resources/pack.cpp
-    PUBLIC  src/resources/pack.h
 )
 
 target_sources(tsunagari
@@ -237,6 +236,8 @@ target_sources(tsunagari
     PUBLIC  src/util/dispatch-queue-impl.h
     PRIVATE src/util/dispatch-queue.cpp
     PUBLIC  src/util/dispatch-queue.h
+    PRIVATE src/util/fnv.cpp
+    PUBLIC  src/util/fnv.h
     PUBLIC  src/util/likely.h
     PUBLIC  src/util/math2.h
     PUBLIC  src/util/meta.h
@@ -246,6 +247,13 @@ target_sources(tsunagari
     PUBLIC  src/util/random.h
     PUBLIC  src/util/rc.h
     PUBLIC  src/util/safe-heap.h
+    PUBLIC  src/util/string-view-hash.h
+    PRIVATE src/util/string-view-std.cpp
+    PUBLIC  src/util/string-view-std.h
+    PRIVATE src/util/string-view.cpp
+    PUBLIC  src/util/string-view.h
+    PRIVATE src/util/string.cpp
+    PUBLIC  src/util/string.h
     PRIVATE src/util/string2.cpp
     PUBLIC  src/util/string2.h
     PRIVATE src/util/transform.cpp
@@ -257,6 +265,13 @@ target_sources(tsunagari
 target_sources(pack-tool
     PRIVATE src/util/assert.cpp
     PUBLIC  src/util/assert.h
+    PRIVATE src/util/fnv.cpp
+    PUBLIC  src/util/fnv.h
+    PUBLIC  src/util/string-view-hash.h
+    PRIVATE src/util/string-view.cpp
+    PUBLIC  src/util/string-view.h
+    PRIVATE src/util/string.cpp
+    PUBLIC  src/util/string.h
 )
 
 

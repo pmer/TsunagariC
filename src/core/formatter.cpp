@@ -1,8 +1,8 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** formatter.cpp                    **
-** Copyright 2013 PariahSoft LLC    **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2013 Michael Reiley    **
+** Copyright 2013-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -30,29 +30,20 @@
 #include <stdio.h>
 
 #include "util/assert.h"
+#include "util/string-view-std.h"
 
 Formatter::Formatter(std::string format)
-    : result(format), pos(0)
-{
+    : result(format), pos(0) {
     findNextPlaceholder();
 }
 
-
-Formatter::~Formatter()
-{
-}
-
-
-Formatter::operator const std::string&()
-{
+Formatter::operator const std::string&() {
     assert_(pos == result.size());
 
     return result;
 }
 
-
-void Formatter::findNextPlaceholder()
-{
+void Formatter::findNextPlaceholder() {
     assert_(pos <= result.size());
 
     size_t next = result.find("%", pos);
@@ -64,83 +55,68 @@ void Formatter::findNextPlaceholder()
     }
 }
 
-
 template<>
-std::string Formatter::format(bool data)
-{
+std::string Formatter::format(bool data) {
     return std::string(data ? "true" : "false");
 }
 
-
 template<>
-std::string Formatter::format(int data)
-{
+std::string Formatter::format(int data) {
     char buf[512];
     sprintf(buf, "%d", data);
     return std::string(buf);
 }
 
-
 template<>
-std::string Formatter::format(unsigned int data)
-{
+std::string Formatter::format(unsigned int data) {
     char buf[512];
     sprintf(buf, "%u", data);
     return std::string(buf);
 }
 
-
 template<>
-std::string Formatter::format(long data)
-{
+std::string Formatter::format(long data) {
     char buf[512];
     sprintf(buf, "%ld", data);
     return std::string(buf);
 }
 
-
 template<>
-std::string Formatter::format(unsigned long data)
-{
+std::string Formatter::format(unsigned long data) {
     char buf[512];
     sprintf(buf, "%lu", data);
     return std::string(buf);
 }
 
-
 template<>
-std::string Formatter::format(double data)
-{
+std::string Formatter::format(double data) {
     char buf[512];
     sprintf(buf, "%f", data);
     return std::string(buf);
 }
 
-
 template<>
-std::string Formatter::format(const char* data)
-{
+std::string Formatter::format(const char* data) {
     return std::string(data);
 }
 
+template<>
+std::string Formatter::format(StringView data) {
+    return to_string(data);
+}
 
 template<>
-std::string Formatter::format(const std::string& data)
-{
+std::string Formatter::format(const std::string& data) {
     return data;
 }
 
-
 template<>
-std::string Formatter::format(const std::string data)
-{
+std::string Formatter::format(const std::string data) {
     return data;
 }
 
-
 template<>
-std::string Formatter::format(void* data)
-{
+std::string Formatter::format(void* data) {
     char buf[512];
     sprintf(buf, "%p", data);
     return std::string(buf);

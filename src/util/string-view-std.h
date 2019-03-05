@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** os/unix.h                     **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** string-view-std.h           **
+** Copyright 2019 Paul Merrill **
+*********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,32 +24,15 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_UNIX_H_
-#define SRC_OS_UNIX_H_
+#ifndef SRC_UTIL_STRING_VIEW_STD_H_
+#define SRC_UTIL_STRING_VIEW_STD_H_
 
-#include "util/optional.h"
-#include "util/string.h"
+#include <string>
 
-class MappedFile {
- public:
-	static Optional<MappedFile> fromPath(String&& path);
+#include "util/string-view.h"
 
-	MappedFile();
-	MappedFile(MappedFile&& other);
-	MappedFile(const MappedFile& other) = delete;
-	MappedFile(char* map, size_t len);
-	~MappedFile();
+std::string to_string(StringView s);
 
-	MappedFile& operator=(MappedFile&& other);
+StringView stringViewFromStdString(const std::string& s);
 
-	template<typename T>
-	const T at(size_t offset) const {
-		return reinterpret_cast<T>(map + offset);
-	}
-
- private:
-	char* map;
-	size_t len;
-};
-
-#endif  // SRC_OS_UNIX_H_
+#endif  // SRC_UTIL_STRING_VIEW_STD_H_

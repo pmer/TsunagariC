@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** file-type.cpp               **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** file-type.cpp                    **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,23 +26,21 @@
 
 #include "pack/file-type.h"
 
-#include <string>
-
-static const std::string textExtensions[] = {
-        ".json"
+static const StringView textExtensions[] = {
+    ".json"
 };
 
-static const std::string mediaExtensions[] = {
-        ".oga",
-        ".png"
+static const StringView mediaExtensions[] = {
+    ".oga",
+    ".png"
 };
 
-FileType determineFileType(const std::string& path) {
+FileType determineFileType(StringView path) {
     auto dot = path.rfind('.');
-    if (dot == -1) {
+    if (!dot) {
         return FT_UNKNOWN;
     }
-    std::string extension = path.substr(dot);
+    StringView extension = path.substr(*dot);
     for (auto& textExtension : textExtensions) {
         if (extension == textExtension) {
             return FT_TEXT;

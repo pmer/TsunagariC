@@ -10,13 +10,11 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include <new>
-
 #include "util/algorithm.h"
 #include "util/assert.h"
 #include "util/likely.h"
 #include "util/move.h"
-
+#include "util/new.h"
 
 template<typename T>
 class vector {

@@ -50,11 +50,11 @@ class String : public vector<char> {
     String(const char* value);
     String(StringView value);
     String(const String& other) = default;
-    String(String&& other);
+    String(String&& other) noexcept;
     ~String() = default;
 
     String& operator=(const String& other) = default;
-    String& operator=(String&& other);
+    String& operator=(String&& other) noexcept;
     bool operator<(const String& other) const noexcept;
     bool operator>(const String& other) const noexcept;
 

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** math2.h                            **
 ** Copyright 2014      Michael Reiley **
-** Copyright 2014-2016 Paul Merrill   **
+** Copyright 2014-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_UTIL_MATH_H_
-#define SRC_UTIL_MATH_H_
+#ifndef SRC_UTIL_MATH2_H_
+#define SRC_UTIL_MATH2_H_
 
 template<typename T>
 static T max(T a, T b) {
@@ -57,4 +57,4 @@ static T wrap(T min, T value, T max) {
     return value % max;
 }
 
-#endif  // SRC_UTIL_MATH_H_
+#endif  // SRC_UTIL_MATH2_H_

@@ -1,8 +1,9 @@
-/********************************
-** Tsunagari Tile Engine       **
-** string-view-hash.h          **
-** Copyright 2019 Paul Merrill **
-********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** math.h                             **
+** Copyright 2014      Michael Reiley **
+** Copyright 2014-2019 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,14 +25,9 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_UTIL_STRING_VIEW_HASH_H_
-#define SRC_UTIL_STRING_VIEW_HASH_H_
+#ifndef SRC_UTIL_MATH_H_
+#define SRC_UTIL_MATH_H_
 
-#include "util/fnv.h"
-#include "util/string-view.h"
+extern "C" float ceilf(float);
 
-size_t hash_(StringView s) {
-    return fnvHash(s.data, s.size);
-}
-
-#endif  // SRC_UTIL_STRING_VIEW_STD_H_
+#endif  // SRC_UTIL_MATH_H_

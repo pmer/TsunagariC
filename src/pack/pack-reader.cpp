@@ -29,10 +29,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <string>
-#include <unordered_map>
-
 #include "os/os.h"
+#include "util/hashtable.h"
 #include "util/move.h"
 #include "util/optional.h"
 #include "util/string-view-hash.h"
@@ -92,7 +90,7 @@ class PackReaderImpl : public PackReader {
     const uint64_t* dataOffsets;
 
     bool lookupsConstructed = false;
-    std::unordered_map<StringView, BlobIndex> lookups;
+    Hashmap<StringView, BlobIndex> lookups;
 };
 
 Unique<PackReader> PackReader::fromFile(StringView path) {
@@ -151,7 +149,7 @@ PackReader::BlobIndex PackReaderImpl::findIndex(StringView path) {
     if (it == lookups.end()) {
         return BLOB_NOT_FOUND;
     } else {
-        return it->second;
+        return it.value();
     }
 }
 

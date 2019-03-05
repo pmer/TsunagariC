@@ -263,16 +263,25 @@ target_sources(tsunagari
 )
 
 target_sources(pack-tool
+    PRIVATE src/util/algorithm.h
     PRIVATE src/util/assert.cpp
     PRIVATE src/util/assert.h
     PRIVATE src/util/fnv.cpp
     PRIVATE src/util/fnv.h
+    PRIVATE src/util/hashtable.h
+    PRIVATE src/util/list.h
+    PRIVATE src/util/math.h
+    PRIVATE src/util/meta.h
+    PRIVATE src/util/move.h
+    PRIVATE src/util/new.h
+    PRIVATE src/util/optional.h
     PRIVATE src/util/sort.h
     PRIVATE src/util/string-view-hash.h
     PRIVATE src/util/string-view.cpp
     PUBLIC  src/util/string-view.h
     PRIVATE src/util/string.cpp
     PUBLIC  src/util/string.h
+    PRIVATE src/util/vector.h
 )
 
 

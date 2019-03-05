@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** optional.h                       **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -29,42 +29,44 @@
 
 #include "util/assert.h"
 #include "util/move.h"
+#include "util/new.h"
 
 template<typename T>
 class Optional {
-    union {
-        T x;
-        char null;
-    };
+    alignas(alignof(T)) char x[sizeof(T)];
     bool exists;
 
  public:
-    explicit Optional() noexcept : null(), exists(false) {}
-    explicit Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
-    explicit Optional(const T& x) noexcept : x(x), exists(true) {}
+    explicit Optional() noexcept : exists(false) {}
+    explicit Optional(T&& x) noexcept : exists(true) {
+        cast() = move_(x);
+    }
+    explicit Optional(const T& x) noexcept : exists(true) {
+        cast() = x;
+    }
 
-    Optional(Optional<T>&& other) noexcept : null(), exists(other.exists) {
+    Optional(Optional<T>&& other) noexcept : exists(other.exists) {
         if (exists) {
-            x = move_(other.x);
-            other.x.~T();
+            cast() = move_(other.cast());
+            other.cast().~T();
         }
         other.exists = false;
     }
-    Optional(const Optional<T>& other) noexcept : null(), exists(other.exists) {
+    Optional(const Optional<T>& other) noexcept : exists(other.exists) {
         if (exists) {
-            x = other.x;
+            cast() = other.cast();
         }
     }
 
-    ~Optional() {
+    ~Optional() noexcept {
         if (exists) {
-            x.~T();
+            cast().~T();
         }
     }
 
     inline Optional& operator=(const T &x) {
         if (exists) {
-            this->x = x;
+            cast() = x;
         }
         else {
             new (&this->x) T(x);
@@ -76,15 +78,15 @@ class Optional {
     inline Optional& operator=(Optional<T>&& other) {
         if (exists) {
             if (other.exists) {
-                x = move_(other.x);
+                cast() = move_(other.cast());
             }
             else {
-                x.~T();
+                cast().~T();
             }
         }
         else {
             if (other.exists) {
-                new (&x) T(other.x);
+                new (x) T(other.cast());
             }
         }
         exists = other.exists;
@@ -94,15 +96,15 @@ class Optional {
     inline Optional& operator=(const Optional<T>& other) {
         if (exists) {
             if (other.exists) {
-                x = move_(other.x);
+                cast() = move_(other.cast());
             }
             else {
-                x.~T();
+                cast().~T();
             }
         }
         else {
             if (other.exists) {
-                new (&x) T(other.x);
+                new (x) T(other.cast());
             }
         }
         exists = other.exists;
@@ -111,11 +113,11 @@ class Optional {
 
     inline operator bool() const { return exists; }
 
-    inline const T* operator->() const { assert_(exists); return &x; }
-    inline const T& operator*() const { assert_(exists); return x; }
+    inline const T* operator->() const { assert_(exists); return &cast(); }
+    inline const T& operator*() const { assert_(exists); return cast(); }
 
-    inline T* operator->() { assert_(exists); return &x; }
-    inline T& operator*() { assert_(exists); return x; }
+    inline T* operator->() { assert_(exists); return &cast(); }
+    inline T& operator*() { assert_(exists); return cast(); }
 
     inline bool operator==(const Optional<T>& other) const {
         if (exists != other.exists) {
@@ -124,8 +126,12 @@ class Optional {
         if (!exists) {
             return true;
         }
-        return x == other.x;
+        return cast() == other.cast();
     }
+
+ private:
+    inline T& cast() { return *reinterpret_cast<T*>(&x); }
+    inline const T& cast() const { return *reinterpret_cast<const T*>(&x); }
 };
 
 #endif  // SRC_UTIL_OPTIONAL_H_

@@ -54,11 +54,11 @@ String::String(StringView value) {
     *this << value;
 }
 
-String::String(String&& other) {
+String::String(String&& other) noexcept {
     swap(other);
 }
 
-String& String::operator=(String&& other) {
+String& String::operator=(String&& other) noexcept {
     swap(other);
     return *this;
 }

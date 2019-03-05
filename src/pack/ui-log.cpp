@@ -24,9 +24,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "pack/ui.h"
-
+// FIXME: Redefines operator new.
 #include <mutex>
+
+#include "pack/ui.h"
 
 #include "pack/pool.h"
 #include "util/string.h"

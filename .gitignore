@@ -1,8 +1,8 @@
-notes.txt
-doc/notes/
+/notes.txt
+/doc/notes/
 
-data/*.zip
-data/*.world
+/data/*.zip
+/data/*.world
 
 # Mac
 .DS_Store
@@ -10,6 +10,6 @@ data/*.world
 # vim
 *.swp
 
-.idea
-cmake-build*
-build*
+/.idea
+/cmake-build*
+/build*

@@ -69,7 +69,7 @@ class SharedPtr {
     }
 
     template<typename D>
-    SharedPtr(SharedPtr<D, Count>&& other, EnableIfSubclass<T, D> = Null())
+    SharedPtr(SharedPtr<D, Count>&& other, EnableIfSubclass<T, D> = Yes())
             : x(other.x), count(other.count) {
         other.x = nullptr;
         other.count = nullptr;
@@ -81,7 +81,7 @@ class SharedPtr {
     }
 
     template<typename D>
-    SharedPtr(SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Null())
+    SharedPtr(SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Yes())
             : x(other.x), count(other.count) {
         incref();
     }
@@ -93,14 +93,14 @@ class SharedPtr {
     }
 
     template<typename D>
-    SharedPtr(const SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Null())
+    SharedPtr(const SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Yes())
             : x(other.x), count(other.count) {
         incref();
     }
 
     // Raw-pointer constructor
     template<typename D>
-    SharedPtr(D* d, EnableIfSubclass<T*, D*> = Null()) : x(d) {
+    SharedPtr(D* d, EnableIfSubclass<T*, D*> = Yes()) : x(d) {
         count = d ? new Count(1)
                   : nullptr;
     }

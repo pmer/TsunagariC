@@ -51,18 +51,17 @@ using If = typename If_<Cond, WhenTrue, WhenFalse>::value;
 //
 // template struct EnableIf
 //
-struct Null {};
+struct Unit {};
+struct Yes {};
 
-template<bool Cond>
-struct EnableIf_;
+template<bool Cond> struct EnableIf_;
+template<>          struct EnableIf_<true> { typedef Yes value; };
 
-template<>
-struct EnableIf_<true> {
-    typedef Null value;
-};
+template<bool Cond> using EnableIf = typename EnableIf_<Cond>::value;
 
-template<bool Cond>
-using EnableIf = typename EnableIf_<Cond>::value;
+template<typename T> constexpr bool IsUnit       = false;
+template<>           constexpr bool IsUnit<Unit> = true;
+
 
 
 //

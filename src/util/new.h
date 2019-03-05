@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** string-view-hash.h          **
-** Copyright 2019 Paul Merrill **
-********************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** new.h                         **
+** Copyright 2019 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,14 +24,13 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_UTIL_STRING_VIEW_HASH_H_
-#define SRC_UTIL_STRING_VIEW_HASH_H_
+#ifndef SRC_UTIL_NEW_H_
+#define SRC_UTIL_NEW_H_
 
-#include "util/fnv.h"
-#include "util/string-view.h"
+#include <stddef.h>
 
-size_t hash_(StringView s) {
-    return fnvHash(s.data, s.size);
-}
+#ifndef _LIBCPP_NEW
+inline void* operator new(size_t, void* p) noexcept { return p; }
+#endif
 
-#endif  // SRC_UTIL_STRING_VIEW_STD_H_
+#endif  // SRC_UTIL_NEW_H_

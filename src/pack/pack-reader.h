@@ -29,7 +29,6 @@
 
 #include <stdint.h>
 
-#include "util/string-view-hash.h"
 #include "util/string-view.h"
 #include "util/unique.h"
 #include "util/vector.h"

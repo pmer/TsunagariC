@@ -27,8 +27,6 @@
 #ifndef SRC_UTIL_STRING_VIEW_HASH_H_
 #define SRC_UTIL_STRING_VIEW_HASH_H_
 
-#include <functional>
-
 #include "util/fnv.h"
 #include "util/string-view.h"
 
@@ -36,7 +34,7 @@ namespace std {
     template<>
     struct hash<StringView> {
         typedef StringView argument_type;
-        typedef std::size_t result_type;
+        typedef size_t result_type;
         size_t operator()(StringView s) const {
             return fnvHash(s.data, s.size);
         }

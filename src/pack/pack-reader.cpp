@@ -35,6 +35,7 @@
 #include "os/os.h"
 #include "util/move.h"
 #include "util/optional.h"
+#include "util/string-view-hash.h"
 
 //                                       "T   s    u    n    a   g    a   r"
 static constexpr uint8_t PACK_MAGIC[8] = {84, 115, 117, 110, 97, 103, 97, 114};

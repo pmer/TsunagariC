@@ -217,19 +217,25 @@ int main(int argc, char* argv[]) {
     int exitCode;
 
     if (command == "create") {
+        if (args.size() < 2) {
+            usage();
+            return 1;
+        }
+
         // The first argument is the archive, the rest are files to add to it.
         StringView archivePath = args[0];
         args.erase(args.begin());
+
         return createArchive(archivePath, move_(args)) ? 0 : 1;
     } else if (command == "list") {
-        if (argc != 3) {
+        if (args.size() != 1) {
             usage();
             return 1;
         }
 
         exitCode = listArchive(args[0]) ? 0 : 1;
     } else if (command == "extract") {
-        if (argc != 3) {
+        if (args.size() != 1) {
             usage();
             return 1;
         }

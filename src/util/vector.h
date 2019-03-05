@@ -7,7 +7,7 @@
 #define SRC_UTIL_VECTOR_H_
 
 
-//#include <stddef.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 #include <new>

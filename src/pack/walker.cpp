@@ -26,8 +26,6 @@
 
 #include "pack/walker.h"
 
-#include <algorithm>
-
 #include "os/os.h"
 #include "pack/pool.h"
 #include "util/unique.h"
@@ -41,7 +39,6 @@ struct WalkContext {
 static void walkPath(WalkContext& ctx, StringView path) {
     if (isDir(path)) {
         vector<String> names = listDir(path);
-        std::sort(names.begin(), names.end());
         for (auto& name : names) {
             String child;
             child << path << dirSeparator << name;

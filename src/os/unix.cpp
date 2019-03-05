@@ -38,9 +38,6 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
-#include <iostream>
-#include <string>
-
 #include "util/string-view-std.h"
 #include "util/vector.h"
 
@@ -177,16 +174,16 @@ void setTermColor(TermColor color) {
 
     switch (color) {
     case TC_RESET:
-        std::cout << escape << "[0m";
+        printf("%c[0m", escape);
         break;
     case TC_GREEN:
-        std::cout << escape << "[32m";
+        printf("%c[32m", escape);
         break;
     case TC_YELLOW:
-        std::cout << escape << "[33m";
+        printf("%c[33m", escape);
         break;
     case TC_RED:
-        std::cout << escape << "[31m";
+        printf("%c[31m", escape);
         break;
     }
 }

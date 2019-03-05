@@ -33,7 +33,6 @@
 #include "os/os.h"
 #include "pack/pack-reader.h"
 #include "pack/pack-writer.h"
-#include "pack/pool.h"
 #include "pack/walker.h"
 #include "pack/ui.h"
 #include "util/move.h"
@@ -167,18 +166,14 @@ static bool extractArchive(String&& archivePath) {
 
         vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
 
-        Unique<Pool> pool(Pool::makePool("extract", 1));
-
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             StringView blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
             void* blobData = blobDatas[i];
 
-            pool->schedule([=] {
-                uiShowExtractingFile(blobPath, blobSize);
+            uiShowExtractingFile(blobPath, blobSize);
 
-                putFile(blobPath, blobSize, blobData);
-            });
+            putFile(blobPath, blobSize, blobData);
         }
 
         return true;

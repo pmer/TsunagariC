@@ -38,7 +38,6 @@
 #include "pack/ui.h"
 #include "util/move.h"
 #include "util/optional.h"
-#include "util/string-view-std.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/unique.h"

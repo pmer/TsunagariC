@@ -28,11 +28,10 @@
 
 #include <stdint.h>
 
-#include <algorithm>
-
 #include "os/os.h"
 #include "pack/file-type.h"
 #include "pack/pack-reader.h"
+#include "util/sort.h"
 #include "util/string.h"
 #include "util/vector.h"
 
@@ -105,7 +104,7 @@ bool PackWriterImpl::writeToFile(StringView path) {
     // Sort blobs by size (smallest first).
     if (!sorted) {
         sorted = true;
-        std::sort(blobs.begin(), blobs.end());
+        pdqsort(blobs.begin(), blobs.end());
     }
 
     // Determine block offsets.

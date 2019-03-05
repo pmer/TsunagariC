@@ -264,10 +264,11 @@ target_sources(tsunagari
 
 target_sources(pack-tool
     PRIVATE src/util/assert.cpp
-    PUBLIC  src/util/assert.h
+    PRIVATE src/util/assert.h
     PRIVATE src/util/fnv.cpp
-    PUBLIC  src/util/fnv.h
-    PUBLIC  src/util/string-view-hash.h
+    PRIVATE src/util/fnv.h
+    PRIVATE src/util/sort.h
+    PRIVATE src/util/string-view-hash.h
     PRIVATE src/util/string-view.cpp
     PUBLIC  src/util/string-view.h
     PRIVATE src/util/string.cpp

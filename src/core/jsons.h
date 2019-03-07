@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** jsons.h                          **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -27,79 +27,64 @@
 #ifndef SRC_CORE_JSONS_H_
 #define SRC_CORE_JSONS_H_
 
-#include <string>
-
 #include "util/rc.h"
+#include "util/string-view.h"
+#include "util/string.h"
 #include "util/unique.h"
 #include "util/vector.h"
 
 class JSONArray;
 class JSONObject;
 
-typedef Unique<const JSONArray> JSONArrayPtr;
-typedef Unique<const JSONObject> JSONObjectPtr;
-typedef Rc<const JSONObject> JSONObjectRef;
-
 class JSONObject {
  public:
-    JSONObject(const JSONObject& other) = delete;
-
     virtual ~JSONObject() = default;
 
-    virtual vector<std::string> names() const = 0;
+    virtual vector<StringView> names() = 0;
 
-    virtual bool hasBool(const std::string& name) const = 0;
-    virtual bool hasInt(const std::string& name) const = 0;
-    virtual bool hasUnsigned(const std::string& name) const = 0;
-    virtual bool hasDouble(const std::string& name) const = 0;
-    virtual bool hasString(const std::string& name) const = 0;
-    virtual bool hasObject(const std::string& name) const = 0;
-    virtual bool hasArray(const std::string& name) const = 0;
+    virtual bool hasBool(StringView name) = 0;
+    virtual bool hasInt(StringView name) = 0;
+    virtual bool hasUnsigned(StringView name) = 0;
+    virtual bool hasDouble(StringView name) = 0;
+    virtual bool hasString(StringView name) = 0;
+    virtual bool hasObject(StringView name) = 0;
+    virtual bool hasArray(StringView name) = 0;
 
-    virtual bool hasStringDouble(const std::string& name) const = 0;
+    virtual bool hasStringDouble(StringView name) = 0;
 
-    virtual bool boolAt(const std::string& name) const = 0;
-    virtual int intAt(const std::string& name) const = 0;
-    virtual int intAt(const std::string& name, int lowerBound, int upperBound)
-        const = 0;
-    virtual unsigned unsignedAt(const std::string& name) const = 0;
-    virtual double doubleAt(const std::string& name) const = 0;
-    virtual std::string stringAt(const std::string& name) const = 0;
-    virtual JSONObjectPtr objectAt(const std::string& name) const = 0;
-    virtual JSONArrayPtr arrayAt(const std::string& name) const = 0;
+    virtual bool boolAt(StringView name) = 0;
+    virtual int intAt(StringView name) = 0;
+    virtual int intAt(StringView name, int lowerBound, int upperBound) = 0;
+    virtual unsigned unsignedAt(StringView name) = 0;
+    virtual double doubleAt(StringView name) = 0;
+    virtual StringView stringAt(StringView name) = 0;
+    virtual Unique<JSONObject> objectAt(StringView name) = 0;
+    virtual Unique<JSONArray> arrayAt(StringView name) = 0;
 
-    virtual double stringDoubleAt(const std::string& name) const = 0;
-
- protected:
-    JSONObject() = default;
+    virtual double stringDoubleAt(StringView name) = 0;
 };
 
 class JSONArray {
  public:
-    JSONArray(const JSONArray& other) = delete;
-
     virtual ~JSONArray() = default;
 
-    virtual size_t size() const = 0;
+    virtual size_t size() = 0;
 
-    virtual bool isBool(size_t index) const = 0;
-    virtual bool isInt(size_t index) const = 0;
-    virtual bool isUnsigned(size_t index) const = 0;
-    virtual bool isDouble(size_t index) const = 0;
-    virtual bool isString(size_t index) const = 0;
-    virtual bool isObject(size_t index) const = 0;
-    virtual bool isArray(size_t index) const = 0;
+    virtual bool isBool(size_t index) = 0;
+    virtual bool isInt(size_t index) = 0;
+    virtual bool isUnsigned(size_t index) = 0;
+    virtual bool isDouble(size_t index) = 0;
+    virtual bool isString(size_t index) = 0;
+    virtual bool isObject(size_t index) = 0;
+    virtual bool isArray(size_t index) = 0;
 
-    virtual bool boolAt(size_t index) const = 0;
-    virtual int intAt(size_t index) const = 0;
-    virtual unsigned unsignedAt(size_t index) const = 0;
-    virtual double doubleAt(size_t index) const = 0;
-    virtual std::string stringAt(size_t index) const = 0;
-    virtual JSONObjectPtr objectAt(size_t index) const = 0;
-    virtual JSONArrayPtr arrayAt(size_t index) const = 0;
-
- protected:
-    JSONArray() = default;
+    virtual bool boolAt(size_t index) = 0;
+    virtual int intAt(size_t index) = 0;
+    virtual unsigned unsignedAt(size_t index) = 0;
+    virtual double doubleAt(size_t index) = 0;
+    virtual StringView stringAt(size_t index) = 0;
+    virtual Unique<JSONObject> objectAt(size_t index) = 0;
+    virtual Unique<JSONArray> arrayAt(size_t index) = 0;
 };
 
 class JSONs {
@@ -107,24 +92,16 @@ class JSONs {
     //! Acquire the global JSONs object.
     static JSONs& instance();
 
-    JSONs(const JSONs&) = delete;
-    JSONs(JSONs&&) = delete;
-    JSONs& operator=(const JSONs&) = delete;
-    JSONs& operator=(JSONs&&) = delete;
-
     virtual ~JSONs() = default;
 
     //! Load a JSON document.
-    virtual JSONObjectRef load(const std::string& path) = 0;
+    virtual Rc<JSONObject> load(StringView path) = 0;
 
     //! Parse a document from the outside world.
-    static JSONObjectPtr parse(std::string data);
+    static Unique<JSONObject> parse(String data);
 
     //! Free JSON documents not recently used.
     virtual void garbageCollect() = 0;
-
- protected:
-    JSONs() = default;
 };
 
 #endif  // SRC_CORE_JSONS_H_

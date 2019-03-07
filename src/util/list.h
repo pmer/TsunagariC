@@ -33,7 +33,7 @@
 
 template<typename T>
 class List {
-private:
+ private:
     struct Node;
     
     struct Links {
@@ -52,14 +52,14 @@ private:
         T x;
         
         template<typename... Args>
-        Node(Args&&... args) noexcept : x(forward_<Args>(args)...) {}
+        Node(Args&&... args) noexcept : x{forward_<Args>(args)...} {}
     };
     
-public:
+ public:
     class Iterator {
         friend List;
         
-    public:
+     public:
         inline T& operator*() const {
             return links->toNode()->x;
         }
@@ -76,7 +76,7 @@ public:
             return links != other.links;
         }
         
-    private:
+     private:
         Iterator(Links* links) : links(links) {}
         Links* links;
     };
@@ -84,7 +84,7 @@ public:
     class ConstIterator {
         friend List;
         
-    public:
+     public:
         inline const T& operator*() const {
             return links->toNode()->x;
         }
@@ -101,7 +101,7 @@ public:
             return links != other.links;
         }
         
-    private:
+     private:
         ConstIterator(const Links* links) : links(links) {}
         const Links* links;
     };
@@ -167,7 +167,7 @@ public:
         return n == 0;
     }
     
-private:
+ private:
     Links head;
     size_t n;
 };

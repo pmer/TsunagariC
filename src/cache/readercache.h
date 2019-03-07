@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** readercache.h                      **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,17 +28,17 @@
 #ifndef SRC_CACHE_READERCACHE_H_
 #define SRC_CACHE_READERCACHE_H_
 
-#include <string>
-
 #include "cache/cache.h"
 
+#include "util/string-view.h"
+
 template<typename T>
-using GenFn = T (*)(const std::string& name);
+using GenFn = T (*)(StringView name);
 
 template<typename T, GenFn<T> fn>
 class ReaderCache {
  public:
-    T momentaryRequest(const std::string& name) {
+    T momentaryRequest(StringView name) {
         T t = cache.momentaryRequest(name);
         if (t) {
             return t;
@@ -49,7 +49,7 @@ class ReaderCache {
         return t;
     }
 
-    T lifetimeRequest(const std::string& name) {
+    T lifetimeRequest(StringView name) {
         T t = cache.lifetimeRequest(name);
         if (t) {
             return t;

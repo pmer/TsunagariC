@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** music.h                            **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,7 +28,7 @@
 #ifndef SRC_CORE_MUSIC_H_
 #define SRC_CORE_MUSIC_H_
 
-#include <string>
+#include "util/string.h"
 
 /**
  * State manager for currently playing music. Continuously controls which music
@@ -49,7 +49,7 @@ class Music {
     virtual ~Music() = default;
 
     //! If the music filepath has changed, start playing it.
-    virtual void play(const std::string& filepath) = 0;
+    virtual void play(String filepath) = 0;
 
     //! Stop playing music.  To begin again, set a new intro or loop.
     virtual void stop() = 0;

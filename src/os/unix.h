@@ -27,12 +27,16 @@
 #ifndef SRC_OS_UNIX_H_
 #define SRC_OS_UNIX_H_
 
+#include <stddef.h>
+
 #include "util/optional.h"
+#include "util/string-view.h"
 #include "util/string.h"
 
 class MappedFile {
  public:
-	static Optional<MappedFile> fromPath(String&& path);
+	static Optional<MappedFile> fromPath(String& path);
+    static Optional<MappedFile> fromPath(StringView path);
 
 	MappedFile();
 	MappedFile(MappedFile&& other);

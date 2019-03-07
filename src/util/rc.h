@@ -1,8 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** rc.h                               **
-** Copyright 2017-2018 Paul Merrill   **
-***************************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** rc.h                             **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,11 +28,9 @@
 #define SRC_UTIL_RC_H_
 
 #include <stddef.h>
-#include <stdlib.h>
 
 #include "util/assert.h"
 #include "util/meta.h"
-#include "util/unique.h"
 
 //
 // Pointers
@@ -209,17 +207,13 @@ class CompactSharedPtr {
     CompactSharedData<T, Count>* data;
 
  public:
-    CompactSharedPtr() : data(nullptr) {}
+    CompactSharedPtr() noexcept : data(nullptr) {}
 
     CompactSharedPtr(CompactSharedPtr&& other) noexcept : data(other.data) {
         other.data = nullptr;
     }
 
-    CompactSharedPtr(CompactSharedPtr& other) : data(other.data) {
-        incref();
-    }
-
-    CompactSharedPtr(const CompactSharedPtr& other) : data(other.data) {
+    CompactSharedPtr(const CompactSharedPtr& other) noexcept : data(other.data) {
         incref();
     }
 
@@ -229,7 +223,7 @@ class CompactSharedPtr {
             : data(std::forward<Args>(args)...) {}
     */
 
-    ~CompactSharedPtr() {
+    ~CompactSharedPtr() noexcept {
         decref();
     }
 
@@ -304,15 +298,5 @@ using Rc = SharedPtr<T, NonAtomic>;
 
 template<typename T>
 using CompactRc = CompactSharedPtr<T, NonAtomic>;
-
-// Allow use in std::unordered_map and std::unordered_set.
-namespace std {
-    template<typename T, typename AtomicClass>
-    struct hash<SharedPtr<T, AtomicClass>> {
-        size_t operator()(const SharedPtr<T, AtomicClass>& p) const {
-            return hash<T*>()(p.get());
-        }
-    };
-}
 
 #endif  // SRC_UTIL_RC_H_

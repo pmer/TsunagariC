@@ -33,60 +33,71 @@
 
 template<typename T>
 class Optional {
-    alignas(alignof(T)) char x[sizeof(T)];
+    union {
+        T x;
+        char null;
+    };
     bool exists;
 
  public:
-    explicit Optional() noexcept : exists(false) {}
-    explicit Optional(T&& x) noexcept : exists(true) {
-        cast() = move_(x);
-    }
-    explicit Optional(const T& x) noexcept : exists(true) {
-        cast() = x;
-    }
+    explicit constexpr Optional() noexcept : null(), exists(false) {}
+    explicit constexpr Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
+    explicit constexpr Optional(const T& x) noexcept : x(x), exists(true) {}
 
-    Optional(Optional<T>&& other) noexcept : exists(other.exists) {
-        if (exists) {
-            cast() = move_(other.cast());
-            other.cast().~T();
+    constexpr Optional(Optional<T>&& other) noexcept
+            : null(), exists(other.exists) {
+        if (other.exists) {
+            x = move_(other.x);
+            other.x.~T();
+            other.exists = false;
         }
-        other.exists = false;
     }
-    Optional(const Optional<T>& other) noexcept : exists(other.exists) {
-        if (exists) {
-            cast() = other.cast();
+    constexpr Optional(const Optional<T>& other) noexcept
+            : exists(other.exists) {
+        if (other.exists) {
+            x = other.x;
         }
     }
 
     ~Optional() noexcept {
         if (exists) {
-            cast().~T();
+            x.~T();
         }
     }
 
-    inline Optional& operator=(const T &x) {
+    inline Optional& operator=(T&& x) {
         if (exists) {
-            cast() = x;
+            this->x = move_(x);
+        }
+        else {
+            new (&this->x) T(move_(x));
+            exists = true;
+        }
+        return *this;
+    }
+    inline Optional& operator=(const T& x) {
+        if (exists) {
+            this->x = x;
         }
         else {
             new (&this->x) T(x);
+            exists = true;
         }
-        exists = true;
         return *this;
     }
 
     inline Optional& operator=(Optional<T>&& other) {
         if (exists) {
             if (other.exists) {
-                cast() = move_(other.cast());
+                x = move_(other.x);
             }
             else {
-                cast().~T();
+                x.~T();
             }
         }
         else {
             if (other.exists) {
-                new (x) T(other.cast());
+                new (&x) T(move_(other.x));
             }
         }
         exists = other.exists;
@@ -96,42 +107,55 @@ class Optional {
     inline Optional& operator=(const Optional<T>& other) {
         if (exists) {
             if (other.exists) {
-                cast() = move_(other.cast());
+                x = other.x;
             }
             else {
-                cast().~T();
+                x.~T();
             }
         }
         else {
             if (other.exists) {
-                new (x) T(other.cast());
+                new (&x) T(other.x);
             }
         }
         exists = other.exists;
         return *this;
     }
 
-    inline operator bool() const { return exists; }
+    inline constexpr operator bool() const { return exists; }
 
-    inline const T* operator->() const { assert_(exists); return &cast(); }
-    inline const T& operator*() const { assert_(exists); return cast(); }
-
-    inline T* operator->() { assert_(exists); return &cast(); }
-    inline T& operator*() { assert_(exists); return cast(); }
-
-    inline bool operator==(const Optional<T>& other) const {
-        if (exists != other.exists) {
-            return false;
-        }
-        if (!exists) {
-            return true;
-        }
-        return cast() == other.cast();
+    inline constexpr const T* operator->() const {
+        static_assert(exists, "");
+        assert_(exists);
+        return &x;
+    }
+    inline constexpr const T& operator*() const {
+        static_assert(exists, "");
+        assert_(exists);
+        return x;
     }
 
- private:
-    inline T& cast() { return *reinterpret_cast<T*>(&x); }
-    inline const T& cast() const { return *reinterpret_cast<const T*>(&x); }
+    inline constexpr T* operator->() {
+        assert_(exists);
+        return &x;
+    }
+    inline constexpr T& operator*() {
+        assert_(exists);
+        return x;
+    }
+    
+    friend constexpr bool operator==(const Optional<T>& a, const Optional<T>& b);
 };
+
+template<typename T>
+inline constexpr bool operator==(const Optional<T>& a, const Optional<T>& b) {
+    if (a.exists != b.exists) {
+        return false;
+    }
+    if (!a.exists) {
+        return true;
+    }
+    return a.x == b.x;
+}
 
 #endif  // SRC_UTIL_OPTIONAL_H_

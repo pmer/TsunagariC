@@ -25,8 +25,11 @@
 // IN THE SOFTWARE.
 // **********
 
+// FIXME: Pre-declare placement new.
+#include <new>
+
 #include "data/data-world.h"
 
-DataArea* DataWorld::area(const std::string& areaName) {
-    return &*areas[areaName];
+DataArea* DataWorld::area(StringView areaName) {
+    return areas[areaName].get();
 }

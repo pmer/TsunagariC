@@ -25,12 +25,14 @@
 // IN THE SOFTWARE.
 // **********
 
+// FIXME: Pre-declare operator new.
+#include <new>
+
 #include <stdlib.h>
 #include <time.h>
 
 #include "config.h"
 #include "core/client-conf.h"
-#include "core/formatter.h"
 #include "core/log.h"
 #include "core/measure.h"
 #include "core/resources.h"
@@ -71,7 +73,7 @@ int main(int argc, char** argv) {
     parseConfig(CLIENT_CONF_PATH);
 
     Log::setVerbosity(conf.verbosity);
-    Log::info("Main", Formatter("Starting %") % TSUNAGARI_RELEASE_VERSION);
+    Log::info("Main", String() << "Starting " << TSUNAGARI_RELEASE_VERSION);
     Log::reportVerbosityOnStartup();
 
     GameWindow* window;

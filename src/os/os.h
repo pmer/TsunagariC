@@ -29,17 +29,26 @@
 
 #include <stdint.h>
 
+#include "util/string-view.h"
 #include "util/string.h"
 #include "util/vector.h"
 
 extern char dirSeparator;
 
-Optional<uint64_t> getFileSize(String&& path);
-bool writeFile(String&& path, size_t length, void* data);
-bool writeFileVec(String&& path, size_t count, size_t* lengths, void** datas);
-bool isDir(String&& path);
-void makeDirectory(String&& path);
-vector<String> listDir(String&& path);
+Optional<uint64_t> getFileSize(String& path);
+Optional<uint64_t> getFileSize(StringView path);
+bool writeFile(String& path, size_t length, void* data);
+bool writeFile(StringView path, size_t length, void* data);
+bool writeFileVec(String& path, size_t count, size_t* lengths, void** datas);
+bool writeFileVec(StringView path, size_t count, size_t* lengths, void** datas);
+bool isDir(String& path);
+bool isDir(StringView path);
+void makeDirectory(String& path);
+void makeDirectory(StringView path);
+vector<String> listDir(String& path);
+vector<String> listDir(StringView path);
+Optional<String> readFile(String& path);
+Optional<String> readFile(StringView path);
 
 enum TermColor {
     TC_RESET,

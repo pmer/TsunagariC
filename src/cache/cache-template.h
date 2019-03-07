@@ -38,35 +38,35 @@
 #define IN_USE_NOW -1
 
 template<class T>
-T Cache<T>::momentaryRequest(const std::string& name) {
-    CacheMapIter it = map.find(name);
+T Cache<T>::momentaryRequest(StringView name) {
+    auto it = map.find(name);
     if (it != map.end()) {
-//            Log::info("Cache", name + ": requested (cached)");
-        CacheEntry& entry = it->second;
+//      Log::info("Cache", String() << name << ": requested (cached)");
+        CacheEntry& entry = it.value();
         // Set lastUsed to now because it won't be used
         // by the time garbageCollect() gets to it.
         entry.lastUsed = World::instance().time();
         return entry.resource;
     }
-    Log::info("Cache", name + ": requested");
+    Log::info("Cache", String() << name << ": requested");
     return T();
 }
 
 template<class T>
-T Cache<T>::lifetimeRequest(const std::string& name) {
-    typename CacheMap::iterator it = map.find(name);
+T Cache<T>::lifetimeRequest(StringView name) {
+    auto it = map.find(name);
     if (it != map.end()) {
-//            Log::info("Cache", name + ": requested (cached)");
-        CacheEntry& entry = it->second;
+//      Log::info("Cache", String() << name << ": requested (cached)");
+        CacheEntry& entry = it.value();
         entry.lastUsed = IN_USE_NOW;
         return entry.resource;
     }
-    Log::info("Cache", name + ": requested");
+    Log::info("Cache", String() << name << ": requested");
     return T();
 }
 
 template<class T>
-void Cache<T>::momentaryPut(const std::string& name, T data){
+void Cache<T>::momentaryPut(StringView name, T data){
     CacheEntry entry;
     entry.resource = data;
     time_t now = World::instance().time();
@@ -75,7 +75,7 @@ void Cache<T>::momentaryPut(const std::string& name, T data){
 }
 
 template<class T>
-void Cache<T>::lifetimePut(const std::string& name, T data) {
+void Cache<T>::lifetimePut(StringView name, T data) {
     CacheEntry entry;
     entry.resource = data;
     entry.lastUsed = IN_USE_NOW;
@@ -85,25 +85,24 @@ void Cache<T>::lifetimePut(const std::string& name, T data) {
 template<class T>
 void Cache<T>::garbageCollect() {
     time_t now = World::instance().time();
-    typedef vector<std::string> StringVector;
-    StringVector dead;
-    for (CacheMapIter it = map.begin(); it != map.end(); it++) {
-        const std::string& name = it->first;
-        CacheEntry& cache = it->second;
+    vector<String> dead;
+    for (auto it = map.begin(); it != map.end(); it++) {
+        StringView name = it.key();
+        CacheEntry& cache = it.value();
         bool unused = !cache.resource || cache.resource.unique();
         if (!unused) {
             continue;
         }
         if (cache.lastUsed == IN_USE_NOW) {
             cache.lastUsed = now;
-//            Log::info("Cache", name + ": unused");
+//          Log::info("Cache", String() << name << ": unused");
         }
-        else if (now > cache.lastUsed + conf.cacheTTL*1000) {
+        else if (now > cache.lastUsed + conf.cacheTTL * 1000) {
             dead.push_back(name);
-            Log::info("Cache", name + ": purged");
+            Log::info("Cache", String() << name << ": purged");
         }
     }
-    for (StringVector::iterator it = dead.begin(); it != dead.end(); it++) {
+    for (auto it = dead.begin(); it != dead.end(); it++) {
         map.erase(*it);
     }
 }

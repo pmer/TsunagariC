@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** window.h                           **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -29,10 +29,9 @@
 #define SRC_CORE_WINDOW_H_
 
 #include <functional>
-#include <map>
-#include <string>
 
 #include "util/bitrecord.h"
+#include "util/string-view.h"
 
 enum KeyboardKey {
     KBEscape = 1,
@@ -70,7 +69,7 @@ class GameWindow {
     virtual unsigned height() const = 0;
 
     //! Set window manager caption.
-    virtual void setCaption(const std::string& caption) = 0;
+    virtual void setCaption(StringView caption) = 0;
 
     //! Show the window and start the main loop.
     virtual void mainLoop() = 0;

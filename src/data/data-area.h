@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** data-area.h                        **
-** Copyright 2014      PariahSoft LLC **
-** Copyright 2016-2017 Paul Merrill   **
+** Copyright 2014      Michael Reiley **
+** Copyright 2014-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -31,15 +31,17 @@
 #include <time.h>
 
 #include <functional>
-#include <map>
-#include <string>
 
+#include "data/inprogress.h"
+
+#include "util/string-view.h"
+#include "util/string.h"
+#include "util/hashtable.h"
 #include "util/unique.h"
 #include "util/vector.h"
 
 class Area;
 class Entity;
-class InProgress;
 class Tile;
 
 class DataArea {
@@ -48,7 +50,7 @@ class DataArea {
     typedef std::function<void (double)> ProgressFn;
     typedef std::function<void ()> ThenFn;
 
-    virtual ~DataArea();
+    virtual ~DataArea() = default;
 
     Area* area;  // borrowed reference
 
@@ -60,9 +62,9 @@ class DataArea {
     // For scripts
 
     //! Play a sound with a 3% speed variation applied to it.
-    void playSoundEffect(const std::string& sound);
+    void playSoundEffect(StringView sound);
 
-    void playSoundAndThen(const std::string& sound, ThenFn then);
+    void playSoundAndThen(StringView sound, ThenFn then);
     void timerProgress(time_t duration, ProgressFn progress);
     void timerThen(time_t duration, ThenFn then);
     void timerProgressAndThen(time_t duration, ProgressFn progress,
@@ -71,12 +73,12 @@ class DataArea {
     // For engine
     void tick(time_t dt);
     void turn();
-    TileScript script(const std::string& scriptName);
+    TileScript script(StringView scriptName);
 
  protected:
-    DataArea();
+    DataArea() = default;
 
-    std::map<std::string,TileScript> scripts;
+    Hashmap<String, TileScript> scripts;
 
  private:
     DataArea(const DataArea&) = delete;

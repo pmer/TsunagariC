@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** images.cpp                       **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -47,11 +47,11 @@ class NullTiledImage: public TiledImage {
 
 class NullImages : public Images {
  public:
-    Rc<Image> load(const std::string&) final {
+    Rc<Image> load(StringView) final {
         return Rc<Image>();
     }
 
-    Rc<TiledImage> loadTiles(const std::string&, unsigned, unsigned) final {
+    Rc<TiledImage> loadTiles(StringView, unsigned, unsigned) final {
         return Rc<TiledImage>(new NullTiledImage);
     }
 

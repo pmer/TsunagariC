@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** inprogress.h                       **
-** Copyright 2014      PariahSoft LLC **
-** Copyright 2016-2017 Paul Merrill   **
+** Copyright 2014      Michael Reiley **
+** Copyright 2014-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -31,9 +31,10 @@
 #include <time.h>
 
 #include <functional>
-#include <string>
 
 #include "core/sounds.h"
+
+#include "util/string-view.h"
 
 /**
  * InProgress objects contain logic that is to be evaluated over time from
@@ -56,7 +57,7 @@
  */
 class InProgress {
  public:
-    virtual ~InProgress();
+    virtual ~InProgress() = default;
 
     virtual void tick(time_t dt);
     bool isOver();
@@ -81,7 +82,7 @@ class InProgressSound : public InProgress {
  public:
     typedef std::function<void ()> ThenFn;
 
-    InProgressSound(const std::string& sound, ThenFn then);
+    InProgressSound(StringView sound, ThenFn then);
 
     void tick(time_t dt);
 
@@ -108,7 +109,7 @@ class InProgressTimer : public InProgress {
     InProgressTimer(time_t duration, ProgressFn progress);
     InProgressTimer(time_t duration, ThenFn then);
     InProgressTimer(time_t duration, ProgressFn progress,
-        ThenFn then);
+                    ThenFn then);
 
     void tick(time_t dt);
 

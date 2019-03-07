@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** log.h                              **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,7 +28,7 @@
 #ifndef SRC_CORE_LOG_H_
 #define SRC_CORE_LOG_H_
 
-#include <string>
+#include "util/string-view.h"
 
 enum verbosity_t {
     V_QUIET = 1,   //! Display fatals.
@@ -52,18 +52,18 @@ class Log {
     /**
      * Log an info message to the console if verbosity is "V_VERBOSE".
      */
-    static void info(std::string domain, std::string msg);
+    static void info(StringView domain, StringView msg);
 
     /**
      * Log an error message to the console if verbosity is "V_VERBOSE" or
      * "V_NORMAL".
      */
-    static void err(std::string domain, std::string msg);
+    static void err(StringView domain, StringView msg);
 
     /**
      * Log a fatal error message to the console.
      */
-    static void fatal(std::string domain, std::string msg);
+    static void fatal(StringView domain, StringView msg);
 
     /**
      * Used by main() to report the verbosity setting on engine startup.

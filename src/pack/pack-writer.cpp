@@ -209,3 +209,20 @@ void PackWriterImpl::addBlob(String path, BlobSize size, const void *data) {
     blobs.push_back({move_(path), size, data});
     sorted = false;
 }
+
+//#include <stdio.h>
+//int main() {
+//    Blob a{
+//        "Hi",
+//        3,
+//        reinterpret_cast<const void*>(&main),
+//    };
+//    Blob b(move_(a));
+//    return 0;
+//}
+
+//struct Blob {
+//    String path;
+//    PackWriter::BlobSize size;
+//    const void* data;
+//};

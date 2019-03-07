@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** area.h                             **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,10 +28,6 @@
 #ifndef SRC_CORE_AREA_H_
 #define SRC_CORE_AREA_H_
 
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-
 #include "core/entity.h"
 #include "core/tile.h"
 #include "core/tile-grid.h"
@@ -40,7 +36,10 @@
 
 #include "data/data-area.h"
 
+#include "util/hashtable.h"
 #include "util/optional.h"
+#include "util/string-view.h"
+#include "util/string.h"
 
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
 
@@ -63,7 +62,7 @@ class Player;
 */
 class Area {
  public:
-    Area(Player* player, const std::string& filename);
+    Area(Player* player, StringView filename);
     virtual ~Area() = default;
 
     //! Parse the file specified in the constructor, generating a full Area
@@ -109,7 +108,7 @@ class Area {
     Tile* getTile(vicoord virt);
     Tile* getTile(rcoord virt);
 
-    TileSet* getTileSet(const std::string& imagePath);
+    TileSet* getTileSet(StringView imagePath);
 
     //! Return the dimensions of the Tile matrix.
     ivec3 getDimensions() const;
@@ -129,11 +128,10 @@ class Area {
     bool loopsInY() const;
 
     // Create an NPC and insert it into the Area.
-    Rc<NPC> spawnNPC(const std::string& descriptor, vicoord coord,
-                     const std::string& phase);
+    Rc<NPC> spawnNPC(StringView descriptor, vicoord coord, StringView phase);
     // Create an Overlay and insert it into the Area.
-    Rc<Overlay> spawnOverlay(const std::string& descriptor, vicoord coord,
-                             const std::string& phase);
+    Rc<Overlay> spawnOverlay(StringView descriptor, vicoord coord,
+                             StringView phase);
 
     // Convert between virtual and physical map coordinates. Physical
     // coordinates are the physical indexes into the Tile matrix. Layer
@@ -161,21 +159,21 @@ class Area {
     Player* player;
     uint32_t colorOverlayARGB;
 
-    std::unordered_set<Rc<Character>> characters;
-    std::unordered_set<Rc<Overlay>> overlays;
+    vector<Rc<Character>> characters;
+    vector<Rc<Overlay>> overlays;
 
     TileGrid<Tile> grid;
 
-    std::unordered_map<std::string, TileSet> tileSets;
+    Hashmap<String, TileSet> tileSets;
 
 
-    std::string name, author;
+    String name, author;
     bool beenFocused;
     bool redraw;
 
     // The following contain filenames such that they may be loaded lazily.
-    const std::string descriptor;
-    Optional<std::string> musicPath;
+    const String descriptor;
+    Optional<String> musicPath;
 };
 
 #endif  // SRC_CORE_AREA_H_

@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** overlay.h                          **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,16 +25,15 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef OVERLAY_H
-#define OVERLAY_H
+#ifndef SRC_CORE_OVERLAY_H_
+#define SRC_CORE_OVERLAY_H_
 
 #include "core/entity.h"
 
-class Overlay : public Entity
-{
-public:
-    Overlay();
-    virtual ~Overlay();
+class Overlay : public Entity {
+ public:
+    Overlay() = default;
+    virtual ~Overlay() = default;
 
     void tick(time_t dt);
 
@@ -43,8 +42,8 @@ public:
     void drift(ivec2 xy);
     void driftTo(ivec2 xy);
 
-protected:
+ protected:
     void pickFacingForAngle();
 };
 
-#endif
+#endif  // SRC_CORE_OVERLAY_H_

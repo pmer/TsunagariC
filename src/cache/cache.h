@@ -28,19 +28,20 @@
 #ifndef SRC_CACHE_CACHE_H_
 #define SRC_CACHE_CACHE_H_
 
-#include <unordered_map>
-#include <string>
+#include "util/hashtable.h"
+#include "util/string-view.h"
+#include "util/string.h"
 
 template<class T>
 class Cache {
  public:
-    T momentaryRequest(const std::string& name);
+    T momentaryRequest(StringView name);
 
-    T lifetimeRequest(const std::string& name);
+    T lifetimeRequest(StringView name);
 
-    void momentaryPut(const std::string& name, T data);
+    void momentaryPut(StringView name, T data);
 
-    void lifetimePut(const std::string& name, T data);
+    void lifetimePut(StringView name, T data);
 
     void garbageCollect();
 
@@ -50,9 +51,7 @@ class Cache {
         time_t lastUsed;  // time in milliseconds
     };
 
-    typedef std::unordered_map<std::string, CacheEntry> CacheMap;
-    typedef typename CacheMap::iterator CacheMapIter;
-    CacheMap map;
+    Hashmap<String, CacheEntry> map;
 };
 
 #endif  // SRC_CORE_CACHE_H_

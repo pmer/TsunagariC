@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** vec.h                              **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,10 +25,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef VEC_H
-#define VEC_H
+#ifndef SRC_CORE_VEC_H_
+#define SRC_CORE_VEC_H_
 
-#include <math.h>
+#include "util/math.h"
 
 /**
  * Virtual integer coordinate.
@@ -36,87 +36,62 @@
  * x and y are the same as a physical integer coordinate.
  * z is a virtual layer depth within an Area.
  */
-struct vicoord
-{
-    vicoord() {}
-    vicoord(int x, int y, double z): x(x), y(y), z(z) {}
-
+struct vicoord {
     int x, y;
     double z;
 };
 
 struct icube {
-    icube(int x1, int y1, int z1, int x2, int y2, int z2)
-        : x1(x1), y1(y1), z1(z1), x2(x2), y2(y2), z2(z2) {}
-
     int x1, y1, z1;
     int x2, y2, z2;
 };
 
 template<class T>
-class vec2
-{
-public:
+class vec2 {
+ public:
     T x, y;
 
-    vec2()
-    {
-    }
-
-    vec2(T x, T y)
-        : x(x), y(y)
-    {
-    }
-
-    vec2<T>& operator +=(const vec2<T>& other)
-    {
+    vec2<T>& operator +=(const vec2<T>& other) {
         x += other.x;
         y += other.y;
         return *this;
     }
 
-    vec2<T>& operator -=(const vec2<T>& other)
-    {
+    vec2<T>& operator -=(const vec2<T>& other) {
         x -= other.x;
         y -= other.y;
         return *this;
     }
 
-    vec2<T>& operator *=(const vec2<T>& other)
-    {
+    vec2<T>& operator *=(const vec2<T>& other) {
         x *= other.x;
         y *= other.y;
         return *this;
     }
 
-    vec2<T>& operator *=(T coefficient)
-    {
+    vec2<T>& operator *=(T coefficient) {
         x *= coefficient;
         y *= coefficient;
         return *this;
     }
 
-    vec2<T>& operator /=(const vec2<T>& other)
-    {
+    vec2<T>& operator /=(const vec2<T>& other) {
         x /= other.x;
         y /= other.y;
         return *this;
     }
 
-    vec2<T>& operator /=(T coefficient)
-    {
+    vec2<T>& operator /=(T coefficient) {
         x /= coefficient;
         y /= coefficient;
         return *this;
     }
 
-    operator bool()
-    {
+    operator bool() {
         return x || y;
     }
 
-    double distanceTo(vec2<T> other)
-    {
+    double distanceTo(vec2<T> other) {
         T dx = x - other.x;
         T dy = y - other.y;
         return sqrt(dx * dx + dy * dy);
@@ -125,75 +100,57 @@ public:
 
 
 template<class T>
-class vec3
-{
-public:
+struct vec3 {
+ public:
     T x, y, z;
 
-    vec3()
-    {
-    }
-
-    vec3(T x, T y, T z)
-        : x(x), y(y), z(z)
-    {
-    }
-
-    vec3<T>& operator +=(const vec3<T>& other)
-    {
+    vec3<T>& operator +=(const vec3<T>& other) {
         x += other.x;
         y += other.y;
         z += other.z;
         return *this;
     }
 
-    vec3<T>& operator -=(const vec3<T>& other)
-    {
+    vec3<T>& operator -=(const vec3<T>& other) {
         x -= other.x;
         y -= other.y;
         z -= other.z;
         return *this;
     }
 
-    vec3<T>& operator *=(const vec3<T>& other)
-    {
+    vec3<T>& operator *=(const vec3<T>& other) {
         x *= other.x;
         y *= other.y;
         z *= other.z;
         return *this;
     }
 
-    vec3<T>& operator *=(T coefficient)
-    {
+    vec3<T>& operator *=(T coefficient) {
         x *= coefficient;
         y *= coefficient;
         z *= coefficient;
         return *this;
     }
 
-    vec3<T>& operator /=(const vec3<T>& other)
-    {
+    vec3<T>& operator /=(const vec3<T>& other) {
         x /= other.x;
         y /= other.y;
         z /= other.z;
         return *this;
     }
 
-    vec3<T>& operator /=(T coefficient)
-    {
+    vec3<T>& operator /=(T coefficient) {
         x /= coefficient;
         y /= coefficient;
         z /= coefficient;
         return *this;
     }
 
-    operator bool()
-    {
+    operator bool() {
         return x || y || z;
     }
 
-    double distanceTo(vec3<T> other)
-    {
+    double distanceTo(vec3<T> other) {
         T dx = x - other.x;
         T dy = y - other.y;
         return sqrt(dx * dx + dy * dy);
@@ -201,8 +158,7 @@ public:
 };
 
 template<class T>
-vec2<T> operator+(const vec2<T>& a, const vec2<T>& b)
-{
+vec2<T> operator+(const vec2<T>& a, const vec2<T>& b) {
     vec2<T> c;
     c.x = a.x + b.x;
     c.y = a.y + b.y;
@@ -210,8 +166,7 @@ vec2<T> operator+(const vec2<T>& a, const vec2<T>& b)
 }
 
 template<class T>
-vec3<T> operator+(const vec3<T>& a, const vec3<T>& b)
-{
+vec3<T> operator+(const vec3<T>& a, const vec3<T>& b) {
     vec3<T> c;
     c.x = a.x + b.x;
     c.y = a.y + b.y;
@@ -220,8 +175,7 @@ vec3<T> operator+(const vec3<T>& a, const vec3<T>& b)
 }
 
 template<class T>
-vec2<T> operator-(const vec2<T>& a, const vec2<T>& b)
-{
+vec2<T> operator-(const vec2<T>& a, const vec2<T>& b) {
     vec2<T> c;
     c.x = a.x - b.x;
     c.y = a.y - b.y;
@@ -229,8 +183,7 @@ vec2<T> operator-(const vec2<T>& a, const vec2<T>& b)
 }
 
 template<class T>
-vec3<T> operator-(const vec3<T>& a, const vec3<T>& b)
-{
+vec3<T> operator-(const vec3<T>& a, const vec3<T>& b) {
     vec3<T> c;
     c.x = a.x - b.x;
     c.y = a.y - b.y;
@@ -239,8 +192,7 @@ vec3<T> operator-(const vec3<T>& a, const vec3<T>& b)
 }
 
 template<class T>
-vec2<T> operator*(const vec2<T>& a, const vec2<T>& b)
-{
+vec2<T> operator*(const vec2<T>& a, const vec2<T>& b) {
     vec2<T> c;
     c.x = a.x * b.x;
     c.y = a.y * b.y;
@@ -248,8 +200,7 @@ vec2<T> operator*(const vec2<T>& a, const vec2<T>& b)
 }
 
 template<class T>
-vec3<T> operator*(const vec3<T>& a, const vec3<T>& b)
-{
+vec3<T> operator*(const vec3<T>& a, const vec3<T>& b) {
     vec3<T> c;
     c.x = a.x * b.x;
     c.y = a.y * b.y;
@@ -258,8 +209,7 @@ vec3<T> operator*(const vec3<T>& a, const vec3<T>& b)
 }
 
 template<class T, class CO>
-vec2<T> operator*(const vec2<T>& a, CO co)
-{
+vec2<T> operator*(const vec2<T>& a, CO co) {
     vec2<T> c;
     c.x = a.x * (T)co;
     c.y = a.y * (T)co;
@@ -267,8 +217,7 @@ vec2<T> operator*(const vec2<T>& a, CO co)
 }
 
 template<class T, class CO>
-vec3<T> operator*(const vec3<T>& a, CO co)
-{
+vec3<T> operator*(const vec3<T>& a, CO co) {
     vec3<T> c;
     c.x = a.x * (T)co;
     c.y = a.y * (T)co;
@@ -277,20 +226,17 @@ vec3<T> operator*(const vec3<T>& a, CO co)
 }
 
 template<class T, class CO>
-vec2<T> operator*(CO co, const vec2<T>& a)
-{
+vec2<T> operator*(CO co, const vec2<T>& a) {
     return a * co;
 }
 
 template<class T, class CO>
-vec3<T> operator*(CO co, const vec3<T>& a)
-{
+vec3<T> operator*(CO co, const vec3<T>& a) {
     return a * co;
 }
 
 template<class T>
-vec2<T> operator/(const vec2<T>& a, const vec2<T>& b)
-{
+vec2<T> operator/(const vec2<T>& a, const vec2<T>& b) {
     vec2<T> c;
     c.x = a.x / b.x;
     c.y = a.y / b.y;
@@ -298,8 +244,7 @@ vec2<T> operator/(const vec2<T>& a, const vec2<T>& b)
 }
 
 template<class T>
-vec3<T> operator/(const vec3<T>& a, const vec3<T>& b)
-{
+vec3<T> operator/(const vec3<T>& a, const vec3<T>& b) {
     vec3<T> c;
     c.x = a.x / b.x;
     c.y = a.y / b.y;
@@ -308,8 +253,7 @@ vec3<T> operator/(const vec3<T>& a, const vec3<T>& b)
 }
 
 template<class T, class CO>
-vec2<T> operator/(const vec2<T>& a, CO co)
-{
+vec2<T> operator/(const vec2<T>& a, CO co) {
     vec2<T> c;
     c.x = a.x / (T)co;
     c.y = a.y / (T)co;
@@ -317,8 +261,7 @@ vec2<T> operator/(const vec2<T>& a, CO co)
 }
 
 template<class T, class CO>
-vec3<T> operator/(const vec3<T>& a, CO co)
-{
+vec3<T> operator/(const vec3<T>& a, CO co) {
     vec3<T> c;
     c.x = a.x / (T)co;
     c.y = a.y / (T)co;
@@ -327,8 +270,7 @@ vec3<T> operator/(const vec3<T>& a, CO co)
 }
 
 template<class T, class CO>
-vec2<T> operator/(CO co, const vec2<T>& a)
-{
+vec2<T> operator/(CO co, const vec2<T>& a) {
     vec2<T> c;
     c.x = (T)co / a.x;
     c.y = (T)co / a.y;
@@ -336,8 +278,7 @@ vec2<T> operator/(CO co, const vec2<T>& a)
 }
 
 template<class T, class CO>
-vec3<T> operator/(CO co, const vec3<T>& a)
-{
+vec3<T> operator/(CO co, const vec3<T>& a) {
     vec3<T> c;
     c.x = (T)co / a.x;
     c.y = (T)co / a.y;
@@ -346,26 +287,22 @@ vec3<T> operator/(CO co, const vec3<T>& a)
 }
 
 template<class T>
-bool operator==(const vec2<T>& a, const vec2<T>& b)
-{
+bool operator==(const vec2<T>& a, const vec2<T>& b) {
     return a.x == b.x && a.y == b.y;
 }
 
 template<class T>
-bool operator!=(const vec2<T>& a, const vec2<T>& b)
-{
+bool operator!=(const vec2<T>& a, const vec2<T>& b) {
     return a.x != b.x || a.y != b.y;
 }
 
 template<class T>
-bool operator==(const vec3<T>& a, const vec3<T>& b)
-{
+bool operator==(const vec3<T>& a, const vec3<T>& b) {
     return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
 template<class T>
-bool operator!=(const vec3<T>& a, const vec3<T>& b)
-{
+bool operator!=(const vec3<T>& a, const vec3<T>& b) {
     return a.x != b.x || a.y != b.y || a.z != b.z;
 }
 
@@ -381,4 +318,4 @@ typedef vec3<double> rvec3;
 typedef ivec3 icoord;
 typedef rvec3 rcoord;
 
-#endif
+#endif  // SRC_CORE_VEC_H_

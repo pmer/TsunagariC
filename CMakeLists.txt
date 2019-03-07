@@ -113,8 +113,6 @@ target_sources(tsunagari
     PRIVATE src/core/display-list.h
     PRIVATE src/core/entity.cpp
     PUBLIC  src/core/entity.h
-    PRIVATE src/core/formatter.cpp
-    PUBLIC  src/core/formatter.h
     PRIVATE src/core/images.cpp
     PUBLIC  src/core/images.h
     PRIVATE src/core/jsons.cpp
@@ -238,18 +236,18 @@ target_sources(tsunagari
     PUBLIC  src/util/dispatch-queue.h
     PRIVATE src/util/fnv.cpp
     PUBLIC  src/util/fnv.h
+    PUBLIC  src/util/hashtable.h
     PUBLIC  src/util/likely.h
+    PUBLIC  src/util/list.h
     PUBLIC  src/util/math2.h
     PUBLIC  src/util/meta.h
     PUBLIC  src/util/move.h
+    PUBLIC  src/util/new.h
     PUBLIC  src/util/optional.h
     PRIVATE src/util/random.cpp
     PUBLIC  src/util/random.h
     PUBLIC  src/util/rc.h
     PUBLIC  src/util/safe-heap.h
-    PUBLIC  src/util/string-view-hash.h
-    PRIVATE src/util/string-view-std.cpp
-    PUBLIC  src/util/string-view-std.h
     PRIVATE src/util/string-view.cpp
     PUBLIC  src/util/string-view.h
     PRIVATE src/util/string.cpp
@@ -276,7 +274,6 @@ target_sources(pack-tool
     PRIVATE src/util/new.h
     PRIVATE src/util/optional.h
     PRIVATE src/util/sort.h
-    PRIVATE src/util/string-view-hash.h
     PRIVATE src/util/string-view.cpp
     PUBLIC  src/util/string-view.h
     PRIVATE src/util/string.cpp

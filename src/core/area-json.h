@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** area-json.h                        **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,13 +28,12 @@
 #ifndef SRC_CORE_AREA_JSON_H_
 #define SRC_CORE_AREA_JSON_H_
 
-#include <string>
-
+#include "util/string-view.h"
 #include "util/unique.h"
 
 class Area;
 class Player;
 
-Unique<Area> makeAreaFromJSON(Player* player, const std::string& filename);
+Unique<Area> makeAreaFromJSON(Player* player, StringView filename);
 
 #endif  // SRC_CORE_AREA_JSON_H_

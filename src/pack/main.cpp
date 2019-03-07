@@ -31,10 +31,12 @@
 #include <mutex>
 
 #include "os/os.h"
+
 #include "pack/pack-reader.h"
 #include "pack/pack-writer.h"
 #include "pack/walker.h"
 #include "pack/ui.h"
+
 #include "util/move.h"
 #include "util/optional.h"
 #include "util/string-view.h"
@@ -44,11 +46,11 @@
 static String exe;
 
 static void usage() {
-    fprintf(stderr, "usage: %s create <output-archive> [input-file]...\n",
+    fprintf(stderr, "usage: %s create [-v] <output-archive> [input-file]...\n",
             exe.null().get());
     fprintf(stderr, "       %s list <input-archive>\n",
             exe.null().get());
-    fprintf(stderr, "       %s extract <input-archive>\n",
+    fprintf(stderr, "       %s extract [-v] <input-archive>\n",
             exe.null().get());
 }
 
@@ -57,34 +59,22 @@ struct CreateArchiveContext {
     std::mutex packMutex;
 };
 
-static void slurp(String&& path, uint64_t* size, void** data) {
-    Optional<uint64_t> size_ = getFileSize(forward_<String>(path));
-    if (!size_) {
-        return;
-    }
-
-    *size = *size_;
-    *data = new char*[*size];
-
-    FILE* f = fopen(path.null(), "r");
-    fread(*data, *size, 1, f);
-    fclose(f);
-}
-
 static void addFile(CreateArchiveContext& ctx, StringView path) {
-    uint64_t size = 0;
-    void* data = nullptr;
-    slurp(path, &size, &data);
+    Optional<String> data = readFile(path);
 
     if (!data) {
         uiShowSkippedMissingFile(path);
         return;
     }
+    
+    String data_ = move_(*data);
 
-    uiShowAddedFile(path, size);
+    uiShowAddedFile(path, data_.size());
 
     std::lock_guard<std::mutex> guard(ctx.packMutex);
-    ctx.pack->addBlob(move_(path), size, data);
+    ctx.pack->addBlob(move_(path), data_.size(), data_.data());
+
+    data_.reset_lose_memory();  // Don't delete data pointer.
 }
 
 static bool createArchive(StringView archivePath, vector<StringView> paths) {
@@ -143,19 +133,14 @@ static void createDirs(StringView path) {
     }
 }
 
-static void putFile(String&& path, uint64_t size, void* data) {
+static void putFile(StringView path, uint64_t size, void* data) {
     createDirs(path);
 
-	// FIXME: Use native IO.
-	FILE* f = fopen(path.null(), "w");
-	if (!f) {
-		// TODO: Propagate error up.
-	}
-	fwrite(data, size, 1, f);
-	fclose(f);
+    // TODO: Propagate error up.
+    writeFile(path, size, data);
 }
 
-static bool extractArchive(String&& archivePath) {
+static bool extractArchive(StringView archivePath) {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
@@ -180,7 +165,7 @@ static bool extractArchive(String&& archivePath) {
     } else {
         fprintf(stderr, "%s: %s: not found\n",
                 exe.null().get(),
-                archivePath.null().get());
+                String(archivePath).null().get());
         return false;
     }
 }
@@ -211,6 +196,11 @@ int main(int argc, char* argv[]) {
     int exitCode;
 
     if (command == "create") {
+        if (args.size() > 0 && args[0] == "-v") {
+            verbose = true;
+            args.erase(args.begin());
+        }
+        
         if (args.size() < 2) {
             usage();
             return 1;
@@ -222,6 +212,8 @@ int main(int argc, char* argv[]) {
 
         return createArchive(archivePath, move_(args)) ? 0 : 1;
     } else if (command == "list") {
+        verbose = true;
+
         if (args.size() != 1) {
             usage();
             return 1;
@@ -229,6 +221,11 @@ int main(int argc, char* argv[]) {
 
         exitCode = listArchive(args[0]) ? 0 : 1;
     } else if (command == "extract") {
+        if (args.size() > 0 && args[0] == "-v") {
+            verbose = true;
+            args.erase(args.begin());
+        }
+        
         if (args.size() != 1) {
             usage();
             return 1;

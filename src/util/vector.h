@@ -18,115 +18,106 @@
 
 template<typename T>
 class vector {
-    typedef size_t       size_type;
-
  protected:
     T* mpBegin;
     T* mpEnd;
     T* mCapacity;
 
  protected:
-    T*        DoAllocate(size_type n);
-    void      DoFree(T* p);
-    size_type GetNewCapacity(size_type currentCapacity);
-
- private:
-    typedef vector<T>   this_type;
+    T*     DoAllocate(size_t n);
+    void   DoFree(T* p);
+    size_t GetNewCapacity(size_t currentCapacity);
 
  public:
-    typedef T           value_type;
-    typedef T*          pointer;
-    typedef const T*    const_pointer;
-    typedef T&          reference;
-    typedef const T&    const_reference;
-    typedef T*          iterator;
-    typedef const T*    const_iterator;
+    typedef T*       iterator;
+    typedef const T* const_iterator;
 
  public:
     vector();
-    explicit vector(size_type n);
-    vector(size_type n, const T& value);
-    vector(const this_type& x);
-    vector(this_type&& x);
+    explicit vector(size_t n);
+    vector(size_t n, const T& value);
+    vector(const vector<T>& x);
+    vector(vector<T>&& x);
 
     ~vector();
 
-    this_type& operator=(const this_type& x);
-    this_type& operator=(this_type&& x);
+    vector<T>& operator=(const vector<T>& x);
+    vector<T>& operator=(vector<T>&& x);
 
-    void swap(this_type& x);
+    void swap(vector<T>& x);
 
     iterator       begin() noexcept;
     const_iterator begin() const noexcept;
-    const_iterator cbegin() const noexcept;
 
     iterator       end() noexcept;
     const_iterator end() const noexcept;
-    const_iterator cend() const noexcept;
 
-    bool      empty() const noexcept;
-    size_type size() const noexcept;
-    size_type capacity() const noexcept;
+    bool   empty() const noexcept;
+    size_t size() const noexcept;
+    size_t capacity() const noexcept;
 
-    void resize(size_type n);
-    void reserve(size_type n);
+    void resize(size_t n);
+    void reserve(size_t n);
 
-    pointer       data() noexcept;
-    const_pointer data() const noexcept;
+    T*       data() noexcept;
+    const T* data() const noexcept;
 
-    reference       operator[](size_type n);
-    const_reference operator[](size_type n) const;
+    T&       operator[](size_t n);
+    const T& operator[](size_t n) const;
 
-    reference       at(size_type n);
-    const_reference at(size_type n) const;
+    T&       at(size_t n);
+    const T& at(size_t n) const;
 
-    reference       front();
-    const_reference front() const;
+    T&       front();
+    const T& front() const;
 
-    reference       back();
-    const_reference back() const;
+    T&       back();
+    const T& back() const;
 
-    void      push_back(const T& value);
-    reference push_back();
-    void      push_back(T&& value);
-    void      pop_back();
+    void push_back(const T& value);
+    void push_back(T&& value);
+    void pop_back();
 
     template<class... Args>
-    iterator emplace(const_iterator position, Args&&... args);
+    iterator emplace(iterator position, Args&&... args);
 
     template<class... Args>
     void emplace_back(Args&&... args);
 
-    iterator insert(const_iterator position, const T& value);
-    iterator insert(const_iterator position, T&& value);
+    iterator insert(iterator position, const T& value);
+    iterator insert(iterator position, T&& value);
 
     void append(const T* range, size_t n);
     
-    iterator erase(const_iterator position);
-    iterator erase_unsorted(const_iterator position);         // Same as erase, except it doesn't preserve order, but is faster because it simply copies the last item in the vector over the erased position.
+    iterator erase(iterator position);
+    iterator erase(iterator first, iterator last);
+    // Same as erase, except it doesn't preserve order, but is faster because it
+    // simply copies the last item in the vector over the erased position.
+    iterator erase_unsorted(iterator position);
 
     void clear() noexcept;
-    void reset_lose_memory() noexcept;                       // This is a unilateral reset to an initially empty state. No destructors are called, no deallocation occurs.
+    // This is a unilateral reset to an initially empty state. No destructors
+    // are called, no deallocation occurs.
+    void reset_lose_memory() noexcept;
 
  protected:
-    template<typename InputIterator>
-    void DoAssign(InputIterator first, InputIterator last);
+    void DoAssign(const_iterator first, const_iterator last);
 
     template<typename... Args>
-    void DoInsertValue(const_iterator position, Args&&... args);
+    void DoInsertValue(iterator position, Args&&... args);
 
-    void DoInsertValuesEnd(size_type n); // Default constructs n values
+    void DoInsertValuesEnd(size_t n); // Default constructs n values
 
-    void DoInsertValuesEnd(const T* range, size_type n);
+    void DoInsertValuesEnd(const T* range, size_t n);
     
     template<typename... Args>
     void DoInsertValueEnd(Args&&... args);
 
     void DoClearCapacity();
 
-    void DoGrow(size_type n);
+    void DoGrow(size_t n);
 
-    void DoSwap(this_type& x);
+    void DoSwap(vector<T>& x);
 };
 
 
@@ -190,7 +181,7 @@ inline T* move_backward(T* first, T* last, T* resultEnd) {
 ///////////////////////////////////////////////////////////////////////
 
 template<typename T>
-inline T* vector<T>::DoAllocate(size_type n) {
+inline T* vector<T>::DoAllocate(size_t n) {
     // Make sure we are not allocating 2GB of data.
     assert_(n < 0x80000000 / sizeof(T));
 
@@ -216,8 +207,7 @@ inline void vector<T>::DoFree(T* p) {
 
 
 template<typename T>
-inline typename vector<T>::size_type
-vector<T>::GetNewCapacity(size_type currentCapacity) {
+inline size_t vector<T>::GetNewCapacity(size_t currentCapacity) {
     // This needs to return a value of at least currentCapacity and at least 1.
     return (currentCapacity > 0) ? (2 * currentCapacity) : 1;
 }
@@ -229,13 +219,11 @@ template<typename T>
 inline vector<T>::vector()
         : mpBegin(NULL),
           mpEnd(NULL),
-          mCapacity(NULL) {
-    // Empty
-}
+          mCapacity(NULL) {}
 
 
 template<typename T>
-inline vector<T>::vector(size_type n) {
+inline vector<T>::vector(size_t n) {
     mpBegin   = DoAllocate(n);
     mpEnd     = mpBegin;
     mCapacity = mpBegin + n;
@@ -246,7 +234,7 @@ inline vector<T>::vector(size_type n) {
 
 
 template<typename T>
-inline vector<T>::vector(const this_type& x) {
+inline vector<T>::vector(const vector<T>& x) {
     mpBegin   = DoAllocate(x.size());
     mpEnd     = mpBegin;
     mCapacity = mpBegin + x.size();
@@ -256,10 +244,10 @@ inline vector<T>::vector(const this_type& x) {
 
 
 template<typename T>
-inline vector<T>::vector(this_type&& x)
-        : mpBegin(NULL),
-          mpEnd(NULL),
-          mCapacity(NULL) {
+inline vector<T>::vector(vector<T>&& x)
+        : mpBegin(nullptr),
+          mpEnd(nullptr),
+          mCapacity(nullptr) {
     DoSwap(x);
 }
 
@@ -272,10 +260,10 @@ inline vector<T>::~vector() {
 
 
 template<typename T>
-typename vector<T>::this_type&
-vector<T>::operator=(const this_type& x) {
+vector<T>& vector<T>::operator=(const vector<T>& x) {
+    assert_(false && "Copying a vector by value.");
     if (this != &x) {
-        DoAssign<const_iterator>(x.begin(), x.end());
+        DoAssign(x.begin(), x.end());
     }
 
     return *this;
@@ -283,8 +271,7 @@ vector<T>::operator=(const this_type& x) {
 
 
 template<typename T>
-typename vector<T>::this_type&
-vector<T>::operator=(this_type&& x) {
+vector<T>& vector<T>::operator=(vector<T>&& x) {
     if (this != &x) {
         swap(x);
     }
@@ -307,13 +294,6 @@ vector<T>::begin() const noexcept {
 
 
 template<typename T>
-inline typename vector<T>::const_iterator
-vector<T>::cbegin() const noexcept {
-    return mpBegin;
-}
-
-
-template<typename T>
 inline typename vector<T>::iterator
 vector<T>::end() noexcept {
     return mpEnd;
@@ -328,36 +308,29 @@ vector<T>::end() const noexcept {
 
 
 template<typename T>
-inline typename vector<T>::const_iterator
-vector<T>::cend() const noexcept {
-    return mpEnd;
-}
-
-
-template<typename T>
 bool vector<T>::empty() const noexcept {
     return (mpBegin == mpEnd);
 }
 
 
 template<typename T>
-inline typename vector<T>::size_type
+inline size_t
 vector<T>::size() const noexcept {
-    return (size_type)(mpEnd - mpBegin);
+    return (size_t)(mpEnd - mpBegin);
 }
 
 
 template<typename T>
-inline typename vector<T>::size_type
+inline size_t
 vector<T>::capacity() const noexcept {
-    return (size_type)(mCapacity - mpBegin);
+    return (size_t)(mCapacity - mpBegin);
 }
 
 
 template<typename T>
-inline void vector<T>::resize(size_type n) {
-    if (n > (size_type)(mpEnd - mpBegin)) { // We expect that more often than not, resizes will be upsizes.
-        DoInsertValuesEnd(n - ((size_type) (mpEnd - mpBegin)));
+inline void vector<T>::resize(size_t n) {
+    if (n > (size_t)(mpEnd - mpBegin)) { // We expect that more often than not, resizes will be upsizes.
+        DoInsertValuesEnd(n - ((size_t) (mpEnd - mpBegin)));
     }
     else {
         destruct(mpBegin + n, mpEnd);
@@ -367,9 +340,9 @@ inline void vector<T>::resize(size_type n) {
 
 
 template<typename T>
-void vector<T>::reserve(size_type n) {
+void vector<T>::reserve(size_t n) {
     // If the user wants to reduce the reserved memory, there is the set_capacity function.
-    if (n > size_type(mCapacity - mpBegin)) {
+    if (n > size_t(mCapacity - mpBegin)) {
         // If n > capacity ...
         DoGrow(n);
     }
@@ -377,62 +350,55 @@ void vector<T>::reserve(size_type n) {
 
 
 template<typename T>
-inline T*
-vector<T>::data() noexcept {
+inline T* vector<T>::data() noexcept {
     return mpBegin;
 }
 
 
 template<typename T>
-inline const T*
-vector<T>::data() const noexcept {
+inline const T* vector<T>::data() const noexcept {
     return mpBegin;
 }
 
 
 template<typename T>
-inline T&
-vector<T>::operator[](size_type n) {
-    assert_(n < static_cast<size_type>(mpEnd - mpBegin));
+inline T& vector<T>::operator[](size_t n) {
+    assert_(n < static_cast<size_t>(mpEnd - mpBegin));
 
     return *(mpBegin + n);
 }
 
 
 template<typename T>
-inline const T&
-vector<T>::operator[](size_type n) const {
-    assert_(n < static_cast<size_type>(mpEnd - mpBegin));
+inline const T& vector<T>::operator[](size_t n) const {
+    assert_(n < static_cast<size_t>(mpEnd - mpBegin));
 
     return *(mpBegin + n);
 }
 
 
 template<typename T>
-inline T&
-vector<T>::at(size_type n) {
+inline T& vector<T>::at(size_t n) {
     // The difference between at() and operator[] is it signals
     // the requested position is out of range by throwing an
     // out_of_range exception.
 
-    assert_(n < static_cast<size_type>(mpEnd - mpBegin));
+    assert_(n < static_cast<size_t>(mpEnd - mpBegin));
 
     return *(mpBegin + n);
 }
 
 
 template<typename T>
-inline const T&
-vector<T>::at(size_type n) const {
-    assert_(n < static_cast<size_type>(mpEnd - mpBegin));
+inline const T& vector<T>::at(size_t n) const {
+    assert_(n < static_cast<size_t>(mpEnd - mpBegin));
 
     return *(mpBegin + n);
 }
 
 
 template<typename T>
-inline T&
-vector<T>::front() {
+inline T& vector<T>::front() {
     assert_(mpEnd > mpBegin);
 
     return *mpBegin;
@@ -440,8 +406,7 @@ vector<T>::front() {
 
 
 template<typename T>
-inline const T&
-vector<T>::front() const {
+inline const T& vector<T>::front() const {
     assert_(mpEnd > mpBegin);
 
     return *mpBegin;
@@ -449,8 +414,7 @@ vector<T>::front() const {
 
 
 template<typename T>
-inline T&
-vector<T>::back() {
+inline T& vector<T>::back() {
     assert_(mpEnd > mpBegin);
 
     return *(mpEnd - 1);
@@ -458,8 +422,7 @@ vector<T>::back() {
 
 
 template<typename T>
-inline const T&
-vector<T>::back() const {
+inline const T& vector<T>::back() const {
     assert_(mpEnd > mpBegin);
 
     return *(mpEnd - 1);
@@ -489,20 +452,6 @@ inline void vector<T>::push_back(T&& value) {
 
 
 template<typename T>
-inline T&
-vector<T>::push_back() {
-    if (mpEnd < mCapacity) {
-        new (static_cast<void*>(mpEnd++)) T;
-    }
-    else {  // Note that in this case we create a temporary, which is less desirable.
-        DoInsertValueEnd(T());
-    }
-
-    return *(mpEnd - 1); // Same as return back();
-}
-
-
-template<typename T>
 inline void vector<T>::pop_back() {
     assert_(mpEnd > mpBegin);
 
@@ -520,7 +469,7 @@ inline void vector<T>::append(const T* range, size_t n) {
 template<typename T>
 template<class... Args>
 inline typename vector<T>::iterator
-vector<T>::emplace(const_iterator position, Args&&... args) {
+vector<T>::emplace(iterator position, Args&&... args) {
     const T* n = position - mpBegin; // Save this because we might reallocate.
 
     if ((mpEnd == mCapacity) || (position != mpEnd)) {
@@ -549,18 +498,24 @@ inline void vector<T>::emplace_back(Args&&... args) {
 
 template<typename T>
 inline typename vector<T>::iterator
-vector<T>::insert(const_iterator position, const T& value) {
+vector<T>::insert(iterator position, const T& value) {
     assert_(position >= mpBegin && position <= mpEnd);
 
-    // We implment a quick pathway for the case that the insertion position is at the end and we have free capacity for it.
-    const size_t n = position - mpBegin; // Save this because we might reallocate.
+    // We implment a quick pathway for the case that the insertion position is
+    // at the end and we have free capacity for it.
+    
+    // Save this because we might reallocate.
+    size_t n = position - mpBegin;
 
     if ((mpEnd == mCapacity) || (position != mpEnd)) {
         DoInsertValue(position, value);
     }
     else {
         new (static_cast<void*>(mpEnd)) T(value);
-        ++mpEnd; // Increment this after the construction above in case the construction throws an exception.
+        
+        // Increment this after the construction above in case the construction
+        // throws an exception.
+        ++mpEnd;
     }
 
     return mpBegin + n;
@@ -569,42 +524,57 @@ vector<T>::insert(const_iterator position, const T& value) {
 
 template<typename T>
 inline typename vector<T>::iterator
-vector<T>::insert(const_iterator position, T&& value) {
+vector<T>::insert(iterator position, T&& value) {
     return emplace(position, move_(value));
 }
 
 
 template<typename T>
 inline typename vector<T>::iterator
-vector<T>::erase(const_iterator position) {
+vector<T>::erase(iterator position) {
     assert_(position >= mpBegin && position < mpEnd);
-
-    // C++11 stipulates that position is const_iterator, but the return value is iterator.
-    iterator destPosition = const_cast<T*>(position);
-
+    
     if ((position + 1) < mpEnd) {
-        move(destPosition + 1, mpEnd, destPosition);
+        move(position + 1, mpEnd, position);
     }
+ 
     --mpEnd;
     mpEnd->~T();
-    return destPosition;
+    
+    return position;
 }
 
 
 template<typename T>
 inline typename vector<T>::iterator
-vector<T>::erase_unsorted(const_iterator position) {
+vector<T>::erase(iterator first, iterator last) {
+    assert_(first >= mpBegin && first < mpEnd);
+    assert_(last >= first && last < mpEnd);
+
+    if ((last + 1) < mpEnd) {
+        move(last + 1, mpEnd, first);
+    }
+    for (auto it = mpEnd - last + first; it != mpEnd; ++it) {
+        it->~T();
+    }
+    mpEnd -= last - first;
+
+    return first;
+}
+
+
+template<typename T>
+inline typename vector<T>::iterator
+vector<T>::erase_unsorted(iterator position) {
     assert_(position >= mpBegin && position < mpEnd);
 
-    // C++11 stipulates that position is const_iterator, but the return value is iterator.
-    iterator destPosition = const_cast<T*>(position);
-    *destPosition = move_(*(mpEnd - 1));
+    *position = move_(*(mpEnd - 1));
 
     // pop_back();
     --mpEnd;
     mpEnd->~T();
 
-    return destPosition;
+    return position;
 }
 
 
@@ -632,7 +602,7 @@ inline void vector<T>::reset_lose_memory() noexcept {
 // is false by default). EASTL doesn't have allocator_traits and so this doesn't directly apply,
 // but EASTL has the effective behavior of propagate_on_container_swap = false for all allocators.
 template<typename T>
-inline void vector<T>::swap(this_type& x) {
+inline void vector<T>::swap(vector<T>& x) {
     // NOTE(rparolin): The previous implementation required T to be copy-constructible in the fall-back case where
     // allocators with unique instances copied elements.  This was an unnecessary restriction and prevented the common
     // usage of vector with non-copyable types (eg. eastl::vector<non_copyable> or eastl::vector<unique_ptr>).
@@ -656,8 +626,7 @@ inline void vector<T>::swap(this_type& x) {
 
 
 template<typename T>
-template<typename InputIterator>
-inline void vector<T>::DoAssign(InputIterator first, InputIterator last) {
+inline void vector<T>::DoAssign(const_iterator first, const_iterator last) {
     iterator position(mpBegin);
 
     while ((position != mpEnd) && (first != last)) {
@@ -669,7 +638,7 @@ inline void vector<T>::DoAssign(InputIterator first, InputIterator last) {
         erase(position, mpEnd);
     }
     else {
-        insert(mpEnd, first, last);
+        DoInsertValuesEnd(first, last - first);
     }
 }
 
@@ -678,19 +647,19 @@ template<typename T>
 void vector<T>::DoClearCapacity() { // This function exists because set_capacity() currently indirectly requires T to be default-constructible,
                                     // and some functions that need to clear our capacity (e.g. operator=) aren't supposed to require default-constructibility.
     clear();
-    this_type temp(move_(*this));  // This is the simplest way to accomplish this,
+    vector<T> temp(move_(*this));  // This is the simplest way to accomplish this,
     swap(temp);             // and it is as efficient as any other.
 }
 
 
 template<typename T>
-void vector<T>::DoGrow(size_type n) {
-    T* const pNewData = DoAllocate(n);
+void vector<T>::DoGrow(size_t n) {
+    T* pNewData = DoAllocate(n);
 
     T* pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewData);
 
     for (auto first = mpBegin, last = mpEnd; first != last; ++first) {
-        (*first).~T();
+        first->~T();
     }
     DoFree(mpBegin);
 
@@ -701,20 +670,20 @@ void vector<T>::DoGrow(size_type n) {
 
 
 template<typename T>
-inline void vector<T>::DoSwap(this_type& x) {
+inline void vector<T>::DoSwap(vector<T>& x) {
     swap_(mpBegin,   x.mpBegin);
     swap_(mpEnd,     x.mpEnd);
-    swap_(mCapacity, x.mCapacity); // We do this even if EASTL_ALLOCATOR_COPY_ENABLED is 0.
+    swap_(mCapacity, x.mCapacity);
 }
 
 
 template<typename T>
-void vector<T>::DoInsertValuesEnd(size_type n) {
-    if (n > size_type(mCapacity - mpEnd)) {
-        const size_type nPrevSize = size_type(mpEnd - mpBegin);
-        const size_type nGrowSize = GetNewCapacity(nPrevSize);
-        const size_type nNewSize = max_(nGrowSize, nPrevSize + n);
-        T* const pNewData = DoAllocate(nNewSize);
+void vector<T>::DoInsertValuesEnd(size_t n) {
+    if (n > size_t(mCapacity - mpEnd)) {
+        size_t nPrevSize = size_t(mpEnd - mpBegin);
+        size_t nGrowSize = GetNewCapacity(nPrevSize);
+        size_t nNewSize  = max_(nGrowSize, nPrevSize + n);
+        T*     pNewData  = DoAllocate(nNewSize);
 
         T* pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewData);
 
@@ -736,11 +705,11 @@ void vector<T>::DoInsertValuesEnd(size_type n) {
 
 
 template<typename T>
-void vector<T>::DoInsertValuesEnd(const T* range, size_type n) {
-    if (n > size_type(mCapacity - mpEnd)) {
-        size_type nPrevSize = size_type(mpEnd - mpBegin);
-        size_type nGrowSize = GetNewCapacity(nPrevSize);
-        size_type nNewSize = max_(nGrowSize, nPrevSize + n);
+void vector<T>::DoInsertValuesEnd(const T* range, size_t n) {
+    if (n > size_t(mCapacity - mpEnd)) {
+        size_t nPrevSize = size_t(mpEnd - mpBegin);
+        size_t nGrowSize = GetNewCapacity(nPrevSize);
+        size_t nNewSize = max_(nGrowSize, nPrevSize + n);
         T* pNewData = DoAllocate(nNewSize);
         T* pNewEnd = pNewData;
 
@@ -762,15 +731,12 @@ void vector<T>::DoInsertValuesEnd(const T* range, size_type n) {
 
 template<typename T>
 template<typename... Args>
-void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
+void vector<T>::DoInsertValue(iterator position, Args&&... args) {
     // To consider: It's feasible that the args is from a T comes from within the current sequence itself and
     // so we need to be sure to handle that case. This is different from insert(position, const T&) because in
     // this case value is potentially being modified.
 
     assert_(position >= mpBegin && position <= mpEnd);
-
-    // C++11 stipulates that position is const_iterator, but the return value is iterator.
-    iterator destPosition = const_cast<T*>(position);
 
     if (mpEnd != mCapacity) { // If size < capacity ...
         // We need to take into account the possibility that args is a T that comes from within the vector itself.
@@ -780,20 +746,20 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
         assert_(position < mpEnd);                                // While insert at end() is valid, our design is such that calling code should handle that case before getting here, as our streamlined logic directly doesn't handle this particular case due to resulting negative ranges.
         T value(forward_<Args>(args)...);           // Need to do this before the move_backward below because maybe args refers to something within the moving range.
         new (static_cast<void*>(mpEnd)) T(move_(*(mpEnd - 1)));      // mpEnd is uninitialized memory, so we must construct into it instead of move into it like we do with the other elements below.
-        move_backward(destPosition, mpEnd - 1, mpEnd);           // We need to go backward because of potential overlap issues.
-        destPosition->~T();
-        new (static_cast<void*>(destPosition)) T(move_(value));                             // Move the value argument to the given position.
+        move_backward(position, mpEnd - 1, mpEnd);           // We need to go backward because of potential overlap issues.
+        position->~T();
+        new (static_cast<void*>(position)) T(move_(value));                             // Move the value argument to the given position.
         ++mpEnd;
     }
     else { // else (size == capacity)
-        const size_type nPosSize  = size_type(destPosition - mpBegin); // Index of the insertion position.
-        const size_type nPrevSize = size_type(mpEnd - mpBegin);
-        const size_type nNewSize  = GetNewCapacity(nPrevSize);
-        T* const   pNewData  = DoAllocate(nNewSize);
+        size_t nPosSize  = size_t(position - mpBegin); // Index of the insertion position.
+        size_t nPrevSize = size_t(mpEnd - mpBegin);
+        size_t nNewSize  = GetNewCapacity(nPrevSize);
+        T*     pNewData  = DoAllocate(nNewSize);
 
         new (static_cast<void*>((pNewData + nPosSize))) T(forward_<Args>(args)...);                  // Because the old data is potentially being moved rather than copied, we need to move
-        T* pNewEnd = uninitialized_move(mpBegin, destPosition, pNewData);   // the value first, because it might possibly be a reference to the old data being moved.
-        pNewEnd = uninitialized_move(destPosition, mpEnd, ++pNewEnd);            // Question: with exceptions disabled, do we asssume all operations are noexcept and thus there's no need for uninitialized_move_ptr_if_noexcept?
+        T* pNewEnd = uninitialized_move(mpBegin, position, pNewData);   // the value first, because it might possibly be a reference to the old data being moved.
+        pNewEnd = uninitialized_move(position, mpEnd, ++pNewEnd);            // Question: with exceptions disabled, do we asssume all operations are noexcept and thus there's no need for uninitialized_move_ptr_if_noexcept?
 
         destruct(mpBegin, mpEnd);
         DoFree(mpBegin);
@@ -808,9 +774,9 @@ void vector<T>::DoInsertValue(const_iterator position, Args&&... args) {
 template<typename T>
 template<typename... Args>
 void vector<T>::DoInsertValueEnd(Args&&... args) {
-    const size_type nPrevSize = size_type(mpEnd - mpBegin);
-    const size_type nNewSize  = GetNewCapacity(nPrevSize);
-    T* const   pNewData  = DoAllocate(nNewSize);
+    size_t nPrevSize = size_t(mpEnd - mpBegin);
+    size_t nNewSize  = GetNewCapacity(nPrevSize);
+    T*     pNewData  = DoAllocate(nNewSize);
 
     T* pNewEnd = uninitialized_move(mpBegin, mpEnd, pNewData);
     new (static_cast<void*>(pNewEnd)) T(forward_<Args>(args)...);
@@ -855,6 +821,5 @@ inline bool operator!=(const vector<T>& a, const vector<T>& b) {
     }
     return false;
 }
-
 
 #endif  // SRC_UTIL_VECTOR_H_

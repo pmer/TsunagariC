@@ -28,10 +28,10 @@
 #ifndef CLIENT_CONF_H
 #define CLIENT_CONF_H
 
-#include <string>
-
 #include "core/log.h"
 #include "core/vec.h"
+
+#include "util/string-view.h"
 
 //! Game Movement Mode
 enum movement_mode_t {
@@ -54,6 +54,6 @@ struct Conf {
 };
 extern Conf conf;
 
-bool parseConfig(const std::string& filename);
+bool parseConfig(StringView filename);
 
 #endif

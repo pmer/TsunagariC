@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** overlay.cpp                        **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,38 +25,27 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/area.h"
-#include "core/client-conf.h"
 #include "core/overlay.h"
 
-Overlay::Overlay()
-{
-}
+#include "core/area.h"
+#include "core/client-conf.h"
 
-Overlay::~Overlay()
-{
-}
-
-void Overlay::tick(time_t dt)
-{
+void Overlay::tick(time_t dt) {
     Entity::tick(dt);
     moveTowardDestination(dt);
 }
 
-void Overlay::teleport(vicoord coord)
-{
+void Overlay::teleport(vicoord coord) {
     r = area->virt2virt(coord);
     redraw = true;
 }
 
-void Overlay::drift(ivec2 xy)
-{
-    driftTo(ivec2((int)r.x + xy.x, (int)r.y + xy.y));
+void Overlay::drift(ivec2 xy) {
+    driftTo(ivec2{(int)r.x + xy.x, (int)r.y + xy.y});
 }
 
-void Overlay::driftTo(ivec2 xy)
-{
-    setDestinationCoordinate(rcoord(xy.x, xy.y, r.z));
+void Overlay::driftTo(ivec2 xy) {
+    setDestinationCoordinate(rcoord{(double)xy.x, (double)xy.y, r.z});
     pickFacingForAngle();
     moving = true;
     setAnimationMoving();
@@ -64,7 +53,6 @@ void Overlay::driftTo(ivec2 xy)
     // Movement happens in Entity::moveTowardDestination() during tick().
 }
 
-void Overlay::pickFacingForAngle()
-{
+void Overlay::pickFacingForAngle() {
     // TODO
 }

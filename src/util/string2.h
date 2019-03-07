@@ -28,46 +28,46 @@
 #ifndef SRC_UTIL_STRING2_H_
 #define SRC_UTIL_STRING2_H_
 
-#include <string>
-
+#include "util/optional.h"
 #include "util/string-view.h"
+#include "util/string.h"
 #include "util/vector.h"
 
 //! Returns true if the string contains only digits, whitespace, and minus.
-bool isInteger(const std::string& s);
+bool isInteger(StringView s);
 
 //! Returns true if the string contains only digits, whitespace, minus, and
 //! period.
-bool isDecimal(const std::string& s);
+bool isDecimal(StringView s);
 
-bool isRanges(const std::string& s);
+bool isRanges(StringView s);
 
 
 //! Whether two strings are case-insensative equals.
-bool iequals(const std::string& a, const std::string& b);
+bool iequals(StringView a, StringView b);
 
 //! Return a bool from a "true"/"false" string.
-bool parseBool(const std::string& s);
+Optional<bool> parseBool(StringView s);
 
-bool parseUInt(const std::string& s, unsigned* n);
-bool parseUInt(const std::string& s, int* n);
-bool parseDouble(const std::string& s, double* n);
+Optional<int> parseInt(String& s);
+Optional<int> parseInt(StringView s);
+Optional<unsigned> parseUInt(String& s);
+Optional<unsigned> parseUInt(StringView s);
+Optional<double> parseDouble(String& s);
+Optional<double> parseDouble(StringView s);
 
-int parseInt100(const std::string& s);
+int parseInt100(const char* s);
 
 //! Split a string by a delimiter.
-vector<std::string> splitStr(const std::string& str,
-                             const std::string& delimiter);
+vector<String> splitStr(StringView str, StringView delimiter);
 
 /**
  * Parse ranges of integers separated by commas.
  * Can take things such as "5-7,2,12-18".
  */
-vector<int> parseRanges(const std::string& format);
+Optional<vector<int>> parseRanges(StringView format);
 
-//! Convert an integer to a representative string.
-std::string itostr(int in);
-
-std::string slurp(StringView filename);
+Optional<String> slurp(String& path);
+Optional<String> slurp(StringView path);
 
 #endif  // SRC_UTIL_STRING2_H_

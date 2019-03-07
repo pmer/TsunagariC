@@ -28,13 +28,13 @@
 #ifndef SRC_CORE_TILE_GRID_H_
 #define SRC_CORE_TILE_GRID_H_
 
-#include <unordered_map>
-
-#include "core/formatter.h"
 #include "core/log.h"
 #include "core/vec.h"
+
 #include "util/assert.h"
 #include "util/math2.h"
+#include "util/hashtable.h"
+#include "util/string.h"
 #include "util/vector.h"
 
 class Viewport;
@@ -92,7 +92,7 @@ class TileGrid {
     ivec2 tileDim;
 
     //! Maps virtual float-point depths to an index in our map array.
-    std::unordered_map<double, int> depth2idx;
+    Hashmap<double, int> depth2idx;
 
     //! Maps an index in our map array to a virtual float-point depth.
     vector<double> idx2depth;
@@ -200,44 +200,44 @@ bool TileGrid<T>::inBounds(rcoord virt) const {
 
 template<typename T>
 vicoord TileGrid<T>::phys2virt_vi(icoord phys) const {
-    return vicoord(phys.x,
+    return vicoord{phys.x,
                    phys.y,
-                   indexDepth(phys.z));
+                   indexDepth(phys.z)};
 }
 
 template<typename T>
 rcoord TileGrid<T>::phys2virt_r(icoord phys) const {
-    return rcoord(static_cast<double>(phys.x * tileDim.x),
+    return rcoord{static_cast<double>(phys.x * tileDim.x),
                   static_cast<double>(phys.y * tileDim.y),
-                  indexDepth(phys.z));
+                  indexDepth(phys.z)};
 }
 
 template<typename T>
 icoord TileGrid<T>::virt2phys(vicoord virt) const {
-    return icoord(static_cast<int>(virt.x),
+    return icoord{static_cast<int>(virt.x),
                   static_cast<int>(virt.y),
-                  depthIndex(virt.z));
+                  depthIndex(virt.z)};
 }
 
 template<typename T>
 icoord TileGrid<T>::virt2phys(rcoord virt) const {
-    return icoord(static_cast<int>(virt.x) / tileDim.x,
+    return icoord{static_cast<int>(virt.x) / tileDim.x,
                   static_cast<int>(virt.y) / tileDim.y,
-                  depthIndex(virt.z));
+                  depthIndex(virt.z)};
 }
 
 template<typename T>
 rcoord TileGrid<T>::virt2virt(vicoord virt) const {
-    return rcoord(virt.x * tileDim.x,
-                  virt.y * tileDim.y,
-                  virt.z);
+    return rcoord{static_cast<double>(virt.x * tileDim.x),
+                  static_cast<double>(virt.y * tileDim.y),
+                  virt.z};
 }
 
 template<typename T>
 vicoord TileGrid<T>::virt2virt(rcoord virt) const {
-    return vicoord(static_cast<int>(virt.x) / tileDim.x,
+    return vicoord{static_cast<int>(virt.x) / tileDim.x,
                    static_cast<int>(virt.y) / tileDim.y,
-                   virt.z);
+                   virt.z};
 }
 
 
@@ -246,9 +246,9 @@ int TileGrid<T>::depthIndex(double depth) const {
     auto it = depth2idx.find(depth);
     if (it == depth2idx.end()) {
         Log::fatal("TileGrid",
-                   Formatter("Attempt to access invalid layer: %") % depth);
+                   String() << "Attempt to access invalid layer: " << depth);
     }
-    return it->second;
+    return it.value();
 }
 
 template<typename T>

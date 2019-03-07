@@ -44,7 +44,7 @@ Player& Player::instance() {
 
 
 Player::Player()
-        : Character(), velocity(0, 0) {
+        : Character(), velocity{0, 0} {
     globalPlayer = this;
     nowalkFlags = TILE_NOWALK | TILE_NOWALK_PLAYER;
     nowalkExempt = TILE_NOWALK_EXIT;
@@ -81,9 +81,8 @@ void Player::stopMovement(ivec2 delta) {
                 break;
             }
         }
-        velocity = movements.size() ?
-                   movements.back() :
-               ivec2(0, 0);
+        velocity = movements.size() ? movements.back()
+                                    : ivec2{0, 0};
         if (velocity) {
             moveByTile(velocity);
         }
@@ -158,6 +157,6 @@ void Player::takeExit(const Exit& exit) {
     if (!world.focusArea(exit.area, exit.coords)) {
         // Roll back movement if exit failed to open.
         setTileCoords(fromCoord);
-        Log::err("Exit", exit.area + ": failed to load properly");
+        Log::err("Exit", String() << exit.area << ": failed to load properly");
     }
 }

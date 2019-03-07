@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** log.cpp                            **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,16 +25,20 @@
 // IN THE SOFTWARE.
 // **********
 
+// FIXME: Pre-declare operator new.
+#include <new>
+
 #include "core/log.h"
 
 #include <iostream>
-#include <sstream>
 #include <mutex>
 
 #include "core/client-conf.h"
-#include "core/formatter.h"
 #include "core/window.h"
+
 #include "os/os.h"
+
+#include "util/algorithm.h"
 
 #ifdef _WIN32
     #include "os/windows.h"
@@ -50,20 +54,36 @@ static time_t startTime;
 
 static std::mutex stdoutMutex;
 
-static std::string& chomp(std::string& str) {
-    std::string::size_type notwhite = str.find_last_not_of(" \t\n\r");
-    str.erase(notwhite + 1);
-    return str;
+static StringView chomp(StringView str) {
+    size_t size = str.size;
+    while (str.data[str.size - 1] == ' ' ||
+           str.data[str.size - 1] == '\t' ||
+           str.data[str.size - 1] == '\n' ||
+           str.data[str.size - 1] == '\r') {
+        size -= 1;
+    }
+    return str.substr(0, size);
 }
 
-static std::string makeTimestamp() {
+static String makeTimestamp() {
     time_t now = GameWindow::time();
 
-    std::ostringstream ts;
-    ts.precision(3);
-    ts << std::fixed;
-    ts << (now - startTime) / (long double)1000.0;
-    return "[" + ts.str() + "] ";
+    double secs = (now - startTime) / (long double)1000.0;
+    
+    String s;
+    s << secs;
+    
+    StringView v = s.view();
+
+    Optional<size_t> idx = v.find('.');
+    if (idx) {
+        size_t dot = *idx;
+        v = v.substr(0, min_(v.size, dot + 4));
+    }
+
+    String s2;
+    s2 << "[" << v << "]";
+    return s2;
 }
 
 bool Log::init() {
@@ -75,68 +95,82 @@ void Log::setVerbosity(verbosity_t v) {
     verb = v;
 }
 
-void Log::info(std::string domain, std::string msg) {
+void Log::info(StringView domain, StringView msg) {
     if (verb > V_NORMAL) {
         std::unique_lock<std::mutex> lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
-        std::cout << makeTimestamp();
+        std::cout << makeTimestamp().null();
 
         setTermColor(TC_YELLOW);
-        std::cout << "Info [" + domain + "]";
+        String s;
+        s << "Info [" << domain << "]";
+        std::cout << s.null();
 
         setTermColor(TC_RESET);
-        std::cout << " - " << chomp(msg) << std::endl;
+        s.clear();
+        s << " - " << chomp(msg) << "\n";
+        std::cout << s.null();
     }
 }
 
-void Log::err(std::string domain, std::string msg) {
+void Log::err(StringView domain, StringView msg) {
     if (verb > V_QUIET) {
         {
             std::unique_lock<std::mutex> lock(stdoutMutex);
 
             setTermColor(TC_GREEN);
-            std::cerr << makeTimestamp();
+            std::cerr << makeTimestamp().null();
 
             setTermColor(TC_RED);
-            std::cerr << "Error [" + domain + "]";
+            String s;
+            s << "Error [" << domain << "]";
+            std::cerr << s.null();
 
             setTermColor(TC_RESET);
-            std::cerr << " - " << chomp(msg) << std::endl;
+            s.clear();
+            s << " - " << chomp(msg) << "\n";
+            std::cerr << s.null();
         }
 
-        std::string str = Formatter("Error [%] - %") % domain % chomp(msg);
+        String s;
+        s << "Error [" << domain << "] - " << chomp(msg);
 
         #ifdef _WIN32
-            wMessageBox("Tsunagari - Error", str);
+            wMessageBox("Tsunagari - Error", s.null());
         #endif
         #ifdef __APPLE__
-            macMessageBox("Tsunagari - Error", str.c_str());
+            macMessageBox("Tsunagari - Error", s.null());
         #endif
     }
 }
 
-void Log::fatal(std::string domain, std::string msg) {
+void Log::fatal(StringView domain, StringView msg) {
     {
         std::unique_lock<std::mutex> lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
-        std::cerr << makeTimestamp();
+        std::cerr << makeTimestamp().null();
 
         setTermColor(TC_RED);
-        std::cerr << "Fatal [" + domain + "]";
+        String s;
+        s << "Fatal [" << domain << "]";
+        std::cerr << s.null();
 
         setTermColor(TC_RESET);
-        std::cerr << " - " << chomp(msg) << std::endl;
+        s.clear();
+        s << " - " << chomp(msg) << "\n";
+        std::cerr << s.null();
     }
 
-    std::string str = Formatter("Fatal [%] - %") % domain % chomp(msg);
+    String s;
+    s << "Fatal [" << domain << "] - " << chomp(msg);
 
     #ifdef _WIN32
-        wMessageBox("Tsunagari - Fatal", str);
+        wMessageBox("Tsunagari - Fatal", s.null());
     #endif
     #ifdef __APPLE__
-        macMessageBox("Tsunagari - Fatal", str.c_str());
+        macMessageBox("Tsunagari - Fatal", s.null());
     #endif
 
     exit(1);
@@ -145,7 +179,7 @@ void Log::fatal(std::string domain, std::string msg) {
 void Log::reportVerbosityOnStartup() {
     std::unique_lock<std::mutex> lock(stdoutMutex);
 
-    std::string verbString;
+    StringView verbString;
     switch (conf.verbosity) {
     case V_QUIET:
         verbString = "QUIET";
@@ -159,9 +193,11 @@ void Log::reportVerbosityOnStartup() {
     }
 
     setTermColor(TC_GREEN);
-    std::cout << makeTimestamp();
+    std::cout << makeTimestamp().null();
 
     setTermColor(TC_RESET);
-    std::cout << "Reporting engine messages in " << verbString
-            << " mode." << std::endl;
+    String s;
+    s << "Reporting engine messages in " << verbString
+      << " mode.\n";
+    std::cout << s.null();
 }

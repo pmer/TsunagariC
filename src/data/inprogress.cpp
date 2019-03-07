@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** inprogress.cpp                **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** inprogress.cpp                   **
+** Copyright 2014 Michael Reiley    **
+** Copyright 2014-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,22 +31,17 @@
 #include "core/sounds.h"
 
 InProgress::InProgress()
-    : over(false)
-{
-}
+    : over(false) {}
 
-InProgress::~InProgress() {}
 void InProgress::tick(time_t) {}
 
-bool InProgress::isOver()
-{
+bool InProgress::isOver() {
     return over;
 }
 
 
-InProgressSound::InProgressSound(const std::string& sound, ThenFn then)
-    : sound(Sounds::instance().play(sound)), then(then)
-{
+InProgressSound::InProgressSound(StringView sound, ThenFn then)
+        : sound(Sounds::instance().play(sound)), then(then) {
     if (!then) {
         Log::err("InProgressSound", "invalid 'then'");
     }
@@ -65,25 +60,23 @@ void InProgressSound::tick(time_t)
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress)
-    : duration(duration), passed(0), progress(progress)
-{
+        : duration(duration), passed(0), progress(progress) {
     if (!progress) {
         Log::err("InProgressTimer", "invalid 'progress'");
     }
 }
 
 InProgressTimer::InProgressTimer(time_t duration, ThenFn then)
-    : duration(duration), passed(0), then(then)
-{
+        : duration(duration), passed(0), then(then) {
     if (!then) {
         Log::err("InProgressTimer", "invalid 'then'");
     }
 }
 
-InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress,
-        ThenFn then)
-    : duration(duration), passed(0), progress(progress), then(then)
-{
+InProgressTimer::InProgressTimer(time_t duration,
+                                 ProgressFn progress,
+                                 ThenFn then)
+        : duration(duration), passed(0), progress(progress), then(then) {
     if (!progress) {
         Log::err("InProgressTimer", "invalid 'progress'");
     }
@@ -92,8 +85,7 @@ InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress,
     }
 }
 
-void InProgressTimer::tick(time_t dt)
-{
+void InProgressTimer::tick(time_t dt) {
     if (over) {
         return;
     }

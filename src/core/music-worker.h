@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** music-worker.h                     **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,7 +28,7 @@
 #ifndef SRC_CORE_MUSIC_WORKER_H_
 #define SRC_CORE_MUSIC_WORKER_H_
 
-#include <string>
+#include "util/string.h"
 
 class MusicWorker {
  public:
@@ -36,7 +36,7 @@ class MusicWorker {
 
     virtual ~MusicWorker() = default;
 
-    virtual void play(std::string path);
+    virtual void play(StringView path);
 
     virtual void stop();
 
@@ -54,7 +54,7 @@ class MusicWorker {
     double volume;
     int paused;
 
-    std::string path;
+    String path;
 };
 
 #endif  // SRC_CORE_MUSIC_WORKER_H_

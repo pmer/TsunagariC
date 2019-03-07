@@ -154,11 +154,6 @@ namespace pdqsort_detail {
 
     };
 
-    template<typename T>
-    inline void iter_swap(T* a, T* b) {
-        swap_(*a, *b);
-    }
-
     // Returns floor(log2(n)), assumes n > 0.
     template<typename T>
     inline int log2(T n) {
@@ -253,7 +248,7 @@ namespace pdqsort_detail {
     template<typename T>
     inline void sort2(T* a, T* b) {
         if (*b < *a) {
-            iter_swap(a, b);
+            swap_(*a, *b);
         }
     }
 
@@ -280,7 +275,7 @@ namespace pdqsort_detail {
             // This case is needed for the descending distribution, where we need
             // to have proper swapping for pdqsort to remain O(n).
             for (int i = 0; i < num; ++i) {
-                iter_swap(first + offsets_l[i], last - offsets_r[i]);
+                swap_(*(first + offsets_l[i]), *(last - offsets_r[i]));
             }
         } else if (num > 0) {
             T* l = first + offsets_l[0]; T* r = last - offsets_r[0];
@@ -329,7 +324,7 @@ namespace pdqsort_detail {
         // swapped pairs guard the searches, which is why the first iteration is special-cased
         // above.
         while (first < last) {
-            iter_swap(first, last);
+            swap_(*first, *last);
             while (*++first < pivot);
             while (!(*--last < pivot));
         }
@@ -358,7 +353,7 @@ namespace pdqsort_detail {
         else                 while (                !(pivot < *++first));
 
         while (first < last) {
-            iter_swap(first, last);
+            swap_(*first, *last);
             while (pivot < *--last);
             while (!(pivot < *++first));
         }
@@ -394,7 +389,7 @@ namespace pdqsort_detail {
                 sort3(begin + 1, begin + (s2 - 1), end - 2);
                 sort3(begin + 2, begin + (s2 + 1), end - 3);
                 sort3(begin + (s2 - 1), begin + s2, begin + (s2 + 1));
-                iter_swap(begin, begin + s2);
+                swap_(begin[0], begin[s2]);
             }
             else {
                 sort3(begin + s2, begin, end - 1);
@@ -430,26 +425,26 @@ namespace pdqsort_detail {
                 }
 
                 if (l_size >= insertion_sort_threshold) {
-                    iter_swap(begin,             begin + l_size / 4);
-                    iter_swap(pivot_pos - 1, pivot_pos - l_size / 4);
+                    swap_(begin[0],      begin[l_size / 4]);
+                    swap_(pivot_pos[-1], pivot_pos[-l_size / 4]);
 
                     if (l_size > ninther_threshold) {
-                        iter_swap(begin + 1,         begin + (l_size / 4 + 1));
-                        iter_swap(begin + 2,         begin + (l_size / 4 + 2));
-                        iter_swap(pivot_pos - 2, pivot_pos - (l_size / 4 + 1));
-                        iter_swap(pivot_pos - 3, pivot_pos - (l_size / 4 + 2));
+                        swap_(begin[1],      begin[l_size / 4 + 1]);
+                        swap_(begin[2],      begin[l_size / 4 + 2]);
+                        swap_(pivot_pos[-2], pivot_pos[-(l_size / 4 + 1)]);
+                        swap_(pivot_pos[-3], pivot_pos[-(l_size / 4 + 2)]);
                     }
                 }
 
                 if (r_size >= insertion_sort_threshold) {
-                    iter_swap(pivot_pos + 1, pivot_pos + (1 + r_size / 4));
-                    iter_swap(end - 1,                   end - r_size / 4);
+                    swap_(pivot_pos[1], pivot_pos[1 + r_size / 4]);
+                    swap_(end[-1],      end[-r_size / 4]);
 
                     if (r_size > ninther_threshold) {
-                        iter_swap(pivot_pos + 2, pivot_pos + (2 + r_size / 4));
-                        iter_swap(pivot_pos + 3, pivot_pos + (3 + r_size / 4));
-                        iter_swap(end - 2,             end - (1 + r_size / 4));
-                        iter_swap(end - 3,             end - (2 + r_size / 4));
+                        swap_(pivot_pos[2], pivot_pos[2 + r_size / 4]);
+                        swap_(pivot_pos[3], pivot_pos[3 + r_size / 4]);
+                        swap_(end[-2],             end[-(1 + r_size / 4)]);
+                        swap_(end[-3],             end[-(2 + r_size / 4)]);
                     }
                 }
             } else {

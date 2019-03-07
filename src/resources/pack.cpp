@@ -24,12 +24,13 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/resources.h"
-
-#include <limits>
+// FIXME: Pre-declare operator new.
 #include <mutex>
 
-#include "core/formatter.h"
+#include "core/resources.h"
+
+#include <limits.h>
+
 #include "core/log.h"
 #include "core/measure.h"
 
@@ -37,7 +38,6 @@
 
 #include "pack/pack-reader.h"
 
-#include "util/string-view-std.h"
 #include "util/unique.h"
 
 static std::mutex mutex;
@@ -51,18 +51,17 @@ static bool openPackFile() {
     pack = PackReader::fromFile(path);
     if (!pack) {
         Log::fatal("PackResources",
-                   Formatter("%: could not open archive") % path);
+                   String() << path << ": could not open archive");
         return false;
     }
 
     return true;
 }
 
-static std::string getFullPath(StringView path) {
-    std::string fullPath = to_string(DataWorld::instance().datafile);
-    fullPath.append("/")
-            .append(path.data, path.size);
-    return fullPath;
+static String getFullPath(StringView path) {
+    return String() << DataWorld::instance().datafile
+                    << "/"
+                    << path;
 }
 
 Optional<StringView> resourceLoad(StringView path) {
@@ -76,16 +75,16 @@ Optional<StringView> resourceLoad(StringView path) {
 
     if (index == PackReader::BLOB_NOT_FOUND) {
         Log::err("PackResources",
-                 Formatter("%: file missing") % getFullPath(path));
+                 String() << getFullPath(path) << ": file missing");
         return Optional<StringView>();
     }
 
     uint64_t blobSize = pack->getBlobSize(index);
 
     // Will it fit in memory?
-    if (blobSize > std::numeric_limits<size_t>::max()) {
+    if (blobSize > SIZE_T_MAX) {
         Log::err("PackResources",
-                 Formatter("%: file too large") % getFullPath(path));
+                 String() << getFullPath(path) << ": file too large");
         return Optional<StringView>();
     }
 

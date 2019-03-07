@@ -28,6 +28,7 @@
 #ifndef SRC_CORE_RESOURCES_H_
 #define SRC_CORE_RESOURCES_H_
 
+#include "util/optional.h"
 #include "util/string-view.h"
 
 /**

@@ -31,6 +31,8 @@
 
 #include "util/string-view.h"
 
+extern bool verbose;
+
 void uiShowSkippedMissingFile(StringView path);
 void uiShowAddedFile(StringView path, size_t size);
 void uiShowWritingArchive(StringView arhivePath);

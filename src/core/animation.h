@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** animation.h                        **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -98,11 +98,8 @@ class Animation {
     Image* frame() const;
 
  private:
-    typedef vector<Rc<Image>> ImageVec;
-
-
     /** List of images in animation. */
-    ImageVec frames;
+    vector<Rc<Image>> frames;
 
     /** Length of each frame in animation in milliseconds. */
     time_t frameTime;

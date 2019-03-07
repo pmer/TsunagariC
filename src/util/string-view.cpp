@@ -28,47 +28,7 @@
 
 #include <string.h>
 
-StringView::StringView(const char* data) noexcept : data(data), size(strlen(data)) {}
-
-StringView::StringView(const char* data, size_t size) noexcept : data(data), size(size) {}
-
-bool StringView::operator==(const StringView other) const noexcept {
-    if (size != other.size) {
-        return false;
-    }
-    return memcmp(data, other.data, size) == 0;
-}
-
-bool StringView::operator!=(const StringView other) const noexcept {
-    if (size != other.size) {
-        return true;
-    }
-    return memcmp(data, other.data, size) != 0;
-}
-
-bool StringView::operator>(const StringView other) const noexcept {
-    size_t lesser = size < other.size ? size : other.size;
-    int cmp = memcmp(data, other.data, lesser);
-    if (cmp < 0) {
-        return false;
-    }
-    if (cmp > 0) {
-        return true;
-    }
-    return size > other.size;
-}
-
-bool StringView::operator<(const StringView other) const noexcept {
-    size_t lesser = size < other.size ? size : other.size;
-    int cmp = memcmp(data, other.data, lesser);
-    if (cmp < 0) {
-        return true;
-    }
-    if (cmp > 0) {
-        return false;
-    }
-    return size < other.size;
-}
+#include "util/fnv.h"
 
 Optional<size_t> StringView::find(char needle) const noexcept {
     for (size_t i = 0; i < size; i++) {
@@ -79,7 +39,28 @@ Optional<size_t> StringView::find(char needle) const noexcept {
     return Optional<size_t>();
 }
 
+Optional<size_t> StringView::find(StringView needle) const noexcept {
+    char* result = static_cast<char*>(memmem(data, size, needle.data, needle.size));
+    if (result == nullptr) {
+        return Optional<size_t>();
+    }
+    return Optional<size_t>(result - data);
+}
+
+Optional<size_t> StringView::find(StringView needle, size_t start) const noexcept {
+    assert_(size >= start);
+    
+    char* result = static_cast<char*>(memmem(data + start, size - start, needle.data, needle.size));
+    if (result == nullptr) {
+        return Optional<size_t>();
+    }
+    return Optional<size_t>(result - data);
+}
+
 Optional<size_t> StringView::rfind(char needle) const noexcept {
+    if (size == 0) {
+        return Optional<size_t>();
+    }
     for (size_t i = size - 1; i >= size; i++) {
         if (data[i] == needle) {
             return Optional<size_t>(i);
@@ -88,13 +69,6 @@ Optional<size_t> StringView::rfind(char needle) const noexcept {
     return Optional<size_t>();
 }
 
-StringView StringView::substr(size_t from) const noexcept {
-    assert_(from <= size);
-    return StringView(data + from, size - from);
-}
-
-StringView StringView::substr(size_t from, size_t to) const noexcept {
-    assert_(to > from);
-    assert_(to - from <= size);
-    return StringView(data + from, to - from);
+size_t hash_(StringView s) {
+    return fnvHash(s.data, s.size);
 }

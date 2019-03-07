@@ -37,6 +37,7 @@ static Unique<Pool> pool(Pool::makePool("ui", 1));
 static std::mutex mutex;
 static bool scheduled = false;
 static String buf;
+bool verbose = false;
 
 static void flush() {
     std::lock_guard<std::mutex> lock(mutex);
@@ -46,6 +47,10 @@ static void flush() {
 }
 
 static void scheduleMessage(StringView message) {
+    if (!verbose) {
+        return;
+    }
+
     std::lock_guard<std::mutex> lock(mutex);
     buf << message;
     if (!scheduled) {
@@ -55,31 +60,36 @@ static void scheduleMessage(StringView message) {
 }
 
 void uiShowSkippedMissingFile(StringView path) {
-    String message;
-    message << "Skipped " << path << ": file not found\n";
-    scheduleMessage(message);
+    scheduleMessage(String() << "Skipped "
+                             << path
+                             << ": file not found\n");
 }
 
 void uiShowAddedFile(StringView path, size_t size) {
-    String message;
-    message << "Added " << path << ": " << size << " bytes\n";
-    scheduleMessage(message);
+    scheduleMessage(String() << "Added "
+                             << path
+                             << ": "
+                             << size
+                             << " bytes\n");
 }
 
 void uiShowWritingArchive(StringView archivePath) {
-    String message;
-    message << "Writing to " << archivePath << "\n";
-    scheduleMessage(message);
+    scheduleMessage(String() << "Writing to "
+                             << archivePath
+                             << "\n");
 }
 
 void uiShowListingEntry(StringView blobPath, uint64_t blobSize) {
-    String message;
-    message << blobPath << ": " << blobSize << " bytes\n";
-    scheduleMessage(message);
+    scheduleMessage(String() << blobPath
+                             << ": "
+                             << blobSize
+                             << " bytes\n");
 }
 
 void uiShowExtractingFile(StringView blobPath, uint64_t blobSize) {
-    String message;
-    message << "Extracting " << blobPath << ": " << blobSize << " bytes\n";
-    scheduleMessage(move_(message));
+    scheduleMessage(String() << "Extracting "
+                             << blobPath
+                             << ": "
+                             << blobSize
+                             << " bytes\n");
 }

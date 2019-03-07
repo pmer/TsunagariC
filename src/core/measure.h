@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** measure.h                     **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** measure.h                        **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,13 +27,13 @@
 #ifndef SRC_CORE_MEASURE_H_
 #define SRC_CORE_MEASURE_H_
 
-#include <string>
+#include "util/string.h"
 
 struct TimeMeasureImpl;
 
 class TimeMeasure {
  public:
-    TimeMeasure(std::string description);
+    TimeMeasure(String description);
     ~TimeMeasure();
 
  private:

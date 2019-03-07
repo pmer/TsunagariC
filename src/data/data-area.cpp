@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** data-area.cpp                      **
-** Copyright 2014      PariahSoft LLC **
-** Copyright 2016-2017 Paul Merrill   **
+** Copyright 2014      Michael Reiley **
+** Copyright 2014-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -33,8 +33,6 @@
 
 #include "data/inprogress.h"
 
-DataArea::DataArea() {}
-DataArea::~DataArea() {}
 void DataArea::onLoad() {}
 void DataArea::onFocus() {}
 void DataArea::onTick(time_t) {}
@@ -57,11 +55,11 @@ void DataArea::turn() {
     onTurn();
 }
 
-void DataArea::playSoundEffect(const std::string& sound) {
+void DataArea::playSoundEffect(StringView sound) {
     Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.03, 0.03));
 }
 
-void DataArea::playSoundAndThen(const std::string& sound, ThenFn then) {
+void DataArea::playSoundAndThen(StringView sound, ThenFn then) {
     inProgresses.emplace_back(
         new InProgressSound(sound, then));
 }
@@ -82,6 +80,6 @@ void DataArea::timerProgressAndThen(time_t duration, ProgressFn progress,
         new InProgressTimer(duration, progress, then));
 }
 
-DataArea::TileScript DataArea::script(const std::string& scriptName) {
+DataArea::TileScript DataArea::script(StringView scriptName) {
     return scripts[scriptName];
 }

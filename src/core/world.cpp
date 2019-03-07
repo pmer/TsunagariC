@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** world.cpp                          **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,8 +27,6 @@
 
 #include "core/world.h"
 
-#include <limits>
-
 #include "core/area.h"
 #include "core/area-json.h"
 #include "core/character.h"
@@ -45,7 +43,9 @@
 #include "core/sounds.h"
 #include "core/viewport.h"
 #include "core/window.h"
+
 #include "data/data-world.h"
+
 #include "util/vector.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
@@ -170,10 +170,10 @@ void World::turn() {
     }
 }
 
-bool World::focusArea(const std::string& filename, vicoord playerPos) {
-    AreaMap::iterator entry = areas.find(filename);
+bool World::focusArea(StringView filename, vicoord playerPos) {
+    auto entry = areas.find(filename);
     if (entry != areas.end()) {
-        Area* rawArea = entry->second.get();
+        Area* rawArea = entry.value().get();
         focusArea(rawArea, playerPos);
         return true;
     }
@@ -242,23 +242,22 @@ void World::setPaused(bool b) {
 }
 
 void World::storeKeys() {
-    keyStates.push(GameWindow::instance().getKeysDown());
+    keyStates.push_back(GameWindow::instance().getKeysDown());
 }
 
 void World::restoreKeys() {
     BitRecord now = GameWindow::instance().getKeysDown();
-    BitRecord then = keyStates.top();
-    typedef vector<size_t> Size_tVector;
-    Size_tVector diffs = now.diff(then);
+    BitRecord then = keyStates.back();
+    vector<size_t> diffs = now.diff(then);
 
-    keyStates.pop();
+    keyStates.pop_back();
 
-    for (Size_tVector::iterator it = diffs.begin(); it != diffs.end(); it++) {
-        KeyboardKey key = (KeyboardKey)*it;
-        if (now[key]) {
-            buttonDown(key);
+    for (size_t key : diffs) {
+        KeyboardKey key_ = static_cast<KeyboardKey>(key);
+        if (now[key_]) {
+            buttonDown(key_);
         } else {
-            buttonUp(key);
+            buttonUp(key_);
         }
     }
 }

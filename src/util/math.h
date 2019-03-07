@@ -1,9 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** math.h                             **
-** Copyright 2014      Michael Reiley **
-** Copyright 2014-2019 Paul Merrill   **
-***************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** math.h                        **
+** Copyright 2019 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +27,12 @@
 #ifndef SRC_UTIL_MATH_H_
 #define SRC_UTIL_MATH_H_
 
+extern "C" double atan2(double, double);
+extern "C" double ceil(double);
 extern "C" float ceilf(float);
+extern "C" double cos(double);
+extern "C" double floor(double);
+extern "C" double sin(double);
+extern "C" double sqrt(double);
 
 #endif  // SRC_UTIL_MATH_H_

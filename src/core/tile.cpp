@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** tile.cpp                           **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,16 +25,17 @@
 // IN THE SOFTWARE.
 // **********
 
+
+// FIXME: Pre-declare placement new.
+#include <new>
+
 #include "core/tile.h"
 
-#include <string.h>  // for memset
-
 #include "core/area.h"
-#include "core/formatter.h"
 #include "core/log.h"
 #include "core/world.h"
-#include "util/move.h"
-#include "util/string2.h"
+
+#include "util/string.h"
 
 static int ivec2_to_dir(ivec2 v) {
     switch (v.x) {
@@ -111,8 +112,8 @@ void FlagManip::setNowalkAreaBound(bool nowalk) {
 }
 
 
-Exit::Exit(std::string area, int x, int y, double z)
-    : area(move_(area)), coords(x, y, z) {}
+Exit::Exit(String area, int x, int y, double z)
+    : area(move_(area)), coords{x, y, z} {}
 
 
 /*
@@ -147,11 +148,11 @@ Tile::Tile() : entCnt(0) {}
 Tile::Tile(Area* area) : area(area), entCnt(0) {}
 
 icoord Tile::moveDest(icoord here, ivec2 facing) const {
-    icoord dest = here + icoord(facing.x, facing.y, 0);
+    icoord dest = here + icoord{facing.x, facing.y, 0};
 
     Optional<double> layermod = layermodAt(facing);
     if (layermod) {
-        dest = area->virt2phys(vicoord(dest.x, dest.y, *layermod));
+        dest = area->virt2phys(vicoord{dest.x, dest.y, *layermod});
     }
     return dest;
 }
@@ -227,7 +228,7 @@ TileType* TileSet::at(size_t x, size_t y) {
     size_t i = idx(x, y);
     if (i > types.size()) {
         Log::err("TileSet",
-            Formatter("get(%, %): out of bounds") % x % y);
+            String() << "get(" << x << ", " << y << "): out of bounds");
         return nullptr;
     }
     return types[i];

@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** unique.h                      **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** unique.h                         **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -42,16 +42,10 @@
 //     class CompactArc  Fast thread-safe shared pointer
 //
 
-template<typename T>
-struct DefaultUniqueDestructor {
-    void operator()(T* x) { delete x; }
-};
-
 // Unique pointers delete their object when destroyed.
-template<typename T, typename Deleter = DefaultUniqueDestructor<T>>
+template<typename T>
 class Unique {
     T* x;
-    Deleter d;
 
  public:
     Unique() : x(nullptr) {}
@@ -62,14 +56,8 @@ class Unique {
 
     Unique(T* x) : x(x) {}
 
-    /*
-    template<typename ...Args>
-    explicit Unique(Args&& ...args)
-            : x(new T(std::forward<Args>(args)...)) {}
-    */
-
     ~Unique() {
-        d(x);
+        delete x;
     }
 
     Unique& operator=(T* x) {

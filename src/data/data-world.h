@@ -28,12 +28,11 @@
 #ifndef SRC_DATA_DATA_WORLD_H_
 #define SRC_DATA_DATA_WORLD_H_
 
-#include <string>
-#include <unordered_map>
-
 #include "core/client-conf.h"
 #include "data/data-area.h"
+
 #include "util/string-view.h"
+#include "util/hashtable.h"
 #include "util/unique.h"
 
 class DataWorld {
@@ -45,11 +44,11 @@ class DataWorld {
     //! After the engine has booted, initialize the world.
     virtual bool init() = 0;
 
-    DataArea* area(const std::string& areaName);
+    DataArea* area(StringView areaName);
 
     // Miscellaneous engine parameters set by world's author.
     struct {
-        std::string name, author, version;
+        StringView name, author, version;
     } about;
     struct {
         enum movement_mode_t moveMode;
@@ -61,9 +60,9 @@ class DataWorld {
         } input;
         struct {
             struct {
-                std::string file, phase;
+                StringView file, phase;
             } player;
-            std::string area;
+            StringView area;
             vicoord coords;
         } gameStart;
     } parameters;
@@ -72,7 +71,7 @@ class DataWorld {
  protected:
     DataWorld() = default;
 
-    std::unordered_map<std::string,Unique<DataArea>> areas;
+    Hashmap<StringView, Unique<DataArea>> areas;
 
  private:
     DataWorld(const DataWorld&) = delete;

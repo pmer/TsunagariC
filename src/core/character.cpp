@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** character.cpp                      **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -34,15 +34,13 @@
 Character::Character()
     : nowalkFlags(TILE_NOWALK | TILE_NOWALK_NPC),
       nowalkExempt(0),
-      fromCoord(0.0, 0.0, 0.0),
+      fromCoord({0.0, 0.0, 0.0}),
       fromTile(nullptr),
-      destTile(nullptr)
-{
+      destTile(nullptr) {
     enterTile();
 }
 
-void Character::tick(time_t dt)
-{
+void Character::tick(time_t dt) {
     Entity::tick(dt);
 
     switch (conf.moveMode) {
@@ -57,87 +55,75 @@ void Character::tick(time_t dt)
     }
 }
 
-void Character::turn()
-{
+void Character::turn() {
 }
 
-void Character::destroy()
-{
+void Character::destroy() {
     leaveTile();
     Entity::destroy();
 }
 
-icoord Character::getTileCoords_i() const
-{
+icoord Character::getTileCoords_i() const {
     return area->virt2phys(r);
 }
 
-vicoord Character::getTileCoords_vi() const
-{
+vicoord Character::getTileCoords_vi() const {
     return area->virt2virt(r);
 }
 
-void Character::setTileCoords(int x, int y)
-{
+void Character::setTileCoords(int x, int y) {
     leaveTile();
     redraw = true;
-    r = area->virt2virt(vicoord(x, y, r.z));
+    r = area->virt2virt(vicoord{x, y, r.z});
     enterTile();
 }
 
-void Character::setTileCoords(int x, int y, double z)
-{
+void Character::setTileCoords(int x, int y, double z) {
     leaveTile();
     redraw = true;
-    r = area->virt2virt(vicoord(x, y, z));
+    r = area->virt2virt(vicoord{x, y, z});
     enterTile();
 }
 
-void Character::setTileCoords(icoord phys)
-{
+void Character::setTileCoords(icoord phys) {
     leaveTile();
     redraw = true;
     r = area->phys2virt_r(phys);
     enterTile();
 }
 
-void Character::setTileCoords(vicoord virt)
-{
+void Character::setTileCoords(vicoord virt) {
     leaveTile();
     redraw = true;
     r = area->virt2virt(virt);
     enterTile();
 }
 
-void Character::setTileCoords(rcoord virt)
-{
+void Character::setTileCoords(rcoord virt) {
     leaveTile();
     redraw = true;
     r = virt;
     enterTile();
 }
 
-const Tile* Character::getTile() const
-{
+const Tile* Character::getTile() const {
     return area ? area->getTile(r) : nullptr;
 }
 
-Tile* Character::getTile()
-{
+Tile* Character::getTile() {
     return area ? area->getTile(r) : nullptr;
 }
 
-void Character::setArea(Area* area)
-{
+void Character::setArea(Area* area) {
     leaveTile();
     Entity::setArea(area);
     enterTile();
 }
 
-void Character::moveByTile(ivec2 delta)
-{
-    if (moving)
+void Character::moveByTile(ivec2 delta) {
+    if (moving) {
         return;
+    }
 
     setFacing(delta);
 
@@ -192,8 +178,7 @@ void Character::moveByTile(ivec2 delta)
     }
 }
 
-icoord Character::moveDest(ivec2 facing)
-{
+icoord Character::moveDest(ivec2 facing) {
     Tile* tile = getTile();
     icoord here = getTileCoords_i();
 
@@ -202,12 +187,11 @@ icoord Character::moveDest(ivec2 facing)
         return tile->moveDest(here, facing);
     }
     else {
-        return here + icoord(facing.x, facing.y, 0);
+        return here + icoord{facing.x, facing.y, 0};
     }
 }
 
-bool Character::canMove(icoord dest)
-{
+bool Character::canMove(icoord dest) {
     if (destExit) {
         // We can always take exits as long as we can take exits.
         // (Even if they would cause us to be out of bounds.)
@@ -234,14 +218,12 @@ bool Character::canMove(icoord dest)
     return nowalkExempt & TILE_NOWALK_AREA_BOUND;
 }
 
-bool Character::nowalked(Tile& t)
-{
+bool Character::nowalked(Tile& t) {
     unsigned flags = nowalkFlags & ~nowalkExempt;
     return t.hasFlag(flags);
 }
 
-void Character::arrived()
-{
+void Character::arrived() {
     Entity::arrived();
 
     if (destTile) {
@@ -269,33 +251,28 @@ void Character::arrived()
      */
 }
 
-void Character::leaveTile()
-{
+void Character::leaveTile() {
     leaveTile(getTile());
     
 }
 
-void Character::leaveTile(Tile* t)
-{
+void Character::leaveTile(Tile* t) {
     if (t) {
         t->entCnt--;
     }
 }
 
-void Character::enterTile()
-{
+void Character::enterTile() {
     enterTile(getTile());
 }
 
-void Character::enterTile(Tile* t)
-{
+void Character::enterTile(Tile* t) {
     if (t) {
         t->entCnt++;
     }
 }
 
-void Character::runTileExitScript()
-{
+void Character::runTileExitScript() {
     // if (!tileExitScript) {
     //     return;
     // }
@@ -305,8 +282,7 @@ void Character::runTileExitScript()
     // tileExitScript->invoke();
 }
 
-void Character::runTileEntryScript()
-{
+void Character::runTileEntryScript() {
     // if (!tileEntryScript) {
     //     return;
     // }

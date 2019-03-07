@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** area.cpp                           **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,13 +27,10 @@
 
 #include "core/area.h"
 
-#include <math.h>
-
 #include "core/algorithm.h"
 #include "core/client-conf.h"
 #include "core/display-list.h"
 #include "core/entity.h"
-#include "core/formatter.h"
 #include "core/log.h"
 #include "core/images.h"
 #include "core/music.h"
@@ -44,7 +41,10 @@
 #include "core/viewport.h"
 #include "core/window.h"
 #include "core/world.h"
+
 #include "util/assert.h"
+#include "util/hashtable.h"
+#include "util/math.h"
 #include "util/math2.h"
 
 #include "data/data-world.h"
@@ -57,16 +57,15 @@
          account.
 */
 
-Area::Area(Player* player,
-           const std::string& descriptor)
+Area::Area(Player* player, StringView descriptor)
     : dataArea(DataWorld::instance().area(descriptor)),
       player(player),
       colorOverlayARGB(0),
       beenFocused(false),
       redraw(true),
       descriptor(descriptor) {
-    grid.dim = ivec3(0, 0, 0);
-    grid.tileDim = ivec2(0, 0);
+    grid.dim = ivec3{0, 0, 0};
+    grid.tileDim = ivec2{0, 0};
     grid.loopX = false;
     grid.loopY = false;
 }
@@ -91,16 +90,16 @@ void Area::focus() {
 void Area::buttonDown(KeyboardKey key) {
     switch (key) {
     case KBLeftArrow:
-        player->startMovement(ivec2(-1, 0));
+        player->startMovement({-1, 0});
         break;
     case KBRightArrow:
-        player->startMovement(ivec2(1, 0));
+        player->startMovement({1, 0});
         break;
     case KBUpArrow:
-        player->startMovement(ivec2(0, -1));
+        player->startMovement({0, -1});
         break;
     case KBDownArrow:
-        player->startMovement(ivec2(0, 1));
+        player->startMovement({0, 1});
         break;
     case KBSpace:
         player->useTile();
@@ -113,16 +112,16 @@ void Area::buttonDown(KeyboardKey key) {
 void Area::buttonUp(KeyboardKey key) {
     switch (key) {
     case KBLeftArrow:
-        player->stopMovement(ivec2(-1, 0));
+        player->stopMovement({-1, 0});
         break;
     case KBRightArrow:
-        player->stopMovement(ivec2(1, 0));
+        player->stopMovement({1, 0});
         break;
     case KBUpArrow:
-        player->stopMovement(ivec2(0, -1));
+        player->stopMovement({0, -1});
         break;
     case KBDownArrow:
-        player->stopMovement(ivec2(0, 1));
+        player->stopMovement({0, 1});
         break;
     default:
         break;
@@ -179,7 +178,7 @@ bool Area::needsRedraw() const {
     for (int z = tiles.z1; z < tiles.z2; z++) {
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {
-                const Tile* tile = getTile(icoord(x, y, z));
+                const Tile* tile = getTile(icoord{x, y, z});
                 const TileType* type = tile->getType();
                 if (!type) {
                     continue;
@@ -292,11 +291,11 @@ Tile* Area::getTile(rcoord virt) {
     return grid.getTile(virt);
 }
 
-TileSet* Area::getTileSet(const std::string& imagePath) {
-    std::unordered_map<std::string, TileSet>::iterator it;
-    it = tileSets.find(imagePath);
-    if (it == tileSets.end()) {
-        Log::err("Area", "tileset " + imagePath + " not found");
+TileSet* Area::getTileSet(StringView imagePath) {
+    if (tileSets.contains(imagePath)) {
+        String msg;
+        msg << "tileset " << imagePath << " not found";
+        Log::err("Area", msg);
         return nullptr;
     }
     return &tileSets[imagePath];
@@ -360,9 +359,9 @@ bool Area::loopsInY() const {
     return grid.loopY;
 }
 
-Rc<NPC> Area::spawnNPC(const std::string& descriptor,
+Rc<NPC> Area::spawnNPC(StringView descriptor,
                        vicoord coord,
-                       const std::string& phase) {
+                       StringView phase) {
     auto c = Rc<NPC>(new NPC);
     if (!c->init(descriptor, phase)) {
         // Error logged.
@@ -370,13 +369,13 @@ Rc<NPC> Area::spawnNPC(const std::string& descriptor,
     }
     c->setArea(this);
     c->setTileCoords(coord);
-    characters.insert(c);
+    characters.push_back(c);
     return c;
 }
 
-Rc<Overlay> Area::spawnOverlay(const std::string& descriptor,
+Rc<Overlay> Area::spawnOverlay(StringView descriptor,
                                vicoord coord,
-                               const std::string& phase) {
+                               StringView phase) {
     auto o = Rc<Overlay>(new Overlay);
     if (!o->init(descriptor, phase)) {
         // Error logged.
@@ -384,7 +383,7 @@ Rc<Overlay> Area::spawnOverlay(const std::string& descriptor,
     }
     o->setArea(this);
     o->teleport(coord);
-    overlays.insert(o);
+    overlays.push_back(o);
     return o;
 }
 
@@ -422,10 +421,10 @@ static void drawTile(DisplayList* display, const TileType* type,
                      int x, int y /*, double depth, int tileDimY */) {
     Image* img = type->anim.frame();
     if (img) {
-        rvec2 drawPos(
+        rvec2 drawPos{
                 double(x * (int)img->width()),
                 double(y * (int)img->height())
-        );
+        };
         //drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
         display->items.push_back(DisplayItem{img, drawPos});
     }
@@ -438,7 +437,7 @@ void Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
 
     for (int y = tiles.y1; y < tiles.y2; y++) {
         for (int x = tiles.x1; x < tiles.x2; x++) {
-            Tile* tile = getTile(icoord(x, y, z));
+            Tile* tile = getTile(icoord{x, y, z});
             // We are certain the Tile exists.
             TileType* type = tile->getType();
             if (!type) {

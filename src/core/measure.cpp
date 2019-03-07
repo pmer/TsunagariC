@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** measure.cpp                      **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -24,27 +24,33 @@
 // IN THE SOFTWARE.
 // **********
 
+// FIXME: Pre-declare operator new.
+#include <new>
+
 #include "core/measure.h"
 
 #include <chrono>
-#include <string>
+#include <string>  // for std::to_string<duration>
 
 #include "core/log.h"
 
 
 #ifdef __APPLE__
 #include <sys/kdebug_signpost.h>
-#include <unordered_map>
+#include "util/hashtable.h"
 
 static uint32_t nextSignpost = 0;
-static std::unordered_map<std::string,uint32_t> signposts;
+static Hashmap<String, uint32_t> signposts;
 
-uint32_t getSignpost(std::string description) {
+uint32_t getSignpost(String description) {
     if (signposts.find(description) != signposts.end()) {
         return signposts[description];
     } else {
-        Log::info("Measure", description + " is signpost " + std::to_string(nextSignpost));
-        signposts[description] = nextSignpost;
+        Log::info("Measure",
+                  String() << description
+                           << " is signpost "
+                           << nextSignpost);
+        signposts[move_(description)] = nextSignpost;
         return nextSignpost++;
     }
 }
@@ -52,19 +58,19 @@ uint32_t getSignpost(std::string description) {
 
 
 struct TimeMeasureImpl {
-    std::string description;
+    String description;
     std::chrono::time_point<std::chrono::system_clock> start;
 #ifdef __APPLE__
     uint32_t signpost;
 #endif
 };
 
-TimeMeasure::TimeMeasure(std::string description) {
+TimeMeasure::TimeMeasure(String description) {
     impl = new TimeMeasureImpl;
-    impl->description = description;
+    impl->description = move_(description);
     impl->start = std::chrono::system_clock::now();
 #ifdef __APPLE__
-    impl->signpost = getSignpost(description);
+    impl->signpost = getSignpost(impl->description);
     kdebug_signpost_start(impl->signpost, 0, 0, 0, 0);
 #endif
 }
@@ -78,7 +84,11 @@ TimeMeasure::~TimeMeasure() {
     end = std::chrono::system_clock::now();
 
     std::chrono::duration<double> elapsed_seconds = end - impl->start;
-    Log::info("Measure", impl->description + " took " + std::to_string(elapsed_seconds.count()) + " seconds");
+    Log::info("Measure",
+              String() << impl->description
+                       << " took "
+                       << std::to_string(elapsed_seconds.count()).c_str()
+                       << " seconds");
 
     delete impl;
 }

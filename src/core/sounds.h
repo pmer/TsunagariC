@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** sounds.h                           **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,9 +28,8 @@
 #ifndef SRC_CORE_SOUNDS_H_
 #define SRC_CORE_SOUNDS_H_
 
-#include <string>
-
 #include "util/rc.h"
+#include "util/string.h"
 
 class SoundInstance {
  public:
@@ -75,7 +74,7 @@ class Sounds {
     virtual ~Sounds();
 
     //! Play a sound from the file at the given path.
-    virtual Rc<SoundInstance> play(const std::string& path) = 0;
+    virtual Rc<SoundInstance> play(StringView path) = 0;
 
     //! Free sounds not recently played.
     virtual void garbageCollect() = 0;

@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** music-impl.cpp                     **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,6 +25,9 @@
 // IN THE SOFTWARE.
 // **********
 
+// FIXME: Pre-declare operator new.
+#include <new>
+
 #include "core/music.h"
 
 #include "core/music-worker.h"
@@ -34,7 +37,7 @@ static const DispatchQueue::QualityOfService WORKER_QOS = DispatchQueue::UTILITY
 
 class MusicImpl : public Music {
  public:
-    void play(const std::string& filepath);
+    void play(String filepath);
     void stop();
     void pause();
     void resume();
@@ -54,7 +57,7 @@ Music& Music::instance() {
     return *globalMusic;
 }
 
-void MusicImpl::play(const std::string& filename) {
+void MusicImpl::play(String filename) {
     queue.async([filename]() {
         MusicWorker::instance().play(filename);
     }, WORKER_QOS);

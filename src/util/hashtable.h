@@ -256,7 +256,7 @@ namespace hopscotch {
         void setValueOfEmptyBucket(Args&&... valueArgs) {
             assert_(empty());
             
-            ::new (mValue) V(forward_<Args>(valueArgs)...);
+            ::new (mValue) V{forward_<Args>(valueArgs)...};
             setEmpty(false);
         }
         
@@ -326,10 +326,6 @@ class Hashmap : private hopscotch::GrowthPolicy {
     struct KV {
         K k;
         V v;
-        
-        KV() = default;
-        KV(const K& k, const V& v) : k(k), v(v) {}
-        KV(K&& k, V&& v) : k(move_(k)), v(move_(v)) {}
     };
     
     static constexpr bool HasValue = !IsUnit<V>;
@@ -588,7 +584,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
     bool erase(const K& key, size_t hash) {
         size_t ibucketForHash = bucketForHash(hash);
         
-        Bucket* bucketFound = findInBuckets(key, hash, mBuckets + ibucketForHash);
+        Bucket* bucketFound = findInBuckets(key, mBuckets + ibucketForHash);
         if (bucketFound != nullptr) {
             eraseFromBucket(*bucketFound, ibucketForHash);
             
@@ -596,7 +592,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
         }
         
         if (mBuckets[ibucketForHash].hasOverflow()) {
-            auto itOverflow = findInOverflow(key);
+            OverflowIterator itOverflow = findInOverflow(key);
             if (itOverflow != mOverflowElements.end()) {
                 eraseFromOverflow(itOverflow, ibucketForHash);
                 
@@ -693,7 +689,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
     }
     
     ConstIterator find(const K& key, size_t hash) const {
-        return findImpl(key, hash, mBuckets + bucketForHash(hash));
+        return findImpl(key, mBuckets + bucketForHash(hash));
     }
     
     
@@ -727,10 +723,6 @@ class Hashmap : private hopscotch::GrowthPolicy {
     
     friend bool operator!=(const Hashmap& lhs, const Hashmap& rhs) {
         return !operator==(lhs, rhs);
-    }
-    
-    friend void swap_(Hashmap& lhs, Hashmap& rhs) {
-        lhs.swap(rhs);
     }
     
     
@@ -771,7 +763,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
         newMap.swap(*this);
     }
     
-    OverflowIterator eraseFromOverflow(ConstOverflowIterator pos, size_t ibucketForHash) {
+    OverflowIterator eraseFromOverflow(OverflowIterator pos, size_t ibucketForHash) {
         auto itNext = mOverflowElements.erase(pos);
         mNumElements--;
         
@@ -1017,8 +1009,8 @@ class Hashmap : private hopscotch::GrowthPolicy {
         return nullptr;
     }
     
-    size_t containsImpl(const K& key, size_t hash, const Bucket* bucketForHash) const {
-        if (findInBuckets(key, hash, bucketForHash) != nullptr) {
+    size_t containsImpl(const K& key, const Bucket* bucketForHash) const {
+        if (findInBuckets(key, bucketForHash) != nullptr) {
             return true;
         }
         return bucketForHash->hasOverflow() &&

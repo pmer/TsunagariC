@@ -99,6 +99,7 @@ static void runJobs(PoolImpl* pool) {
 
             if (pool->jobsRunning == 0 && pool->jobs.empty()) {
                 // Notify the PoolImpl destructor.
+                std::unique_lock<std::mutex> lock(pool->finishedMutex);
                 pool->finished.notify_one();
             }
         }

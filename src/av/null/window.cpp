@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** window.cpp                       **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -25,7 +25,6 @@
 // **********
 
 #include <chrono>
-#include <string>
 #include <thread>
 
 #include "core/window.h"
@@ -33,6 +32,8 @@
 #include "core/client-conf.h"
 #include "core/display-list.h"
 #include "core/world.h"
+
+#include "util/string-view.h"
 
 class NullGameWindow : public GameWindow {
  public:
@@ -46,7 +47,7 @@ class NullGameWindow : public GameWindow {
         return static_cast<unsigned>(conf.windowSize.y);
     }
 
-    void setCaption(const std::string&) final {}
+    void setCaption(StringView) final {}
 
     void mainLoop() final {
         using namespace std::chrono;

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** world.h                            **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -29,14 +29,16 @@
 #define SRC_CORE_WORLD_H_
 
 #include <functional>
-#include <stack>
-#include <string>
 
 #include "core/vec.h"
 #include "core/window.h"  // for KeyboardKey
+
 #include "util/bitrecord.h"
-#include "util/arc.h"
+#include "util/rc.h"
+#include "util/string.h"
+#include "util/hashtable.h"
 #include "util/unique.h"
+#include "util/vector.h"
 
 class Area;
 struct DisplayList;
@@ -93,7 +95,7 @@ class World {
      *
      *                       MOVE MODE
      *                 TURN     TILE     NOTILE
-     * Area               yes      yes      yes
+     * Area            yes      yes      yes
      * Character       no       yes      yes
      * Overlay         yes      yes      yes
      */
@@ -104,7 +106,7 @@ class World {
      *
      *                       MOVE MODE
      *                 TURN     TILE     NOTILE
-     * Area               yes      no       no
+     * Area            yes      no       no
      * Character       yes      no       no
      * Overlay         yes      no       no
      */
@@ -114,7 +116,7 @@ class World {
      * Switch the game to a new Area, moving the player to the specified
      * position in the Area.
      */
-    bool focusArea(const std::string& filename, vicoord playerPos);
+    bool focusArea(StringView filename, vicoord playerPos);
     void focusArea(Area* area, vicoord playerPos);
 
     void setPaused(bool b);
@@ -144,11 +146,9 @@ class World {
     void pushLetterbox(std::function<void()> op);
 
  protected:
-    typedef std::map<std::string, Unique<Area>> AreaMap;
-
     Rc<Image> pauseInfo;
 
-    AreaMap areas;
+    Hashmap<String, Unique<Area>> areas;
     Area* area;
     Unique<Player> player;
 
@@ -167,7 +167,7 @@ class World {
     bool userPaused;
     int paused;
 
-    std::stack<BitRecord> keyStates;
+    vector<BitRecord> keyStates;
 };
 
 #endif  // SRC_CORE_WORLD_H_

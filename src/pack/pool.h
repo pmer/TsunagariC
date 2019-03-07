@@ -33,7 +33,7 @@
 
 class Pool {
  public:
-    static const size_t ONE_PER_CORE = 0;
+    static constexpr size_t ONE_PER_CORE = 0;
 
     static Pool* makePool(String name,
                           size_t workerLimit = ONE_PER_CORE);

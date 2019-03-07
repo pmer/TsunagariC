@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** viewport.cpp                       **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,10 +27,11 @@
 
 #include "core/area.h"
 #include "core/entity.h"
-#include "util/math2.h"
 #include "core/vec.h"
 #include "core/viewport.h"
 #include "core/window.h"
+
+#include "util/math2.h"
 
 static Viewport globalViewport;
 
@@ -39,7 +40,7 @@ Viewport& Viewport::instance() {
 }
 
 Viewport::Viewport()
-    : off(0, 0),
+    : off{0, 0},
       mode(TM_MANUAL),
       area(nullptr) {}
 
@@ -65,29 +66,29 @@ rvec2 Viewport::getMapOffset() const {
 }
 
 rvec2 Viewport::getLetterboxOffset() const {
-    return addLetterboxOffset(rvec2(0.0, 0.0));
+    return addLetterboxOffset(rvec2{0.0, 0.0});
 }
 
 rvec2 Viewport::getScale() const {
     const GameWindow& window = GameWindow::instance();
     rvec2 letterbox = getLetterbox();
-    rvec2 physRes = rvec2(
+    rvec2 physRes = rvec2{
         (double)window.width(),
         (double)window.height()
-    );
+    };
 
-    return rvec2(
+    return rvec2{
         physRes.x / virtRes.x * (1 - letterbox.x),
         physRes.y / virtRes.y * (1 - letterbox.y)
-    );
+    };
 }
 
 rvec2 Viewport::getPhysRes() const {
     const GameWindow& window = GameWindow::instance();
-    return rvec2(
+    return rvec2{
         (double)window.width(),
         (double)window.height()
-    );
+    };
 }
 
 rvec2 Viewport::getVirtRes() const {
@@ -96,7 +97,7 @@ rvec2 Viewport::getVirtRes() const {
 
 // Immediatly center render offset. Stop any tracking.
 void Viewport::jumpToPt(ivec2 pt) {
-    jumpToPt(rvec2((double)pt.x, (double)pt.y));
+    jumpToPt(rvec2{(double)pt.x, (double)pt.y});
 }
 
 void Viewport::jumpToPt(rvec2 pt) {
@@ -137,10 +138,10 @@ void Viewport::update() {
 void Viewport::_jumpToEntity(const Entity* e) {
     rcoord pos = e->getPixelCoord();
     ivec2 td = area->getTileDimensions();
-    rvec2 center = rvec2(
+    rvec2 center = rvec2{
         pos.x + td.x/2,
         pos.y + td.y/2
-    );
+    };
     off = offsetForPt(center);
 }
 
@@ -153,11 +154,11 @@ rvec2 Viewport::getLetterbox() const {
     if (physAspect > virtAspect) {
         // Letterbox cuts off left-right.
         double cut = 1 - virtAspect / physAspect;
-        return rvec2(cut, 0);
+        return rvec2{cut, 0};
     } else {
         // Letterbox cuts off top-bottom.
         double cut = 1 - physAspect / virtAspect;
-        return rvec2(0, cut);
+        return rvec2{0, cut};
     }
 }
 
@@ -177,10 +178,10 @@ rvec2 Viewport::boundToArea(rvec2 pt) const {
     bool loopX = area->loopsInX();
     bool loopY = area->loopsInY();
 
-    return rvec2(
+    return rvec2{
         boundDimension(virtRes.x, areaWidth,  pt.x, loopX),
         boundDimension(virtRes.y, areaHeight, pt.y, loopY)
-    );
+    };
 }
 
 double Viewport::boundDimension(double screen, double area, double pt,

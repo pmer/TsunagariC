@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** tile.h                             **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,17 +28,18 @@
 #ifndef SRC_CORE_TILE_H_
 #define SRC_CORE_TILE_H_
 
-#include <string>
-
 class Tile;
 class TileType;
 class TileSet;
 
 #include "core/animation.h"
 #include "core/vec.h"
+
 #include "data/data-area.h"
+
 #include "util/move.h"
 #include "util/optional.h"
+#include "util/string.h"
 #include "util/vector.h"
 
 class Area;
@@ -157,10 +158,10 @@ class FlagManip {
 */
 class Exit {
  public:
-    Exit(std::string area, int x, int y, double z);
+    Exit(String area, int x, int y, double z);
 
  public:
-    std::string area;
+    String area;
     vicoord coords;
 };
 

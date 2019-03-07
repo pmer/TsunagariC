@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** entity.cpp                         **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,25 +25,26 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <math.h>
+#include "core/entity.h"
 
 #include "core/area.h"
 #include "core/client-conf.h"
 #include "core/display-list.h"
-#include "core/entity.h"
 #include "core/images.h"
 #include "core/jsons.h"
 #include "core/log.h"
 #include "core/resources.h"
 #include "core/world.h"
+
 #include "util/assert.h"
+#include "util/math.h"
 #include "util/math2.h"
 #include "util/move.h"
 #include "util/string2.h"
 
 #define CHECK(x)  if (!(x)) { return false; }
 
-static std::string directions[][3] = {
+static StringView directions[][3] = {
     {"up-left",   "up",     "up-right"},
     {"left",      "stance", "right"},
     {"down-left", "down",   "down-right"},
@@ -54,15 +55,15 @@ Entity::Entity()
     : dead(false),
       redraw(true),
       area(nullptr),
-      r(0.0, 0.0, 0.0),
+      r{0.0, 0.0, 0.0},
       frozen(false),
       moving(false),
       phase(nullptr),
       phaseName(""),
-      facing(0, 0) {}
+      facing{0, 0} {}
 
-bool Entity::init(const std::string& descriptor,
-                  const std::string& initialPhase) {
+bool Entity::init(StringView descriptor,
+                  StringView initialPhase) {
     this->descriptor = descriptor;
     CHECK(processDescriptor());
     setPhase(initialPhase);
@@ -87,8 +88,8 @@ void Entity::draw(DisplayList* display) {
     // TODO: Don't add to DisplayList if not on-screen.
 
     display->items.push_back(DisplayItem{phase->frame(now),
-                                         rvec2(doff.x + r.x,
-                                               doff.y + r.y)});
+                                         rvec2{doff.x + r.x,
+                                               doff.y + r.y}});
 }
 
 bool Entity::needsRedraw(const icube& visiblePixels) const {
@@ -127,17 +128,20 @@ void Entity::turn() {
     }
 }
 
-const std::string Entity::getFacing() const {
+const StringView Entity::getFacing() const {
     return directionStr(facing);
 }
 
-bool Entity::setPhase(const std::string& name) {
+bool Entity::setPhase(StringView name) {
     enum SetPhaseResult res;
     res = _setPhase(name);
     if (res == PHASE_NOTFOUND) {
         res = _setPhase("stance");
         if (res == PHASE_NOTFOUND) {
-            Log::err(descriptor, "phase '" + name + "' not found");
+            Log::err(descriptor,
+                     String() << "phase '"
+                              << name
+                              << "' not found");
         }
     }
     return res == PHASE_CHANGED;
@@ -152,7 +156,7 @@ void Entity::setAnimationStanding() {
 }
 
 void Entity::setAnimationMoving() {
-    setPhase("moving " + getFacing());
+    setPhase(String() << "moving " << getFacing());
 }
 
 
@@ -205,24 +209,23 @@ void Entity::calcDraw() {
 }
 
 ivec2 Entity::setFacing(ivec2 facing) {
-    this->facing = ivec2(
+    this->facing = ivec2{
         bound(facing.x, -1, 1),
         bound(facing.y, -1, 1)
-    );
+    };
     return this->facing;
 }
 
-const std::string& Entity::directionStr(ivec2 facing) const {
+StringView Entity::directionStr(ivec2 facing) const {
     return directions[facing.y+1][facing.x+1];
 }
 
-enum SetPhaseResult Entity::_setPhase(const std::string& name) {
-    AnimationMap::iterator it;
-    it = phases.find(name);
+enum SetPhaseResult Entity::_setPhase(StringView name) {
+    auto it = phases.find(name);
     if (it == phases.end()) {
         return PHASE_NOTFOUND;
     }
-    Animation* newPhase = &it->second;
+    Animation* newPhase = &it.value();
     if (phase != newPhase) {
         time_t now = World::instance().time();
         phase = newPhase;
@@ -287,7 +290,7 @@ void Entity::arrived() {
  */
 
 bool Entity::processDescriptor() {
-    JSONObjectRef doc = JSONs::instance().load(descriptor);
+    Rc<JSONObject> doc = JSONs::instance().load(descriptor);
     if (!doc) {
         return false;
     }
@@ -312,20 +315,20 @@ bool Entity::processDescriptor() {
     return true;
 }
 
-bool Entity::processSprite(JSONObjectPtr sprite) {
+bool Entity::processSprite(Unique<JSONObject> sprite) {
     Rc<TiledImage> tiles;
 
     CHECK(sprite->hasObject("sheet"));
     CHECK(sprite->hasObject("phases"));
 
-    JSONObjectPtr sheet = sprite->objectAt("sheet");
+    Unique<JSONObject> sheet = sprite->objectAt("sheet");
     CHECK(sheet->hasUnsigned("tile_width"));
     CHECK(sheet->hasUnsigned("tile_height"));
     CHECK(sheet->hasString("path"));
 
     imgsz.x = sheet->intAt("tile_width");
     imgsz.y = sheet->intAt("tile_height");
-    std::string path = sheet->stringAt("path");
+    StringView path = sheet->stringAt("path");
     tiles = Images::instance().loadTiles(path,
         static_cast<unsigned>(imgsz.x), static_cast<unsigned>(imgsz.y));
     CHECK(tiles);
@@ -333,15 +336,15 @@ bool Entity::processSprite(JSONObjectPtr sprite) {
     return processPhases(sprite->objectAt("phases"), *tiles);
 }
 
-bool Entity::processPhases(JSONObjectPtr phases, TiledImage& tiles) {
-    for (std::string& name : phases->names()) {
+bool Entity::processPhases(Unique<JSONObject> phases, TiledImage& tiles) {
+    for (StringView name : phases->names()) {
         CHECK(phases->hasObject(name));
         CHECK(processPhase(name, phases->objectAt(name), tiles));
     }
     return true;
 }
 
-vector<int> intArrayToVector(JSONArrayPtr array) {
+vector<int> intArrayToVector(Unique<JSONArray> array) {
     vector<int> v;
     for (size_t i = 0; i < array->size(); i++) {
         if (array->isUnsigned(i)) {
@@ -351,7 +354,9 @@ vector<int> intArrayToVector(JSONArrayPtr array) {
     return v;
 }
 
-bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& tiles) {
+bool Entity::processPhase(StringView name,
+                          Unique<JSONObject> phase,
+                          TiledImage& tiles) {
     // Each phase requires a 'name' and a 'frame' or 'frames'. Additionally,
     // 'speed' is required if 'frames' is found.
     CHECK(phase->hasUnsigned("frame") || phase->hasArray("frames"));
@@ -398,16 +403,16 @@ bool Entity::processPhase(std::string& name, JSONObjectPtr phase, TiledImage& ti
     return true;
 }
 
-bool Entity::processSounds(JSONObjectPtr sounds) {
-    for (std::string& name : sounds->names()) {
+bool Entity::processSounds(Unique<JSONObject> sounds) {
+    for (StringView name : sounds->names()) {
         CHECK(sounds->hasString(name));
         CHECK(processSound(name, sounds->stringAt(name)));
     }
     return true;
 }
 
-bool Entity::processSound(std::string& name, std::string path) {
-    if (path.empty()) {
+bool Entity::processSound(StringView name, StringView path) {
+    if (!path.size) {
         Log::err(descriptor, "sound path is empty");
         return false;
     }
@@ -416,16 +421,16 @@ bool Entity::processSound(std::string& name, std::string path) {
     return true;
 }
 
-bool Entity::processScripts(JSONObjectPtr scripts) {
-    for (std::string& name : scripts->names()) {
+bool Entity::processScripts(Unique<JSONObject> scripts) {
+    for (StringView name : scripts->names()) {
         CHECK(scripts->hasString(name));
         CHECK(processScript(name, scripts->stringAt(name)));
     }
     return true;
 }
 
-bool Entity::processScript(std::string& /*name*/, std::string path) {
-    if (path.empty()) {
+bool Entity::processScript(StringView /*name*/, StringView path) {
+    if (!path.size) {
         Log::err(descriptor, "script path is empty");
         return false;
     }
@@ -444,7 +449,7 @@ bool Entity::processScript(std::string& /*name*/, std::string path) {
 }
 
 /*
-bool Entity::setScript(const std::string& trigger, ScriptRef& script) {
+bool Entity::setScript(StringView trigger, ScriptRef& script) {
     if (trigger == "on_tick") {
         tickScript = script;
         return true;

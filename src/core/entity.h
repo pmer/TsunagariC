@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** entity.h                           **
 ** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -29,11 +29,13 @@
 #define SRC_CORE_ENTITY_H_
 
 #include <functional>
-#include <map>
-#include <string>
 
+#include "core/animation.h"
 #include "core/jsons.h"
 #include "core/vec.h"
+
+#include "util/hashtable.h"
+#include "util/string.h"
 #include "util/vector.h"
 
 class Animation;
@@ -67,8 +69,8 @@ class Entity {
     virtual ~Entity() = default;
 
     //! Entity initializer
-    virtual bool init(const std::string& descriptor,
-                      const std::string& initialPhase);
+    virtual bool init(StringView descriptor,
+                      StringView initialPhase);
 
     //! Entity destroyer.
     virtual void destroy();
@@ -84,11 +86,11 @@ class Entity {
     //! to 'facing'.
     ivec2 setFacing(ivec2 facing);
 
-    const std::string getFacing() const;
+    const StringView getFacing() const;
 
     //! Change the graphic. Returns true if it was changed to something
     //! different.
-    bool setPhase(const std::string& name);
+    bool setPhase(StringView name);
 
     ivec2 getImageSize() const;
 
@@ -134,9 +136,9 @@ class Entity {
     void calcDraw();
 
     //! Gets a string describing a direction.
-    const std::string& directionStr(ivec2 facing) const;
+    StringView directionStr(ivec2 facing) const;
 
-    enum SetPhaseResult _setPhase(const std::string& name);
+    enum SetPhaseResult _setPhase(StringView name);
 
     void setDestinationCoordinate(rcoord destCoord);
 
@@ -149,20 +151,17 @@ class Entity {
 
     // JSON parsing functions used in constructing an Entity
     bool processDescriptor();
-    bool processSprite(JSONObjectPtr sprite);
-    bool processPhases(JSONObjectPtr phases, TiledImage& tiles);
-    bool processPhase(std::string& name, JSONObjectPtr phase, TiledImage& tiles);
-    bool processSounds(JSONObjectPtr sounds);
-    bool processSound(std::string& name, std::string path);
-    bool processScripts(JSONObjectPtr scripts);
-    bool processScript(std::string& name, std::string path);
-    // bool setScript(const std::string& trigger, ScriptRef& script);
+    bool processSprite(Unique<JSONObject> sprite);
+    bool processPhases(Unique<JSONObject> phases, TiledImage& tiles);
+    bool processPhase(StringView name, Unique<JSONObject> phase, TiledImage& tiles);
+    bool processSounds(Unique<JSONObject> sounds);
+    bool processSound(StringView name, StringView path);
+    bool processScripts(Unique<JSONObject> scripts);
+    bool processScript(StringView name, StringView path);
+    // bool setScript(StringView trigger, ScriptRef& script);
 
 
  protected:
-    typedef std::map<std::string, Animation> AnimationMap;
-
-
     //! Set to true if the Entity was destroyed this tick.
     bool dead;
 
@@ -174,7 +173,7 @@ class Entity {
     rcoord r; //!< real x,y position: hold partial pixel transversal
     rcoord doff; //!< Drawing offset to center entity on tile.
 
-    std::string descriptor;
+    String descriptor;
 
     bool frozen;
 
@@ -188,14 +187,14 @@ class Entity {
     double angleToDest;
 
     ivec2 imgsz;
-    AnimationMap phases;
+    Hashmap<String, Animation> phases;
     Animation* phase;
-    std::string phaseName;
+    String phaseName;
     ivec2 facing;
 
     //! Map from effect name to filenames.
     //!  e.g.: ["step"] = "sounds/player_step.oga"
-    std::map<std::string, std::string> soundPaths;
+    Hashmap<String, String> soundPaths;
 
     vector<OnTickFn> onTickFns;
     vector<OnTurnFn> onTurnFns;

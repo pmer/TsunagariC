@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** character.h                        **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -33,6 +33,7 @@
 #include "core/entity.h"
 #include "core/tile.h"
 #include "core/vec.h"
+
 #include "util/optional.h"
 
 class Tile;

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** images.h                           **
 ** Copyright 2011-2015 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,9 +28,8 @@
 #ifndef SRC_CORE_IMAGES_H_
 #define SRC_CORE_IMAGES_H_
 
-#include <string>
-
 #include "util/rc.h"
+#include "util/string-view.h"
 
 class Image {
  public:
@@ -81,11 +80,11 @@ class Images {
     virtual ~Images() = default;
 
     //! Load an image from the file at the given path.
-    virtual Rc<Image> load(const std::string& path) = 0;
+    virtual Rc<Image> load(StringView path) = 0;
 
     //! Load an image of tiles from the file at the given path. Each tile
     //! with have width and heigh as specified.
-    virtual Rc<TiledImage> loadTiles(const std::string& path,
+    virtual Rc<TiledImage> loadTiles(StringView path,
                                      unsigned tileW, unsigned tileH) = 0;
 
     //! Free images not recently used.

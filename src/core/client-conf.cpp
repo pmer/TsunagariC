@@ -28,37 +28,38 @@
 #include "core/client-conf.h"
 
 #include "config.h"
-#include "core/formatter.h"
+
 #include "core/jsons.h"
+
 #include "util/move.h"
-#include "util/string-view-std.h"
+#include "util/string.h"
 #include "util/string2.h"
 #include "util/vector.h"
 
-Conf conf; // Project-wide global configuration.
+Conf conf;  // Project-wide global configuration.
 
 // Parse and process the client config file, and set configuration defaults for
 // missing options.
 bool parseConfig(StringView filename) {
-    std::string file = slurp(filename);
+    Optional<String> file = slurp(filename);
 
-    if (file.empty()) {
-        Log::err(to_string(filename), Formatter("Could not find ") % filename);
+    if (!file) {
+        Log::err(filename, String() << "Could not find " << filename);
         return false;
     }
 
-    JSONObjectPtr doc = JSONs::parse(move_(file));
+    Unique<JSONObject> doc = JSONs::parse(move_(*file));
 
     if (!doc) {
-        Log::err(to_string(filename), Formatter("Could not parse ") % filename);
+        Log::err(filename, String() << "Could not parse " << filename);
         return false;
     }
 
     if (doc->hasObject("engine")) {
-        JSONObjectPtr engine = doc->objectAt("engine");
+        Unique<JSONObject> engine = doc->objectAt("engine");
 
         if (engine->hasString("verbosity")) {
-            std::string verbosity = engine->stringAt("verbosity");
+            StringView verbosity = engine->stringAt("verbosity");
             if (verbosity == "quiet") {
                 conf.verbosity = V_QUIET;
             } else if (verbosity == "normal") {
@@ -66,13 +67,14 @@ bool parseConfig(StringView filename) {
             } else if (verbosity == "verbose") {
                 conf.verbosity = V_VERBOSE;
             } else {
-                Log::err(to_string(filename), "Unknown value for \"engine.verbosity\", using default");
+                Log::err(filename,
+                    "Unknown value for \"engine.verbosity\", using default");
             }
         }
     }
 
     if (doc->hasObject("window")) {
-        JSONObjectPtr window = doc->objectAt("window");
+        Unique<JSONObject> window = doc->objectAt("window");
 
         if (window->hasUnsigned("width")) {
             conf.windowSize.x = window->intAt("width", 1, 100000);
@@ -86,7 +88,7 @@ bool parseConfig(StringView filename) {
     }
 
     if (doc->hasObject("audio")) {
-        JSONObjectPtr audio = doc->objectAt("audio");
+        Unique<JSONObject> audio = doc->objectAt("audio");
 
         if (audio->hasUnsigned("musicvolume")) {
             conf.musicVolume = audio->intAt("musicvolume", 0, 100);
@@ -97,7 +99,7 @@ bool parseConfig(StringView filename) {
     }
 
     if (doc->hasObject("cache")) {
-        JSONObjectPtr cache = doc->objectAt("cache");
+        Unique<JSONObject> cache = doc->objectAt("cache");
 
         if (cache->hasUnsigned("ttl")) {
             conf.cacheTTL = cache->unsignedAt("ttl") != 0;

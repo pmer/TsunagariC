@@ -28,30 +28,30 @@
 #include "string2.h"
 
 #include <ctype.h>
+#include <errno.h>
 #include <limits.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-#include <fstream>
-#include <limits>
-#include <sstream>
+#include "os/os.h"
 
-#include "core/log.h"
 #include "util/math2.h"
-#include "util/string-view-std.h"
 #include "util/string-view.h"
+#include "util/string.h"
 
 /**
  * Matches regex /\s*-?\d+/
  */
-bool isInteger(const std::string& s) {
-    const int space = 0;
-    const int sign = 1;
-    const int digit = 2;
+bool isInteger(StringView s) {
+    constexpr int space = 0;
+    constexpr int sign = 1;
+    constexpr int digit = 2;
 
     int state = space;
 
-    for (size_t i = 0; i < s.size(); i++) {
-        char c = s[i];
+    for (size_t i = 0; i < s.size; i++) {
+        char c = s.data[i];
         if (state == space) {
             if (isspace(c)) continue;
             else state++;
@@ -71,17 +71,17 @@ bool isInteger(const std::string& s) {
 /**
  * Matches regex /\s*-?\d+\.?\d* /   [sic: star-slash ends comment]
  */
-bool isDecimal(const std::string& s) {
-    const int space = 0;
-    const int sign = 1;
-    const int digit = 2;
-    const int dot = 3;
-    const int digit2 = 4;
+bool isDecimal(StringView s) {
+    constexpr int space = 0;
+    constexpr int sign = 1;
+    constexpr int digit = 2;
+    constexpr int dot = 3;
+    constexpr int digit2 = 4;
 
     int state = space;
 
-    for (size_t i = 0; i < s.size(); i++) {
-        char c = s[i];
+    for (size_t i = 0; i < s.size; i++) {
+        char c = s.data[i];
         switch (state) {
         case space:
             if (isspace(c)) continue;
@@ -107,18 +107,18 @@ bool isDecimal(const std::string& s) {
 /**
  * Matches "5-7,2,12-14" no whitespace.
  */
-bool isRanges(const std::string& s) {
-    const int sign = 0;
-    const int digit = 1;
-    const int dash = 3;
-    const int comma = 4;
+bool isRanges(StringView s) {
+    constexpr int sign = 0;
+    constexpr int digit = 1;
+    constexpr int dash = 3;
+    constexpr int comma = 4;
 
     bool dashed = false;
 
     int state = sign;
 
-    for (size_t i = 0; i < s.size(); i++) {
-        char c = s[i];
+    for (size_t i = 0; i < s.size; i++) {
+        char c = s.data[i];
         switch (state) {
         case sign:
             state++;
@@ -147,128 +147,178 @@ bool isRanges(const std::string& s) {
     return true;
 }
 
-bool iequals(const std::string& a, const std::string& b) {
-    if (a.length() != b.length())
+bool iequals(StringView a, StringView b) {
+    if (a.size != b.size) {
         return false;
-    size_t len = a.length();
-    for (size_t i = 0; i < len; i++) {
-        if (tolower(a[i]) != tolower(b[i]))
+    }
+    for (size_t i = 0; i < a.size; i++) {
+        if (tolower(a.data[i]) != tolower(b.data[i])) {
             return false;
+        }
     }
     return true;
 }
 
-bool parseBool(const std::string& s) {
-    static std::string true_ = "true";
-    static std::string yes = "yes";
-    static std::string on = "on";
+Optional<bool> parseBool(StringView s) {
+    static const StringView true_ = "true";
+    static const StringView yes = "yes";
+    static const StringView on = "on";
+    
+    if (iequals(s, true_) ||
+        iequals(s, yes) ||
+        iequals(s, on) ||
+        s == "1") {
+        return Optional<bool>(true);
+    }
 
-    return iequals(s, true_) ||
-           iequals(s, yes) ||
-           iequals(s, on) ||
-        s == "1";
+    static const StringView false_ = "false";
+    static const StringView no = "no";
+    static const StringView off = "off";
+    
+    if (iequals(s, false_) ||
+        iequals(s, no) ||
+        iequals(s, off) ||
+        s == "0") {
+        return Optional<bool>(false);
+    }
+    
+    return Optional<bool>();
 }
 
-bool parseUInt(const std::string& s, unsigned* n) {
-    size_t pos = std::numeric_limits<size_t>::max();
-    unsigned long i = std::stoul(s, &pos, 10);
-    if (pos < s.size()) {
-        return false;
+Optional<unsigned> parseUInt(String& s) {
+    errno = 0;
+    
+    char* end;
+    unsigned long ul = strtoul(s.null(), &end, 10);
+
+    if (end != s.data() + s.size()) {
+        return Optional<unsigned>();
     }
-    if (i > std::numeric_limits<unsigned>::max()) {
-        return false;
+
+    if (errno != 0) {
+        // Overflow.
+        return Optional<unsigned>();
     }
-    *n = static_cast<unsigned>(i);
-    return true;
+    if (ul > UINT_MAX) {
+        // Overflow.
+        return Optional<unsigned>();
+    }
+
+    return Optional<unsigned>(static_cast<unsigned>(ul));
 }
 
-bool parseUInt(const std::string& s, int* n) {
-    size_t pos = std::numeric_limits<size_t>::max();
-    unsigned long i = std::stoul(s, &pos, 10);
-    if (pos < s.size()) {
-        return false;
-    }
-    if (i > std::numeric_limits<int>::max()) {
-        return false;
-    }
-    *n = static_cast<int>(i);
-    return true;
+Optional<unsigned> parseUInt(StringView s) {
+    String s_(s);
+    return parseUInt(s_);
 }
 
-bool parseDouble(const std::string& s, double* n) {
-    size_t pos = std::numeric_limits<size_t>::max();
-    *n = std::stod(s, &pos);
-    return pos >= s.size();
+Optional<int> parseInt(String& s) {
+    errno = 0;
+    
+    char* end;
+    long l = strtol(s.null(), &end, 10);
+    
+    if (end != s.data() + s.size()) {
+        return Optional<int>();
+    }
+    
+    if (errno != 0) {
+        // Overflow.
+        return Optional<int>();
+    }
+    if (l > INT_MAX) {
+        // Overflow.
+        return Optional<int>();
+    }
+    
+    return Optional<int>(static_cast<int>(l));
 }
 
-int parseInt100(const std::string& s) {
-    int i = atoi(s.c_str());
+Optional<int> parseInt(StringView s) {
+    String s_(s);
+    return parseInt(s_);
+}
+
+Optional<double> parseDouble(String& s) {
+    errno = 0;
+
+    char* end;
+    double d = strtod(s.null(), &end);
+
+    if (end != s.data() + s.size()) {
+        return Optional<double>();
+    }
+
+    if (errno != 0) {
+        // Overflow.
+        return Optional<double>();
+    }
+
+    return Optional<double>(d);
+}
+
+Optional<double> parseDouble(StringView s) {
+    String s_(s);
+    return parseDouble(s_);
+}
+
+int parseInt100(const char* s) {
+    int i = atoi(s);
     return bound(i, 0, 100);
 }
 
-vector<std::string> splitStr(const std::string& input,
-                             const std::string& delimiter) {
-    vector<std::string> strlist;
+vector<String> splitStr(StringView input, StringView delimiter) {
+    vector<String> strlist;
     size_t i = 0;
 
-    for (size_t pos = input.find(delimiter); pos != std::string::npos; pos = input.find(delimiter, i)) {
-        if (input.size() != i) {  // Don't save empty strings
-            strlist.push_back(input.substr(i, pos - i));  // Save
-        }
-        i = pos + delimiter.size();
+    for (Optional<size_t> pos = input.find(delimiter);
+         pos;
+         pos = input.find(delimiter, i)) {
+        strlist.push_back(input.substr(i, *pos - i));
+        i = *pos + delimiter.size;
     }
 
-    if (input.size() != i) {
+    if (input.size != i) {
         strlist.push_back(input.substr(i));
     }
     return strlist;
 }
 
-vector<int> parseRanges(const std::string& format) {
+Optional<vector<int>> parseRanges(StringView format) {
     vector<int> ints;
-    typedef vector<std::string> StringVector;
-    StringVector ranges = splitStr(format, ",");
-    for (StringVector::const_iterator it = ranges.begin(); it != ranges.end(); it++) {
-        const std::string& range = *it;
-        size_t dash = range.find("-");
-        if (dash == std::string::npos) {
-            if (!isInteger(range)) {
-                Log::err("parseRanges", "not an integer");
-                continue;
+    for (StringView range : splitStr(format, ",")) {
+        Optional<size_t> dash = range.find("-");
+
+        if (!dash) {
+            Optional<int> i = parseInt(range);
+            if (!i) {
+                return Optional<vector<int>>();
             }
-            int i = atoi(range.c_str());
-            ints.push_back(i);
+
+            ints.push_back(*i);
         }
         else {
-            std::string rngbeg = range.substr(0, dash);
-            std::string rngend = range.substr(dash + 1);
-            if (!isInteger(rngbeg) || !isInteger(rngend)) {
-                Log::err("parseRanges", "not an integer");
-                continue;
+            size_t dash_ = *dash;
+
+            StringView rngbeg = range.substr(0, dash_);
+            StringView rngend = range.substr(dash_ + 1);
+
+            Optional<int> beg = parseInt(rngbeg);
+            Optional<int> end = parseInt(rngend);
+            if (!beg || !end) {
+                return Optional<vector<int>>();
             }
-            int beg = atoi(rngbeg.c_str());
-            int end = atoi(rngend.c_str());
-            if (beg > end) {
-                Log::err("parseRanges", "beg > end");
-                continue;
+
+            int beg_ = *beg;
+            int end_ = *end;
+            if (beg_ > end_) {
+                return Optional<vector<int>>();
             }
-            for (int i = beg; i <= end; i++) {
+
+            for (int i = beg_; i <= end_; i++) {
                 ints.push_back(i);
             }
         }
     }
-    return ints;
-}
-
-std::string itostr(int in) {
-    std::stringstream out;
-    out << in;
-    return out.str();
-}
-
-std::string slurp(StringView filename) {
-    std::ifstream in(to_string(filename));
-    std::stringstream sstr;
-    sstr << in.rdbuf();
-    return sstr.str();
+    return Optional<vector<int>>(move_(ints));
 }

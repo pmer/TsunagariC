@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** music-impl.cpp                     **
-** Copyright 2011-2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2014 Michael Riley  **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -28,7 +28,7 @@
 #include "core/music-worker.h"
 
 #include "core/client-conf.h"
-#include "core/formatter.h"
+
 #include "util/math2.h"
 
 static void clientIniVolumeVerify() {
@@ -51,7 +51,7 @@ static double clientIniVolumeUnapply(double volume) {
 MusicWorker::MusicWorker()
     : volume(1.0), paused(0) {}
 
-void MusicWorker::play(std::string filename) {
+void MusicWorker::play(StringView filename) {
     paused = 0;
     path = filename;
 }
@@ -81,8 +81,10 @@ void MusicWorker::setVolume(double attemptedVolume) {
     double newVolume = bound(attemptedVolume, 0.0, 1.0);
     if (attemptedVolume != newVolume) {
         Log::info("MusicWorker",
-            Formatter("Attempted to set volume to %, setting it to %")
-                % attemptedVolume % newVolume
+            String() << "Attempted to set volume to "
+                     << attemptedVolume
+                     << ", setting it to "
+                     << newVolume
         );
     }
 

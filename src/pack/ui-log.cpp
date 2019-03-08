@@ -24,23 +24,26 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Redefines operator new.
-#include <mutex>
+// FIXME: Pre-declare operator new.
+#include <new>
 
 #include "pack/ui.h"
 
+#include "os/mutex.h"
+
 #include "pack/pool.h"
+
 #include "util/string.h"
 #include "util/unique.h"
 
 static Unique<Pool> pool(Pool::makePool("ui", 1));
-static std::mutex mutex;
+static Mutex mutex;
 static bool scheduled = false;
 static String buf;
 bool verbose = false;
 
 static void flush() {
-    std::lock_guard<std::mutex> lock(mutex);
+    LockGuard lock(mutex);
     printf("%s", buf.null().get());
     buf.clear();
     scheduled = false;
@@ -51,7 +54,7 @@ static void scheduleMessage(StringView message) {
         return;
     }
 
-    std::lock_guard<std::mutex> lock(mutex);
+    LockGuard lock(mutex);
     buf << message;
     if (!scheduled) {
         pool->schedule(flush);

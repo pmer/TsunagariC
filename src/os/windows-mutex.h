@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** pool.h                           **
-** Copyright 2017-2019 Paul Merrill **
-*************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** windows-mutex.h               **
+** Copyright 2019 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,22 +24,30 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_POOL_H_
-#define SRC_PACK_POOL_H_
+#ifndef SRC_OS_WINDOWS_MUTEX_H_
+#define SRC_OS_WINDOWS_MUTEX_H_
 
-#include <functional>
+#include <synchapi.h>
 
-#include "util/string.h"
-
-class Pool {
+class Mutex {
  public:
-    static constexpr size_t ONE_PER_CORE = 0;
+    constexpr Mutex() noexcept = default;
+    
+    inline void lock() {
+        AcquireSRWLockExclusive(&m);
+    }
+    inline bool tryLock() {
+        return TryAcquireSRWLockExclusive(&m) != 0;
+    }
+    inline void unlock() {
+        ReleaseSRWLockExclusive(&m);
+    }
+    
+ private:
+    Mutex(const Mutex&) = delete;
+    Mutex& operator=(const Mutex&) = delete;
 
-    static Pool* makePool(StringView name,
-                          size_t workerLimit = ONE_PER_CORE);
-    virtual ~Pool() = default;
-
-    virtual void schedule(std::function<void()> job) = 0;
+    SRWLOCK m = SRWLOCK_INIT;
 };
 
-#endif  // SRC_PACK_POOL_H_
+#endif  // SRC_OS_WINDOWS_MUTEX_H_

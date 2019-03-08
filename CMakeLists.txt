@@ -159,14 +159,25 @@ target_sources(tsunagari
     PRIVATE src/nbcl/nbcl.h
 )
 
+target_sources(tsunagari
+    PUBLIC  src/os/os.h
+)
+target_sources(pack-tool
+    PRIVATE src/os/condition-variable.h
+    PRIVATE src/os/mutex.h
+    PUBLIC  src/os/os.h
+    PRIVATE src/os/thread.h
+)
+
 if (WIN32)
     target_sources(tsunagari
-        PUBLIC  src/os/os.h
         PRIVATE src/os/windows.cpp
         PUBLIC  src/os/windows.h
     )
     target_sources(pack-tool
-        PUBLIC  src/os/os.h
+        PRIVATE src/os/windows-condition-variable.h
+        PRIVATE src/os/windows-mutex.h
+        PRIVATE src/os/windows-thread.h
         PRIVATE src/os/windows.cpp
         PUBLIC  src/os/windows.h
     )
@@ -174,23 +185,25 @@ elseif(APPLE)
     target_sources(tsunagari
         PRIVATE src/os/mac-gui.mm
         PUBLIC  src/os/mac-gui.h
-        PUBLIC  src/os/os.h
         PRIVATE src/os/unix.cpp
         PUBLIC  src/os/unix.h
     )
     target_sources(pack-tool
-        PUBLIC  src/os/os.h
+        PRIVATE src/os/unix-condition-variable.h
+        PRIVATE src/os/unix-mutex.h
+        PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
         PUBLIC  src/os/unix.h
     )
 else()
     target_sources(tsunagari
-        PUBLIC  src/os/os.h
         PRIVATE src/os/unix.cpp
         PUBLIC  src/os/unix.h
     )
     target_sources(pack-tool
-        PUBLIC  src/os/os.h
+        PRIVATE src/os/unix-condition-variable.h
+        PRIVATE src/os/unix-mutex.h
+        PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
         PUBLIC  src/os/unix.h
     )
@@ -308,6 +321,11 @@ if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
         set_target_properties(tsunagari PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
         set_target_properties(pack-tool PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
     endif()
+endif()
+
+if(CMAKE_BUILD_TYPE MATCHES Release)
+    target_compile_definitions(tsunagari PRIVATE NDEBUG)
+    target_compile_definitions(pack-tool PRIVATE NDEBUG)
 endif()
 
 

@@ -24,12 +24,14 @@
 // IN THE SOFTWARE.
 // **********
 
+// FIXME: Pre-define operator new.
+#include <new>
+
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <mutex>
-
+#include "os/mutex.h"
 #include "os/os.h"
 
 #include "pack/pack-reader.h"
@@ -56,7 +58,7 @@ static void usage() {
 
 struct CreateArchiveContext {
     Unique<PackWriter> pack;
-    std::mutex packMutex;
+    Mutex packMutex;
 };
 
 static void addFile(CreateArchiveContext& ctx, StringView path) {
@@ -71,7 +73,7 @@ static void addFile(CreateArchiveContext& ctx, StringView path) {
 
     uiShowAddedFile(path, data_.size());
 
-    std::lock_guard<std::mutex> guard(ctx.packMutex);
+    LockGuard guard(ctx.packMutex);
     ctx.pack->addBlob(move_(path), data_.size(), data_.data());
 
     data_.reset_lose_memory();  // Don't delete data pointer.
@@ -107,9 +109,10 @@ static bool listArchive(StringView archivePath) {
         printf("%s", output.null().get());
         return true;
     } else {
-        String msg;
-        msg << exe << ": " << archivePath << ": not found\n";
-        fprintf(stderr, "%s", msg.null().get());
+        fprintf(stderr, "%s", (String() << exe
+                                        << ": "
+                                        << archivePath
+                                        << ": not found\n").null().get());
         return false;
     }
 }

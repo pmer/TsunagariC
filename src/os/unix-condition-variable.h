@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** pool.h                           **
-** Copyright 2017-2019 Paul Merrill **
-*************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** unix-condition-variable.h     **
+** Copyright 2019 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,22 +24,37 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_POOL_H_
-#define SRC_PACK_POOL_H_
+#ifndef SRC_OS_UNIX_CONDITION_VARIBLE_H_
+#define SRC_OS_UNIX_CONDITION_VARIBLE_H_
 
-#include <functional>
+#include "os/mutex.h"
 
-#include "util/string.h"
+#include <pthread.h>
 
-class Pool {
+#include "util/assert.h"
+
+class ConditionVariable {
  public:
-    static constexpr size_t ONE_PER_CORE = 0;
+    inline ConditionVariable() = default;
+    inline ~ConditionVariable() noexcept {
+        pthread_cond_destroy(&cv);
+    }
+    
+    ConditionVariable(const ConditionVariable&) = delete;
+    ConditionVariable& operator=(const ConditionVariable&) = delete;
+    
+    inline void notifyOne() noexcept {
+        pthread_cond_signal(&cv);
+    }
+    inline void notifyAll() noexcept {
+        pthread_cond_broadcast(&cv);
+    }
+    
+    inline void wait(LockGuard& lock) noexcept {
+        assert_(pthread_cond_wait(&cv, &lock.m.m) == 0);
+    }
 
-    static Pool* makePool(StringView name,
-                          size_t workerLimit = ONE_PER_CORE);
-    virtual ~Pool() = default;
-
-    virtual void schedule(std::function<void()> job) = 0;
+    pthread_cond_t cv = PTHREAD_COND_INITIALIZER;
 };
 
-#endif  // SRC_PACK_POOL_H_
+#endif  // SRC_OS_UNIX_CONDITION_VARIBLE_H_

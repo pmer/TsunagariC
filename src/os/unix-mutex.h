@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** pool.h                           **
-** Copyright 2017-2019 Paul Merrill **
-*************************************/
+/**********************************
+** Tsunagari Tile Engine         **
+** unix-mutex.h                  **
+** Copyright 2019 Paul Merrill   **
+**********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,22 +24,31 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_POOL_H_
-#define SRC_PACK_POOL_H_
+#ifndef SRC_OS_UNIX_MUTEX_H_
+#define SRC_OS_UNIX_MUTEX_H_
 
-#include <functional>
+#include <pthread.h>
 
-#include "util/string.h"
+#include "util/assert.h"
 
-class Pool {
+class Mutex {
  public:
-    static constexpr size_t ONE_PER_CORE = 0;
+    constexpr Mutex() noexcept = default;
+    inline ~Mutex() {
+        pthread_mutex_destroy(&m);
+    }
 
-    static Pool* makePool(StringView name,
-                          size_t workerLimit = ONE_PER_CORE);
-    virtual ~Pool() = default;
+    inline void lock() {
+        assert_(pthread_mutex_lock(&m) == 0);
+    };
+    inline void unlock() {
+        assert_(pthread_mutex_unlock(&m) == 0);
+    }
 
-    virtual void schedule(std::function<void()> job) = 0;
+    Mutex(const Mutex&) = delete;
+    Mutex& operator=(const Mutex&) = delete;
+
+    pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 };
 
-#endif  // SRC_PACK_POOL_H_
+#endif  // SRC_OS_UNIX_MUTEX_H_

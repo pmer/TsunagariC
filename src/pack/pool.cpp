@@ -26,10 +26,11 @@
 
 #include "pack/pool.h"
 
-#include <condition_variable>
 #include <deque>
-#include <mutex>
-#include <thread>
+
+#include "os/condition-variable.h"
+#include "os/mutex.h"
+#include "os/thread.h"
 
 #include "util/move.h"
 #include "util/string.h"
@@ -44,43 +45,49 @@ class PoolImpl : public Pool {
     String name;
 
     size_t workerLimit;
-    vector<std::thread> workers;
-    int jobsRunning;
 
+    size_t numWorkers;
+    vector<Thread> workers;
+    
     // Empty jobs are the signal to quit.
     std::deque<std::function<void()>> jobs;
 
- public:
-    // Protects access to all above variables and to jobsChanged.
-    std::mutex mainMutex;
+    int jobsRunning;
+    
+    // Whether the destructor has been called,
+    bool tearingDown;
 
-    // Protects access to finished.
-    std::mutex finishedMutex;
+    // Access to workers vector, jobs deque, jobsRunning, and tearingDown.
+    Mutex jobsMutex;
 
-    // Signaled when a job is added.
-    std::condition_variable jobsChanged;
+    // Events for when a job is added.
+    ConditionVariable jobAvailable;
 
-    // Signaled when all jobs are finished.
-    std::condition_variable finished;
+    // Events for when a job is finished.
+    ConditionVariable jobsDone;
 };
 
-Pool* Pool::makePool(String name, size_t workerLimit) {
+Pool* Pool::makePool(StringView name, size_t workerLimit) {
     auto pool = new PoolImpl;
-    pool->name = move_(name);
+    pool->name = name;
     pool->workerLimit = workerLimit > 0 ? workerLimit
-                                        : std::thread::hardware_concurrency();
+                                        : Thread::hardware_concurrency();
+    pool->numWorkers = 0;
     pool->jobsRunning = 0;
+    pool->tearingDown = false;
     return pool;
 }
 
-static void runJobs(PoolImpl* pool) {
+static void jobWorker(PoolImpl* pool) {
     std::function<void()> job;
 
     do {
         {
-            std::unique_lock<std::mutex> lock(pool->mainMutex);
+            LockGuard lock(pool->jobsMutex);
 
-            pool->jobsChanged.wait(lock, [&]{ return !pool->jobs.empty(); });
+            while (pool->jobs.empty()) {
+                pool->jobAvailable.wait(lock);
+            }
 
             job = move_(pool->jobs.front());
             pool->jobs.pop_front();
@@ -93,51 +100,57 @@ static void runJobs(PoolImpl* pool) {
         }
 
         {
-            std::unique_lock<std::mutex> lock(pool->mainMutex);
+            LockGuard lock(pool->jobsMutex);
 
             pool->jobsRunning -= 1;
 
             if (pool->jobsRunning == 0 && pool->jobs.empty()) {
-                // Notify the PoolImpl destructor.
-                std::unique_lock<std::mutex> lock(pool->finishedMutex);
-                pool->finished.notify_one();
+                pool->jobsDone.notifyOne();
             }
         }
-
     } while (job);
-}
-
-static void startWorker(PoolImpl* pool) {
-    if (pool->workers.size() < pool->workerLimit) {
-        pool->workers.push_back(std::thread(runJobs, pool));
-    }
 }
 
 void PoolImpl::schedule(std::function<void()> job) {
     {
-        std::lock_guard<std::mutex> lock(mainMutex);
-        startWorker(this);
+        LockGuard lock(jobsMutex);
+        assert_(!tearingDown);
+        if (numWorkers < workerLimit) {
+            if (numWorkers < workerLimit) {
+                workers.push_back(Thread(jobWorker, this));
+            }
+        }
         jobs.push_back(job);
     }
-    jobsChanged.notify_one();
+    jobAvailable.notifyOne();
 }
 
 PoolImpl::~PoolImpl() {
+    // Wait for all jobs to finish.
     {
-        std::unique_lock<std::mutex> lock(finishedMutex);
+        Mutex m;
+        LockGuard lock(m);
+        
+        while (jobsRunning > 0 || jobs.size() > 0) {
+            jobsDone.wait(lock);
+        }
+    }
 
-        finished.wait(lock, [&]{ return jobsRunning == 0 && jobs.empty(); });
-
-        std::unique_lock<std::mutex> lock2(mainMutex);
+    // Tell workers they can quit.
+    {
+        LockGuard lock(jobsMutex);
 
         for (size_t i = 0; i < workers.size(); i++) {
             // Send over empty jobs.
             jobs.emplace_back();
         }
+        
+        tearingDown = true;
     }
 
-    jobsChanged.notify_all();
+    jobAvailable.notifyAll();
 
+    // Wait for workers to quit.
     for (auto& worker : workers) {
         worker.join();
     }

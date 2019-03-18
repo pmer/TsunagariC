@@ -29,8 +29,11 @@
 
 #include <stddef.h>
 
+#ifndef __PLACEMENT_NEW_INLINE
+#define __PLACEMENT_NEW_INLINE
 #ifndef _LIBCPP_NEW
 inline void* operator new(size_t, void* p) noexcept { return p; }
+#endif
 #endif
 
 #endif  // SRC_UTIL_NEW_H_

@@ -181,6 +181,7 @@ if (WIN32)
     target_sources(pack-tool
         PRIVATE src/os/windows-condition-variable.h
 		PRIVATE src/os/windows-cmath.h
+		PRIVATE src/os/windows-cstdio.cpp
 		PRIVATE src/os/windows-cstdio.h
 		PRIVATE src/os/windows-cstring.cpp
 		PRIVATE src/os/windows-cstring.h

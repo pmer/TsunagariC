@@ -29,13 +29,17 @@
 
 #include "util/int.h"
 
-void* memmem(const void* haystack, size_t h_sz, const void* needle, size_t n_sz);
-
-__pragma(pack(push, 8)) extern "C" {
-    void* __cdecl memchr(const void* buf, int chr, size_t cnt);
-    int __cdecl memcmp(void const* dst, void const* src, size_t size);
-    size_t __cdecl strlen(char const* _Str);
+__pragma(pack(push, 8));
+extern "C" {
+void* __cdecl memchr(const void* buf, int chr, size_t cnt);
+int __cdecl memcmp(void const* dst, void const* src, size_t size);
+size_t __cdecl strlen(char const* _Str);
 }
-__pragma(pack(pop))
+__pragma(pack(pop));
+
+void* memmem(const void* haystack,
+             size_t h_sz,
+             const void* needle,
+             size_t n_sz);
 
 #endif  // SRC_OS_WINDOWS_CSTRING_H_

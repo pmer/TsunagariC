@@ -26,8 +26,6 @@
 
 #include "os/windows-mapped-file.h"
 
-//#include <Windows.h>
-
 #include "os/windows-types.h"
 #include "util/string.h"
 

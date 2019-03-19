@@ -29,20 +29,22 @@
 
 #include "os/windows-types.h"
 
-__pragma(pack(push, 8)) extern "C" {
-    typedef struct _iobuf {
-        void* _Placeholder;
-    } FILE;
+__pragma(pack(push, 8));
+extern "C" {
+typedef struct _iobuf {
+    void* _Placeholder;
+} FILE;
 
-    _ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned _Ix);
-    int __CRTDECL fprintf(FILE* const _Stream, char const* const _Format, ...);
-    int __CRTDECL printf(char const* const _Format, ...);
-    int __CRTDECL sprintf(char* const _Buffer, char const* const _Format, ...);
+_ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned _Ix);
 }
-__pragma(pack(pop))
+__pragma(pack(pop));
 
 #define stdin (__acrt_iob_func(0))
 #define stdout (__acrt_iob_func(1))
 #define stderr (__acrt_iob_func(2))
+
+int __CRTDECL fprintf(FILE* const _Stream, char const* const _Format, ...);
+int __CRTDECL printf(char const* const _Format, ...);
+int __CRTDECL sprintf(char* const _Buffer, char const* const _Format, ...);
 
 #endif  // SRC_OS_WINDOWS_CSTDIO_H_

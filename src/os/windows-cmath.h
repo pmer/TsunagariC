@@ -29,15 +29,19 @@
 
 #include "os/windows-types.h"
 
-__pragma(pack(push, 8)) extern "C" {
-    double __cdecl atan2(double _Y, double _X);
-    _ACRTIMP double __cdecl ceil(double _X);
-    __inline float __CRTDECL ceilf(float _X) { return (float)ceil(_X); }
-    double __cdecl cos(double _X);
-    _ACRTIMP double __cdecl floor(double _X);
-    double __cdecl sin(double _X);
-    double __cdecl sqrt(double _X);
+__pragma(pack(push, 8));
+extern "C" {
+double __cdecl atan2(double _Y, double _X);
+_ACRTIMP double __cdecl ceil(double _X);
+__inline float __CRTDECL
+ceilf(float _X) {
+    return (float)ceil(_X);
 }
-__pragma(pack(pop))
+double __cdecl cos(double _X);
+_ACRTIMP double __cdecl floor(double _X);
+double __cdecl sin(double _X);
+double __cdecl sqrt(double _X);
+}
+__pragma(pack(pop));
 
 #endif  // SRC_OS_WINDOWS_MATH_H_

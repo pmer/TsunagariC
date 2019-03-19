@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** assert.h                      **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** assert.h                         **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,12 +30,12 @@
 #include "util/likely.h"
 
 #ifndef NDEBUG
-#define assert_(expr)  (likely(expr) ? (void)0 \
-                              : assert__(__func__, __FILE__, __LINE__, #expr))
+#    define assert_(expr) \
+        (likely(expr) ? (void)0 : assert__(__func__, __FILE__, __LINE__, #expr))
 
-void assert__(const char *func, const char *file, int line, const char *expr);
+void assert__(const char* func, const char* file, int line, const char* expr);
 #else
-#define assert_(expr)
+#    define assert_(expr)
 #endif
 
 #endif  // SRC_CORE_ASSERT_H_

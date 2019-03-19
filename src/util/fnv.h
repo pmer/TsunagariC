@@ -27,7 +27,7 @@
 #ifndef SRC_UTIL_FNV_H_
 #define SRC_UTIL_FNV_H_
 
-#include <stddef.h>
+#include "util/int.h"
 
 size_t fnvHash(const char* data, size_t size);
 

@@ -25,12 +25,6 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-declare operator new.
-#include <new>
-
-#include <stdlib.h>
-#include <time.h>
-
 #include "config.h"
 #include "core/client-conf.h"
 #include "core/log.h"
@@ -38,15 +32,16 @@
 #include "core/resources.h"
 #include "core/window.h"
 #include "core/world.h"
-
 #include "data/data-world.h"
+#include "os/cstdlib.h"
+#include "util/int.h"
 
 #ifdef _WIN32
-  #include "os/windows.h"
+#    include "os/windows.h"
 #endif
 
 #ifdef __APPLE__
-  #include "os/mac-gui.h"
+#    include "os/mac-gui.h"
 #endif
 
 /**
@@ -55,7 +50,8 @@
  * The client config tells us our window parameters along with which World
  * we're going to load. The GameWindow class then loads and plays the game.
  */
-int main(int argc, char** argv) {
+int
+main(int argc, char** argv) {
 #ifdef _WIN32
     wFixConsole();
 #endif

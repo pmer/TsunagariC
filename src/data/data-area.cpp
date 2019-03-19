@@ -29,16 +29,23 @@
 
 #include "core/algorithm.h"
 #include "core/sounds.h"
+#include "data/inprogress.h"
 #include "util/random.h"
 
-#include "data/inprogress.h"
+void
+DataArea::onLoad() {}
 
-void DataArea::onLoad() {}
-void DataArea::onFocus() {}
-void DataArea::onTick(time_t) {}
-void DataArea::onTurn() {}
+void
+DataArea::onFocus() {}
 
-void DataArea::tick(time_t dt) {
+void
+DataArea::onTick(time_t) {}
+
+void
+DataArea::onTurn() {}
+
+void
+DataArea::tick(time_t dt) {
     // Only iterate over inProgresses that existed at the time of the
     // beginning of the loop.  Also, iterate by index instead of by
     // iterator because iterators are invalidated if the vector is
@@ -47,39 +54,43 @@ void DataArea::tick(time_t dt) {
         auto& inProgress = inProgresses[i];
         inProgress->tick(dt);
     }
-    erase_if(inProgresses, [] (Unique<InProgress>& ip) { return ip->isOver(); });
+    erase_if(inProgresses, [](Unique<InProgress>& ip) { return ip->isOver(); });
     onTick(dt);
 }
 
-void DataArea::turn() {
+void
+DataArea::turn() {
     onTurn();
 }
 
-void DataArea::playSoundEffect(StringView sound) {
+void
+DataArea::playSoundEffect(StringView sound) {
     Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.03, 0.03));
 }
 
-void DataArea::playSoundAndThen(StringView sound, ThenFn then) {
-    inProgresses.emplace_back(
-        new InProgressSound(sound, then));
+void
+DataArea::playSoundAndThen(StringView sound, ThenFn then) {
+    inProgresses.emplace_back(new InProgressSound(sound, then));
 }
 
-void DataArea::timerProgress(time_t duration, ProgressFn progress) {
-    inProgresses.emplace_back(
-        new InProgressTimer(duration, progress));
+void
+DataArea::timerProgress(time_t duration, ProgressFn progress) {
+    inProgresses.emplace_back(new InProgressTimer(duration, progress));
 }
 
-void DataArea::timerThen(time_t duration, ThenFn then) {
-    inProgresses.emplace_back(
-        new InProgressTimer(duration, then));
+void
+DataArea::timerThen(time_t duration, ThenFn then) {
+    inProgresses.emplace_back(new InProgressTimer(duration, then));
 }
 
-void DataArea::timerProgressAndThen(time_t duration, ProgressFn progress,
-    ThenFn then) {
-    inProgresses.emplace_back(
-        new InProgressTimer(duration, progress, then));
+void
+DataArea::timerProgressAndThen(time_t duration,
+                               ProgressFn progress,
+                               ThenFn then) {
+    inProgresses.emplace_back(new InProgressTimer(duration, progress, then));
 }
 
-DataArea::TileScript DataArea::script(StringView scriptName) {
+DataArea::TileScript
+DataArea::script(StringView scriptName) {
     return scripts[scriptName];
 }

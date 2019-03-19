@@ -160,6 +160,7 @@ target_sources(tsunagari
 )
 
 target_sources(tsunagari
+	PUBLIC  src/os/cstdlib.h
     PUBLIC  src/os/os.h
 )
 target_sources(pack-tool
@@ -177,6 +178,7 @@ if (WIN32)
     target_sources(tsunagari
         PRIVATE src/os/windows.cpp
         PUBLIC  src/os/windows.h
+		PUBLIC  src/os/windows-cstdlib.h
     )
     target_sources(pack-tool
         PRIVATE src/os/windows-condition-variable.h

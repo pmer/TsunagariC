@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** int.h                       **
+** os/windows-cstdlib.h        **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,22 +24,27 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_UTIL_INT_H_
-#define SRC_UTIL_INT_H_
+#ifndef SRC_OS_WINDOWS_CSTDLIB_H_
+#define SRC_OS_WINDOWS_CSTDLIB_H_
 
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-typedef unsigned long long uint64_t;
-typedef uint64_t time_t;
+#include "os/windows-types.h"
+#include "util/int.h"
 
-#ifndef _WIN32
-typedef unsigned long long size_t;
-#endif
+__pragma(pack(push, 8));
+extern "C" {
+typedef __int64 __time64_t;
 
-typedef size_t uintptr_t;
+_ACRTIMP __time64_t __cdecl _time64(__time64_t* _Time);
+_ACRTIMP void __cdecl free(void* _Block);
+_ACRTIMP _CRTRESTRICT void* __cdecl malloc(size_t _Size);
+_ACRTIMP int __cdecl rand();
+_ACRTIMP void __cdecl srand(unsigned int _Seed);
+}
+__pragma(pack(pop));
 
-static constexpr size_t SIZE_T_MAX = 0xffffffff;
-static constexpr uint32_t UINT32_MAX = 0xffffffff;
+static inline time_t __CRTDECL
+time(time_t* _Time) {
+    return _time64(reinterpret_cast<__time64_t*>(_Time));
+}
 
-#endif  // SRC_UTIL_INT_H_
+#endif  // SRC_OS_WINDOWS_CSTDLIB_H_

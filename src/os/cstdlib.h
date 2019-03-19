@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** int.h                       **
+** os/cstdlib.h                **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,22 +24,13 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_UTIL_INT_H_
-#define SRC_UTIL_INT_H_
+#ifndef SRC_OS_CSTDLIB_H_
+#define SRC_OS_CSTDLIB_H_
 
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-typedef unsigned long long uint64_t;
-typedef uint64_t time_t;
-
-#ifndef _WIN32
-typedef unsigned long long size_t;
+#ifdef _WIN32
+#include "os/windows-cstdlib.h"
+#else
+#include "os/unix-cstdlib.h"
 #endif
 
-typedef size_t uintptr_t;
-
-static constexpr size_t SIZE_T_MAX = 0xffffffff;
-static constexpr uint32_t UINT32_MAX = 0xffffffff;
-
-#endif  // SRC_UTIL_INT_H_
+#endif  // SRC_OS_CSTDLIB_H_

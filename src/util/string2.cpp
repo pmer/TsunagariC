@@ -30,12 +30,12 @@
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "os/os.h"
 
+#include "util/int.h"
 #include "util/math2.h"
 #include "util/string-view.h"
 #include "util/string.h"

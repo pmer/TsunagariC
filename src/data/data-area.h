@@ -28,15 +28,12 @@
 #ifndef SRC_DATA_DATA_AREA_H_
 #define SRC_DATA_DATA_AREA_H_
 
-#include <time.h>
-
-#include <functional>
-
 #include "data/inprogress.h"
-
+#include "util/function.h"
+#include "util/hashtable.h"
+#include "util/int.h"
 #include "util/string-view.h"
 #include "util/string.h"
-#include "util/hashtable.h"
 #include "util/unique.h"
 #include "util/vector.h"
 
@@ -46,9 +43,9 @@ class Tile;
 
 class DataArea {
  public:
-    typedef void (DataArea::* TileScript)(Entity& triggeredBy, Tile& tile);
-    typedef std::function<void (double)> ProgressFn;
-    typedef std::function<void ()> ThenFn;
+    typedef void (DataArea::*TileScript)(Entity& triggeredBy, Tile& tile);
+    typedef Function<void(double)> ProgressFn;
+    typedef Function<void()> ThenFn;
 
     virtual ~DataArea() = default;
 
@@ -67,8 +64,9 @@ class DataArea {
     void playSoundAndThen(StringView sound, ThenFn then);
     void timerProgress(time_t duration, ProgressFn progress);
     void timerThen(time_t duration, ThenFn then);
-    void timerProgressAndThen(time_t duration, ProgressFn progress,
-        ThenFn then);
+    void timerProgressAndThen(time_t duration,
+                              ProgressFn progress,
+                              ThenFn then);
 
     // For engine
     void tick(time_t dt);

@@ -24,29 +24,23 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-declare operator new.
-#include <mutex>
-
-#include "core/resources.h"
-
-#include <limits.h>
-
 #include "core/log.h"
 #include "core/measure.h"
-
+#include "core/resources.h"
 #include "data/data-world.h"
-
+#include "os/mutex.h"
 #include "pack/pack-reader.h"
-
+#include "util/int.h"
 #include "util/unique.h"
 
-static std::mutex mutex;
+static Mutex mutex;
 static Unique<PackReader> pack;
 
-static bool openPackFile() {
+static bool
+openPackFile() {
     StringView path = DataWorld::instance().datafile;
 
-    //TimeMeasure m("Opened " + path);
+    // TimeMeasure m("Opened " + path);
 
     pack = PackReader::fromFile(path);
     if (!pack) {
@@ -58,14 +52,14 @@ static bool openPackFile() {
     return true;
 }
 
-static String getFullPath(StringView path) {
-    return String() << DataWorld::instance().datafile
-                    << "/"
-                    << path;
+static String
+getFullPath(StringView path) {
+    return String() << DataWorld::instance().datafile << "/" << path;
 }
 
-Optional<StringView> resourceLoad(StringView path) {
-    std::lock_guard<std::mutex> lock(mutex);
+Optional<StringView>
+resourceLoad(StringView path) {
+    LockGuard lock(mutex);
 
     if (!openPackFile()) {
         return Optional<StringView>();
@@ -79,7 +73,7 @@ Optional<StringView> resourceLoad(StringView path) {
         return Optional<StringView>();
     }
 
-    uint64_t blobSize = pack->getBlobSize(index);
+    uint32_t blobSize = pack->getBlobSize(index);
 
     // Will it fit in memory?
     if (blobSize > SIZE_T_MAX) {

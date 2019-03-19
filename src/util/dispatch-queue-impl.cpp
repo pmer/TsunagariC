@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** dispatch-queue-impl.cpp     **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** dispatch-queue-impl.cpp          **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,17 +25,22 @@
 // **********
 
 #include "util/dispatch-queue-impl.h"
+
+#include "util/function.h"
 #include "util/move.h"
 
-bool operator<(const TaskContext& lhs, const TaskContext& rhs) {
+bool
+operator<(const TaskContext& lhs, const TaskContext& rhs) {
     return lhs.qualityOfService < rhs.qualityOfService;
 }
 
 DispatchQueueImpl::DispatchQueueImpl() {
     unsigned n = std::thread::hardware_concurrency();
-    //n = 1;  // debug, and to help with MusicWorker until better mechanism for series-of-tasks implemented
+    // n = 1;
+    // debug, and to help with MusicWorker until better mechanism for
+    // series-of-tasks implemented
     for (unsigned i = 0; i < n; i++) {
-        std::thread thread(&DispatchQueueImpl::runTasks, this);
+        Thread thread(Function<void()>([this]() { this->runTasks(); }));
         threads.emplace_back(move_(thread));
     }
 }
@@ -47,16 +52,19 @@ DispatchQueueImpl::~DispatchQueueImpl() {
     }
 }
 
-void DispatchQueueImpl::async(Task task, DispatchQueue::QualityOfService qos) {
-     tasks.push({task, qos});
+void
+DispatchQueueImpl::async(Task task, DispatchQueue::QualityOfService qos) {
+    tasks.push({task, qos});
 }
 
-void DispatchQueueImpl::runTasks() {
+void
+DispatchQueueImpl::runTasks() {
     while (true) {
         Optional<TaskContext> context = tasks.pop();
         if (context) {
             context->task();
-        } else {
+        }
+        else {
             return;
         }
     }

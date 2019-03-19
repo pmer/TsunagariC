@@ -24,15 +24,14 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "core/window.h"
+
 #include <chrono>
 #include <thread>
-
-#include "core/window.h"
 
 #include "core/client-conf.h"
 #include "core/display-list.h"
 #include "core/world.h"
-
 #include "util/string-view.h"
 
 class NullGameWindow : public GameWindow {
@@ -64,7 +63,7 @@ class NullGameWindow : public GameWindow {
             DisplayList dl;
             World::instance().draw(&dl);
 
-            auto nextFrame = last + microseconds(1000000)/60;
+            auto nextFrame = last + microseconds(1000000) / 60;
             std::this_thread::sleep_until(nextFrame);
 
             last = now;
@@ -84,16 +83,19 @@ class NullGameWindow : public GameWindow {
 
 static NullGameWindow globalWindow;
 
-GameWindow* GameWindow::create() {
+GameWindow*
+GameWindow::create() {
     return &globalWindow;
 }
 
-GameWindow& GameWindow::instance() {
+GameWindow&
+GameWindow::instance() {
     return globalWindow;
 }
 
 
-time_t GameWindow::time() {
+time_t
+GameWindow::time() {
     using namespace std::chrono;
 
     auto now = steady_clock::now();

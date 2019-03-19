@@ -60,6 +60,7 @@ typedef unsigned long ULONG_PTR, *PULONG_PTR;
 #define __CRTDECL __cdecl
 #define _ACRTIMP __declspec(dllimport)
 #define _ACRTIMP_ALT __declspec(dllimport)
+#define _CRTRESTRICT __declspec(restrict)
 #define WINAPI __stdcall
 #define WINBASEAPI __declspec(dllimport)
 #define WINUSERAPI __declspec(dllimport)

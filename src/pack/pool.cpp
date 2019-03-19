@@ -29,6 +29,7 @@
 #include "os/condition-variable.h"
 #include "os/mutex.h"
 #include "os/thread.h"
+#include "util/function.h"
 #include "util/move.h"
 #include "util/string.h"
 #include "util/vector.h"
@@ -121,7 +122,8 @@ PoolImpl::schedule(Function<void()> job) {
 
         if (numWorkers < workerLimit) {
             if (numWorkers < workerLimit) {
-                workers.push_back(Thread(jobWorker, this));
+                workers.push_back(Thread(
+                        Function<void()>([this]() { jobWorker(this); })));
             }
         }
 

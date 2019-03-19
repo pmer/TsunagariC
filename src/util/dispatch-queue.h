@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** dispatch-queue.h            **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** dispatch-queue.h                 **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,9 +27,9 @@
 #ifndef SRC_UTIL_DISPATCH_QUEUE_H_
 #define SRC_UTIL_DISPATCH_QUEUE_H_
 
-#include <functional>
+#include "util/function.h"
 
-typedef std::function<void()> Task;
+typedef Function<void()> Task;
 
 class DispatchQueueImpl;
 

@@ -28,6 +28,7 @@
 #define SRC_OS_WINDOWS_THREAD_H_
 
 #include "os/windows-types.h"
+#include "util/function.h"
 #include "util/int.h"
 
 extern "C" {
@@ -67,28 +68,18 @@ _ACRTIMP uintptr_t __cdecl _beginthreadex(
 constexpr DWORD WAIT_FAILED = 0xFFFFFFFF;
 }
 
-struct beginthreadex_data {
-    void (*f)(void*);
-    void* arg;
-};
-
 static unsigned WINAPI
-beginthreadex_thunk(void* data_) {
-    auto* data = static_cast<beginthreadex_data*>(data_);
-    auto* f = data->f;
-    void* arg = data->arg;
-    delete data;
-    f(arg);
+beginthreadex_thunk(void* data) {
+    auto f = static_cast<Function<void()>*>(data);
+    (*f)();
+    delete f;
     return 0;
 }
 
 class Thread {
  public:
-    template<class Arg> inline explicit Thread(void (*f)(Arg), Arg arg) {
-        static_assert(sizeof(Arg) == sizeof(void*), "");
-        beginthreadex_data* data = new beginthreadex_data;
-        data->f = reinterpret_cast<void (*)(void*)>(f);
-        data->arg = arg;
+    inline explicit Thread(Function<void()> f) {
+        auto data = new Function<void()>(move_(f));
         id = reinterpret_cast<HANDLE>(_beginthreadex(nullptr,
                                                      0,
                                                      beginthreadex_thunk,

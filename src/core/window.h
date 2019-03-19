@@ -28,9 +28,8 @@
 #ifndef SRC_CORE_WINDOW_H_
 #define SRC_CORE_WINDOW_H_
 
-#include <functional>
-
 #include "util/bitrecord.h"
+#include "util/function.h"
 #include "util/string-view.h"
 
 enum KeyboardKey {
@@ -78,13 +77,19 @@ class GameWindow {
      * Draws a rectangle on the screen of the specified color. Coordinates
      * are in virtual pixels.
      */
-    virtual void drawRect(double x1, double x2, double y1, double y2,
-        uint32_t argb) = 0;
+    virtual void drawRect(double x1,
+                          double x2,
+                          double y1,
+                          double y2,
+                          uint32_t argb) = 0;
 
-    virtual void scale(double x, double y, std::function<void()> op) = 0;
-    virtual void translate(double x, double y, std::function<void()> op) = 0;
-    virtual void clip(double x, double y, double width, double height,
-                      std::function<void()> op) = 0;
+    virtual void scale(double x, double y, Function<void()> op) = 0;
+    virtual void translate(double x, double y, Function<void()> op) = 0;
+    virtual void clip(double x,
+                      double y,
+                      double width,
+                      double height,
+                      Function<void()> op) = 0;
 
     void emitKeyDown(KeyboardKey key);
     void emitKeyUp(KeyboardKey key);
@@ -97,7 +102,6 @@ class GameWindow {
     virtual void close() = 0;
 
     BitRecord keysDown;
-
 };
 
 #endif  // SRC_CORE_WINDOW_H_

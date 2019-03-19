@@ -6,6 +6,7 @@
 #ifndef SRC_UTIL_VECTOR_H_
 #define SRC_UTIL_VECTOR_H_
 
+#include "os/cstdlib.h"
 #include "util/algorithm.h"
 #include "util/assert.h"
 #include "util/int.h"

@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** dispatch-queue-impl.h       **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** dispatch-queue-impl.h            **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,8 +27,7 @@
 #ifndef SRC_UTIL_DISPATCH_QUEUE_IMPL_H_
 #define SRC_UTIL_DISPATCH_QUEUE_IMPL_H_
 
-#include <thread>
-
+#include "os/thread.h"
 #include "util/dispatch-queue.h"
 #include "util/safe-heap.h"
 #include "util/vector.h"
@@ -49,7 +48,7 @@ class DispatchQueueImpl {
     void runTasks();
 
     SafeHeap<TaskContext> tasks;
-    vector<std::thread> threads;
+    vector<Thread> threads;
 };
 
 #endif  // SRC_UTIL_DISPATCH_QUEUE_IMPL_H_

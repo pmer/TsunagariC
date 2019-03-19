@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** dispatch-queue.cpp          **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** dispatch-queue.cpp               **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,14 +27,15 @@
 #include "util/dispatch-queue.h"
 
 #include "util/dispatch-queue-impl.h"
+#include "util/move.h"
 
-DispatchQueue::DispatchQueue()
-    : impl(new DispatchQueueImpl) {}
+DispatchQueue::DispatchQueue() : impl(new DispatchQueueImpl) {}
 
 DispatchQueue::~DispatchQueue() {
     delete impl;
 }
 
-void DispatchQueue::async(Task task, QualityOfService qos) {
-     impl->async(task, qos);
+void
+DispatchQueue::async(Task task, QualityOfService qos) {
+    impl->async(move_(task), qos);
 }

@@ -28,15 +28,13 @@
 #ifndef SRC_CORE_WORLD_H_
 #define SRC_CORE_WORLD_H_
 
-#include <functional>
-
 #include "core/vec.h"
 #include "core/window.h"  // for KeyboardKey
-
 #include "util/bitrecord.h"
+#include "util/function.h"
+#include "util/hashtable.h"
 #include "util/rc.h"
 #include "util/string.h"
-#include "util/hashtable.h"
 #include "util/unique.h"
 #include "util/vector.h"
 
@@ -143,7 +141,7 @@ class World {
      * ratio and optimize drawing if the Area doesn't fit into the
      * Viewport.
      */
-    void pushLetterbox(std::function<void()> op);
+    void pushLetterbox(Function<void()> op);
 
  protected:
     Rc<Image> pauseInfo;

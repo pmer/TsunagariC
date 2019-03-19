@@ -28,17 +28,14 @@
 #ifndef SRC_DATA_INPROGRESS_H_
 #define SRC_DATA_INPROGRESS_H_
 
-#include <time.h>
-
-#include <functional>
-
 #include "core/sounds.h"
-
+#include "util/function.h"
+#include "util/int.h"
 #include "util/string-view.h"
 
 /**
  * InProgress objects contain logic that is to be evaluated over time from
- * within a DataArea.  They are run only when an Area is in focus.
+ * within a DataArea. They are run only when an Area is in focus.
  *
  * When a game script wants to run some logic during an event (e.g., during a
  * timer), or after an event happens (e.g., after a sound plays), an InProgress
@@ -68,8 +65,8 @@ class InProgress {
     bool over;
 
  private:
-    InProgress(const InProgress&);
-    InProgress& operator=(const InProgress&);
+    InProgress(const InProgress&) = delete;
+    InProgress& operator=(const InProgress&) = delete;
 };
 
 /**
@@ -80,7 +77,7 @@ class InProgress {
  */
 class InProgressSound : public InProgress {
  public:
-    typedef std::function<void ()> ThenFn;
+    typedef Function<void()> ThenFn;
 
     InProgressSound(StringView sound, ThenFn then);
 
@@ -103,13 +100,12 @@ class InProgressSound : public InProgress {
  */
 class InProgressTimer : public InProgress {
  public:
-    typedef std::function<void (double)> ProgressFn;
-    typedef std::function<void ()> ThenFn;
+    typedef Function<void(double)> ProgressFn;
+    typedef Function<void()> ThenFn;
 
     InProgressTimer(time_t duration, ProgressFn progress);
     InProgressTimer(time_t duration, ThenFn then);
-    InProgressTimer(time_t duration, ProgressFn progress,
-                    ThenFn then);
+    InProgressTimer(time_t duration, ProgressFn progress, ThenFn then);
 
     void tick(time_t dt);
 

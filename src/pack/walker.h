@@ -27,14 +27,13 @@
 #ifndef SRC_PACK_WALKER_H_
 #define SRC_PACK_WALKER_H_
 
-#include <functional>
-
+#include "util/function.h"
 #include "util/string-view.h"
 #include "util/vector.h"
 
 // Recursively walk the file system under the following paths, calling op on
 // each regular file (non-directory) found. Uses one thread per logical core, so
 // op can be called multiple times in parallel.
-void walk(vector<StringView> paths, std::function<void(StringView)> op);
+void walk(vector<StringView> paths, Function<void(StringView)> op);
 
 #endif  // SRC_PACK_WALKER_H_

@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** pack-reader.h                    **
-** Copyright 2016-2019 Paul Merrill **
-*************************************/
+/********************************
+** Tsunagari Tile Engine       **
+** int.h                       **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,33 +24,20 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_PACK_PACK_READER_H_
-#define SRC_PACK_PACK_READER_H_
+#ifndef SRC_UTIL_INT_H_
+#define SRC_UTIL_INT_H_
 
-#include "util/int.h"
-#include "util/string-view.h"
-#include "util/unique.h"
-#include "util/vector.h"
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
 
-class PackReader {
- public:
-    typedef uint32_t BlobIndex;
-    typedef uint32_t BlobSize;
+#ifndef _WIN32
+typedef unsigned long long size_t;
+#endif
 
-    static constexpr BlobIndex BLOB_NOT_FOUND = UINT32_MAX;
+typedef size_t uintptr_t;
 
-    static Unique<PackReader> fromFile(StringView path);
-    virtual ~PackReader() = default;
+static constexpr uint32_t UINT32_MAX = 0xffffffff;
 
-    virtual BlobIndex size() const = 0;
-
-    virtual BlobIndex findIndex(StringView path) = 0;
-
-    virtual StringView getBlobPath(BlobIndex index) const = 0;
-    virtual BlobSize getBlobSize(BlobIndex index) const = 0;
-    virtual void* getBlobData(BlobIndex index) = 0;
-
-    virtual vector<void*> getBlobDatas(vector<BlobIndex> indicies) = 0;
-};
-
-#endif  // SRC_PACK_PACK_READER_H_
+#endif  // SRC_UTIL_INT_H_

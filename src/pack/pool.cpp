@@ -26,12 +26,9 @@
 
 #include "pack/pool.h"
 
-#include <deque>
-
 #include "os/condition-variable.h"
 #include "os/mutex.h"
 #include "os/thread.h"
-
 #include "util/move.h"
 #include "util/string.h"
 #include "util/vector.h"
@@ -40,7 +37,7 @@ class PoolImpl : public Pool {
  public:
     ~PoolImpl() final;
 
-    void schedule(std::function<void()> job) final;
+    void schedule(Function<void()> job) final;
 
     String name;
 
@@ -48,12 +45,12 @@ class PoolImpl : public Pool {
 
     size_t numWorkers;
     vector<Thread> workers;
-    
+
     // Empty jobs are the signal to quit.
-    std::deque<std::function<void()>> jobs;
+    vector<Function<void()>> jobs;
 
     int jobsRunning;
-    
+
     // Whether the destructor has been called,
     bool tearingDown;
 
@@ -67,19 +64,21 @@ class PoolImpl : public Pool {
     ConditionVariable jobsDone;
 };
 
-Pool* Pool::makePool(StringView name, size_t workerLimit) {
+Pool*
+Pool::makePool(StringView name, size_t workerLimit) {
     auto pool = new PoolImpl;
     pool->name = name;
-    pool->workerLimit = workerLimit > 0 ? workerLimit
-                                        : Thread::hardware_concurrency();
+    pool->workerLimit =
+            workerLimit > 0 ? workerLimit : Thread::hardware_concurrency();
     pool->numWorkers = 0;
     pool->jobsRunning = 0;
     pool->tearingDown = false;
     return pool;
 }
 
-static void jobWorker(PoolImpl* pool) {
-    std::function<void()> job;
+static void
+jobWorker(PoolImpl* pool) {
+    Function<void()> job;
 
     do {
         {
@@ -90,7 +89,7 @@ static void jobWorker(PoolImpl* pool) {
             }
 
             job = move_(pool->jobs.front());
-            pool->jobs.pop_front();
+            pool->jobs.erase(pool->jobs.begin());
 
             pool->jobsRunning += 1;
         }
@@ -111,18 +110,23 @@ static void jobWorker(PoolImpl* pool) {
     } while (job);
 }
 
-void PoolImpl::schedule(std::function<void()> job) {
+void
+PoolImpl::schedule(Function<void()> job) {
     {
         LockGuard lock(jobsMutex);
+
         assert_(!tearingDown);
+
+        jobs.push_back(job);
+
         if (numWorkers < workerLimit) {
             if (numWorkers < workerLimit) {
                 workers.push_back(Thread(jobWorker, this));
             }
         }
-        jobs.push_back(job);
+
+        jobAvailable.notifyOne();
     }
-    jobAvailable.notifyOne();
 }
 
 PoolImpl::~PoolImpl() {
@@ -130,7 +134,7 @@ PoolImpl::~PoolImpl() {
     {
         Mutex m;
         LockGuard lock(m);
-        
+
         while (jobsRunning > 0 || jobs.size() > 0) {
             jobsDone.wait(lock);
         }
@@ -144,7 +148,7 @@ PoolImpl::~PoolImpl() {
             // Send over empty jobs.
             jobs.emplace_back();
         }
-        
+
         tearingDown = true;
     }
 

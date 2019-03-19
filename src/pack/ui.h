@@ -27,8 +27,7 @@
 #ifndef SRC_PACK_UI_H_
 #define SRC_PACK_UI_H_
 
-#include <stdint.h>
-
+#include "util/int.h"
 #include "util/string-view.h"
 
 extern bool verbose;

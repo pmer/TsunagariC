@@ -24,21 +24,15 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-define operator new.
-#include <new>
-
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-
+#include "os/cstdio.h"
+#include "os/cstring.h"
 #include "os/mutex.h"
 #include "os/os.h"
-
 #include "pack/pack-reader.h"
 #include "pack/pack-writer.h"
-#include "pack/walker.h"
 #include "pack/ui.h"
-
+#include "pack/walker.h"
+#include "util/int.h"
 #include "util/move.h"
 #include "util/optional.h"
 #include "util/string-view.h"
@@ -47,12 +41,14 @@
 
 static String exe;
 
-static void usage() {
-    fprintf(stderr, "usage: %s create [-v] <output-archive> [input-file]...\n",
+static void
+usage() {
+    fprintf(stderr,
+            "usage: %s create [-v] <output-archive> [input-file]...\n",
             exe.null().get());
-    fprintf(stderr, "       %s list <input-archive>\n",
-            exe.null().get());
-    fprintf(stderr, "       %s extract [-v] <input-archive>\n",
+    fprintf(stderr, "       %s list <input-archive>\n", exe.null().get());
+    fprintf(stderr,
+            "       %s extract [-v] <input-archive>\n",
             exe.null().get());
 }
 
@@ -61,14 +57,15 @@ struct CreateArchiveContext {
     Mutex packMutex;
 };
 
-static void addFile(CreateArchiveContext& ctx, StringView path) {
+static void
+addFile(CreateArchiveContext& ctx, StringView path) {
     Optional<String> data = readFile(path);
 
     if (!data) {
         uiShowSkippedMissingFile(path);
         return;
     }
-    
+
     String data_ = move_(*data);
 
     uiShowAddedFile(path, data_.size());
@@ -79,20 +76,20 @@ static void addFile(CreateArchiveContext& ctx, StringView path) {
     data_.reset_lose_memory();  // Don't delete data pointer.
 }
 
-static bool createArchive(StringView archivePath, vector<StringView> paths) {
+static bool
+createArchive(StringView archivePath, vector<StringView> paths) {
     CreateArchiveContext ctx;
     ctx.pack = PackWriter::make();
 
-    walk(move_(paths), [&](StringView path) {
-        addFile(ctx, path);
-    });
+    walk(move_(paths), [&](StringView path) { addFile(ctx, path); });
 
     uiShowWritingArchive(archivePath);
 
     return ctx.pack->writeToFile(archivePath);
 }
 
-static bool listArchive(StringView archivePath) {
+static bool
+listArchive(StringView archivePath) {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
@@ -108,25 +105,30 @@ static bool listArchive(StringView archivePath) {
 
         printf("%s", output.null().get());
         return true;
-    } else {
-        fprintf(stderr, "%s", (String() << exe
-                                        << ": "
-                                        << archivePath
-                                        << ": not found\n").null().get());
+    }
+    else {
+        fprintf(stderr,
+                "%s",
+                (String() << exe << ": " << archivePath << ": not found\n")
+                        .null()
+                        .get());
         return false;
     }
 }
 
-static Optional<StringView> getParentPath(StringView path) {
+static Optional<StringView>
+getParentPath(StringView path) {
     Optional<size_t> sep = path.rfind('/');
     if (!sep) {
         return Optional<StringView>();
-    } else {
+    }
+    else {
         return Optional<StringView>(path.substr(0, sep));
     }
 }
 
-static void createDirs(StringView path) {
+static void
+createDirs(StringView path) {
     Optional<StringView> parentPath = getParentPath(path);
     if (parentPath) {
         // Make sure parentPath's parent exists.
@@ -136,14 +138,16 @@ static void createDirs(StringView path) {
     }
 }
 
-static void putFile(StringView path, uint64_t size, void* data) {
+static void
+putFile(StringView path, uint32_t size, void* data) {
     createDirs(path);
 
     // TODO: Propagate error up.
     writeFile(path, size, data);
 }
 
-static bool extractArchive(StringView archivePath) {
+static bool
+extractArchive(StringView archivePath) {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
@@ -156,7 +160,7 @@ static bool extractArchive(StringView archivePath) {
 
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             StringView blobPath = pack->getBlobPath(i);
-            uint64_t blobSize = pack->getBlobSize(i);
+            uint32_t blobSize = pack->getBlobSize(i);
             void* blobData = blobDatas[i];
 
             uiShowExtractingFile(blobPath, blobSize);
@@ -165,15 +169,18 @@ static bool extractArchive(StringView archivePath) {
         }
 
         return true;
-    } else {
-        fprintf(stderr, "%s: %s: not found\n",
+    }
+    else {
+        fprintf(stderr,
+                "%s: %s: not found\n",
                 exe.null().get(),
                 String(archivePath).null().get());
         return false;
     }
 }
 
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[]) {
     exe = argv[0];
     Optional<size_t> dir = exe.view().rfind(dirSeparator);
     if (dir) {
@@ -203,7 +210,7 @@ int main(int argc, char* argv[]) {
             verbose = true;
             args.erase(args.begin());
         }
-        
+
         if (args.size() < 2) {
             usage();
             return 1;
@@ -214,7 +221,8 @@ int main(int argc, char* argv[]) {
         args.erase(args.begin());
 
         return createArchive(archivePath, move_(args)) ? 0 : 1;
-    } else if (command == "list") {
+    }
+    else if (command == "list") {
         verbose = true;
 
         if (args.size() != 1) {
@@ -223,19 +231,21 @@ int main(int argc, char* argv[]) {
         }
 
         exitCode = listArchive(args[0]) ? 0 : 1;
-    } else if (command == "extract") {
+    }
+    else if (command == "extract") {
         if (args.size() > 0 && args[0] == "-v") {
             verbose = true;
             args.erase(args.begin());
         }
-        
+
         if (args.size() != 1) {
             usage();
             return 1;
         }
 
         exitCode = extractArchive(args[0]) ? 0 : 1;
-    } else {
+    }
+    else {
         usage();
         return 1;
     }

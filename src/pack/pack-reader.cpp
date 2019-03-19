@@ -26,11 +26,10 @@
 
 #include "pack/pack-reader.h"
 
-#include <stdint.h>
-#include <string.h>
-
-#include "os/os.h"
+#include "os/cstring.h"
+#include "os/mapped-file.h"
 #include "util/hashtable.h"
+#include "util/int.h"
 #include "util/move.h"
 #include "util/optional.h"
 
@@ -43,19 +42,17 @@ struct HeaderBlock {
     uint8_t magic[8];
     uint8_t version;
     uint8_t unused[7];
-    uint64_t blobCount;
-    uint64_t pathOffsetsBlockOffset;
-    uint64_t pathsBlockOffset;
-    uint64_t pathsBlockSize;
-    uint64_t metadataBlockOffset;
-    uint64_t dataOffsetsBlockOffset;
+    PackReader::BlobIndex blobCount;
+    uint32_t pathOffsetsBlockOffset;
+    uint32_t pathsBlockOffset;
+    uint32_t pathsBlockSize;
+    uint32_t metadataBlockOffset;
+    uint32_t dataOffsetsBlockOffset;
 };
 
-typedef uint64_t PathOffset;
+typedef uint32_t PathOffset;
 
-enum BlobCompressionType {
-    BLOB_COMPRESSION_NONE
-};
+enum BlobCompressionType { BLOB_COMPRESSION_NONE };
 
 struct BlobMetadata {
     PackReader::BlobSize uncompressedSize;
@@ -70,7 +67,7 @@ class PackReaderImpl : public PackReader {
     BlobIndex findIndex(StringView path);
 
     StringView getBlobPath(BlobIndex index) const;
-    uint64_t getBlobSize(BlobIndex index) const;
+    BlobSize getBlobSize(BlobIndex index) const;
     void* getBlobData(BlobIndex index);
 
     vector<void*> getBlobDatas(vector<BlobIndex> indicies);
@@ -86,13 +83,14 @@ class PackReaderImpl : public PackReader {
     const PathOffset* pathOffsets;
     const char* paths;
     const BlobMetadata* metadatas;
-    const uint64_t* dataOffsets;
+    const uint32_t* dataOffsets;
 
     bool lookupsConstructed = false;
     Hashmap<StringView, BlobIndex> lookups;
 };
 
-Unique<PackReader> PackReader::fromFile(StringView path) {
+Unique<PackReader>
+PackReader::fromFile(StringView path) {
     Optional<MappedFile> maybeFile = MappedFile::fromPath(path);
     if (!maybeFile) {
         return Unique<PackReader>();
@@ -117,7 +115,7 @@ Unique<PackReader> PackReader::fromFile(StringView path) {
     reader->file = move_(file);
     reader->header = header;
 
-    uint64_t blobCount = header->blobCount;
+    BlobIndex blobCount = header->blobCount;
 
     reader->pathOffsets = reader->file.at<PathOffset*>(offset);
     offset += (blobCount + 1) * sizeof(PathOffset);
@@ -128,17 +126,19 @@ Unique<PackReader> PackReader::fromFile(StringView path) {
     reader->metadatas = reader->file.at<BlobMetadata*>(offset);
     offset += blobCount * sizeof(BlobMetadata);
 
-    reader->dataOffsets = reader->file.at<uint64_t*>(offset);
-    //offset += blobCount * sizeof(uint64_t);
+    reader->dataOffsets = reader->file.at<uint32_t*>(offset);
+    // offset += blobCount * sizeof(uint64_t);
 
     return Unique<PackReader>(reader);
 }
 
-PackReader::BlobIndex PackReaderImpl::size() const {
+PackReader::BlobIndex
+PackReaderImpl::size() const {
     return header->blobCount;
 }
 
-PackReader::BlobIndex PackReaderImpl::findIndex(StringView path) {
+PackReader::BlobIndex
+PackReaderImpl::findIndex(StringView path) {
     if (!lookupsConstructed) {
         lookupsConstructed = true;
         constructLookups();
@@ -147,26 +147,31 @@ PackReader::BlobIndex PackReaderImpl::findIndex(StringView path) {
     auto it = lookups.find(path);
     if (it == lookups.end()) {
         return BLOB_NOT_FOUND;
-    } else {
+    }
+    else {
         return it.value();
     }
 }
 
-StringView PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const {
-    uint64_t begin = pathOffsets[index];
-    uint64_t end = pathOffsets[index + 1];
+StringView
+PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const {
+    uint32_t begin = pathOffsets[index];
+    uint32_t end = pathOffsets[index + 1];
     return StringView(paths + begin, end - begin);
 }
 
-uint64_t PackReaderImpl::getBlobSize(PackReader::BlobIndex index) const {
+PackReader::BlobSize
+PackReaderImpl::getBlobSize(PackReader::BlobIndex index) const {
     return metadatas[index].uncompressedSize;
 }
 
-void* PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
+void*
+PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
     return file.at<void*>(dataOffsets[index]);
 }
 
-vector<void*> PackReaderImpl::getBlobDatas(vector<BlobIndex> indicies) {
+vector<void*>
+PackReaderImpl::getBlobDatas(vector<BlobIndex> indicies) {
     vector<void*> datas;
 
     for (BlobIndex i : indicies) {
@@ -176,10 +181,11 @@ vector<void*> PackReaderImpl::getBlobDatas(vector<BlobIndex> indicies) {
     return datas;
 }
 
-void PackReaderImpl::constructLookups() {
+void
+PackReaderImpl::constructLookups() {
     for (PackReader::BlobIndex i = 0; i < header->blobCount; i++) {
-        uint64_t pathBegin = pathOffsets[i];
-        uint64_t pathEnd = pathOffsets[i + 1];
+        uint32_t pathBegin = pathOffsets[i];
+        uint32_t pathEnd = pathOffsets[i + 1];
         StringView blobPath(paths + pathBegin, pathEnd - pathBegin);
         lookups[blobPath] = i;
     }

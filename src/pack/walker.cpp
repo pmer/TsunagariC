@@ -28,38 +28,36 @@
 
 #include "os/os.h"
 #include "pack/pool.h"
-#include "util/unique.h"
 #include "util/string-view.h"
+#include "util/unique.h"
 
 struct WalkContext {
     Unique<Pool> pool;
-    std::function<void(StringView)> op;
+    Function<void(StringView)> op;
 };
 
-static void walkPath(WalkContext& ctx, StringView path) {
+static void
+walkPath(WalkContext& ctx, StringView path) {
     if (isDir(path)) {
         vector<String> names = listDir(path);
         for (auto& name : names) {
             String child;
             child << path << dirSeparator << name;
-            ctx.pool->schedule([&ctx, child] {
-                walkPath(ctx, child);
-            });
+            ctx.pool->schedule([&ctx, child] { walkPath(ctx, child); });
         }
-    } else {
+    }
+    else {
         ctx.op(path);
     }
 }
 
-void walk(vector<StringView> paths, std::function<void(StringView)> op) {
-    WalkContext ctx{
-        Pool::makePool("walk"),
-        move_(op)
-    };
+void
+walk(vector<StringView> paths, Function<void(StringView)> op) {
+    WalkContext ctx;
+    ctx.pool = Pool::makePool("walk");
+    ctx.op = move_(op);
 
     for (auto& path : paths) {
-        ctx.pool->schedule([&] {
-            walkPath(ctx, path);
-        });
+        ctx.pool->schedule([&] { walkPath(ctx, path); });
     }
 }

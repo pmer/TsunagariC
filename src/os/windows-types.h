@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** fnv.cpp                     **
+** os/windows-types.h          **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,38 +24,44 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "util/fnv.h"
-#include "util/int.h"
+#ifndef SRC_OS_WINDOWS_TYPES_H_
+#define SRC_OS_WINDOWS_TYPES_H_
 
-#if __SIZEOF_SIZE_T__ == 4 || (defined(_WIN32) && !defined(_WIN64))
+#define VOID void
 
-size_t fnvHash(const char* data, size_t size) {
-    size_t hash = 0x811c9dc5;
+typedef int BOOL;
+typedef unsigned char BOOLEAN;
+typedef unsigned char BYTE;
+typedef unsigned long* DWORD_PTR;
+typedef unsigned long DWORD;
+typedef void* HANDLE;
+typedef void* HWND;
+typedef const char* LPCSTR;
+typedef const void* LPCVOID;
+typedef void* LPVOID;
+typedef void* PVOID;
+typedef size_t SIZE_T, *PSIZE_T;
+typedef unsigned int UINT;
+typedef unsigned long ULONG;
+typedef unsigned short WORD;
 
-    const uint8_t* begin = (const uint8_t*)data;
-    const uint8_t* end = begin + size;
-
-    while (begin < end) {
-        hash ^= (size_t)*begin++;
-        hash += (hash<<1) + (hash<<4) + (hash<<7) + (hash<<8) + (hash<<24);
-    }
-    return hash;
-}
-
-#elif __SIZEOF_SIZE_T__ == 8 || (defined(_WIN32) && defined(_WIN64))
-
-size_t fnvHash(const char* data, size_t size) {
-    size_t hash = 0xcbf29ce484222325;
-
-    const uint8_t* begin = (const uint8_t*)data;
-    const uint8_t* end = begin + size;
-    
-    while (begin < end) {
-        hash ^= (size_t)*begin++;
-        hash += (hash << 1) + (hash << 4) + (hash << 5) +
-                (hash << 7) + (hash << 8) + (hash << 40);
-    }
-    return hash;
-}
-
+#if defined(_WIN64)
+typedef long long INT_PTR, *PINT_PTR;
+typedef unsigned long long UINT_PTR, *PUINT_PTR;
+typedef long long LONG_PTR, *PLONG_PTR;
+typedef unsigned long long ULONG_PTR, *PULONG_PTR;
+#else
+typedef int INT_PTR, *PINT_PTR;
+typedef unsigned int UINT_PTR, *PUINT_PTR;
+typedef long LONG_PTR, *PLONG_PTR;
+typedef unsigned long ULONG_PTR, *PULONG_PTR;
 #endif
+
+#define __CRTDECL __cdecl
+#define _ACRTIMP __declspec(dllimport)
+#define _ACRTIMP_ALT __declspec(dllimport)
+#define WINAPI __stdcall
+#define WINBASEAPI __declspec(dllimport)
+#define WINUSERAPI __declspec(dllimport)
+
+#endif  // SRC_OS_WINDOWS_TYPES_H_

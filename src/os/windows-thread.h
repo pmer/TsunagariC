@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** condition-variable.h          **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** windows-thread.h            **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,55 +24,99 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_CONDITION_VARIBLE_H_
-#define SRC_OS_CONDITION_VARIBLE_H_
+#ifndef SRC_OS_WINDOWS_THREAD_H_
+#define SRC_OS_WINDOWS_THREAD_H_
 
-#ifdef _WIN32
-#include "os/windows-condition-variable.h"
-#else
-#include "os/unix-condition-variable.h"
-#endif
+#include "os/windows-types.h"
+#include "util/int.h"
 
-class condition_variable
-{
-public:
-    condition_variable();
-    ~condition_variable();
-    
-    condition_variable(const condition_variable&) = delete;
-    condition_variable& operator=(const condition_variable&) = delete;
-    
-    void notify_one() noexcept;
-    void notify_all() noexcept;
-    
-    void wait(unique_lock<mutex>& lock);
-    template <class Predicate>
-    void wait(unique_lock<mutex>& lock, Predicate pred);
-    
-    template <class Clock, class Duration>
-    cv_status
-    wait_until(unique_lock<mutex>& lock,
-               const chrono::time_point<Clock, Duration>& abs_time);
-    
-    template <class Clock, class Duration, class Predicate>
-    bool
-    wait_until(unique_lock<mutex>& lock,
-               const chrono::time_point<Clock, Duration>& abs_time,
-               Predicate pred);
-    
-    template <class Rep, class Period>
-    cv_status
-    wait_for(unique_lock<mutex>& lock,
-             const chrono::duration<Rep, Period>& rel_time);
-    
-    template <class Rep, class Period, class Predicate>
-    bool
-    wait_for(unique_lock<mutex>& lock,
-             const chrono::duration<Rep, Period>& rel_time,
-             Predicate pred);
-    
-    typedef pthread_cond_t* native_handle_type;
-    native_handle_type native_handle();
+extern "C" {
+typedef struct _SYSTEM_INFO {
+    union {
+        DWORD dwOemId;
+        struct {
+            WORD wProcessorArchitecture;
+            WORD wReserved;
+        } s;
+    } u;
+    DWORD dwPageSize;
+    LPVOID lpMinimumApplicationAddress;
+    LPVOID lpMaximumApplicationAddress;
+    DWORD_PTR dwActiveProcessorMask;
+    DWORD dwNumberOfProcessors;
+    DWORD dwProcessorType;
+    DWORD dwAllocationGranularity;
+    WORD wProcessorLevel;
+    WORD wProcessorRevision;
+} SYSTEM_INFO, *LPSYSTEM_INFO;
+
+WINBASEAPI BOOL WINAPI CloseHandle(HANDLE hObject);
+WINBASEAPI VOID WINAPI GetSystemInfo(LPSYSTEM_INFO lpSystemInfo);
+WINBASEAPI DWORD WINAPI WaitForSingleObjectEx(HANDLE hHandle,
+                                              DWORD dwMilliseconds,
+                                              BOOL bAlertable);
+_ACRTIMP uintptr_t __cdecl _beginthreadex(
+        void* security,
+        unsigned stack_size,
+        unsigned(WINAPI* start_address)(void*),
+        void* arglist,
+        unsigned initflag,
+        unsigned* thrdaddr);
+
+#define INFINITE 0xFFFFFFFF  // Infinite timeout.
+constexpr DWORD WAIT_FAILED = 0xFFFFFFFF;
+}
+
+struct beginthreadex_data {
+    void (*f)(void*);
+    void* arg;
 };
 
-#endif  // SRC_OS_CONDITION_VARIBLE_H_
+static unsigned WINAPI
+beginthreadex_thunk(void* data_) {
+    auto* data = static_cast<beginthreadex_data*>(data_);
+    auto* f = data->f;
+    void* arg = data->arg;
+    delete data;
+    f(arg);
+    return 0;
+}
+
+class Thread {
+ public:
+    template<class Arg> inline explicit Thread(void (*f)(Arg), Arg arg) {
+        static_assert(sizeof(Arg) == sizeof(void*), "");
+        beginthreadex_data* data = new beginthreadex_data;
+        data->f = reinterpret_cast<void (*)(void*)>(f);
+        data->arg = arg;
+        id = reinterpret_cast<HANDLE>(_beginthreadex(nullptr,
+                                                     0,
+                                                     beginthreadex_thunk,
+                                                     static_cast<void*>(data),
+                                                     0,
+                                                     nullptr));
+        assert_(id);
+    }
+    Thread(Thread&& other) : id(other.id) { other.id = 0; }
+    inline ~Thread() noexcept { assert_(id == 0); }
+
+    Thread(const Thread&) = delete;
+    Thread& operator=(const Thread&) = delete;
+
+    inline void join() noexcept {
+        assert_(id != 0);
+        assert_(WaitForSingleObjectEx(id, INFINITE, false) !=
+                WAIT_FAILED);      // GetLastError();
+        assert_(CloseHandle(id));  // GetLastError();
+        id = 0;
+    }
+    static inline unsigned hardware_concurrency() noexcept {
+        SYSTEM_INFO info;
+        GetSystemInfo(&info);
+        return info.dwNumberOfProcessors;
+    }
+
+    HANDLE id = 0;
+};
+
+#endif  // SRC_OS_WINDOWS_THREAD_H_

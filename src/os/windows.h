@@ -28,34 +28,7 @@
 #ifndef SRC_OS_WINDOWS_H_
 #define SRC_OS_WINDOWS_H_
 
-#include <string>
-
-#define UNICODE
-#include <Windows.h>
-
-#include "util/optional.h"
-
-class MappedFile {
- public:
-    static Optional<MappedFile> fromPath(const std::string& path);
-
-    MappedFile();
-    MappedFile(MappedFile&& other);
-    MappedFile(const MappedFile& other) = delete;
-    ~MappedFile();
-
-    MappedFile& operator=(MappedFile&& other);
-
-    template<typename T>
-    const T at(size_t offset) const {
-        return reinterpret_cast<T>(data + offset);
-    }
-
- private:
-    HANDLE file;
-    HANDLE mapping;
-    char* data;
-};
+#include "util/string-view.h"
 
 /* Visual C++ ignorantly assumes that all programs will use either a console OR
  * a window. Our program needs a window and an optional console. When Tsunagari
@@ -65,6 +38,6 @@ class MappedFile {
 void wFixConsole();
 
 // Simple wrapper to create a halting (modal) message box.
-void wMessageBox(const std::string& title, const std::string& text);
+void wMessageBox(StringView title, StringView text);
 
 #endif  // SRC_OS_WINDOWS_H_

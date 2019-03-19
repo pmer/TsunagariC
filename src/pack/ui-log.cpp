@@ -24,15 +24,10 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-declare operator new.
-#include <new>
-
-#include "pack/ui.h"
-
+#include "os/cstdio.h"
 #include "os/mutex.h"
-
 #include "pack/pool.h"
-
+#include "pack/ui.h"
 #include "util/string.h"
 #include "util/unique.h"
 
@@ -42,14 +37,16 @@ static bool scheduled = false;
 static String buf;
 bool verbose = false;
 
-static void flush() {
+static void
+flush() {
     LockGuard lock(mutex);
     printf("%s", buf.null().get());
     buf.clear();
     scheduled = false;
 }
 
-static void scheduleMessage(StringView message) {
+static void
+scheduleMessage(StringView message) {
     if (!verbose) {
         return;
     }
@@ -62,37 +59,28 @@ static void scheduleMessage(StringView message) {
     }
 }
 
-void uiShowSkippedMissingFile(StringView path) {
-    scheduleMessage(String() << "Skipped "
-                             << path
-                             << ": file not found\n");
+void
+uiShowSkippedMissingFile(StringView path) {
+    scheduleMessage(String() << "Skipped " << path << ": file not found\n");
 }
 
-void uiShowAddedFile(StringView path, size_t size) {
-    scheduleMessage(String() << "Added "
-                             << path
-                             << ": "
-                             << size
-                             << " bytes\n");
+void
+uiShowAddedFile(StringView path, size_t size) {
+    scheduleMessage(String() << "Added " << path << ": " << size << " bytes\n");
 }
 
-void uiShowWritingArchive(StringView archivePath) {
-    scheduleMessage(String() << "Writing to "
-                             << archivePath
-                             << "\n");
+void
+uiShowWritingArchive(StringView archivePath) {
+    scheduleMessage(String() << "Writing to " << archivePath << "\n");
 }
 
-void uiShowListingEntry(StringView blobPath, uint64_t blobSize) {
-    scheduleMessage(String() << blobPath
-                             << ": "
-                             << blobSize
-                             << " bytes\n");
+void
+uiShowListingEntry(StringView blobPath, uint64_t blobSize) {
+    scheduleMessage(String() << blobPath << ": " << blobSize << " bytes\n");
 }
 
-void uiShowExtractingFile(StringView blobPath, uint64_t blobSize) {
-    scheduleMessage(String() << "Extracting "
-                             << blobPath
-                             << ": "
-                             << blobSize
+void
+uiShowExtractingFile(StringView blobPath, uint64_t blobSize) {
+    scheduleMessage(String() << "Extracting " << blobPath << ": " << blobSize
                              << " bytes\n");
 }

@@ -27,8 +27,7 @@
 #ifndef SRC_UTIL_STRING_VIEW_H_
 #define SRC_UTIL_STRING_VIEW_H_
 
-#include <stddef.h>
-
+#include "util/int.h"
 #include "util/optional.h"
 
 class StringView {

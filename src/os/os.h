@@ -27,8 +27,7 @@
 #ifndef SRC_OS_OS_H_
 #define SRC_OS_OS_H_
 
-#include <stdint.h>
-
+#include "util/int.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/vector.h"
@@ -37,10 +36,12 @@ extern char dirSeparator;
 
 Optional<uint64_t> getFileSize(String& path);
 Optional<uint64_t> getFileSize(StringView path);
-bool writeFile(String& path, size_t length, void* data);
-bool writeFile(StringView path, size_t length, void* data);
-bool writeFileVec(String& path, size_t count, size_t* lengths, void** datas);
-bool writeFileVec(StringView path, size_t count, size_t* lengths, void** datas);
+bool writeFile(String& path, uint32_t length, void* data);
+bool writeFile(StringView path, uint32_t length, void* data);
+bool writeFileVec(String& path, uint32_t count, uint32_t* lengths,
+                  void** datas);
+bool writeFileVec(StringView path, uint32_t count, uint32_t* lengths,
+                  void** datas);
 bool isDir(String& path);
 bool isDir(StringView path);
 void makeDirectory(String& path);

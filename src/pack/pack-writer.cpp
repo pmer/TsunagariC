@@ -26,11 +26,10 @@
 
 #include "pack/pack-writer.h"
 
-#include <stdint.h>
-
 #include "os/os.h"
 #include "pack/file-type.h"
 #include "pack/pack-reader.h"
+#include "util/int.h"
 #include "util/sort.h"
 #include "util/string.h"
 #include "util/vector.h"
@@ -44,19 +43,17 @@ struct HeaderBlock {
     uint8_t magic[8];
     uint8_t version;
     uint8_t unused[7];
-    uint64_t blobCount;
-    uint64_t pathOffsetsBlockOffset;
-    uint64_t pathsBlockOffset;
-    uint64_t pathsBlockSize;
-    uint64_t metadataBlockOffset;
-    uint64_t dataOffsetsBlockOffset;
+    uint32_t blobCount;
+    uint32_t pathOffsetsBlockOffset;
+    uint32_t pathsBlockOffset;
+    uint32_t pathsBlockSize;
+    uint32_t metadataBlockOffset;
+    uint32_t dataOffsetsBlockOffset;
 };
 
-typedef uint64_t PathOffset;
+typedef uint32_t PathOffset;
 
-enum BlobCompressionType {
-    BLOB_COMPRESSION_NONE
-};
+enum BlobCompressionType { BLOB_COMPRESSION_NONE };
 
 struct BlobMetadata {
     PackReader::BlobSize uncompressedSize;
@@ -70,14 +67,17 @@ struct Blob {
     const void* data;
 };
 
-static bool operator<(const Blob& a, const Blob& b) {
+static bool
+operator<(const Blob& a, const Blob& b) {
     FileType typeA = determineFileType(a.path);
     FileType typeB = determineFileType(b.path);
     if (typeA < typeB) {
         return true;
-    } else if (typeA > typeB) {
+    }
+    else if (typeA > typeB) {
         return false;
-    } else {
+    }
+    else {
         return a.path < b.path;
     }
 }
@@ -94,12 +94,14 @@ class PackWriterImpl : public PackWriter {
     bool sorted = true;
 };
 
-Unique<PackWriter> PackWriter::make() {
+Unique<PackWriter>
+PackWriter::make() {
     return Unique<PackWriter>(new PackWriterImpl);
 }
 
-bool PackWriterImpl::writeToFile(StringView path) {
-    size_t blobCount = blobs.size();
+bool
+PackWriterImpl::writeToFile(StringView path) {
+    uint32_t blobCount = blobs.size();
 
     // Sort blobs by size (smallest first).
     if (!sorted) {
@@ -108,10 +110,10 @@ bool PackWriterImpl::writeToFile(StringView path) {
     }
 
     // Determine block offsets.
-    uint64_t pathOffsetsBlockSize = (blobCount + 1) * sizeof(PathOffset);
-    uint64_t pathsBlockSize = 0;
-    uint64_t metadataBlockSize = blobCount * sizeof(BlobMetadata);
-    uint64_t dataOffsetsBlockSize = blobCount * sizeof(uint64_t);
+    uint32_t pathOffsetsBlockSize = (blobCount + 1) * sizeof(PathOffset);
+    uint32_t pathsBlockSize = 0;
+    uint32_t metadataBlockSize = blobCount * sizeof(BlobMetadata);
+    uint32_t dataOffsetsBlockSize = blobCount * sizeof(uint32_t);
 
     for (auto& blob : blobs) {
         pathsBlockSize += blob.path.size();
@@ -119,32 +121,40 @@ bool PackWriterImpl::writeToFile(StringView path) {
 
     // Construct blocks.
     HeaderBlock headerBlock = {
-        {PACK_MAGIC[0], PACK_MAGIC[1], PACK_MAGIC[2], PACK_MAGIC[3],
-         PACK_MAGIC[4], PACK_MAGIC[5], PACK_MAGIC[6], PACK_MAGIC[7]},
+            {PACK_MAGIC[0],
+             PACK_MAGIC[1],
+             PACK_MAGIC[2],
+             PACK_MAGIC[3],
+             PACK_MAGIC[4],
+             PACK_MAGIC[5],
+             PACK_MAGIC[6],
+             PACK_MAGIC[7]},
 
-        PACK_VERSION, {0, 0, 0, 0, 0, 0, 0},
+            PACK_VERSION,
+            {0, 0, 0, 0, 0, 0, 0},
 
-        // blobCount
-        static_cast<uint64_t>(blobCount),
+            // blobCount
+            static_cast<uint32_t>(blobCount),
 
-        // We write blocks contiguously (well, so far we do).
+            // We write blocks contiguously (well, so far we do).
 
-        // pathOffsetsBlockOffset
-        sizeof(HeaderBlock),
-        // pathsBlockOffset
-        sizeof(HeaderBlock) + pathOffsetsBlockSize,
-        // pathsBlockSize
-        pathsBlockSize,
-        // metadataBlockOffset
-        sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize,
-        // dataOffsetsBlockOffset
-        sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize + metadataBlockSize,
+            // pathOffsetsBlockOffset
+            sizeof(HeaderBlock),
+            // pathsBlockOffset
+            sizeof(HeaderBlock) + pathOffsetsBlockSize,
+            // pathsBlockSize
+            pathsBlockSize,
+            // metadataBlockOffset
+            sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize,
+            // dataOffsetsBlockOffset
+            sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize +
+                    metadataBlockSize,
     };
 
     vector<PathOffset> pathOffsetsBlock;
     String pathsBlock;
     vector<BlobMetadata> metadatasBlock;
-    vector<uint64_t> dataOffsetsBlock;
+    vector<uint32_t> dataOffsetsBlock;
 
     pathOffsetsBlock.reserve(blobCount + 1);
     pathsBlock.reserve(pathsBlockSize);
@@ -162,16 +172,13 @@ bool PackWriterImpl::writeToFile(StringView path) {
     }
 
     for (auto& blob : blobs) {
-        BlobMetadata metadata = {
-            blob.size,
-            blob.size,
-            BLOB_COMPRESSION_NONE
-        };
+        BlobMetadata metadata = {blob.size, blob.size, BLOB_COMPRESSION_NONE};
         metadatasBlock.push_back(metadata);
     }
 
     // Blob data starts immediately after the data offset block.
-    uint64_t dataOffset = headerBlock.dataOffsetsBlockOffset + dataOffsetsBlockSize;
+    uint32_t dataOffset =
+            headerBlock.dataOffsetsBlockOffset + dataOffsetsBlockSize;
     for (auto& blob : blobs) {
         dataOffsetsBlock.push_back(dataOffset);
         dataOffset += blob.size;
@@ -202,10 +209,12 @@ bool PackWriterImpl::writeToFile(StringView path) {
     }
 
     // Write file.
-    return writeFileVec(path, writeLengths.size(), writeLengths.data(), writeDatas.data());
+    return writeFileVec(
+            path, writeLengths.size(), writeLengths.data(), writeDatas.data());
 }
 
-void PackWriterImpl::addBlob(String path, BlobSize size, const void *data) {
+void
+PackWriterImpl::addBlob(String path, BlobSize size, const void* data) {
     blobs.push_back({move_(path), size, data});
     sorted = false;
 }

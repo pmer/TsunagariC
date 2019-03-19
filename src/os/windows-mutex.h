@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** windows-mutex.h               **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** windows-mutex.h             **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,27 +27,34 @@
 #ifndef SRC_OS_WINDOWS_MUTEX_H_
 #define SRC_OS_WINDOWS_MUTEX_H_
 
-#include <synchapi.h>
+#include "os/windows-types.h"
+
+extern "C" {
+typedef struct {
+    PVOID Ptr;
+} SRWLOCK, *PSRWLOCK;
+
+#define SRWLOCK_INIT \
+    { 0 }
+
+WINBASEAPI VOID WINAPI AcquireSRWLockExclusive(PSRWLOCK SRWLock);
+WINBASEAPI BOOLEAN WINAPI TryAcquireSRWLockExclusive(PSRWLOCK SRWLock);
+WINBASEAPI VOID WINAPI ReleaseSRWLockExclusive(PSRWLOCK SRWLock);
+}
 
 class Mutex {
  public:
     constexpr Mutex() noexcept = default;
-    
-    inline void lock() {
-        AcquireSRWLockExclusive(&m);
-    }
-    inline bool tryLock() {
-        return TryAcquireSRWLockExclusive(&m) != 0;
-    }
-    inline void unlock() {
-        ReleaseSRWLockExclusive(&m);
-    }
-    
+
+    inline void lock() { AcquireSRWLockExclusive(&m); }
+    inline bool tryLock() { return TryAcquireSRWLockExclusive(&m) != 0; }
+    inline void unlock() { ReleaseSRWLockExclusive(&m); }
+
+    SRWLOCK m = SRWLOCK_INIT;
+
  private:
     Mutex(const Mutex&) = delete;
     Mutex& operator=(const Mutex&) = delete;
-
-    SRWLOCK m = SRWLOCK_INIT;
 };
 
 #endif  // SRC_OS_WINDOWS_MUTEX_H_

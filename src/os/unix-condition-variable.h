@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** unix-condition-variable.h     **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** unix-condition-variable.h   **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,10 +27,9 @@
 #ifndef SRC_OS_UNIX_CONDITION_VARIBLE_H_
 #define SRC_OS_UNIX_CONDITION_VARIBLE_H_
 
-#include "os/mutex.h"
-
 #include <pthread.h>
 
+#include "os/unix-mutex.h"
 #include "util/assert.h"
 
 class ConditionVariable {

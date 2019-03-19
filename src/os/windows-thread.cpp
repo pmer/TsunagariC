@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** fnv.cpp                     **
+** windows-thread.h            **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,38 +24,39 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "util/fnv.h"
-#include "util/int.h"
+#ifndef SRC_OS_WINDOWS_THREAD_H_
+#define SRC_OS_WINDOWS_THREAD_H_
 
-#if __SIZEOF_SIZE_T__ == 4 || (defined(_WIN32) && !defined(_WIN64))
+#include <sysinfoapi.h>
 
-size_t fnvHash(const char* data, size_t size) {
-    size_t hash = 0x811c9dc5;
-
-    const uint8_t* begin = (const uint8_t*)data;
-    const uint8_t* end = begin + size;
-
-    while (begin < end) {
-        hash ^= (size_t)*begin++;
-        hash += (hash<<1) + (hash<<4) + (hash<<7) + (hash<<8) + (hash<<24);
+class Thread {
+ public:
+    template<class Arg> inline explicit Thread(void (*f)(Arg), Arg arg) {
+        static_assert(sizeof(Arg) == sizeof(void*), "");
+        pthread_create(&t,
+                       nullptr,
+                       reinterpret_cast<void* (*)(void*)>(f),
+                       static_cast<void*>(arg));
     }
-    return hash;
-}
+    Thread(Thread&& other) : t(other.t) { other.t = 0; }
+    inline ~Thread() noexcept { assert_(t == 0); }
 
-#elif __SIZEOF_SIZE_T__ == 8 || (defined(_WIN32) && defined(_WIN64))
+    Thread(const Thread&) = delete;
+    Thread& operator=(const Thread&) = delete;
 
-size_t fnvHash(const char* data, size_t size) {
-    size_t hash = 0xcbf29ce484222325;
-
-    const uint8_t* begin = (const uint8_t*)data;
-    const uint8_t* end = begin + size;
-    
-    while (begin < end) {
-        hash ^= (size_t)*begin++;
-        hash += (hash << 1) + (hash << 4) + (hash << 5) +
-                (hash << 7) + (hash << 8) + (hash << 40);
+    inline void join() noexcept {
+        assert_(id != 0);
+        assert_(WaitForSingleObjectEx(t, INFINITE, FALSE) != WAIT_FAILED);  // GetLastError();
+        assert_(CloseHandle(*__t));  // GetLastError();
+        id = 0;
     }
-    return hash;
-}
+    static inline unsigned hardware_concurrency() noexcept {
+        SYSTEM_INFO info;
+        GetSystemInfo(&info);
+        return info.dwNumberOfProcessors;
+    }
 
-#endif
+    HANDLE id = 0;
+};
+
+#endif  // SRC_OS_WINDOWS_THREAD_H_

@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** assert.cpp                    **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** assert.cpp                       **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,9 +26,9 @@
 
 #ifndef NDEBUG
 
-#include "assert.h"
+#include "util/assert.h"
 
-#include <stdio.h>
+#include "os/cstdio.h"
 
 void assert__(const char *func, const char *file, int line, const char *expr) {
     printf("Assertion failed: %s, function %s, file %s, line %d\n",

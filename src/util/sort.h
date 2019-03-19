@@ -53,9 +53,8 @@
 #ifndef SRC_UTIL_SORT_H_
 #define SRC_UTIL_SORT_H_
 
-#include <stddef.h>
-
 #include "util/algorithm.h"
+#include "util/int.h"
 #include "util/move.h"
 
 namespace pdqsort_detail {
@@ -426,25 +425,25 @@ namespace pdqsort_detail {
 
                 if (l_size >= insertion_sort_threshold) {
                     swap_(begin[0],      begin[l_size / 4]);
-                    swap_(pivot_pos[-1], pivot_pos[-l_size / 4]);
+                    swap_(pivot_pos[-1], pivot_pos[0 - l_size / 4]);
 
                     if (l_size > ninther_threshold) {
                         swap_(begin[1],      begin[l_size / 4 + 1]);
                         swap_(begin[2],      begin[l_size / 4 + 2]);
-                        swap_(pivot_pos[-2], pivot_pos[-(l_size / 4 + 1)]);
-                        swap_(pivot_pos[-3], pivot_pos[-(l_size / 4 + 2)]);
+                        swap_(pivot_pos[-2], pivot_pos[0 - (l_size / 4 + 1)]);
+                        swap_(pivot_pos[-3], pivot_pos[0 - (l_size / 4 + 2)]);
                     }
                 }
 
                 if (r_size >= insertion_sort_threshold) {
                     swap_(pivot_pos[1], pivot_pos[1 + r_size / 4]);
-                    swap_(end[-1],      end[-r_size / 4]);
+                    swap_(end[-1],      end[0 - r_size / 4]);
 
                     if (r_size > ninther_threshold) {
                         swap_(pivot_pos[2], pivot_pos[2 + r_size / 4]);
                         swap_(pivot_pos[3], pivot_pos[3 + r_size / 4]);
-                        swap_(end[-2],             end[-(1 + r_size / 4)]);
-                        swap_(end[-3],             end[-(2 + r_size / 4)]);
+                        swap_(end[-2],             end[0 - (1 + r_size / 4)]);
+                        swap_(end[-3],             end[0 - (2 + r_size / 4)]);
                     }
                 }
             } else {

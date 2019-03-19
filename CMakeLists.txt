@@ -164,6 +164,10 @@ target_sources(tsunagari
 )
 target_sources(pack-tool
     PRIVATE src/os/condition-variable.h
+	PRIVATE src/os/cmath.h
+	PRIVATE src/os/cstdio.h
+	PRIVATE src/os/cstring.h
+	PRIVATE src/os/mapped-file.h
     PRIVATE src/os/mutex.h
     PUBLIC  src/os/os.h
     PRIVATE src/os/thread.h
@@ -176,8 +180,15 @@ if (WIN32)
     )
     target_sources(pack-tool
         PRIVATE src/os/windows-condition-variable.h
+		PRIVATE src/os/windows-cmath.h
+		PRIVATE src/os/windows-cstdio.h
+		PRIVATE src/os/windows-cstring.cpp
+		PRIVATE src/os/windows-cstring.h
+		PRIVATE src/os/windows-mapped-file.cpp
+		PRIVATE src/os/windows-mapped-file.h
         PRIVATE src/os/windows-mutex.h
         PRIVATE src/os/windows-thread.h
+        PRIVATE src/os/windows-types.h
         PRIVATE src/os/windows.cpp
         PUBLIC  src/os/windows.h
     )
@@ -250,6 +261,7 @@ target_sources(tsunagari
     PRIVATE src/util/fnv.cpp
     PUBLIC  src/util/fnv.h
     PUBLIC  src/util/hashtable.h
+    PUBLIC  src/util/int.h
     PUBLIC  src/util/likely.h
     PUBLIC  src/util/list.h
     PUBLIC  src/util/math2.h
@@ -279,9 +291,10 @@ target_sources(pack-tool
     PRIVATE src/util/assert.h
     PRIVATE src/util/fnv.cpp
     PRIVATE src/util/fnv.h
+	PRIVATE src/util/function.h
     PRIVATE src/util/hashtable.h
+    PUBLIC  src/util/int.h
     PRIVATE src/util/list.h
-    PRIVATE src/util/math.h
     PRIVATE src/util/meta.h
     PRIVATE src/util/move.h
     PRIVATE src/util/new.h

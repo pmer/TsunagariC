@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** condition-variable.h          **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/*********************************
+** Tsunagari Tile Engine        **
+** windows-condition-variable.h **
+** Copyright 2019 Paul Merrill  **
+*********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,55 +24,51 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_CONDITION_VARIBLE_H_
-#define SRC_OS_CONDITION_VARIBLE_H_
+#ifndef SRC_OS_WINDOWS_CONDITION_VARIBLE_H_
+#define SRC_OS_WINDOWS_CONDITION_VARIBLE_H_
 
-#ifdef _WIN32
-#include "os/windows-condition-variable.h"
-#else
-#include "os/unix-condition-variable.h"
-#endif
+#include "os/mutex.h"
+#include "os/windows-types.h"
+#include "util/assert.h"
 
-class condition_variable
-{
-public:
-    condition_variable();
-    ~condition_variable();
-    
-    condition_variable(const condition_variable&) = delete;
-    condition_variable& operator=(const condition_variable&) = delete;
-    
-    void notify_one() noexcept;
-    void notify_all() noexcept;
-    
-    void wait(unique_lock<mutex>& lock);
-    template <class Predicate>
-    void wait(unique_lock<mutex>& lock, Predicate pred);
-    
-    template <class Clock, class Duration>
-    cv_status
-    wait_until(unique_lock<mutex>& lock,
-               const chrono::time_point<Clock, Duration>& abs_time);
-    
-    template <class Clock, class Duration, class Predicate>
-    bool
-    wait_until(unique_lock<mutex>& lock,
-               const chrono::time_point<Clock, Duration>& abs_time,
-               Predicate pred);
-    
-    template <class Rep, class Period>
-    cv_status
-    wait_for(unique_lock<mutex>& lock,
-             const chrono::duration<Rep, Period>& rel_time);
-    
-    template <class Rep, class Period, class Predicate>
-    bool
-    wait_for(unique_lock<mutex>& lock,
-             const chrono::duration<Rep, Period>& rel_time,
-             Predicate pred);
-    
-    typedef pthread_cond_t* native_handle_type;
-    native_handle_type native_handle();
+extern "C" {
+typedef struct {
+    PVOID Ptr;
+} CONDITION_VARIABLE, *PCONDITION_VARIABLE;
+
+#define CONDITION_VARIABLE_INIT \
+    { 0 }
+
+WINBASEAPI VOID WINAPI
+WakeConditionVariable(PCONDITION_VARIABLE ConditionVariable);
+
+WINBASEAPI VOID WINAPI
+WakeAllConditionVariable(PCONDITION_VARIABLE ConditionVariable);
+
+WINBASEAPI BOOL WINAPI
+SleepConditionVariableSRW(PCONDITION_VARIABLE ConditionVariable,
+                          PSRWLOCK SRWLock,
+                          DWORD dwMilliseconds,
+                          ULONG Flags);
+
+#define INFINITE 0xFFFFFFFF  // Infinite timeout.
+}
+
+class ConditionVariable {
+ public:
+    inline ConditionVariable() = default;
+
+    ConditionVariable(const ConditionVariable&) = delete;
+    ConditionVariable& operator=(const ConditionVariable&) = delete;
+
+    inline void notifyOne() noexcept { WakeConditionVariable(&cv); }
+    inline void notifyAll() noexcept { WakeAllConditionVariable(&cv); }
+
+    inline void wait(LockGuard& lock) noexcept {
+        assert_(SleepConditionVariableSRW(&cv, &lock.m.m, INFINITE, 0) == 0);
+    }
+
+    CONDITION_VARIABLE cv = CONDITION_VARIABLE_INIT;
 };
 
-#endif  // SRC_OS_CONDITION_VARIBLE_H_
+#endif  // SRC_OS_WINDOWS_CONDITION_VARIBLE_H_

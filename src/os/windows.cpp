@@ -28,14 +28,33 @@
 
 #include "os/windows.h"
 
-#include <string>
-
-#include "core/world.h"
+//#include "core/world.h"
 #include "os/os.h"
-#include "util/move.h"
+#include "os/windows-cstdio.h"
+#include "os/windows-types.h"
+#include "util/string-view.h"
+#include "util/string.h"
 #include "util/vector.h"
 
-void wFixConsole() {
+extern "C" {
+WINBASEAPI BOOL WINAPI AttachConsole(DWORD processId);
+_ACRTIMP FILE* __cdecl freopen(const char* filename,
+                               const char* mode,
+                               FILE* stream);
+WINUSERAPI int WINAPI MessageBoxA(HWND hwnd,
+                                  LPCSTR text,
+                                  LPCSTR caption,
+                                  UINT type);
+
+#define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
+#define MessageBox MessageBoxA
+
+constexpr DWORD ATTACH_PARENT_PROCESS = -1;
+constexpr UINT MB_OK = 0x00000000L;
+}
+
+void
+wFixConsole() {
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         freopen("CONOUT$", "wb", stdout);  // Attach STDOUT.
         freopen("CONOUT$", "wb", stderr);  // Attach STDERR.
@@ -43,82 +62,29 @@ void wFixConsole() {
 }
 
 /* From gosu/src/Utility.cpp by Julian Raschke in 2007 */
-std::wstring widen(const std::string& s) {
-    size_t wideLen = std::mbstowcs(0, s.c_str(), 0);
-    if (wideLen == static_cast<size_t>(-1)) {
-        throw std::runtime_error(
-            "Could not convert from string to wstring: " + s);
-    }
+/*
+std::wstring widen(StringView s) {
+  size_t wideLen = mbstowcs(0, String(s).null(), 0);
+  if (wideLen == static_cast<size_t>(-1)) {
+    throw std::runtime_error("Could not convert from string to wstring: " + s);
+  }
 
-    vector<wchar_t> buf(wideLen + 1);
-    mbstowcs(&buf.front(), s.c_str(), buf.size());
+  vector<wchar_t> buf(wideLen + 1);
+  mbstowcs(&buf.front(), String(s).null(), buf.size());
 
-    return std::wstring(buf.begin(), buf.end() - 1);
+  return std::wstring(buf.begin(), buf.end() - 1);
+}
+*/
+
+void
+wMessageBox(StringView title, StringView text) {
+    // World::instance().setPaused(true);
+    // FIXME: Try to get the window's native handle instead of passing nullptr.
+    MessageBox(nullptr, String(text).null(), String(title).null(), MB_OK);
+    // World::instance().setPaused(false);
 }
 
-void wMessageBox(const std::string& title, const std::string& text) {
-    World::instance().setPaused(true);
-    // FIXME: Try to get the window's native handle instead of passing NULL.
-    MessageBox(NULL, widen(text).c_str(), widen(title).c_str(), MB_OK);
-    World::instance().setPaused(false);
-}
-
-void setTermColor(TermColor color) {
+void
+setTermColor(TermColor color) {
     // TODO
-}
-
-Optional<MappedFile> MappedFile::fromPath(const std::string& path) {
-    HANDLE file = CreateFile(widen(path).c_str(), GENERIC_READ, 0, NULL, OPEN_ALWAYS,
-                             FILE_ATTRIBUTE_NORMAL, NULL);
-    if (file == INVALID_HANDLE_VALUE) {
-        return Optional<MappedFile>();
-    }
-
-    HANDLE mapping = CreateFileMapping(file, NULL, PAGE_READONLY, 0, 0, NULL);
-    if (mapping == NULL) {
-        CloseHandle(file);
-        return Optional<MappedFile>();
-    }
-
-    void* data = MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
-    if (data == NULL) {
-        CloseHandle(mapping);
-        CloseHandle(file);
-        return Optional<MappedFile>();
-    }
-
-    MappedFile m;
-    m.file = file;
-    m.mapping = mapping;
-    m.data = static_cast<char*>(data);
-    return Optional<MappedFile>(move_(m));
-}
-
-MappedFile::MappedFile()
-    : file(INVALID_HANDLE_VALUE),
-      mapping(NULL),
-      data(NULL) {}
-
-MappedFile::MappedFile(MappedFile&& other) { *this = move_(other); }
-
-MappedFile::~MappedFile() {
-    if (data) {
-        UnmapViewOfFile(static_cast<void*>(data));
-    }
-    if (mapping) {
-        CloseHandle(mapping);
-    }
-    if (file != INVALID_HANDLE_VALUE) {
-        CloseHandle(file);
-    }
-}
-
-MappedFile& MappedFile::operator=(MappedFile&& other) {
-    file = other.file;
-    mapping = other.mapping;
-    data = other.data;
-    other.file = INVALID_HANDLE_VALUE;
-    other.mapping = NULL;
-    other.data = NULL;
-    return *this;
 }

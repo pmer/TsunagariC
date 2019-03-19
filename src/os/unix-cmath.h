@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** math.h                        **
+** windows-math.h                **
 ** Copyright 2019 Paul Merrill   **
 **********************************/
 
@@ -24,15 +24,33 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_UTIL_MATH_H_
-#define SRC_UTIL_MATH_H_
+#ifndef SRC_OS_WINDOWS_MATH_H_
+#define SRC_OS_WINDOWS_MATH_H_
 
-extern "C" double atan2(double, double);
-extern "C" double ceil(double);
-extern "C" float ceilf(float);
-extern "C" double cos(double);
-extern "C" double floor(double);
-extern "C" double sin(double);
-extern "C" double sqrt(double);
+#ifdef _WIN32
+#define WINDOWSC __cdecl
+#define DLLIMPORT __declspec(dllimport)
+#define UNIXC
+#else
+#define WINDOWSC
+#define DLLIMPORT
+#define UNIXC extern "C"
+#endif
 
-#endif  // SRC_UTIL_MATH_H_
+UNIXC double WINDOWSC atan2(double, double);
+UNIXC DLLIMPORT double WINDOWSC ceil(double);
+#ifdef _WIN32
+#ifndef _INC_MATH
+inline float WINDOWSC ceilf(float x) {
+  return static_cast<float>(ceil(x));
+}
+#endif
+#else
+UNIXC DLLIMPORT float WINDOWSC ceilf(float);
+#endif
+UNIXC double WINDOWSC cos(double);
+UNIXC DLLIMPORT double WINDOWSC floor(double);
+UNIXC double WINDOWSC sin(double);
+UNIXC double WINDOWSC sqrt(double);
+
+#endif  // SRC_OS_WINDOWS_MATH_H_

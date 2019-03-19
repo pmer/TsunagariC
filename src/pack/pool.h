@@ -27,19 +27,17 @@
 #ifndef SRC_PACK_POOL_H_
 #define SRC_PACK_POOL_H_
 
-#include <functional>
-
+#include "util/function.h"
 #include "util/string.h"
 
 class Pool {
  public:
     static constexpr size_t ONE_PER_CORE = 0;
 
-    static Pool* makePool(StringView name,
-                          size_t workerLimit = ONE_PER_CORE);
+    static Pool* makePool(StringView name, size_t workerLimit = ONE_PER_CORE);
     virtual ~Pool() = default;
 
-    virtual void schedule(std::function<void()> job) = 0;
+    virtual void schedule(Function<void()> job) = 0;
 };
 
 #endif  // SRC_PACK_POOL_H_

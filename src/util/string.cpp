@@ -24,13 +24,12 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <stdio.h>
-#include <string.h>
-
 #include "util/string.h"
 
-NullTerminatedString::NullTerminatedString(String& s)
-        : s(s) {
+#include "os/cstdio.h"
+#include "os/cstring.h"
+
+NullTerminatedString::NullTerminatedString(String& s) : s(s) {
     s.push_back('\0');
 }
 
@@ -38,7 +37,8 @@ NullTerminatedString::~NullTerminatedString() {
     s.pop_back();
 }
 
-const char* NullTerminatedString::get() {
+const char*
+NullTerminatedString::get() {
     return s.data();
 }
 
@@ -58,81 +58,96 @@ String::String(String&& other) noexcept {
     swap(other);
 }
 
-String& String::operator=(String&& other) noexcept {
+String&
+String::operator=(String&& other) noexcept {
     swap(other);
     return *this;
 }
 
-bool String::operator<(const String& other) const noexcept {
+bool
+String::operator<(const String& other) const noexcept {
     return view() < other.view();
 }
 
-bool String::operator>(const String& other) const noexcept {
+bool
+String::operator>(const String& other) const noexcept {
     return view() > other.view();
 }
 
-String& String::operator<<(char value) {
+String&
+String::operator<<(char value) {
     push_back(value);
     return *this;
 }
 
-String& String::operator<<(const char* value) {
+String&
+String::operator<<(const char* value) {
     append(value, strlen(value));
     return *this;
 }
 
-String& String::operator<<(StringView value) {
+String&
+String::operator<<(StringView value) {
     append(value.data, value.size);
     return *this;
 }
 
-String& String::operator<<(bool value) {
+String&
+String::operator<<(bool value) {
     return *this << (value ? "true" : "false");
 }
 
-String& String::operator<<(int value) {
+String&
+String::operator<<(int value) {
     char buf[64];
     sprintf(buf, "%d", value);
     return *this << buf;
 }
 
-String& String::operator<<(unsigned int value) {
+String&
+String::operator<<(unsigned int value) {
     char buf[64];
     sprintf(buf, "%u", value);
     return *this << buf;
 }
 
-String& String::operator<<(long value) {
+String&
+String::operator<<(long value) {
     char buf[64];
     sprintf(buf, "%ld", value);
     return *this << buf;
 }
 
-String& String::operator<<(unsigned long value) {
+String&
+String::operator<<(unsigned long value) {
     char buf[64];
     sprintf(buf, "%lu", value);
     return *this << buf;
 }
 
-String& String::operator<<(long long value) {
+String&
+String::operator<<(long long value) {
     char buf[64];
     sprintf(buf, "%lld", value);
     return *this << buf;
 }
 
-String& String::operator<<(unsigned long long value) {
+String&
+String::operator<<(unsigned long long value) {
     char buf[64];
     sprintf(buf, "%llu", value);
     return *this << buf;
 }
 
-String& String::operator<<(float value) {
+String&
+String::operator<<(float value) {
     char buf[64];
     sprintf(buf, "%f", value);
     return *this << buf;
 }
 
-String& String::operator<<(double value) {
+String&
+String::operator<<(double value) {
     char buf[64];
     sprintf(buf, "%f", value);
     return *this << buf;
@@ -142,10 +157,12 @@ String::operator StringView() const {
     return StringView(data(), size());
 }
 
-StringView String::view() const {
+StringView
+String::view() const {
     return StringView(data(), size());
 }
 
-NullTerminatedString String::null() {
+NullTerminatedString
+String::null() {
     return NullTerminatedString(*this);
 }

@@ -29,11 +29,7 @@
 
 #include "util/string-view.h"
 
-enum FileType {
-    FT_TEXT,
-    FT_UNKNOWN,
-    FT_MEDIA
-};
+enum FileType { FT_TEXT, FT_UNKNOWN, FT_MEDIA };
 
 FileType determineFileType(StringView path);
 

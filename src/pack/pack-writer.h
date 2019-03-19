@@ -27,15 +27,14 @@
 #ifndef SRC_PACK_PACK_WRITER_H_
 #define SRC_PACK_PACK_WRITER_H_
 
-#include <stdint.h>
-
+#include "util/int.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/unique.h"
 
 class PackWriter {
  public:
-    typedef uint64_t BlobSize;
+    typedef uint32_t BlobSize;
 
     static Unique<PackWriter> make();
     virtual ~PackWriter() = default;

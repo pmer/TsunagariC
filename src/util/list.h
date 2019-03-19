@@ -27,8 +27,7 @@
 #ifndef SRC_UTIL_LIST_H_
 #define SRC_UTIL_LIST_H_
 
-#include <stddef.h>
-
+#include "util/int.h"
 #include "util/move.h"
 
 template<typename T>

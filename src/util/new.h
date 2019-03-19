@@ -27,13 +27,20 @@
 #ifndef SRC_UTIL_NEW_H_
 #define SRC_UTIL_NEW_H_
 
-#include <stddef.h>
+#include "util/int.h"
 
-#ifndef __PLACEMENT_NEW_INLINE
-#define __PLACEMENT_NEW_INLINE
 #ifndef _LIBCPP_NEW
-inline void* operator new(size_t, void* p) noexcept { return p; }
+inline void*
+operator new(size_t, void* p) noexcept {
+    return p;
+}
 #endif
-#endif
+
+__pragma(pack(push, 8)) extern "C" {
+    __declspec(dllimport) __declspec(allocator) __declspec(
+            restrict) void* __cdecl malloc(size_t size);
+    __declspec(dllimport) void __cdecl free(void* block);
+}
+__pragma(pack(pop))
 
 #endif  // SRC_UTIL_NEW_H_

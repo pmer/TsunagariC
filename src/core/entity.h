@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** entity.h                           **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2013 Michael Reiley **
 ** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
@@ -28,12 +28,10 @@
 #ifndef SRC_CORE_ENTITY_H_
 #define SRC_CORE_ENTITY_H_
 
-#include <functional>
-
 #include "core/animation.h"
 #include "core/jsons.h"
 #include "core/vec.h"
-
+#include "util/function.h"
 #include "util/hashtable.h"
 #include "util/string.h"
 #include "util/vector.h"
@@ -45,11 +43,7 @@ class Image;
 class Tile;
 class TiledImage;
 
-enum SetPhaseResult {
-    PHASE_NOTFOUND,
-    PHASE_NOTCHANGED,
-    PHASE_CHANGED
-};
+enum SetPhaseResult { PHASE_NOTFOUND, PHASE_NOTCHANGED, PHASE_CHANGED };
 
 //! An Entity represents one 'thing' that will be rendered to the screen.
 /*!
@@ -69,8 +63,7 @@ class Entity {
     virtual ~Entity() = default;
 
     //! Entity initializer
-    virtual bool init(StringView descriptor,
-                      StringView initialPhase);
+    virtual bool init(StringView descriptor, StringView initialPhase);
 
     //! Entity destroyer.
     virtual void destroy();
@@ -120,8 +113,8 @@ class Entity {
     virtual void setFrozen(bool b);
 
 
-    typedef std::function<void (time_t)> OnTickFn;
-    typedef std::function<void ()> OnTurnFn;
+    typedef Function<void(time_t)> OnTickFn;
+    typedef Function<void()> OnTurnFn;
 
     void attach(OnTickFn fn);
     void attach(OnTurnFn fn);
@@ -153,7 +146,9 @@ class Entity {
     bool processDescriptor();
     bool processSprite(Unique<JSONObject> sprite);
     bool processPhases(Unique<JSONObject> phases, TiledImage& tiles);
-    bool processPhase(StringView name, Unique<JSONObject> phase, TiledImage& tiles);
+    bool processPhase(StringView name,
+                      Unique<JSONObject> phase,
+                      TiledImage& tiles);
     bool processSounds(Unique<JSONObject> sounds);
     bool processSound(StringView name, StringView path);
     bool processScripts(Unique<JSONObject> scripts);
@@ -170,8 +165,8 @@ class Entity {
 
     //! Pointer to Area this Entity is located on.
     Area* area;
-    rcoord r; //!< real x,y position: hold partial pixel transversal
-    rcoord doff; //!< Drawing offset to center entity on tile.
+    rcoord r;     //!< real x,y position: hold partial pixel transversal
+    rcoord doff;  //!< Drawing offset to center entity on tile.
 
     String descriptor;
 

@@ -36,9 +36,13 @@ class Image {
     virtual ~Image() = default;
 
     virtual void draw(double dstX, double dstY, double z) = 0;
-    virtual void drawSubrect(double dstX, double dstY, double z,
-                             double srcX, double srcY,
-                             double srcW, double srcH) = 0;
+    virtual void drawSubrect(double dstX,
+                             double dstY,
+                             double z,
+                             double srcX,
+                             double srcY,
+                             double srcW,
+                             double srcH) = 0;
 
     unsigned width() const;
     unsigned height() const;
@@ -85,7 +89,8 @@ class Images {
     //! Load an image of tiles from the file at the given path. Each tile
     //! with have width and heigh as specified.
     virtual Rc<TiledImage> loadTiles(StringView path,
-                                     unsigned tileW, unsigned tileH) = 0;
+                                     unsigned tileW,
+                                     unsigned tileH) = 0;
 
     //! Free images not recently used.
     virtual void garbageCollect() = 0;

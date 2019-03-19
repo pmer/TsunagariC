@@ -1,8 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** algorithm.h                   **
-** Copyright 2014 PariahSoft LLC **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** algorithm.h                      **
+** Copyright 2014 Michael Reiley    **
+** Copyright 2014-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef ALGORITHM_H
-#define ALGORITHM_H
+#ifndef SRC_CORE_ALGORITHM_H_
+#define SRC_CORE_ALGORITHM_H_
 
 template <class Container, class Predicate>
 void erase_if(Container& container, Predicate pred) {

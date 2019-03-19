@@ -28,9 +28,8 @@
 #ifndef SRC_CORE_ANIMATION_H_
 #define SRC_CORE_ANIMATION_H_
 
-#include <time.h>
-
 #include "core/images.h"
+#include "util/int.h"
 #include "util/rc.h"
 #include "util/vector.h"
 

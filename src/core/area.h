@@ -29,13 +29,11 @@
 #define SRC_CORE_AREA_H_
 
 #include "core/entity.h"
-#include "core/tile.h"
 #include "core/tile-grid.h"
+#include "core/tile.h"
 #include "core/vec.h"
 #include "core/window.h"
-
 #include "data/data-area.h"
-
 #include "util/hashtable.h"
 #include "util/optional.h"
 #include "util/string-view.h"
@@ -130,7 +128,8 @@ class Area {
     // Create an NPC and insert it into the Area.
     Rc<NPC> spawnNPC(StringView descriptor, vicoord coord, StringView phase);
     // Create an Overlay and insert it into the Area.
-    Rc<Overlay> spawnOverlay(StringView descriptor, vicoord coord,
+    Rc<Overlay> spawnOverlay(StringView descriptor,
+                             vicoord coord,
                              StringView phase);
 
     // Convert between virtual and physical map coordinates. Physical

@@ -28,12 +28,10 @@
 #ifndef SRC_CORE_CHARACTER_H_
 #define SRC_CORE_CHARACTER_H_
 
-#include <time.h>
-
 #include "core/entity.h"
 #include "core/tile.h"
 #include "core/vec.h"
-
+#include "util/int.h"
 #include "util/optional.h"
 
 class Tile;

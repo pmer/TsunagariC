@@ -31,9 +31,9 @@
 #include "util/string-view.h"
 
 enum verbosity_t {
-    V_QUIET = 1,   //! Display fatals.
-    V_NORMAL,  //! Display fatals and errors.
-    V_VERBOSE  //! Display fatals, errors and info.
+    V_QUIET = 1,  //! Display fatals.
+    V_NORMAL,     //! Display fatals and errors.
+    V_VERBOSE     //! Display fatals, errors and info.
 };
 
 class Log {

@@ -30,15 +30,10 @@
 
 #include "core/log.h"
 #include "core/vec.h"
-
 #include "util/string-view.h"
 
 //! Game Movement Mode
-enum movement_mode_t {
-    TURN,
-    TILE,
-    NOTILE
-};
+enum movement_mode_t { TURN, TILE, NOTILE };
 
 //! Engine-wide user-confurable values.
 struct Conf {

@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** display-list.h              **
-** Copyright 2018 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** display-list.h                   **
+** Copyright 2018-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +32,7 @@
 #include "util/vector.h"
 
 struct DisplayItem {
-    Image* image;  // TODO: Move to ImageKey.
+    Image* image;       // TODO: Move to ImageKey.
     rvec2 destination;  // TODO: Move to float.
 };
 

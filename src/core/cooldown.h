@@ -28,7 +28,7 @@
 #ifndef SRC_CORE_COOLDOWN_H_
 #define SRC_CORE_COOLDOWN_H_
 
-#include <time.h>
+#include "util/int.h"
 
 /**
  * Cooldown is a timer that repeatedly expires after a specified number of

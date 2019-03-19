@@ -34,9 +34,7 @@ class TileSet;
 
 #include "core/animation.h"
 #include "core/vec.h"
-
 #include "data/data-area.h"
-
 #include "util/move.h"
 #include "util/optional.h"
 #include "util/string.h"
@@ -58,19 +56,19 @@ class TileType;
  * TILE_NOWALK
  * Neither the player nor NPCs can walk here.
  */
-#define TILE_NOWALK          (unsigned)(0x001)
+#define TILE_NOWALK (unsigned)(0x001)
 
 /**
  * TILE_NOWALK_PLAYER
  * The player cannot walk here. NPCs can, though.
  */
-#define TILE_NOWALK_PLAYER   ((unsigned)(0x002))
+#define TILE_NOWALK_PLAYER ((unsigned)(0x002))
 
 /**
  * TILE_NOWALK_NPC
  * NPCs cannot walk here. The player can, though.
  */
-#define TILE_NOWALK_NPC      ((unsigned)(0x004))
+#define TILE_NOWALK_NPC ((unsigned)(0x004))
 
 /**
  * TILE_NOWALK_EXIT
@@ -80,7 +78,7 @@ class TileType;
  * This flag is not carried by actual Tiles, but can instead be flipped in an
  * Entity's "exempt" flag which will be read elsewhere in the engine.
  */
-#define TILE_NOWALK_EXIT     ((unsigned)(0x008))
+#define TILE_NOWALK_EXIT ((unsigned)(0x008))
 
 /**
  * TILE_NOWALK_AREA_BOUND
@@ -193,7 +191,7 @@ class TileBase {
 */
 class Tile : public TileBase {
  public:
-    Tile(); // Should not be used. Wanted by std::containers.
+    Tile();  // Should not be used. Wanted by std::containers.
     Tile(Area* area);
 
     /**
@@ -220,7 +218,7 @@ class Tile : public TileBase {
 
     Optional<Exit> exits[EXITS_LENGTH];
     Optional<double> layermods[EXITS_LENGTH];
-    int entCnt; //!< Number of entities on this Tile.
+    int entCnt;  //!< Number of entities on this Tile.
 };
 
 //! Contains the properties shared by all tiles of a certain type.
@@ -240,11 +238,11 @@ class TileType : public TileBase {
  public:
     // Graphical details.
     int id;
-    Animation anim; //! Graphics for tiles of this type.
+    Animation anim;  //! Graphics for tiles of this type.
 
     // Object details.
-    //unsigned flags;
-    //DataArea::TileScript enterScript, leaveScript, useScript;
+    // unsigned flags;
+    // DataArea::TileScript enterScript, leaveScript, useScript;
 };
 
 extern int maxTileTypeId;

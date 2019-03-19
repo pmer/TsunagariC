@@ -53,6 +53,46 @@ constexpr DWORD ATTACH_PARENT_PROCESS = -1;
 constexpr UINT MB_OK = 0x00000000L;
 }
 
+char dirSeparator = '\\';
+
+Optional<uint64_t>
+getFileSize(StringView path) {
+    return Optional<uint64_t>();
+}
+
+bool
+writeFile(StringView path, uint32_t length, void* data) {
+    return false;
+}
+
+bool
+writeFileVec(StringView path, uint32_t count, uint32_t* lengths, void** datas) {
+    return false;
+}
+
+bool
+isDir(StringView path) {
+    return false;
+}
+
+void
+makeDirectory(StringView path) {}
+
+vector<String>
+listDir(StringView path) {
+    return vector<String>();
+}
+
+Optional<String>
+readFile(StringView path) {
+    return Optional<String>();
+}
+
+void
+setTermColor(TermColor color) {
+    // TODO
+}
+
 void
 wFixConsole() {
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
@@ -82,9 +122,4 @@ wMessageBox(StringView title, StringView text) {
     // FIXME: Try to get the window's native handle instead of passing nullptr.
     MessageBox(nullptr, String(text).null(), String(title).null(), MB_OK);
     // World::instance().setPaused(false);
-}
-
-void
-setTermColor(TermColor color) {
-    // TODO
 }

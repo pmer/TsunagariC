@@ -34,21 +34,13 @@
 
 extern char dirSeparator;
 
-Optional<uint64_t> getFileSize(String& path);
 Optional<uint64_t> getFileSize(StringView path);
-bool writeFile(String& path, uint32_t length, void* data);
 bool writeFile(StringView path, uint32_t length, void* data);
-bool writeFileVec(String& path, uint32_t count, uint32_t* lengths,
-                  void** datas);
 bool writeFileVec(StringView path, uint32_t count, uint32_t* lengths,
                   void** datas);
-bool isDir(String& path);
 bool isDir(StringView path);
-void makeDirectory(String& path);
 void makeDirectory(StringView path);
-vector<String> listDir(String& path);
 vector<String> listDir(StringView path);
-Optional<String> readFile(String& path);
 Optional<String> readFile(StringView path);
 
 enum TermColor {

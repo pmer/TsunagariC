@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** viewport.h                         **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2016 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********

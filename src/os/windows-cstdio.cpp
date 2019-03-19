@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** os/windows-stdio.cpp        **
+** os/windows-cstdio.cpp       **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 

@@ -25,15 +25,12 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-declare operator new.
-#include <new>
-
-#include "core/music.h"
-
 #include "core/music-worker.h"
+#include "core/music.h"
 #include "util/dispatch-queue.h"
 
-static const DispatchQueue::QualityOfService WORKER_QOS = DispatchQueue::UTILITY;
+static const DispatchQueue::QualityOfService WORKER_QOS =
+        DispatchQueue::UTILITY;
 
 class MusicImpl : public Music {
  public:
@@ -50,45 +47,45 @@ class MusicImpl : public Music {
 
 static MusicImpl* globalMusic = nullptr;
 
-Music& Music::instance() {
+Music&
+Music::instance() {
     if (globalMusic == nullptr) {
         globalMusic = new MusicImpl;
     }
     return *globalMusic;
 }
 
-void MusicImpl::play(String filename) {
-    queue.async([filename]() {
-        MusicWorker::instance().play(filename);
-    }, WORKER_QOS);
+void
+MusicImpl::play(String filename) {
+    queue.async([filename]() { MusicWorker::instance().play(filename); },
+                WORKER_QOS);
 }
 
-void MusicImpl::stop() {
-    queue.async([]() {
-        MusicWorker::instance().stop();
-    }, WORKER_QOS);
+void
+MusicImpl::stop() {
+    queue.async([]() { MusicWorker::instance().stop(); }, WORKER_QOS);
 }
 
-void MusicImpl::pause() {
-    queue.async([]() {
-        MusicWorker::instance().pause();
-    }, WORKER_QOS);
+void
+MusicImpl::pause() {
+    queue.async([]() { MusicWorker::instance().pause(); }, WORKER_QOS);
 }
 
-void MusicImpl::resume() {
-    queue.async([]() {
-        MusicWorker::instance().resume();
-    }, WORKER_QOS);
+void
+MusicImpl::resume() {
+    queue.async([]() { MusicWorker::instance().resume(); }, WORKER_QOS);
 }
 
-void MusicImpl::setVolume(double attemptedVolume) {
-    queue.async([attemptedVolume]() {
-        MusicWorker::instance().setVolume(attemptedVolume);
-    }, WORKER_QOS);
+void
+MusicImpl::setVolume(double attemptedVolume) {
+    queue.async(
+            [attemptedVolume]() {
+                MusicWorker::instance().setVolume(attemptedVolume);
+            },
+            WORKER_QOS);
 }
 
-void MusicImpl::garbageCollect() {
-    queue.async([]() {
-        MusicWorker::instance().garbageCollect();
-    }, WORKER_QOS);
+void
+MusicImpl::garbageCollect() {
+    queue.async([]() { MusicWorker::instance().garbageCollect(); }, WORKER_QOS);
 }

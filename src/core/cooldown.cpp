@@ -1,9 +1,9 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** cooldown.cpp                  **
-** Copyright 2014 PariahSoft LLC **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** cooldown.cpp                     **
+** Copyright 2014 Michael Reiley    **
+** Copyright 2014-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,36 +26,31 @@
 // **********
 
 #include "core/cooldown.h"
+
 #include "core/log.h"
 
-Cooldown::Cooldown()
-    : duration(0), passed(0)
-{
-}
+Cooldown::Cooldown() : duration(0), passed(0) {}
 
-Cooldown::Cooldown(time_t duration)
-    : duration(duration), passed(0)
-{
-}
+Cooldown::Cooldown(time_t duration) : duration(duration), passed(0) {}
 
-void Cooldown::setDuration(time_t duration)
-{
+void
+Cooldown::setDuration(time_t duration) {
     this->duration = duration;
     passed = 0;
 }
 
-void Cooldown::advance(time_t dt)
-{
+void
+Cooldown::advance(time_t dt) {
     passed += dt;
 }
 
-bool Cooldown::hasExpired()
-{
+bool
+Cooldown::hasExpired() {
     return passed > duration;
 }
 
-void Cooldown::wrap()
-{
+void
+Cooldown::wrap() {
     if (hasExpired()) {
         passed -= duration;
     }

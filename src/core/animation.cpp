@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** animation.cpp                      **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -30,35 +30,32 @@
 #include "util/assert.h"
 #include "util/move.h"
 
-Animation::Animation()
-    : frameTime(1),
-      cycleTime(1),
-      frameShowing(0) {}
+Animation::Animation() : frameTime(1), cycleTime(1), frameShowing(0) {}
 
 Animation::Animation(Rc<Image> frame)
-    : frameTime(1),
-      cycleTime(1),
-      frameShowing(0) {
+        : frameTime(1), cycleTime(1), frameShowing(0) {
     frames.push_back(move_(frame));
 }
 
 Animation::Animation(vector<Rc<Image>> frames, time_t frameTime)
-    : frames(move_(frames)),
-      frameTime(frameTime),
-      cycleTime(1),
-      frameShowing(0),
-      offset(0) {
+        : frames(move_(frames)),
+          frameTime(frameTime),
+          cycleTime(1),
+          frameShowing(0),
+          offset(0) {
     assert_(frameTime > 0);
 
     cycleTime = frameTime * (time_t)this->frames.size();
 }
 
-void Animation::startOver(time_t now) {
+void
+Animation::startOver(time_t now) {
     offset = now;
     frameShowing = 0;
 }
 
-bool Animation::needsRedraw(time_t now) const {
+bool
+Animation::needsRedraw(time_t now) const {
     if (frames.size() == 1) {
         return false;
     }
@@ -67,7 +64,8 @@ bool Animation::needsRedraw(time_t now) const {
     return frame != frameShowing;
 }
 
-Image* Animation::frame(time_t now) {
+Image*
+Animation::frame(time_t now) {
     if (frames.empty()) {
         return nullptr;
     }
@@ -81,7 +79,8 @@ Image* Animation::frame(time_t now) {
     return frames[frameShowing].get();
 }
 
-Image* Animation::frame() const {
+Image*
+Animation::frame() const {
     if (frames.empty()) {
         return nullptr;
     }

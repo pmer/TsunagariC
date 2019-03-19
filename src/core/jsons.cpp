@@ -24,10 +24,6 @@
 // IN THE SOFTWARE.
 // **********
 
-
-// FIXME: Pre-define operator new.
-#include <new>
-
 #include "core/jsons.h"
 
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
@@ -43,7 +39,10 @@
 #include "util/move.h"
 #include "util/string2.h"
 
-#define CHECK(x)  if (!(x)) { return false; }
+#define CHECK(x)      \
+    if (!(x)) {       \
+        return false; \
+    }
 
 typedef rapidjson::Document RJDocument;
 typedef RJDocument::ValueType RJValue;
@@ -154,11 +153,13 @@ class JSONsImpl : public JSONs {
 
 static JSONsImpl globalJSONs;
 
-JSONs& JSONs::instance() {
+JSONs&
+JSONs::instance() {
     return globalJSONs;
 }
 
-vector<StringView> JSONObjectImpl::names() {
+vector<StringView>
+JSONObjectImpl::names() {
     vector<StringView> names(get().MemberCount());
     for (auto& property : get()) {
         auto& name = property.name;
@@ -170,32 +171,65 @@ vector<StringView> JSONObjectImpl::names() {
 }
 
 template<typename T>
-static bool isStringDouble(const T& val) {
+static bool
+isStringDouble(const T& val) {
     CHECK(val.IsString());
     StringView str = val.GetString();
     return parseDouble(str);
 }
 
 template<typename T>
-static double stringDoubleFrom(const T& val) {
+static double
+stringDoubleFrom(const T& val) {
     StringView str = val.GetString();
     Optional<double> d = parseDouble(str);
     return *d;
 }
 
 
-bool JSONObjectImpl::hasBool(StringView name) { return get().HasMember(str(name)) && get()[str(name)].IsBool(); }
-bool JSONObjectImpl::hasInt(StringView name) { return get().HasMember(str(name)) && get()[str(name)].IsInt(); }
-bool JSONObjectImpl::hasUnsigned(StringView name) { return get().HasMember(str(name)) && get()[str(name)].IsUint(); }
-bool JSONObjectImpl::hasDouble(StringView name) { return get().HasMember(str(name)) && get()[str(name)].IsDouble(); }
-bool JSONObjectImpl::hasString(StringView name) { return get().HasMember(str(name)) && get()[str(name)].IsString(); }
-bool JSONObjectImpl::hasObject(StringView name) { return get().HasMember(str(name)) && get()[str(name)].IsObject(); }
-bool JSONObjectImpl::hasArray(StringView name) { return get().HasMember(str(name)) && get()[str(name)].IsArray(); }
-bool JSONObjectImpl::hasStringDouble(StringView name) { return get().HasMember(str(name)) && isStringDouble(get()[str(name)]); }
+bool
+JSONObjectImpl::hasBool(StringView name) {
+    return get().HasMember(str(name)) && get()[str(name)].IsBool();
+}
+bool
+JSONObjectImpl::hasInt(StringView name) {
+    return get().HasMember(str(name)) && get()[str(name)].IsInt();
+}
+bool
+JSONObjectImpl::hasUnsigned(StringView name) {
+    return get().HasMember(str(name)) && get()[str(name)].IsUint();
+}
+bool
+JSONObjectImpl::hasDouble(StringView name) {
+    return get().HasMember(str(name)) && get()[str(name)].IsDouble();
+}
+bool
+JSONObjectImpl::hasString(StringView name) {
+    return get().HasMember(str(name)) && get()[str(name)].IsString();
+}
+bool
+JSONObjectImpl::hasObject(StringView name) {
+    return get().HasMember(str(name)) && get()[str(name)].IsObject();
+}
+bool
+JSONObjectImpl::hasArray(StringView name) {
+    return get().HasMember(str(name)) && get()[str(name)].IsArray();
+}
+bool
+JSONObjectImpl::hasStringDouble(StringView name) {
+    return get().HasMember(str(name)) && isStringDouble(get()[str(name)]);
+}
 
-bool JSONObjectImpl::boolAt(StringView name) { return get()[str(name)].GetBool(); }
-int JSONObjectImpl::intAt(StringView name) { return get()[str(name)].GetInt(); }
-int JSONObjectImpl::intAt(StringView name, int lowerBound, int upperBound) {
+bool
+JSONObjectImpl::boolAt(StringView name) {
+    return get()[str(name)].GetBool();
+}
+int
+JSONObjectImpl::intAt(StringView name) {
+    return get()[str(name)].GetInt();
+}
+int
+JSONObjectImpl::intAt(StringView name, int lowerBound, int upperBound) {
     int i = get()[str(name)].GetInt();
     if (i < lowerBound) {
         Log::fatal("JSONObject::intAt", "Value out of range");
@@ -205,77 +239,138 @@ int JSONObjectImpl::intAt(StringView name, int lowerBound, int upperBound) {
     }
     return i;
 }
-unsigned JSONObjectImpl::unsignedAt(StringView name) { return get()[str(name)].GetUint(); }
-double JSONObjectImpl::doubleAt(StringView name) { return get()[str(name)].GetDouble(); }
-StringView JSONObjectImpl::stringAt(StringView name) { return get()[str(name)].GetString(); }
-Unique<JSONObject> JSONObjectImpl::objectAt(StringView name) { return Unique<JSONObject>(new JSONObjectReal(get()[str(name)].GetObject())); }
-Unique<JSONArray> JSONObjectImpl::arrayAt(StringView name) { return Unique<JSONArray>(new JSONArrayImpl(get()[str(name)].GetArray())); }
-double JSONObjectImpl::stringDoubleAt(StringView name) { return stringDoubleFrom(get()[str(name)]); }
+unsigned
+JSONObjectImpl::unsignedAt(StringView name) {
+    return get()[str(name)].GetUint();
+}
+double
+JSONObjectImpl::doubleAt(StringView name) {
+    return get()[str(name)].GetDouble();
+}
+StringView
+JSONObjectImpl::stringAt(StringView name) {
+    return get()[str(name)].GetString();
+}
+Unique<JSONObject>
+JSONObjectImpl::objectAt(StringView name) {
+    return Unique<JSONObject>(new JSONObjectReal(get()[str(name)].GetObject()));
+}
+Unique<JSONArray>
+JSONObjectImpl::arrayAt(StringView name) {
+    return Unique<JSONArray>(new JSONArrayImpl(get()[str(name)].GetArray()));
+}
+double
+JSONObjectImpl::stringDoubleAt(StringView name) {
+    return stringDoubleFrom(get()[str(name)]);
+}
 
-RJValue JSONObjectImpl::str(StringView name) {
+RJValue
+JSONObjectImpl::str(StringView name) {
     return RJValue(rapidjson::StringRef(name.data, name.size));
 }
 
 
 JSONObjectReal::JSONObjectReal(RJObject object) : object(move_(object)) {}
 
-RJObject& JSONObjectReal::get() {
+RJObject&
+JSONObjectReal::get() {
     return object;
 }
 
 
 JSONArrayImpl::JSONArrayImpl(RJArray array) : array(move_(array)) {}
 
-size_t JSONArrayImpl::size() {
+size_t
+JSONArrayImpl::size() {
     return array.Size();
 }
 
-bool JSONArrayImpl::isBool(size_t index) { return at(index).IsBool(); }
-bool JSONArrayImpl::isInt(size_t index) { return at(index).IsInt(); }
-bool JSONArrayImpl::isUnsigned(size_t index) { return at(index).IsUint(); }
-bool JSONArrayImpl::isDouble(size_t index) { return at(index).IsDouble(); }
-bool JSONArrayImpl::isString(size_t index) { return at(index).IsString(); }
-bool JSONArrayImpl::isObject(size_t index) { return at(index).IsObject(); }
-bool JSONArrayImpl::isArray(size_t index) { return at(index).IsArray(); }
+bool
+JSONArrayImpl::isBool(size_t index) {
+    return at(index).IsBool();
+}
+bool
+JSONArrayImpl::isInt(size_t index) {
+    return at(index).IsInt();
+}
+bool
+JSONArrayImpl::isUnsigned(size_t index) {
+    return at(index).IsUint();
+}
+bool
+JSONArrayImpl::isDouble(size_t index) {
+    return at(index).IsDouble();
+}
+bool
+JSONArrayImpl::isString(size_t index) {
+    return at(index).IsString();
+}
+bool
+JSONArrayImpl::isObject(size_t index) {
+    return at(index).IsObject();
+}
+bool
+JSONArrayImpl::isArray(size_t index) {
+    return at(index).IsArray();
+}
 
-bool JSONArrayImpl::boolAt(size_t index) { return at(index).GetBool(); }
-int JSONArrayImpl::intAt(size_t index) { return at(index).GetInt(); }
-unsigned JSONArrayImpl::unsignedAt(size_t index) { return at(index).GetUint(); }
-double JSONArrayImpl::doubleAt(size_t index) { return at(index).GetDouble(); }
-StringView JSONArrayImpl::stringAt(size_t index) { return at(index).GetString(); }
-Unique<JSONObject> JSONArrayImpl::objectAt(size_t index) {
+bool
+JSONArrayImpl::boolAt(size_t index) {
+    return at(index).GetBool();
+}
+int
+JSONArrayImpl::intAt(size_t index) {
+    return at(index).GetInt();
+}
+unsigned
+JSONArrayImpl::unsignedAt(size_t index) {
+    return at(index).GetUint();
+}
+double
+JSONArrayImpl::doubleAt(size_t index) {
+    return at(index).GetDouble();
+}
+StringView
+JSONArrayImpl::stringAt(size_t index) {
+    return at(index).GetString();
+}
+Unique<JSONObject>
+JSONArrayImpl::objectAt(size_t index) {
     return Unique<JSONObject>(new JSONObjectReal(at(index).GetObject()));
 }
-Unique<JSONArray> JSONArrayImpl::arrayAt(size_t index) {
+Unique<JSONArray>
+JSONArrayImpl::arrayAt(size_t index) {
     return Unique<JSONArray>(new JSONArrayImpl(at(index).GetArray()));
 }
 
-RJArray::PlainType& JSONArrayImpl::at(size_t index) {
+RJArray::PlainType&
+JSONArrayImpl::at(size_t index) {
     return array[static_cast<unsigned>(index)];
 };
 
 
-JSONDocImpl::JSONDocImpl(String json)
-        : json(move_(json)) {
-    document.ParseInsitu<
-            rapidjson::kParseInsituFlag |
-            rapidjson::kParseCommentsFlag |
-            rapidjson::kParseTrailingCommasFlag>(
-                const_cast<char*>(this->json.null().get()));
+JSONDocImpl::JSONDocImpl(String json) : json(move_(json)) {
+    document.ParseInsitu<rapidjson::kParseInsituFlag |
+                         rapidjson::kParseCommentsFlag |
+                         rapidjson::kParseTrailingCommasFlag>(
+            const_cast<char*>(this->json.null().get()));
     object = &document;
     objectAddr = &object;
 }
 
-bool JSONDocImpl::isValid() {
+bool
+JSONDocImpl::isValid() {
     return !document.HasParseError() && document.IsObject();
 }
 
-RJObject& JSONDocImpl::get() {
+RJObject&
+JSONDocImpl::get() {
     return (RJObject&)object;
 }
 
 
-static Rc<JSONObject> genJSON(StringView path) {
+static Rc<JSONObject>
+genJSON(StringView path) {
     Optional<StringView> r = resourceLoad(path);
     if (!r) {
         return Rc<JSONObject>();
@@ -292,14 +387,17 @@ static Rc<JSONObject> genJSON(StringView path) {
     return Rc<JSONObject>(new JSONDocImpl(move_(document)));
 }
 
-Rc<JSONObject> JSONsImpl::load(StringView path) {
+Rc<JSONObject>
+JSONsImpl::load(StringView path) {
     return documents.lifetimeRequest(path);
 }
 
-Unique<JSONObject> JSONs::parse(String data) {
+Unique<JSONObject>
+JSONs::parse(String data) {
     return Unique<JSONObject>(new JSONDocImpl(move_(data)));
 }
 
-void JSONsImpl::garbageCollect() {
+void
+JSONsImpl::garbageCollect() {
     documents.garbageCollect();
 }

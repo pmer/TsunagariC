@@ -24,9 +24,6 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-declare operator new.
-#include <new>
-
 #include "core/measure.h"
 
 #include <chrono>
@@ -36,20 +33,21 @@
 
 
 #ifdef __APPLE__
-#include <sys/kdebug_signpost.h>
-#include "util/hashtable.h"
+#    include <sys/kdebug_signpost.h>
+
+#    include "util/hashtable.h"
 
 static uint32_t nextSignpost = 0;
 static Hashmap<String, uint32_t> signposts;
 
-uint32_t getSignpost(String description) {
+uint32_t
+getSignpost(String description) {
     if (signposts.find(description) != signposts.end()) {
         return signposts[description];
-    } else {
+    }
+    else {
         Log::info("Measure",
-                  String() << description
-                           << " is signpost "
-                           << nextSignpost);
+                  String() << description << " is signpost " << nextSignpost);
         signposts[move_(description)] = nextSignpost;
         return nextSignpost++;
     }
@@ -85,8 +83,7 @@ TimeMeasure::~TimeMeasure() {
 
     std::chrono::duration<double> elapsed_seconds = end - impl->start;
     Log::info("Measure",
-              String() << impl->description
-                       << " took "
+              String() << impl->description << " took "
                        << std::to_string(elapsed_seconds.count()).c_str()
                        << " seconds");
 

@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** player.cpp                         **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -25,36 +25,42 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "core/player.h"
+
 #include "core/area.h"
 #include "core/client-conf.h"
 #include "core/entity.h"
 #include "core/log.h"
-#include "core/player.h"
 #include "core/tile.h"
-#include "core/world.h"
 #include "core/window.h"
+#include "core/world.h"
 
-#define CHECK(x)  if (!(x)) { return false; }
+#define CHECK(x)      \
+    if (!(x)) {       \
+        return false; \
+    }
 
 static Player* globalPlayer = nullptr;
 
-Player& Player::instance() {
+Player&
+Player::instance() {
     return *globalPlayer;
 }
 
 
-Player::Player()
-        : Character(), velocity{0, 0} {
+Player::Player() : Character(), velocity{0, 0} {
     globalPlayer = this;
     nowalkFlags = TILE_NOWALK | TILE_NOWALK_PLAYER;
     nowalkExempt = TILE_NOWALK_EXIT;
 }
 
-void Player::destroy() {
+void
+Player::destroy() {
     Log::fatal("Player", "destroy(): Player should not be destroyed");
 }
 
-void Player::startMovement(ivec2 delta) {
+void
+Player::startMovement(ivec2 delta) {
     switch (conf.moveMode) {
     case TURN:
         moveByTile(delta);
@@ -70,7 +76,8 @@ void Player::startMovement(ivec2 delta) {
     }
 }
 
-void Player::stopMovement(ivec2 delta) {
+void
+Player::stopMovement(ivec2 delta) {
     switch (conf.moveMode) {
     case TURN:
         break;
@@ -81,8 +88,7 @@ void Player::stopMovement(ivec2 delta) {
                 break;
             }
         }
-        velocity = movements.size() ? movements.back()
-                                    : ivec2{0, 0};
+        velocity = movements.size() ? movements.back() : ivec2{0, 0};
         if (velocity) {
             moveByTile(velocity);
         }
@@ -93,7 +99,8 @@ void Player::stopMovement(ivec2 delta) {
     }
 }
 
-void Player::moveByTile(ivec2 delta) {
+void
+Player::moveByTile(ivec2 delta) {
     if (frozen) {
         return;
     }
@@ -116,14 +123,16 @@ void Player::moveByTile(ivec2 delta) {
     World::instance().turn();
 }
 
-void Player::useTile() {
+void
+Player::useTile() {
     Tile* t = area->getTile(moveDest(facing));
     if (t) {
         t->runUseScript(this);
     }
 }
 
-void Player::setFrozen(bool b) {
+void
+Player::setFrozen(bool b) {
     World& world = World::instance();
 
     if (b) {
@@ -139,7 +148,8 @@ void Player::setFrozen(bool b) {
     }
 }
 
-void Player::arrived() {
+void
+Player::arrived() {
     Entity::arrived();
 
     if (destExit) {
@@ -152,7 +162,8 @@ void Player::arrived() {
     }
 }
 
-void Player::takeExit(const Exit& exit) {
+void
+Player::takeExit(const Exit& exit) {
     World& world = World::instance();
     if (!world.focusArea(exit.area, exit.coords)) {
         // Roll back movement if exit failed to open.

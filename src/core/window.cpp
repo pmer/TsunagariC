@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** window.cpp                         **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2017 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,19 +27,19 @@
 
 #include "core/window.h"
 
-#include <stdlib.h>
-
 #include "core/world.h"
+#include "os/cstdlib.h"
 
 GameWindow::GameWindow() : keysDown(KB_SIZE) {}
 
-void GameWindow::emitKeyDown(KeyboardKey key) {
+void
+GameWindow::emitKeyDown(KeyboardKey key) {
     bool wasDown = keysDown[key];
 
     keysDown[key] = true;
 
-    if (keysDown[KBEscape] && (keysDown[KBLeftShift] ||
-                               keysDown[KBRightShift])) {
+    if (keysDown[KBEscape] &&
+        (keysDown[KBLeftShift] || keysDown[KBRightShift])) {
         close();
         exit(0);
     }
@@ -49,7 +49,8 @@ void GameWindow::emitKeyDown(KeyboardKey key) {
     }
 }
 
-void GameWindow::emitKeyUp(KeyboardKey key) {
+void
+GameWindow::emitKeyUp(KeyboardKey key) {
     bool wasDown = keysDown[key];
 
     keysDown[key] = false;
@@ -59,10 +60,12 @@ void GameWindow::emitKeyUp(KeyboardKey key) {
     }
 }
 
-bool GameWindow::isKeyDown(KeyboardKey key) {
+bool
+GameWindow::isKeyDown(KeyboardKey key) {
     return keysDown[key];
 }
 
-BitRecord GameWindow::getKeysDown() {
+BitRecord
+GameWindow::getKeysDown() {
     return keysDown;
 }

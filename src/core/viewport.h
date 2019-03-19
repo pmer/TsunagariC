@@ -28,6 +28,8 @@
 #ifndef SRC_CORE_VIEWPORT_H_
 #define SRC_CORE_VIEWPORT_H_
 
+#include "core/vec.h"
+
 class Area;
 class Entity;
 

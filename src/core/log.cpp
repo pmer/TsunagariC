@@ -25,54 +25,49 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-declare operator new.
-#include <new>
-
 #include "core/log.h"
 
 #include <iostream>
-#include <mutex>
 
 #include "core/client-conf.h"
 #include "core/window.h"
-
+#include "os/mutex.h"
 #include "os/os.h"
-
 #include "util/algorithm.h"
 
 #ifdef _WIN32
-    #include "os/windows.h"
+#    include "os/windows.h"
 #endif
 
 #ifdef __APPLE__
-    #include "os/mac-gui.h"
+#    include "os/mac-gui.h"
 #endif
 
 static verbosity_t verb = V_NORMAL;
 
 static time_t startTime;
 
-static std::mutex stdoutMutex;
+static Mutex stdoutMutex;
 
-static StringView chomp(StringView str) {
+static StringView
+chomp(StringView str) {
     size_t size = str.size;
-    while (str.data[str.size - 1] == ' ' ||
-           str.data[str.size - 1] == '\t' ||
-           str.data[str.size - 1] == '\n' ||
-           str.data[str.size - 1] == '\r') {
+    while (str.data[str.size - 1] == ' ' || str.data[str.size - 1] == '\t' ||
+           str.data[str.size - 1] == '\n' || str.data[str.size - 1] == '\r') {
         size -= 1;
     }
     return str.substr(0, size);
 }
 
-static String makeTimestamp() {
+static String
+makeTimestamp() {
     time_t now = GameWindow::time();
 
     double secs = (now - startTime) / (long double)1000.0;
-    
+
     String s;
     s << secs;
-    
+
     StringView v = s.view();
 
     Optional<size_t> idx = v.find('.');
@@ -86,18 +81,21 @@ static String makeTimestamp() {
     return s2;
 }
 
-bool Log::init() {
+bool
+Log::init() {
     startTime = GameWindow::time();
     return true;
 }
 
-void Log::setVerbosity(verbosity_t v) {
+void
+Log::setVerbosity(verbosity_t v) {
     verb = v;
 }
 
-void Log::info(StringView domain, StringView msg) {
+void
+Log::info(StringView domain, StringView msg) {
     if (verb > V_NORMAL) {
-        std::unique_lock<std::mutex> lock(stdoutMutex);
+        LockGuard lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
         std::cout << makeTimestamp().null();
@@ -114,10 +112,11 @@ void Log::info(StringView domain, StringView msg) {
     }
 }
 
-void Log::err(StringView domain, StringView msg) {
+void
+Log::err(StringView domain, StringView msg) {
     if (verb > V_QUIET) {
         {
-            std::unique_lock<std::mutex> lock(stdoutMutex);
+            LockGuard lock(stdoutMutex);
 
             setTermColor(TC_GREEN);
             std::cerr << makeTimestamp().null();
@@ -136,18 +135,19 @@ void Log::err(StringView domain, StringView msg) {
         String s;
         s << "Error [" << domain << "] - " << chomp(msg);
 
-        #ifdef _WIN32
-            wMessageBox("Tsunagari - Error", s.null());
-        #endif
-        #ifdef __APPLE__
-            macMessageBox("Tsunagari - Error", s.null());
-        #endif
+#ifdef _WIN32
+        wMessageBox("Tsunagari - Error", s.null());
+#endif
+#ifdef __APPLE__
+        macMessageBox("Tsunagari - Error", s.null());
+#endif
     }
 }
 
-void Log::fatal(StringView domain, StringView msg) {
+void
+Log::fatal(StringView domain, StringView msg) {
     {
-        std::unique_lock<std::mutex> lock(stdoutMutex);
+        LockGuard lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
         std::cerr << makeTimestamp().null();
@@ -166,18 +166,19 @@ void Log::fatal(StringView domain, StringView msg) {
     String s;
     s << "Fatal [" << domain << "] - " << chomp(msg);
 
-    #ifdef _WIN32
-        wMessageBox("Tsunagari - Fatal", s.null());
-    #endif
-    #ifdef __APPLE__
-        macMessageBox("Tsunagari - Fatal", s.null());
-    #endif
+#ifdef _WIN32
+    wMessageBox("Tsunagari - Fatal", s.null());
+#endif
+#ifdef __APPLE__
+    macMessageBox("Tsunagari - Fatal", s.null());
+#endif
 
     exit(1);
 }
 
-void Log::reportVerbosityOnStartup() {
-    std::unique_lock<std::mutex> lock(stdoutMutex);
+void
+Log::reportVerbosityOnStartup() {
+    LockGuard lock(stdoutMutex);
 
     StringView verbString;
     switch (conf.verbosity) {
@@ -197,7 +198,6 @@ void Log::reportVerbosityOnStartup() {
 
     setTermColor(TC_RESET);
     String s;
-    s << "Reporting engine messages in " << verbString
-      << " mode.\n";
+    s << "Reporting engine messages in " << verbString << " mode.\n";
     std::cout << s.null();
 }

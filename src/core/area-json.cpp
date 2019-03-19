@@ -25,9 +25,6 @@
 // IN THE SOFTWARE.
 // **********
 
-// FIXME: Pre-declaration of operator new.
-#include <new>
-
 #include "core/area-json.h"
 
 #include <limits.h>
@@ -44,19 +41,21 @@
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"
-
+#include "os/cmath.h"
 #include "util/assert.h"
-#include "util/math.h"
 #include "util/move.h"
 #include "util/optional.h"
 #include "util/string2.h"
 #include "util/vector.h"
 
 #ifdef _WIN32
-    #include "os/windows.h"
+#    include "os/windows.h"
 #endif
 
-#define CHECK(x)  if (!(x)) { return false; }
+#define CHECK(x)      \
+    if (!(x)) {       \
+        return false; \
+    }
 
 /* NOTE: In the JSON map format used by Tiled, tileset tiles start counting
          their Y-positions from 0, while layer tiles start counting from 1. I
@@ -80,10 +79,13 @@ class AreaJSON : public Area {
     bool processDescriptor();
     bool processMapProperties(Unique<JSONObject> obj);
     bool processTileSet(Unique<JSONObject> obj);
-    bool processTileSetFile(Rc<JSONObject> obj, StringView source,
+    bool processTileSetFile(Rc<JSONObject> obj,
+                            StringView source,
                             int firstGid);
-    bool processTileType(Unique<JSONObject> obj, TileType& type,
-                         Rc<TiledImage>& img, int id);
+    bool processTileType(Unique<JSONObject> obj,
+                         TileType& type,
+                         Rc<TiledImage>& img,
+                         int id);
     bool processLayer(Unique<JSONObject> obj);
     bool processLayerProperties(Unique<JSONObject> obj);
     bool processLayerData(Unique<JSONArray> arr);
@@ -93,16 +95,20 @@ class AreaJSON : public Area {
     bool splitTileFlags(StringView strOfFlags, unsigned* flags);
     bool parseExit(StringView dest,
                    Optional<Exit>& exit,
-                   bool* wwide, bool* hwide);
+                   bool* wwide,
+                   bool* hwide);
     bool parseARGB(StringView str,
-                   unsigned char& a, unsigned char& r,
-                   unsigned char& g, unsigned char& b);
+                   unsigned char& a,
+                   unsigned char& r,
+                   unsigned char& g,
+                   unsigned char& b);
 
     vector<TileType*> gids;
 };
 
 
-Unique<Area> makeAreaFromJSON(Player* player, StringView filename) {
+Unique<Area>
+makeAreaFromJSON(Player* player, StringView filename) {
     return Unique<Area>(new AreaJSON(player, filename));
 }
 
@@ -113,13 +119,15 @@ AreaJSON::AreaJSON(Player* player, StringView descriptor)
     gids.push_back(nullptr);
 }
 
-bool AreaJSON::init() {
+bool
+AreaJSON::init() {
     TimeMeasure m(String() << "Constructed " << descriptor << " as area-json");
     return processDescriptor();
 }
 
 
-void AreaJSON::allocateMapLayer() {
+void
+AreaJSON::allocateMapLayer() {
     ivec3 dim = grid.dim;
 
     // FIXME: Better int overflow check that multiplies x,y,z together.
@@ -136,7 +144,8 @@ void AreaJSON::allocateMapLayer() {
     grid.dim.z++;
 }
 
-bool AreaJSON::processDescriptor() {
+bool
+AreaJSON::processDescriptor() {
     Rc<JSONObject> doc = JSONs::instance().load(descriptor);
 
     CHECK(doc);
@@ -173,10 +182,13 @@ bool AreaJSON::processDescriptor() {
 
         if (type == "tilelayer") {
             CHECK(processLayer(move_(layer)));
-        } else if (type == "objectgroup") {
+        }
+        else if (type == "objectgroup") {
             CHECK(processObjectGroup(move_(layer)));
-        } else {
-            Log::err(descriptor, "Each layer must be a tilelayer or objectlayer");
+        }
+        else {
+            Log::err(descriptor,
+                     "Each layer must be a tilelayer or objectlayer");
             return false;
         }
     }
@@ -184,16 +196,16 @@ bool AreaJSON::processDescriptor() {
     return true;
 }
 
-bool AreaJSON::processMapProperties(Unique<JSONObject> obj) {
-
-/*
- {
-   "name": "Wooded Area"
-   "music": "wind.oga",
-   "loop": "xy",
-   "color_overlay": "255,255,255,127"
- }
-*/
+bool
+AreaJSON::processMapProperties(Unique<JSONObject> obj) {
+    /*
+     {
+       "name": "Wooded Area"
+       "music": "wind.oga",
+       "loop": "xy",
+       "color_overlay": "255,255,255,127"
+     }
+    */
 
     if (!obj->hasString("name")) {
         Log::err(descriptor, "Area must have \"name\" property");
@@ -212,9 +224,8 @@ bool AreaJSON::processMapProperties(Unique<JSONObject> obj) {
     if (obj->hasString("color_overlay")) {
         unsigned char a, r, g, b;
         CHECK(parseARGB(obj->stringAt("color_overlay"), a, r, g, b));
-        colorOverlayARGB =
-            (uint32_t)(a << 24) + (uint32_t)(r << 16) +
-            (uint32_t)(g <<  8) + (uint32_t)b;
+        colorOverlayARGB = (uint32_t)(a << 24) + (uint32_t)(r << 16) +
+                           (uint32_t)(g << 8) + (uint32_t)b;
     }
 
     return true;
@@ -226,26 +237,28 @@ bool AreaJSON::processMapProperties(Unique<JSONObject> obj) {
  * Returns the directory component of a path, including trailing slash.  If
  * there is no directory component, return an empty string.
  */
-static StringView dirname(StringView path) {
+static StringView
+dirname(StringView path) {
     Optional<size_t> slash = path.rfind('/');
     return !slash ? "" : path.substr(0, slash + 1);
 }
 
-bool AreaJSON::processTileSet(Unique<JSONObject> obj) {
-
-/*
- {
-   "firstgid": 1,
-   "source": "tiles\/forest.png.json"
- }
-*/
+bool
+AreaJSON::processTileSet(Unique<JSONObject> obj) {
+    /*
+     {
+       "firstgid": 1,
+       "source": "tiles\/forest.png.json"
+     }
+    */
     CHECK(obj->hasUnsigned("firstgid"));
     const unsigned firstGid = obj->unsignedAt("firstgid");
 
     CHECK(obj->hasString("source"));
     String source = String() << dirname(descriptor) << obj->stringAt("source");
 
-    // We don't handle embeded tilesets, only references to an external JSON files.
+    // We don't handle embeded tilesets, only references to an external JSON
+    // files.
     Rc<JSONObject> doc = JSONs::instance().load(source);
     if (!doc) {
         Log::err(descriptor,
@@ -262,27 +275,27 @@ bool AreaJSON::processTileSet(Unique<JSONObject> obj) {
     return true;
 }
 
-bool AreaJSON::processTileSetFile(Rc<JSONObject> obj,
-                                  StringView source,
-                                  int firstGid) {
-
-/*
- {
-   "image": "forest.png",
-   "imageheight": 304,
-   "imagewidth": 272,
-   "name": "forest.png",
-   "tilecount": 323,
-   "tileheight": 16,
-   "tileproperties": {
-     "29": {
-       "frames": "29,58",
-       "speed": "0.75"
+bool
+AreaJSON::processTileSetFile(Rc<JSONObject> obj,
+                             StringView source,
+                             int firstGid) {
+    /*
+     {
+       "image": "forest.png",
+       "imageheight": 304,
+       "imagewidth": 272,
+       "name": "forest.png",
+       "tilecount": 323,
+       "tileheight": 16,
+       "tileproperties": {
+         "29": {
+           "frames": "29,58",
+           "speed": "0.75"
+         }
+       },
+       "tilewidth": 16
      }
-   },
-   "tilewidth": 16
- }
-*/
+    */
 
     TileSet* set = nullptr;
     Rc<TiledImage> img;
@@ -362,8 +375,7 @@ bool AreaJSON::processTileSetFile(Rc<JSONObject> obj,
 
             // Initialize a default TileType, we'll build on that.
             TileType* type = new TileType((*img.get())[id__]);
-            if (!processTileType(move_(tileProperties),
-                                 *type, img, id__)) {
+            if (!processTileType(move_(tileProperties), *type, img, id__)) {
                 delete type;
                 return false;
             }
@@ -378,22 +390,24 @@ bool AreaJSON::processTileSetFile(Rc<JSONObject> obj,
     return true;
 }
 
-bool AreaJSON::processTileType(Unique<JSONObject> obj, TileType& type,
-                               Rc<TiledImage>& img, int id) {
+bool
+AreaJSON::processTileType(Unique<JSONObject> obj,
+                          TileType& type,
+                          Rc<TiledImage>& img,
+                          int id) {
+    /*
+      {
+        "flags": "nowalk",
+        "onEnter": "skid"
+        "onLeave": "no_skid"
+        "onUse": "no_skid"
+      }
 
-/*
-  {
-    "flags": "nowalk",
-    "onEnter": "skid"
-    "onLeave": "no_skid"
-    "onUse": "no_skid"
-  }
-
-  {
-    "frames": "29,58",
-    "speed": "0.75"
-  }
-*/
+      {
+        "frames": "29,58",
+        "speed": "0.75"
+      }
+    */
 
     // The id has already been handled by processTileSet, so we don't have
     // to worry about it.
@@ -428,9 +442,9 @@ bool AreaJSON::processTileType(Unique<JSONObject> obj, TileType& type,
         // Make sure the first member is this tile.
         Optional<int> firstFrame = parseInt(frames[0]);
         if (!firstFrame || *firstFrame != id) {
-            Log::err(descriptor, String() << "first member of tile id "
-                                          << id
-                                          << " animation must be itself.");
+            Log::err(descriptor,
+                     String() << "first member of tile id " << id
+                              << " animation must be itself.");
             return false;
         }
 
@@ -439,8 +453,9 @@ bool AreaJSON::processTileType(Unique<JSONObject> obj, TileType& type,
         for (String& frame : frames) {
             int idx = atoi(frame.null());
             if (idx < 0 || (int)img->size() <= idx) {
-                Log::err(descriptor, "frame index out "
-                        "of range for animated tile");
+                Log::err(descriptor,
+                         "frame index out "
+                         "of range for animated tile");
                 return false;
             }
             framesvec.push_back((*img.get())[(size_t)idx]);
@@ -455,8 +470,9 @@ bool AreaJSON::processTileType(Unique<JSONObject> obj, TileType& type,
 
     if (framesvec.size() || frameLen != -1) {
         if (framesvec.empty() || frameLen == -1) {
-            Log::err(descriptor, "Tile type must either have both "
-                    "frames and speed or none");
+            Log::err(descriptor,
+                     "Tile type must either have both "
+                     "frames and speed or none");
             return false;
         }
         // Add 'now' to Animation constructor??
@@ -468,18 +484,18 @@ bool AreaJSON::processTileType(Unique<JSONObject> obj, TileType& type,
     return true;
 }
 
-bool AreaJSON::processLayer(Unique<JSONObject> obj) {
-
-/*
- {
-   "data": [9, 9, 9, ..., 3, 9, 9],
-   "height": 33,
-   "properties": {
-     ...
-   },
-   "width": 34,
- }
-*/
+bool
+AreaJSON::processLayer(Unique<JSONObject> obj) {
+    /*
+     {
+       "data": [9, 9, 9, ..., 3, 9, 9],
+       "height": 33,
+       "properties": {
+         ...
+       },
+       "width": 34,
+     }
+    */
 
     CHECK(obj->hasInt("width"));
     CHECK(obj->hasInt("height"));
@@ -503,13 +519,13 @@ bool AreaJSON::processLayer(Unique<JSONObject> obj) {
     return true;
 }
 
-bool AreaJSON::processLayerProperties(Unique<JSONObject> obj) {
-
-/*
- {
-   "depth": "-0.5"
- }
-*/
+bool
+AreaJSON::processLayerProperties(Unique<JSONObject> obj) {
+    /*
+     {
+       "depth": "-0.5"
+     }
+    */
 
     if (!obj->hasStringDouble("depth")) {
         Log::err(descriptor, "A tilelayer must have the \"depth\" property");
@@ -524,21 +540,22 @@ bool AreaJSON::processLayerProperties(Unique<JSONObject> obj) {
     }
 
     grid.depth2idx[depth] = grid.dim.z - 1;
-    grid.idx2depth.push_back(depth);  // Effectively idx2depth[dim.z - 1] = depth;
+    grid.idx2depth.push_back(
+            depth);  // Effectively idx2depth[dim.z - 1] = depth;
 
     return true;
 }
 
-bool AreaJSON::processLayerData(Unique<JSONArray> arr) {
-
-/*
- [9, 9, 9, ..., 3, 9, 9]
-*/
+bool
+AreaJSON::processLayerData(Unique<JSONArray> arr) {
+    /*
+     [9, 9, 9, ..., 3, 9, 9]
+    */
 
     const int z = grid.dim.z - 1;
 
     // If we ever allow finding layers out of order.
-    //assert_(0 <= z && z < dim.z);
+    // assert_(0 <= z && z < dim.z);
 
     size_t x = 0, y = 0;
 
@@ -568,15 +585,15 @@ bool AreaJSON::processLayerData(Unique<JSONArray> arr) {
     return true;
 }
 
-bool AreaJSON::processObjectGroup(Unique<JSONObject> obj) {
-
-/*
- {
-   "name": "Prop(1)",
-   "objects": [...],
-   "properties": {...}
- }
-*/
+bool
+AreaJSON::processObjectGroup(Unique<JSONObject> obj) {
+    /*
+     {
+       "name": "Prop(1)",
+       "objects": [...],
+       "properties": {...}
+     }
+    */
 
     CHECK(obj->hasObject("properties"));
     CHECK(processObjectGroupProperties(obj->objectAt("properties")));
@@ -592,13 +609,13 @@ bool AreaJSON::processObjectGroup(Unique<JSONObject> obj) {
     return true;
 }
 
-bool AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) {
-
-/*
- {
-   "depth": "0.0"
- }
-*/
+bool
+AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) {
+    /*
+     {
+       "depth": "0.0"
+     }
+    */
 
     if (!obj->hasStringDouble("depth")) {
         Log::err(descriptor, "An objectlayer must have the \"depth\" property");
@@ -614,28 +631,29 @@ bool AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) {
 
     allocateMapLayer();
     grid.depth2idx[depth] = grid.dim.z - 1;
-    grid.idx2depth.push_back(depth);  // Effectively idx2depth[dim.z - 1] = depth;
+    grid.idx2depth.push_back(
+            depth);  // Effectively idx2depth[dim.z - 1] = depth;
 
     return true;
 }
 
-bool AreaJSON::processObject(Unique<JSONObject> obj) {
-
-/*
- {
-   "height": 16,
-   "properties": {
-     "onEnter": "half_speed"
-     "onLeave": "normal_speed"
-     "onuse": "normal_speed"
-     "exit": "grassfield.area,1,1,0"
-     "flags": "npc_nowalk"
-   },
-   "width": 16,
-   "x": 256,
-   "y": 272
- }
-*/
+bool
+AreaJSON::processObject(Unique<JSONObject> obj) {
+    /*
+     {
+       "height": 16,
+       "properties": {
+         "onEnter": "half_speed"
+         "onLeave": "normal_speed"
+         "onuse": "normal_speed"
+         "exit": "grassfield.area,1,1,0"
+         "flags": "npc_nowalk"
+       },
+       "width": 16,
+       "x": 256,
+       "y": 272
+     }
+    */
 
     if (!obj->hasObject("properties")) {
         // Empty tile object. Odd, but acceptable.
@@ -645,13 +663,12 @@ bool AreaJSON::processObject(Unique<JSONObject> obj) {
     const int z = grid.dim.z - 1;
 
     // If we ever allow finding layers out of order.
-    //assert_(0 <= z && z < dim.z);
+    // assert_(0 <= z && z < dim.z);
 
     // Gather object properties now. Assign them to tiles later.
     bool wwide[5] = {}, hwide[5] = {};  // Wide exit in width or height.
 
-    DataArea::TileScript enterScript = nullptr,
-                         leaveScript = nullptr,
+    DataArea::TileScript enterScript = nullptr, leaveScript = nullptr,
                          useScript = nullptr;
     Optional<Exit> exit[5];
     Optional<double> layermods[5];
@@ -678,24 +695,33 @@ bool AreaJSON::processObject(Unique<JSONObject> obj) {
 
     if (props->hasString("exit")) {
         StringView value = props->stringAt("exit");
-        CHECK(parseExit(value, exit[EXIT_NORMAL], &wwide[EXIT_NORMAL], &hwide[EXIT_NORMAL]));
+        CHECK(parseExit(value,
+                        exit[EXIT_NORMAL],
+                        &wwide[EXIT_NORMAL],
+                        &hwide[EXIT_NORMAL]));
         flags |= TILE_NOWALK_NPC;
     }
     if (props->hasString("exit:up")) {
         StringView value = props->stringAt("exit:up");
-        CHECK(parseExit(value, exit[EXIT_UP], &wwide[EXIT_UP], &hwide[EXIT_UP]));
+        CHECK(parseExit(
+                value, exit[EXIT_UP], &wwide[EXIT_UP], &hwide[EXIT_UP]));
     }
     if (props->hasString("exit:down")) {
         StringView value = props->stringAt("exit:down");
-        CHECK(parseExit(value, exit[EXIT_DOWN], &wwide[EXIT_DOWN], &hwide[EXIT_DOWN]));
+        CHECK(parseExit(
+                value, exit[EXIT_DOWN], &wwide[EXIT_DOWN], &hwide[EXIT_DOWN]));
     }
     if (props->hasString("exit:left")) {
         StringView value = props->stringAt("exit:left");
-        CHECK(parseExit(value, exit[EXIT_LEFT], &wwide[EXIT_LEFT], &hwide[EXIT_LEFT]));
+        CHECK(parseExit(
+                value, exit[EXIT_LEFT], &wwide[EXIT_LEFT], &hwide[EXIT_LEFT]));
     }
     if (props->hasString("exit:right")) {
         StringView value = props->stringAt("exit:right");
-        CHECK(parseExit(value, exit[EXIT_RIGHT], &wwide[EXIT_RIGHT], &hwide[EXIT_RIGHT]));
+        CHECK(parseExit(value,
+                        exit[EXIT_RIGHT],
+                        &wwide[EXIT_RIGHT],
+                        &hwide[EXIT_RIGHT]));
     }
 
     if (props->hasStringDouble("layermod")) {
@@ -767,7 +793,8 @@ bool AreaJSON::processObject(Unique<JSONObject> obj) {
     return true;
 }
 
-bool AreaJSON::splitTileFlags(StringView strOfFlags, unsigned* flags) {
+bool
+AreaJSON::splitTileFlags(StringView strOfFlags, unsigned* flags) {
     for (auto str : splitStr(strOfFlags, ",")) {
         if (str == "nowalk") {
             *flags |= TILE_NOWALK;
@@ -790,7 +817,8 @@ bool AreaJSON::splitTileFlags(StringView strOfFlags, unsigned* flags) {
 /**
  * Matches regex /^\s*\d+\+?$/
  */
-static bool isIntegerOrPlus(StringView s) {
+static bool
+isIntegerOrPlus(StringView s) {
     const int space = 0;
     const int digit = 1;
     const int sign = 2;
@@ -799,12 +827,16 @@ static bool isIntegerOrPlus(StringView s) {
 
     for (char c : s) {
         if (state == space) {
-               if (isspace(c)) continue;
-               else state++;
+            if (isspace(c))
+                continue;
+            else
+                state++;
         }
         if (state == digit) {
-            if (isdigit(c)) continue;
-            else state++;
+            if (isdigit(c))
+                continue;
+            else
+                state++;
         }
         if (state == sign) {
             return c == '+';
@@ -813,14 +845,15 @@ static bool isIntegerOrPlus(StringView s) {
     return true;
 }
 
-bool AreaJSON::parseExit(StringView dest,
-                         Optional<Exit>& exit,
-                         bool* wwide, bool* hwide) {
-
-/*
-  Format: destination area, x, y, z
-  E.g.:   "babysfirst.area,1,3,0"
-*/
+bool
+AreaJSON::parseExit(StringView dest,
+                    Optional<Exit>& exit,
+                    bool* wwide,
+                    bool* hwide) {
+    /*
+      Format: destination area, x, y, z
+      E.g.:   "babysfirst.area,1,3,0"
+    */
 
     vector<String> strs = splitStr(dest, ",");
 
@@ -829,22 +862,15 @@ bool AreaJSON::parseExit(StringView dest,
         return false;
     }
 
-    String area = move_(strs[0]),
-           x    = move_(strs[1]),
-           y    = move_(strs[2]),
-           z    = move_(strs[3]);
+    String area = move_(strs[0]), x = move_(strs[1]), y = move_(strs[2]),
+           z = move_(strs[3]);
 
-    if (!isIntegerOrPlus(x) ||
-        !isIntegerOrPlus(y) ||
-        !isIntegerOrPlus(z)) {
+    if (!isIntegerOrPlus(x) || !isIntegerOrPlus(y) || !isIntegerOrPlus(z)) {
         Log::err(descriptor, "exit: Invalid format");
         return false;
     }
 
-    exit = Exit(area,
-                atoi(x.null()),
-                atoi(y.null()),
-                atof(z.null()));
+    exit = Exit(area, atoi(x.null()), atoi(y.null()), atof(z.null()));
 
     *wwide = x.view().find('+');
     *hwide = y.view().find('+');
@@ -852,10 +878,13 @@ bool AreaJSON::parseExit(StringView dest,
     return true;
 }
 
-bool AreaJSON::parseARGB(StringView str,
-                         unsigned char& a, unsigned char& r,
-                         unsigned char& g, unsigned char& b) {
-    unsigned char* channels[] = { &a, &r, &g, &b };
+bool
+AreaJSON::parseARGB(StringView str,
+                    unsigned char& a,
+                    unsigned char& r,
+                    unsigned char& g,
+                    unsigned char& b) {
+    unsigned char* channels[] = {&a, &r, &g, &b};
 
     vector<String> strs = splitStr(str, ",");
 
@@ -873,8 +902,7 @@ bool AreaJSON::parseARGB(StringView str,
         }
         int v_ = *v;
         if (!(0 <= v_ && v_ < 256)) {
-            Log::err(descriptor,
-                "ARGB values must be between 0 and 255");
+            Log::err(descriptor, "ARGB values must be between 0 and 255");
             return false;
         }
         *channels[i] = (unsigned char)v_;

@@ -25,19 +25,15 @@
 // IN THE SOFTWARE.
 // **********
 
-
-// FIXME: Pre-declare placement new.
-#include <new>
-
 #include "core/tile.h"
 
 #include "core/area.h"
 #include "core/log.h"
 #include "core/world.h"
-
 #include "util/string.h"
 
-static int ivec2_to_dir(ivec2 v) {
+static int
+ivec2_to_dir(ivec2 v) {
     switch (v.x) {
     case -1:
         return v.y == 0 ? EXIT_LEFT : -1;
@@ -66,76 +62,93 @@ static int ivec2_to_dir(ivec2 v) {
  */
 FlagManip::FlagManip(unsigned* flags) : flags(flags) {}
 
-bool FlagManip::isNowalk() const {
+bool
+FlagManip::isNowalk() const {
     return (*flags & TILE_NOWALK) != 0;
 }
 
-bool FlagManip::isNowalkPlayer() const {
+bool
+FlagManip::isNowalkPlayer() const {
     return (*flags & TILE_NOWALK_PLAYER) != 0;
 }
 
-bool FlagManip::isNowalkNPC() const {
+bool
+FlagManip::isNowalkNPC() const {
     return (*flags & TILE_NOWALK_NPC) != 0;
 }
 
-bool FlagManip::isNowalkExit() const {
+bool
+FlagManip::isNowalkExit() const {
     return (*flags & TILE_NOWALK_EXIT) != 0;
 }
 
-bool FlagManip::isNowalkAreaBound() const {
+bool
+FlagManip::isNowalkAreaBound() const {
     return (*flags & TILE_NOWALK_AREA_BOUND) != 0;
 }
 
-void FlagManip::setNowalk(bool nowalk) {
+void
+FlagManip::setNowalk(bool nowalk) {
     *flags &= ~TILE_NOWALK;
     *flags |= TILE_NOWALK * nowalk;
 }
 
-void FlagManip::setNowalkPlayer(bool nowalk) {
+void
+FlagManip::setNowalkPlayer(bool nowalk) {
     *flags &= ~TILE_NOWALK_PLAYER;
     *flags |= TILE_NOWALK_PLAYER * nowalk;
 }
 
-void FlagManip::setNowalkNPC(bool nowalk) {
+void
+FlagManip::setNowalkNPC(bool nowalk) {
     *flags &= ~TILE_NOWALK_NPC;
     *flags |= TILE_NOWALK_NPC * nowalk;
 }
 
-void FlagManip::setNowalkExit(bool nowalk) {
+void
+FlagManip::setNowalkExit(bool nowalk) {
     *flags &= ~TILE_NOWALK_EXIT;
     *flags |= TILE_NOWALK_EXIT * nowalk;
 }
 
-void FlagManip::setNowalkAreaBound(bool nowalk) {
+void
+FlagManip::setNowalkAreaBound(bool nowalk) {
     *flags &= ~TILE_NOWALK_AREA_BOUND;
     *flags |= TILE_NOWALK_AREA_BOUND * nowalk;
 }
 
 
 Exit::Exit(String area, int x, int y, double z)
-    : area(move_(area)), coords{x, y, z} {}
+        : area(move_(area)), coords{x, y, z} {}
 
 
 /*
  * TILEBASE
  */
 TileBase::TileBase()
-    : parent(nullptr), flags(0x0),
-      enterScript(nullptr), leaveScript(nullptr), useScript(nullptr) {}
+        : parent(nullptr),
+          flags(0x0),
+          enterScript(nullptr),
+          leaveScript(nullptr),
+          useScript(nullptr) {}
 
-FlagManip TileBase::flagManip() {
+FlagManip
+TileBase::flagManip() {
     return FlagManip(&flags);
 }
 
-bool TileBase::hasFlag(unsigned flag) const {
+bool
+TileBase::hasFlag(unsigned flag) const {
     return flags & flag || (parent && parent->hasFlag(flag));
 }
 
-TileType* TileBase::getType() const {
+TileType*
+TileBase::getType() const {
     return (TileType*)parent;
 }
 
-void TileBase::setType(TileType* type) {
+void
+TileBase::setType(TileType* type) {
     parent = type;
 }
 
@@ -147,7 +160,8 @@ Tile::Tile() : entCnt(0) {}
 
 Tile::Tile(Area* area) : area(area), entCnt(0) {}
 
-icoord Tile::moveDest(icoord here, ivec2 facing) const {
+icoord
+Tile::moveDest(icoord here, ivec2 facing) const {
     icoord dest = here + icoord{facing.x, facing.y, 0};
 
     Optional<double> layermod = layermodAt(facing);
@@ -157,17 +171,20 @@ icoord Tile::moveDest(icoord here, ivec2 facing) const {
     return dest;
 }
 
-Optional<Exit> Tile::exitAt(ivec2 dir) const {
+Optional<Exit>
+Tile::exitAt(ivec2 dir) const {
     int idx = ivec2_to_dir(dir);
     return idx == -1 ? Optional<Exit>() : exits[idx];
 }
 
-Optional<double> Tile::layermodAt(ivec2 dir) const {
+Optional<double>
+Tile::layermodAt(ivec2 dir) const {
     int idx = ivec2_to_dir(dir);
     return idx == -1 ? Optional<double>() : layermods[idx];
 }
 
-void Tile::runEnterScript(Entity* triggeredBy) {
+void
+Tile::runEnterScript(Entity* triggeredBy) {
     DataArea* dataArea = area->getDataArea();
     for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
         DataArea::TileScript script = scripted->enterScript;
@@ -176,7 +193,8 @@ void Tile::runEnterScript(Entity* triggeredBy) {
     }
 }
 
-void Tile::runLeaveScript(Entity* triggeredBy) {
+void
+Tile::runLeaveScript(Entity* triggeredBy) {
     DataArea* dataArea = area->getDataArea();
     for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
         DataArea::TileScript script = scripted->leaveScript;
@@ -185,7 +203,8 @@ void Tile::runLeaveScript(Entity* triggeredBy) {
     }
 }
 
-void Tile::runUseScript(Entity* triggeredBy) {
+void
+Tile::runUseScript(Entity* triggeredBy) {
     DataArea* dataArea = area->getDataArea();
     for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
         DataArea::TileScript script = scripted->useScript;
@@ -205,7 +224,8 @@ TileType::TileType(const Rc<Image>& img) {
     anim = Animation(img);
 }
 
-bool TileType::needsRedraw() const {
+bool
+TileType::needsRedraw() const {
     time_t now = World::instance().time();
     return anim.needsRedraw(now);
 }
@@ -213,35 +233,40 @@ bool TileType::needsRedraw() const {
 /*
  * TILESET
  */
-TileSet::TileSet(size_t width, size_t height)
-    : width(width), height(height) {}
+TileSet::TileSet(size_t width, size_t height) : width(width), height(height) {}
 
-void TileSet::add(TileType* type) {
+void
+TileSet::add(TileType* type) {
     types.push_back(type);
 }
 
-void TileSet::set(size_t idx, TileType* type) {
+void
+TileSet::set(size_t idx, TileType* type) {
     types[idx] = type;
 }
 
-TileType* TileSet::at(size_t x, size_t y) {
+TileType*
+TileSet::at(size_t x, size_t y) {
     size_t i = idx(x, y);
     if (i > types.size()) {
         Log::err("TileSet",
-            String() << "get(" << x << ", " << y << "): out of bounds");
+                 String() << "get(" << x << ", " << y << "): out of bounds");
         return nullptr;
     }
     return types[i];
 }
 
-size_t TileSet::getWidth() const {
+size_t
+TileSet::getWidth() const {
     return height;
 }
 
-size_t TileSet::getHeight() const {
+size_t
+TileSet::getHeight() const {
     return width;
 }
 
-size_t TileSet::idx(size_t x, size_t y) const {
+size_t
+TileSet::idx(size_t x, size_t y) const {
     return y * width + x;
 }

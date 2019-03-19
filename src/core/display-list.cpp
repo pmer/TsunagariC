@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** display-list.cpp            **
-** Copyright 2018 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** display-list.cpp                 **
+** Copyright 2018-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,14 +24,16 @@
 // IN THE SOFTWARE.
 // **********
 
-#include <functional>
+#include "core/display-list.h"
+
 #include <limits>
 
-#include "core/display-list.h"
 #include "core/window.h"
+#include "util/function.h"
 #include "util/math2.h"
 
-static void pushLetterbox(DisplayList* display, std::function<void()> op) {
+static void
+pushLetterbox(DisplayList* display, Function<void()> op) {
     GameWindow& window = GameWindow::instance();
 
     // Aspect ratio correction.
@@ -66,7 +68,8 @@ static void pushLetterbox(DisplayList* display, std::function<void()> op) {
     window.clip(x, y, width, height, op);
 }
 
-void displayListPresent(DisplayList* display) {
+void
+displayListPresent(DisplayList* display) {
     GameWindow& window = GameWindow::instance();
 
     pushLetterbox(display, [&] {
@@ -75,9 +78,8 @@ void displayListPresent(DisplayList* display) {
             window.scale(display->scale.x, display->scale.y, [&] {
                 window.translate(-display->scroll.x, -display->scroll.y, [&] {
                     for (auto& item : display->items) {
-                        item.image->draw(item.destination.x,
-                                         item.destination.y,
-                                         0.0);
+                        item.image->draw(
+                                item.destination.x, item.destination.y, 0.0);
                     }
                 });
             });
@@ -100,7 +102,7 @@ void displayListPresent(DisplayList* display) {
             unsigned iw = pauseInfo->width();
             unsigned ih = pauseInfo->height();
             double top = std::numeric_limits<double>::max();
-            pauseInfo->draw(ww/2 - iw/2, wh/2 - ih/2, top);
+            pauseInfo->draw(ww / 2 - iw / 2, wh / 2 - ih / 2, top);
         }
     }
 }

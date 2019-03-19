@@ -30,21 +30,25 @@
 #include "core/area.h"
 #include "core/client-conf.h"
 
-void Overlay::tick(time_t dt) {
+void
+Overlay::tick(time_t dt) {
     Entity::tick(dt);
     moveTowardDestination(dt);
 }
 
-void Overlay::teleport(vicoord coord) {
+void
+Overlay::teleport(vicoord coord) {
     r = area->virt2virt(coord);
     redraw = true;
 }
 
-void Overlay::drift(ivec2 xy) {
+void
+Overlay::drift(ivec2 xy) {
     driftTo(ivec2{(int)r.x + xy.x, (int)r.y + xy.y});
 }
 
-void Overlay::driftTo(ivec2 xy) {
+void
+Overlay::driftTo(ivec2 xy) {
     setDestinationCoordinate(rcoord{(double)xy.x, (double)xy.y, r.z});
     pickFacingForAngle();
     moving = true;
@@ -53,6 +57,7 @@ void Overlay::driftTo(ivec2 xy) {
     // Movement happens in Entity::moveTowardDestination() during tick().
 }
 
-void Overlay::pickFacingForAngle() {
+void
+Overlay::pickFacingForAngle() {
     // TODO
 }

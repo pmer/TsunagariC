@@ -31,8 +31,8 @@
 #include "core/client-conf.h"
 #include "core/display-list.h"
 #include "core/entity.h"
-#include "core/log.h"
 #include "core/images.h"
+#include "core/log.h"
 #include "core/music.h"
 #include "core/npc.h"
 #include "core/overlay.h"
@@ -41,15 +41,16 @@
 #include "core/viewport.h"
 #include "core/window.h"
 #include "core/world.h"
-
+#include "data/data-world.h"
+#include "os/cmath.h"
 #include "util/assert.h"
 #include "util/hashtable.h"
-#include "util/math.h"
 #include "util/math2.h"
 
-#include "data/data-world.h"
-
-#define CHECK(x)  if (!(x)) { return false; }
+#define CHECK(x)      \
+    if (!(x)) {       \
+        return false; \
+    }
 
 /* NOTE: In the TMX map format used by Tiled, tileset tiles start counting
          their Y-positions from 0, while layer tiles start counting from 1. I
@@ -58,19 +59,20 @@
 */
 
 Area::Area(Player* player, StringView descriptor)
-    : dataArea(DataWorld::instance().area(descriptor)),
-      player(player),
-      colorOverlayARGB(0),
-      beenFocused(false),
-      redraw(true),
-      descriptor(descriptor) {
+        : dataArea(DataWorld::instance().area(descriptor)),
+          player(player),
+          colorOverlayARGB(0),
+          beenFocused(false),
+          redraw(true),
+          descriptor(descriptor) {
     grid.dim = ivec3{0, 0, 0};
     grid.tileDim = ivec2{0, 0};
     grid.loopX = false;
     grid.loopY = false;
 }
 
-void Area::focus() {
+void
+Area::focus() {
     if (!beenFocused) {
         beenFocused = true;
         if (dataArea) {
@@ -87,7 +89,8 @@ void Area::focus() {
     }
 }
 
-void Area::buttonDown(KeyboardKey key) {
+void
+Area::buttonDown(KeyboardKey key) {
     switch (key) {
     case KBLeftArrow:
         player->startMovement({-1, 0});
@@ -109,7 +112,8 @@ void Area::buttonDown(KeyboardKey key) {
     }
 }
 
-void Area::buttonUp(KeyboardKey key) {
+void
+Area::buttonUp(KeyboardKey key) {
     switch (key) {
     case KBLeftArrow:
         player->stopMovement({-1, 0});
@@ -128,7 +132,8 @@ void Area::buttonUp(KeyboardKey key) {
     }
 }
 
-void Area::draw(DisplayList* display) {
+void
+Area::draw(DisplayList* display) {
     icube tiles = visibleTiles();
     int maxZ = grid.dim.z;
 
@@ -143,19 +148,20 @@ void Area::draw(DisplayList* display) {
     redraw = false;
 }
 
-bool Area::needsRedraw() const {
+bool
+Area::needsRedraw() const {
     if (redraw) {
         return true;
     }
 
     const icube tiles = visibleTiles();
     const icube pixels = {
-        tiles.x1 * grid.tileDim.x,
-        tiles.y1 * grid.tileDim.y,
-        tiles.z1,
-        tiles.x2 * grid.tileDim.x,
-        tiles.y2 * grid.tileDim.y,
-        tiles.z2,
+            tiles.x1 * grid.tileDim.x,
+            tiles.y1 * grid.tileDim.y,
+            tiles.z1,
+            tiles.x2 * grid.tileDim.x,
+            tiles.y2 * grid.tileDim.y,
+            tiles.z2,
     };
 
     if (player->needsRedraw(pixels)) {
@@ -196,11 +202,13 @@ bool Area::needsRedraw() const {
     return false;
 }
 
-void Area::requestRedraw() {
+void
+Area::requestRedraw() {
     redraw = true;
 }
 
-void Area::tick(time_t dt) {
+void
+Area::tick(time_t dt) {
     if (dataArea) {
         dataArea->tick(dt);
     }
@@ -208,7 +216,7 @@ void Area::tick(time_t dt) {
     for (auto& overlay : overlays) {
         overlay->tick(dt);
     }
-    erase_if(overlays, [] (const Rc<Overlay>& o) {
+    erase_if(overlays, [](const Rc<Overlay>& o) {
         bool dead = o->isDead();
         if (dead) {
             o->setArea(nullptr);
@@ -222,7 +230,7 @@ void Area::tick(time_t dt) {
         for (auto& character : characters) {
             character->tick(dt);
         }
-        erase_if(characters, [] (const Rc<Character>& c) {
+        erase_if(characters, [](const Rc<Character>& c) {
             bool dead = c->isDead();
             if (dead) {
                 c->setArea(nullptr);
@@ -234,7 +242,8 @@ void Area::tick(time_t dt) {
     Viewport::instance().tick(dt);
 }
 
-void Area::turn() {
+void
+Area::turn() {
     if (dataArea) {
         dataArea->turn();
     }
@@ -244,7 +253,7 @@ void Area::turn() {
     for (auto& character : characters) {
         character->turn();
     }
-    erase_if(characters, [] (const Rc<Character>& c) {
+    erase_if(characters, [](const Rc<Character>& c) {
         bool dead = c->isDead();
         if (dead) {
             c->setArea(nullptr);
@@ -256,42 +265,51 @@ void Area::turn() {
 }
 
 
-uint32_t Area::getColorOverlay() {
+uint32_t
+Area::getColorOverlay() {
     return colorOverlayARGB;
 }
 
-void Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b) {
+void
+Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b) {
     colorOverlayARGB = (uint32_t)(a << 24u) + (uint32_t)(r << 16u) +
-        (uint32_t)(g << 8u) + (uint32_t)b;
+                       (uint32_t)(g << 8u) + (uint32_t)b;
     redraw = true;
 }
 
 
-const Tile* Area::getTile(icoord phys) const {
+const Tile*
+Area::getTile(icoord phys) const {
     return grid.getTile(phys);
 }
 
-const Tile* Area::getTile(vicoord virt) const {
+const Tile*
+Area::getTile(vicoord virt) const {
     return grid.getTile(virt);
 }
 
-const Tile* Area::getTile(rcoord virt) const {
+const Tile*
+Area::getTile(rcoord virt) const {
     return grid.getTile(virt);
 }
 
-Tile* Area::getTile(icoord phys) {
+Tile*
+Area::getTile(icoord phys) {
     return grid.getTile(phys);
 }
 
-Tile* Area::getTile(vicoord virt) {
+Tile*
+Area::getTile(vicoord virt) {
     return grid.getTile(virt);
 }
 
-Tile* Area::getTile(rcoord virt) {
+Tile*
+Area::getTile(rcoord virt) {
     return grid.getTile(virt);
 }
 
-TileSet* Area::getTileSet(StringView imagePath) {
+TileSet*
+Area::getTileSet(StringView imagePath) {
     if (tileSets.contains(imagePath)) {
         String msg;
         msg << "tileset " << imagePath << " not found";
@@ -302,15 +320,18 @@ TileSet* Area::getTileSet(StringView imagePath) {
 }
 
 
-ivec3 Area::getDimensions() const {
+ivec3
+Area::getDimensions() const {
     return grid.dim;
 }
 
-ivec2 Area::getTileDimensions() const {
+ivec2
+Area::getTileDimensions() const {
     return grid.tileDim;
 }
 
-icube Area::visibleTiles() const {
+icube
+Area::visibleTiles() const {
     Viewport& viewport = Viewport::instance();
 
     rvec2 screen = viewport.getVirtRes();
@@ -333,35 +354,39 @@ icube Area::visibleTiles() const {
     return icube{x1, y1, 0, x2, y2, grid.dim.z};
 }
 
-bool Area::inBounds(icoord phys) const {
+bool
+Area::inBounds(icoord phys) const {
     return grid.inBounds(phys);
 }
 
-bool Area::inBounds(vicoord virt) const {
+bool
+Area::inBounds(vicoord virt) const {
     return grid.inBounds(virt);
 }
 
-bool Area::inBounds(rcoord virt) const {
+bool
+Area::inBounds(rcoord virt) const {
     return grid.inBounds(virt);
 }
 
-bool Area::inBounds(Entity* ent) const {
+bool
+Area::inBounds(Entity* ent) const {
     return inBounds(ent->getPixelCoord());
 }
 
 
-
-bool Area::loopsInX() const {
+bool
+Area::loopsInX() const {
     return grid.loopX;
 }
 
-bool Area::loopsInY() const {
+bool
+Area::loopsInY() const {
     return grid.loopY;
 }
 
-Rc<NPC> Area::spawnNPC(StringView descriptor,
-                       vicoord coord,
-                       StringView phase) {
+Rc<NPC>
+Area::spawnNPC(StringView descriptor, vicoord coord, StringView phase) {
     auto c = Rc<NPC>(new NPC);
     if (!c->init(descriptor, phase)) {
         // Error logged.
@@ -373,9 +398,8 @@ Rc<NPC> Area::spawnNPC(StringView descriptor,
     return c;
 }
 
-Rc<Overlay> Area::spawnOverlay(StringView descriptor,
-                               vicoord coord,
-                               StringView phase) {
+Rc<Overlay>
+Area::spawnOverlay(StringView descriptor, vicoord coord, StringView phase) {
     auto o = Rc<Overlay>(new Overlay);
     if (!o->init(descriptor, phase)) {
         // Error logged.
@@ -388,49 +412,58 @@ Rc<Overlay> Area::spawnOverlay(StringView descriptor,
 }
 
 
-vicoord Area::phys2virt_vi(icoord phys) const {
+vicoord
+Area::phys2virt_vi(icoord phys) const {
     return grid.phys2virt_vi(phys);
 }
 
-rcoord Area::phys2virt_r(icoord phys) const {
+rcoord
+Area::phys2virt_r(icoord phys) const {
     return grid.phys2virt_r(phys);
 }
 
-icoord Area::virt2phys(vicoord virt) const {
+icoord
+Area::virt2phys(vicoord virt) const {
     return grid.virt2phys(virt);
 }
 
-icoord Area::virt2phys(rcoord virt) const {
+icoord
+Area::virt2phys(rcoord virt) const {
     return grid.virt2phys(virt);
 }
 
-rcoord Area::virt2virt(vicoord virt) const {
+rcoord
+Area::virt2virt(vicoord virt) const {
     return grid.virt2virt(virt);
 }
 
-vicoord Area::virt2virt(rcoord virt) const {
+vicoord
+Area::virt2virt(rcoord virt) const {
     return grid.virt2virt(virt);
 }
 
-DataArea* Area::getDataArea() {
+DataArea*
+Area::getDataArea() {
     return dataArea;
 }
 
 
-static void drawTile(DisplayList* display, const TileType* type,
-                     int x, int y /*, double depth, int tileDimY */) {
+static void
+drawTile(DisplayList* display,
+         const TileType* type,
+         int x,
+         int y /*, double depth, int tileDimY */) {
     Image* img = type->anim.frame();
     if (img) {
-        rvec2 drawPos{
-                double(x * (int)img->width()),
-                double(y * (int)img->height())
-        };
-        //drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
+        rvec2 drawPos{double(x * (int)img->width()),
+                      double(y * (int)img->height())};
+        // drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
         display->items.push_back(DisplayItem{img, drawPos});
     }
 }
 
-void Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
+void
+Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     time_t now = World::instance().time();
     BitRecord tilesAnimated(static_cast<size_t>(maxTileTypeId));
     // double depth = grid.idx2depth[(size_t)z];
@@ -451,7 +484,8 @@ void Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     }
 }
 
-void Area::drawEntities(DisplayList* display, const icube& tiles, int z) {
+void
+Area::drawEntities(DisplayList* display, const icube& tiles, int z) {
     double depth = grid.idx2depth[(size_t)z];
 
     for (auto& character : characters) {

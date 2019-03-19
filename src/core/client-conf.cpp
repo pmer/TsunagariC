@@ -28,9 +28,7 @@
 #include "core/client-conf.h"
 
 #include "config.h"
-
 #include "core/jsons.h"
-
 #include "util/move.h"
 #include "util/string.h"
 #include "util/string2.h"
@@ -40,7 +38,8 @@ Conf conf;  // Project-wide global configuration.
 
 // Parse and process the client config file, and set configuration defaults for
 // missing options.
-bool parseConfig(StringView filename) {
+bool
+parseConfig(StringView filename) {
     Optional<String> file = slurp(filename);
 
     if (!file) {
@@ -62,13 +61,17 @@ bool parseConfig(StringView filename) {
             StringView verbosity = engine->stringAt("verbosity");
             if (verbosity == "quiet") {
                 conf.verbosity = V_QUIET;
-            } else if (verbosity == "normal") {
+            }
+            else if (verbosity == "normal") {
                 conf.verbosity = V_NORMAL;
-            } else if (verbosity == "verbose") {
+            }
+            else if (verbosity == "verbose") {
                 conf.verbosity = V_VERBOSE;
-            } else {
+            }
+            else {
                 Log::err(filename,
-                    "Unknown value for \"engine.verbosity\", using default");
+                         "Unknown value for \"engine.verbosity\", using "
+                         "default");
             }
         }
     }

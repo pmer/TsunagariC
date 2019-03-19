@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** npc.cpp                            **
 ** Copyright 2011-2014 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,13 +27,13 @@
 
 #include "core/npc.h"
 
-void NPC::arrived() {
+void
+NPC::arrived() {
     Entity::arrived();
 
     if (destExit) {
-        moving = false; // Prevent time rollover check in
-                        // Entity::moveTowardDestination().
+        moving = false;  // Prevent time rollover check in
+                         // Entity::moveTowardDestination().
         destroy();
     }
 }
-

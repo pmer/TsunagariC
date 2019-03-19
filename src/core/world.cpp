@@ -27,8 +27,8 @@
 
 #include "core/world.h"
 
-#include "core/area.h"
 #include "core/area-json.h"
+#include "core/area.h"
 #include "core/character.h"
 #include "core/client-conf.h"
 #include "core/display-list.h"
@@ -43,25 +43,31 @@
 #include "core/sounds.h"
 #include "core/viewport.h"
 #include "core/window.h"
-
 #include "data/data-world.h"
-
 #include "util/vector.h"
 
-#define CHECK(x)  if (!(x)) { return false; }
+#define CHECK(x)      \
+    if (!(x)) {       \
+        return false; \
+    }
 
 static World globalWorld;
 
-World& World::instance() {
+World&
+World::instance() {
     return globalWorld;
 }
 
 World::World()
-    : player(new Player),
-      lastTime(0), total(0), alive(false), redraw(false),
-      paused(0) {}
+        : player(new Player),
+          lastTime(0),
+          total(0),
+          alive(false),
+          redraw(false),
+          paused(0) {}
 
-bool World::init() {
+bool
+World::init() {
     alive = true;
 
     auto& parameters = DataWorld::instance().parameters;
@@ -88,11 +94,13 @@ bool World::init() {
     return true;
 }
 
-time_t World::time() const {
+time_t
+World::time() const {
     return total;
 }
 
-void World::buttonDown(KeyboardKey key) {
+void
+World::buttonDown(KeyboardKey key) {
     switch (key) {
     case KBEscape:
         setPaused(paused == 0);
@@ -108,7 +116,8 @@ void World::buttonDown(KeyboardKey key) {
     }
 }
 
-void World::buttonUp(KeyboardKey key) {
+void
+World::buttonUp(KeyboardKey key) {
     switch (key) {
     case KBEscape:
         break;
@@ -122,8 +131,9 @@ void World::buttonUp(KeyboardKey key) {
     }
 }
 
-void World::draw(DisplayList* display) {
-    //TimeMeasure m("Drew world");
+void
+World::draw(DisplayList* display) {
+    // TimeMeasure m("Drew world");
 
     Viewport& view = Viewport::instance();
 
@@ -143,15 +153,18 @@ void World::draw(DisplayList* display) {
     area->draw(display);
 }
 
-bool World::needsRedraw() const {
+bool
+World::needsRedraw() const {
     return redraw || (!paused && area->needsRedraw());
 }
 
-void World::update(time_t now) {
+void
+World::update(time_t now) {
     if (lastTime == 0) {
         // There is no dt on the first update().  Don't tick.
         lastTime = now;
-    } else {
+    }
+    else {
         time_t dt = calculateDt(now);
         if (!paused) {
             total += dt;
@@ -160,17 +173,20 @@ void World::update(time_t now) {
     }
 }
 
-void World::tick(time_t dt) {
+void
+World::tick(time_t dt) {
     area->tick(dt);
 }
 
-void World::turn() {
+void
+World::turn() {
     if (conf.moveMode == TURN) {
         area->turn();
     }
 }
 
-bool World::focusArea(StringView filename, vicoord playerPos) {
+bool
+World::focusArea(StringView filename, vicoord playerPos) {
     auto entry = areas.find(filename);
     if (entry != areas.end()) {
         Area* rawArea = entry.value().get();
@@ -203,7 +219,8 @@ bool World::focusArea(StringView filename, vicoord playerPos) {
     return true;
 }
 
-void World::focusArea(Area* area, vicoord playerPos) {
+void
+World::focusArea(Area* area, vicoord playerPos) {
     this->area = area;
     player->setArea(area);
     player->setTileCoords(playerPos);
@@ -211,7 +228,8 @@ void World::focusArea(Area* area, vicoord playerPos) {
     area->focus();
 }
 
-void World::setPaused(bool b) {
+void
+World::setPaused(bool b) {
     if (!alive) {
         return;
     }
@@ -241,11 +259,13 @@ void World::setPaused(bool b) {
     }
 }
 
-void World::storeKeys() {
+void
+World::storeKeys() {
     keyStates.push_back(GameWindow::instance().getKeysDown());
 }
 
-void World::restoreKeys() {
+void
+World::restoreKeys() {
     BitRecord now = GameWindow::instance().getKeysDown();
     BitRecord then = keyStates.back();
     vector<size_t> diffs = now.diff(then);
@@ -256,20 +276,23 @@ void World::restoreKeys() {
         KeyboardKey key_ = static_cast<KeyboardKey>(key);
         if (now[key_]) {
             buttonDown(key_);
-        } else {
+        }
+        else {
             buttonUp(key_);
         }
     }
 }
 
-void World::garbageCollect() {
+void
+World::garbageCollect() {
     Images::instance().garbageCollect();
     JSONs::instance().garbageCollect();
     Music::instance().garbageCollect();
     Sounds::instance().garbageCollect();
 }
 
-time_t World::calculateDt(time_t now) {
+time_t
+World::calculateDt(time_t now) {
     time_t dt = now - lastTime;
     lastTime = now;
     return dt;

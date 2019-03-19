@@ -28,44 +28,49 @@
 #include "core/music-worker.h"
 
 #include "core/client-conf.h"
-
 #include "util/math2.h"
 
-static void clientIniVolumeVerify() {
+static void
+clientIniVolumeVerify() {
     if (conf.musicVolume < 0 || 100 < conf.musicVolume) {
         Log::err("MusicWorker", "Music volume not within bounds [0,100]");
     }
 }
 
-static double clientIniVolumeApply(double volume) {
+static double
+clientIniVolumeApply(double volume) {
     clientIniVolumeVerify();
     return volume * conf.musicVolume / 100.0;
 }
 
-static double clientIniVolumeUnapply(double volume) {
+static double
+clientIniVolumeUnapply(double volume) {
     clientIniVolumeVerify();
     return volume / conf.musicVolume * 100.0;
 }
 
 
-MusicWorker::MusicWorker()
-    : volume(1.0), paused(0) {}
+MusicWorker::MusicWorker() : volume(1.0), paused(0) {}
 
-void MusicWorker::play(StringView filename) {
+void
+MusicWorker::play(StringView filename) {
     paused = 0;
     path = filename;
 }
 
-void MusicWorker::stop() {
+void
+MusicWorker::stop() {
     paused = 0;
     path = "";
 }
 
-void MusicWorker::pause() {
+void
+MusicWorker::pause() {
     paused++;
 }
 
-void MusicWorker::resume() {
+void
+MusicWorker::resume() {
     if (paused <= 0) {
         Log::err("MusicWorker", "Unpausing, but music not paused");
         return;
@@ -73,19 +78,18 @@ void MusicWorker::resume() {
     paused--;
 }
 
-double MusicWorker::getVolume() {
+double
+MusicWorker::getVolume() {
     return clientIniVolumeUnapply(volume);
 }
 
-void MusicWorker::setVolume(double attemptedVolume) {
+void
+MusicWorker::setVolume(double attemptedVolume) {
     double newVolume = bound(attemptedVolume, 0.0, 1.0);
     if (attemptedVolume != newVolume) {
         Log::info("MusicWorker",
-            String() << "Attempted to set volume to "
-                     << attemptedVolume
-                     << ", setting it to "
-                     << newVolume
-        );
+                  String() << "Attempted to set volume to " << attemptedVolume
+                           << ", setting it to " << newVolume);
     }
 
     volume = clientIniVolumeApply(newVolume);

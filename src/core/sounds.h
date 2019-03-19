@@ -33,7 +33,7 @@
 
 class SoundInstance {
  public:
-    virtual ~SoundInstance();
+    virtual ~SoundInstance() = default;
 
     //! Whether the sound is currently playing.
     virtual bool playing() = 0;
@@ -71,7 +71,7 @@ class Sounds {
     //! Acquire the global Sounds object.
     static Sounds& instance();
 
-    virtual ~Sounds();
+    virtual ~Sounds() = default;
 
     //! Play a sound from the file at the given path.
     virtual Rc<SoundInstance> play(StringView path) = 0;

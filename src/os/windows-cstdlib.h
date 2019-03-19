@@ -35,6 +35,7 @@ extern "C" {
 typedef __int64 __time64_t;
 
 _ACRTIMP __time64_t __cdecl _time64(__time64_t* _Time);
+_ACRTIMP __declspec(noreturn) void __cdecl exit(int _Code);
 _ACRTIMP void __cdecl free(void* _Block);
 _ACRTIMP _CRTRESTRICT void* __cdecl malloc(size_t _Size);
 _ACRTIMP int __cdecl rand();

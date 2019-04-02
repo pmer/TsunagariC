@@ -63,31 +63,39 @@ template<typename T, typename Count> class SharedPtr {
         other.count = nullptr;
     }
 
+	/*
     template<typename D>
     SharedPtr(SharedPtr<D, Count>&& other, EnableIfSubclass<T, D> = Yes())
             : x(other.x), count(other.count) {
         other.x = nullptr;
         other.count = nullptr;
     }
+    */
 
+    /*
     SharedPtr(SharedPtr& other) : x(other.x), count(other.count) { incref(); }
+    */
 
+    /*
     template<typename D>
     SharedPtr(SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Yes())
             : x(other.x), count(other.count) {
         incref();
     }
+    */
 
     // Copy constructors
     SharedPtr(const SharedPtr& other) : x(other.x), count(other.count) {
         incref();
     }
 
+	/*
     template<typename D>
     SharedPtr(const SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Yes())
             : x(other.x), count(other.count) {
         incref();
     }
+    */
 
     // Raw-pointer constructor
     template<typename D>

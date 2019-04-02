@@ -29,6 +29,7 @@
 #define SRC_CORE_VIEWPORT_H_
 
 #include "core/vec.h"
+#include "util/int.h"
 
 class Area;
 class Entity;

@@ -28,21 +28,17 @@
 #define SRC_OS_MUTEX_H_
 
 #ifdef _WIN32
-#include "os/windows-mutex.h"
+#    include "os/windows-mutex.h"
 #else
-#include "os/unix-mutex.h"
+#    include "os/unix-mutex.h"
 #endif
 
 #include "util/assert.h"
 
 class LockGuard {
  public:
-    inline explicit LockGuard(Mutex& m) noexcept : m(m) {
-        m.lock();
-    }
-    inline ~LockGuard() noexcept {
-        m.unlock();
-    }
+    inline explicit LockGuard(Mutex& m) noexcept : m(m) { m.lock(); }
+    inline ~LockGuard() noexcept { m.unlock(); }
 
     LockGuard(const LockGuard&) = delete;
     LockGuard& operator=(const LockGuard&) = delete;

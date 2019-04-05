@@ -28,9 +28,9 @@
 #define SRC_OS_CSTDIO_H_
 
 #ifdef _WIN32
-#include "os/windows-cstdio.h"
+#    include "os/windows-cstdio.h"
 #else
-#include "os/unix-cstdio.h"
+#    include "os/unix-cstdio.h"
 #endif
 
 #endif  // SRC_OS_CSTDIO_H_

@@ -35,25 +35,24 @@
 
 class MappedFile {
  public:
-	static Optional<MappedFile> fromPath(String& path);
+    static Optional<MappedFile> fromPath(String& path);
     static Optional<MappedFile> fromPath(StringView path);
 
-	MappedFile();
-	MappedFile(MappedFile&& other);
-	MappedFile(const MappedFile& other) = delete;
-	MappedFile(char* map, size_t len);
-	~MappedFile();
+    MappedFile();
+    MappedFile(MappedFile&& other);
+    MappedFile(const MappedFile& other) = delete;
+    MappedFile(char* map, size_t len);
+    ~MappedFile();
 
-	MappedFile& operator=(MappedFile&& other);
+    MappedFile& operator=(MappedFile&& other);
 
-	template<typename T>
-	const T at(size_t offset) const {
-		return reinterpret_cast<T>(map + offset);
-	}
+    template<typename T> const T at(size_t offset) const {
+        return reinterpret_cast<T>(map + offset);
+    }
 
  private:
-	char* map;
-	size_t len;
+    char* map;
+    size_t len;
 };
 
 #endif  // SRC_OS_UNIX_H_

@@ -204,6 +204,9 @@ elseif(APPLE)
     )
     target_sources(pack-tool
         PRIVATE src/os/unix-condition-variable.h
+        PRIVATE src/os/unix-cstdio.h
+        PRIVATE src/os/unix-cstdlib.h
+        PRIVATE src/os/unix-cstring.h
         PRIVATE src/os/unix-mutex.h
         PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp

@@ -141,14 +141,15 @@ PackWriterImpl::writeToFile(StringView path) {
             // pathOffsetsBlockOffset
             sizeof(HeaderBlock),
             // pathsBlockOffset
-            sizeof(HeaderBlock) + pathOffsetsBlockSize,
+            static_cast<uint32_t>(sizeof(HeaderBlock)) + pathOffsetsBlockSize,
             // pathsBlockSize
             pathsBlockSize,
             // metadataBlockOffset
-            sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize,
+            static_cast<uint32_t>(sizeof(HeaderBlock)) + pathOffsetsBlockSize +
+                    pathsBlockSize,
             // dataOffsetsBlockOffset
-            sizeof(HeaderBlock) + pathOffsetsBlockSize + pathsBlockSize +
-                    metadataBlockSize,
+            static_cast<uint32_t>(sizeof(HeaderBlock)) + pathOffsetsBlockSize +
+                    pathsBlockSize + metadataBlockSize,
     };
 
     vector<PathOffset> pathOffsetsBlock;
@@ -185,13 +186,13 @@ PackWriterImpl::writeToFile(StringView path) {
     }
 
     // Build IO vector.
-    vector<size_t> writeLengths;
+    vector<uint32_t> writeLengths;
     vector<void*> writeDatas;
 
     writeLengths.reserve(5 + blobCount);
     writeDatas.reserve(5 + blobCount);
 
-    writeLengths.push_back(sizeof(headerBlock));
+    writeLengths.push_back(static_cast<uint32_t>(sizeof(headerBlock)));
     writeLengths.push_back(pathOffsetsBlockSize);
     writeLengths.push_back(pathsBlockSize);
     writeLengths.push_back(metadataBlockSize);
@@ -210,7 +211,7 @@ PackWriterImpl::writeToFile(StringView path) {
 
     // Write file.
     return writeFileVec(
-            path, writeLengths.size(), writeLengths.data(), writeDatas.data());
+            path, static_cast<uint32_t>(writeLengths.size()), writeLengths.data(), writeDatas.data());
 }
 
 void

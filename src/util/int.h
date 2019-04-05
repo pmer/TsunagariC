@@ -31,10 +31,15 @@ typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
+
+#ifdef _WIN32
 typedef uint64_t time_t;
+#else
+typedef long time_t;
+#endif
 
 #ifndef _WIN32
-typedef unsigned long long size_t;
+typedef unsigned long size_t;
 #endif
 
 typedef size_t uintptr_t;

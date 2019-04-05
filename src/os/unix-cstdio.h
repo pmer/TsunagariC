@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** thread.h                      **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** os/unix-stdio.h             **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,13 +24,23 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_THREAD_H_
-#define SRC_OS_THREAD_H_
+#ifndef SRC_OS_UNIX_CSTDIO_H_
+#define SRC_OS_UNIX_CSTDIO_H_
 
-#ifdef _WIN32
-#    include "os/windows-thread.h"
-#else
-#    include "os/unix-thread.h"
-#endif
+extern "C" {
+struct FILE;
 
-#endif  // SRC_OS_THREAD_H_
+int fprintf(FILE* __restrict, const char* __restrict, ...);
+int printf(const char* __restrict, ...);
+int sprintf(char* __restrict, const char* __restrict, ...);
+
+extern FILE* __stdinp;
+extern FILE* __stdoutp;
+extern FILE* __stderrp;
+}
+
+#define stdin __stdinp
+#define stdout __stdoutp
+#define stderr __stderrp
+
+#endif  // SRC_OS_UNIX_CSTDIO_H_

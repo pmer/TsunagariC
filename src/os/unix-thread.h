@@ -28,33 +28,49 @@
 #define SRC_OS_UNIX_THREAD_H_
 
 #include "os/thread.h"
-
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/sysctl.h>
-
 #include "util/assert.h"
+#include "util/int.h"
+#include "util/move.h"
+
+extern "C" {
+#define __PTHREAD_SIZE__ 8176
+
+struct _pthread_t {
+    long __sig;
+    struct __darwin_pthread_handler_rec* __cleanup_stack;
+    char __opaque[__PTHREAD_SIZE__];
+};
+
+typedef _pthread_t* pthread_t;
+
+int pthread_create(pthread_t*, const void*, void* (*)(void*), void*);
+int pthread_join(pthread_t, void**);
+
+int sysctl(int*, unsigned int, void*, size_t*, void*, size_t);
+
+#define CTL_HW 6
+#define HW_NCPU 3
+}
+
+static void*
+run(void* f) {
+    Function<void()>* fun = reinterpret_cast<Function<void()>*>(f);
+    (*fun)();
+    return nullptr;
+}
 
 class Thread {
  public:
-    template<class Arg>
-    inline explicit Thread(void (*f)(Arg), Arg arg) {
-        static_assert(sizeof(Arg) == sizeof(void*), "");
-        pthread_create(&t,
-                       nullptr,
-                       reinterpret_cast<void*(*)(void*)>(f),
-                       static_cast<void*>(arg));
+    inline explicit Thread(Function<void()> f) {
+        Function<void()>* fun = new Function<void()>(move_(f));
+        assert_(pthread_create(&t, nullptr, run, static_cast<void*>(fun)) == 0);
     }
-    Thread(Thread&& other) : t(other.t) {
-        other.t = 0;
-    }
-    inline ~Thread() noexcept {
-        assert_(t == 0);
-    }
-    
+    Thread(Thread&& other) : t(other.t) { other.t = 0; }
+    inline ~Thread() noexcept { assert_(t == 0); }
+
     Thread(const Thread&) = delete;
     Thread& operator=(const Thread&) = delete;
-    
+
     inline void join() noexcept {
         assert_(t != 0);
         assert_(pthread_join(t, 0) == 0);

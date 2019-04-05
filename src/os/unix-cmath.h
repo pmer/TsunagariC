@@ -28,23 +28,24 @@
 #define SRC_OS_WINDOWS_MATH_H_
 
 #ifdef _WIN32
-#define WINDOWSC __cdecl
-#define DLLIMPORT __declspec(dllimport)
-#define UNIXC
+#    define WINDOWSC __cdecl
+#    define DLLIMPORT __declspec(dllimport)
+#    define UNIXC
 #else
-#define WINDOWSC
-#define DLLIMPORT
-#define UNIXC extern "C"
+#    define WINDOWSC
+#    define DLLIMPORT
+#    define UNIXC extern "C"
 #endif
 
 UNIXC double WINDOWSC atan2(double, double);
 UNIXC DLLIMPORT double WINDOWSC ceil(double);
 #ifdef _WIN32
-#ifndef _INC_MATH
-inline float WINDOWSC ceilf(float x) {
-  return static_cast<float>(ceil(x));
+#    ifndef _INC_MATH
+inline float WINDOWSC
+ceilf(float x) {
+    return static_cast<float>(ceil(x));
 }
-#endif
+#    endif
 #else
 UNIXC DLLIMPORT float WINDOWSC ceilf(float);
 #endif

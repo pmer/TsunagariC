@@ -28,9 +28,9 @@
 #define SRC_OS_MATH_H_
 
 #ifdef _WIN32
-#include "os/windows-cmath.h"
+#    include "os/windows-cmath.h"
 #else
-#include "os/unix-cmath.h"
+#    include "os/unix-cmath.h"
 #endif
 
 #endif  // SRC_OS_MATH_H_

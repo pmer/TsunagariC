@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** thread.h                      **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** os/unix-cstdlib.h           **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,13 +24,18 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_THREAD_H_
-#define SRC_OS_THREAD_H_
+#ifndef SRC_OS_UNIX_CSTDLIB_H_
+#define SRC_OS_UNIX_CSTDLIB_H_
 
-#ifdef _WIN32
-#    include "os/windows-thread.h"
-#else
-#    include "os/unix-thread.h"
-#endif
+#include "util/int.h"
 
-#endif  // SRC_OS_THREAD_H_
+extern "C" {
+void exit(int);
+void free(void*);
+void* malloc(size_t);
+int rand();
+void srand(unsigned);
+time_t time(time_t*);
+}
+
+#endif  // SRC_OS_UNIX_CSTDLIB_H_

@@ -42,8 +42,7 @@ class MappedFile {
 
     MappedFile& operator=(MappedFile&& other);
 
-    template <typename T>
-    const T at(size_t offset) const {
+    template<typename T> const T at(size_t offset) const {
         return reinterpret_cast<T>(data + offset);
     }
 
@@ -53,4 +52,4 @@ class MappedFile {
     char* data;
 };
 
-#endif // SRC_OS_WINDOWS_MAPPED_FILE_H_
+#endif  // SRC_OS_WINDOWS_MAPPED_FILE_H_

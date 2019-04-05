@@ -28,9 +28,9 @@
 #define SRC_OS_CSTDLIB_H_
 
 #ifdef _WIN32
-#include "os/windows-cstdlib.h"
+#    include "os/windows-cstdlib.h"
 #else
-#include "os/unix-cstdlib.h"
+#    include "os/unix-cstdlib.h"
 #endif
 
 #endif  // SRC_OS_CSTDLIB_H_

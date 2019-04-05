@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** thread.h                      **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** os/unix-cstring.h           **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,13 +24,19 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_THREAD_H_
-#define SRC_OS_THREAD_H_
+#ifndef SRC_OS_UNIX_CSTRING_H_
+#define SRC_OS_UNIX_CSTRING_H_
 
-#ifdef _WIN32
-#    include "os/windows-thread.h"
-#else
-#    include "os/unix-thread.h"
-#endif
+#include "util/int.h"
 
-#endif  // SRC_OS_THREAD_H_
+extern "C" {
+void* memchr(const void* s, int c, size_t n);
+int memcmp(void const* s1, void const* s2, size_t n);
+void* memmem(const void* haystack,
+             size_t h_sz,
+             const void* needle,
+             size_t n_sz);
+size_t strlen(char const* s);
+}
+
+#endif  // SRC_OS_UNIX_CSTRING_H_

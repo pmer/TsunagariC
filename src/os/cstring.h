@@ -28,9 +28,9 @@
 #define SRC_OS_CSTRING_H_
 
 #ifdef _WIN32
-#include "os/windows-cstring.h"
+#    include "os/windows-cstring.h"
 #else
-#include "os/unix-cstring.h"
+#    include "os/unix-cstring.h"
 #endif
 
 #endif  // SRC_OS_CSTRING_H_

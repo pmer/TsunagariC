@@ -27,11 +27,12 @@
 
 #ifdef __APPLE__
 
-#ifndef SRC_OS_MAC_H_
-#define SRC_OS_MAC_H_
+#    ifndef SRC_OS_MAC_H_
+#        define SRC_OS_MAC_H_
 
 /**
- * Sets the current working directory to the "Resources" folder in the .app package.
+ * Sets the current working directory to the "Resources" folder in the .app
+ * package.
  */
 void macSetWorkingDirectory();
 
@@ -40,6 +41,6 @@ void macSetWorkingDirectory();
  */
 void macMessageBox(const char* title, const char* msg);
 
-#endif  // SRC_OS_MAC_H_
+#    endif  // SRC_OS_MAC_H_
 
 #endif  // __APPLE__

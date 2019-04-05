@@ -24,10 +24,11 @@
 // IN THE SOFTWARE.
 // **********
 
-// Original source downloaded from: http://git.musl-libc.org/cgit/musl/plain/src/string/memmem.c
+// Original source downloaded from:
+// http://git.musl-libc.org/cgit/musl/plain/src/string/memmem.c
 
 // **********
-// Copyright © 2005-2014 Rich Felker, et al.
+// Copyright 2005-2014 Rich Felker, et al.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -51,6 +52,8 @@
 #include "os/windows-cstring.h"
 
 #include "util/int.h"
+
+extern "C" {
 
 static char*
 twobyte_memmem(const unsigned char* h, size_t k, const unsigned char* n) {
@@ -233,4 +236,6 @@ memmem(const void* h0, size_t k, const void* n0, size_t l) {
         return fourbyte_memmem(h, k, n);
 
     return twoway_memmem(h, h + k, n, l);
+}
+
 }

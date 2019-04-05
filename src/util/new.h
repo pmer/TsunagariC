@@ -29,11 +29,9 @@
 
 #include "util/int.h"
 
-#ifndef _LIBCPP_NEW
 inline void*
 operator new(size_t, void* p) noexcept {
     return p;
 }
-#endif
 
 #endif  // SRC_UTIL_NEW_H_

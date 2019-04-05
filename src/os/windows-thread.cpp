@@ -46,7 +46,8 @@ class Thread {
 
     inline void join() noexcept {
         assert_(id != 0);
-        assert_(WaitForSingleObjectEx(t, INFINITE, FALSE) != WAIT_FAILED);  // GetLastError();
+        assert_(WaitForSingleObjectEx(t, INFINITE, FALSE) !=
+                WAIT_FAILED);        // GetLastError();
         assert_(CloseHandle(*__t));  // GetLastError();
         id = 0;
     }

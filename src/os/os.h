@@ -36,7 +36,9 @@ extern char dirSeparator;
 
 Optional<uint64_t> getFileSize(StringView path);
 bool writeFile(StringView path, uint32_t length, void* data);
-bool writeFileVec(StringView path, uint32_t count, uint32_t* lengths,
+bool writeFileVec(StringView path,
+                  uint32_t count,
+                  uint32_t* lengths,
                   void** datas);
 bool isDir(StringView path);
 void makeDirectory(StringView path);
@@ -53,9 +55,9 @@ enum TermColor {
 void setTermColor(TermColor color);
 
 #ifdef _WIN32
-#include "windows.h"
+#    include "windows.h"
 #else
-#include "unix.h"
+#    include "unix.h"
 #endif
 
 #endif  // SRC_OS_OS_H_

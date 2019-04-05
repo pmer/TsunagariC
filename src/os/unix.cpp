@@ -43,7 +43,8 @@
 
 char dirSeparator = '/';
 
-Optional<uint64_t> getFileSize(String& path) {
+Optional<uint64_t>
+getFileSize(String& path) {
     struct stat status;
     if (stat(path.null(), &status)) {
         return Optional<uint64_t>();
@@ -51,12 +52,14 @@ Optional<uint64_t> getFileSize(String& path) {
     return Optional<uint64_t>(static_cast<uint64_t>(status.st_size));
 }
 
-Optional<uint64_t> getFileSize(StringView path) {
+Optional<uint64_t>
+getFileSize(StringView path) {
     String path_(path);
     return getFileSize(path_);
 }
 
-bool isDir(String& path) {
+bool
+isDir(String& path) {
     struct stat status;
     if (stat(path.null(), &status)) {
         return false;
@@ -64,21 +67,25 @@ bool isDir(String& path) {
     return S_ISDIR(status.st_mode);
 }
 
-bool isDir(StringView path) {
+bool
+isDir(StringView path) {
     String path_(path);
     return isDir(path_);
 }
 
-void makeDirectory(String& path) {
+void
+makeDirectory(String& path) {
     mkdir(path.null(), 0777);
 }
 
-void makeDirectory(StringView path) {
+void
+makeDirectory(StringView path) {
     String path_(path);
     return makeDirectory(path_);
 }
 
-vector<String> listDir(String& path) {
+vector<String>
+listDir(String& path) {
     DIR* dir = nullptr;
     struct dirent* entry = nullptr;
     vector<String> names;
@@ -108,12 +115,14 @@ vector<String> listDir(String& path) {
     return names;
 }
 
-vector<String> listDir(StringView path) {
+vector<String>
+listDir(StringView path) {
     String path_(path);
     return listDir(path_);
 }
 
-bool writeFile(String& path, size_t length, void* data) {
+bool
+writeFile(String& path, uint32_t length, void* data) {
     int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
     if (fd == -1) {
         return false;
@@ -127,12 +136,14 @@ bool writeFile(String& path, size_t length, void* data) {
     return true;
 }
 
-bool writeFile(StringView path, size_t length, void* data) {
+bool
+writeFile(StringView path, uint32_t length, void* data) {
     String path_(path);
     return writeFile(path_, length, data);
 }
 
-bool writeFileVec(String& path, size_t count, size_t* lengths, void** datas) {
+bool
+writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas) {
     int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
     if (fd == -1) {
         return false;
@@ -157,16 +168,16 @@ bool writeFileVec(String& path, size_t count, size_t* lengths, void** datas) {
     return true;
 }
 
-bool writeFileVec(StringView path, size_t count, size_t* lengths, void** datas) {
+bool
+writeFileVec(StringView path, uint32_t count, uint32_t* lengths, void** datas) {
     String path_(path);
     return writeFileVec(path_, count, lengths, datas);
 }
 
 /*
-bool writeFileVec(String& path, size_t count, size_t* lengths, void** datas) {
-    int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
-    if (fd == -1) {
-        return false;
+bool writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas)
+{ int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666); if (fd == -1)
+{ return false;
     }
     for (size_t i = 0; i < count; i++) {
         size_t length = lengths[i];
@@ -182,37 +193,40 @@ bool writeFileVec(String& path, size_t count, size_t* lengths, void** datas) {
 }
 */
 
-Optional<String> readFile(String& path) {
+Optional<String>
+readFile(String& path) {
     Optional<uint64_t> size = getFileSize(path);
     if (!size) {
         return Optional<String>();
     }
-    
+
     FILE* f = fopen(path.null(), "r");
     if (!f) {
         return Optional<String>();
     }
-    
+
     String contents;
     contents.resize(*size);
-    
+
     ssize_t read = fread(contents.data(), *size, 1, f);
     if (read != 1) {
         fclose(f);
         return Optional<String>();
     }
-    
+
     fclose(f);
-    
+
     return Optional<String>(move_(contents));
 }
 
-Optional<String> readFile(StringView s) {
+Optional<String>
+readFile(StringView s) {
     String s_(s);
     return readFile(s_);
 }
 
-static bool isaTTY() {
+static bool
+isaTTY() {
     static bool checked = false;
     static bool tty = false;
 
@@ -222,7 +236,8 @@ static bool isaTTY() {
     return tty;
 }
 
-void setTermColor(TermColor color) {
+void
+setTermColor(TermColor color) {
     if (!isaTTY()) {
         return;
     }
@@ -248,64 +263,72 @@ void setTermColor(TermColor color) {
     }
 }
 
-Optional<MappedFile> MappedFile::fromPath(String& path) {
-	int fd = open(path.null(), O_RDONLY);
-	if (fd == -1) {
-		return Optional<MappedFile>();
-	}
+Optional<MappedFile>
+MappedFile::fromPath(String& path) {
+    int fd = open(path.null(), O_RDONLY);
+    if (fd == -1) {
+        return Optional<MappedFile>();
+    }
 
-	struct stat st;
-	fstat(fd, &st);
+    struct stat st;
+    fstat(fd, &st);
 
-	if (st.st_size == 0) {
-		close(fd);
-		return Optional<MappedFile>();
-	}
+    if (st.st_size == 0) {
+        close(fd);
+        return Optional<MappedFile>();
+    }
 
-	// Cannot open files >4 GB on 32-bit operating systems since they will fail
-	// the mmap.
-	if (sizeof(long long) > sizeof(size_t)) {
-		if (st.st_size > static_cast<long long>(SIZE_MAX)) {
-			close(fd);
-			return Optional<MappedFile>();
-		}
-	}
+    // Cannot open files >4 GB on 32-bit operating systems since they will fail
+    // the mmap.
+    if (sizeof(long long) > sizeof(size_t)) {
+        if (st.st_size > static_cast<long long>(SIZE_MAX)) {
+            close(fd);
+            return Optional<MappedFile>();
+        }
+    }
 
-	char* map = reinterpret_cast<char*>(mmap(nullptr,
-		static_cast<size_t>(st.st_size),
-		PROT_READ, MAP_SHARED, fd, 0));
-	size_t len = static_cast<size_t>(st.st_size);
+    char* map = reinterpret_cast<char*>(mmap(nullptr,
+                                             static_cast<size_t>(st.st_size),
+                                             PROT_READ,
+                                             MAP_SHARED,
+                                             fd,
+                                             0));
+    size_t len = static_cast<size_t>(st.st_size);
 
-	if (map == MAP_FAILED) {
-		close(fd);
-		return Optional<MappedFile>();
-	}
+    if (map == MAP_FAILED) {
+        close(fd);
+        return Optional<MappedFile>();
+    }
 
-	// FIXME: Close the fd now or at destruction?
-	return Optional<MappedFile>(MappedFile(map, len));
+    // FIXME: Close the fd now or at destruction?
+    return Optional<MappedFile>(MappedFile(map, len));
 }
 
-Optional<MappedFile> MappedFile::fromPath(StringView path) {
+Optional<MappedFile>
+MappedFile::fromPath(StringView path) {
     String path_(path);
     return MappedFile::fromPath(path_);
 }
 
 MappedFile::MappedFile() : map(reinterpret_cast<char*>(MAP_FAILED)), len(0) {}
 
-MappedFile::MappedFile(MappedFile&& other) { *this = move_(other); }
+MappedFile::MappedFile(MappedFile&& other) {
+    *this = move_(other);
+}
 
 MappedFile::MappedFile(char* map, size_t len) : map(map), len(len) {}
 
 MappedFile::~MappedFile() {
-	if (map != MAP_FAILED) {
-		munmap(map, len);
-	}
+    if (map != MAP_FAILED) {
+        munmap(map, len);
+    }
 }
 
-MappedFile& MappedFile::operator=(MappedFile&& other) {
-	map = other.map;
-	len = other.len;
-	other.map = reinterpret_cast<char*>(MAP_FAILED);
-	other.len = 0;
-	return *this;
+MappedFile&
+MappedFile::operator=(MappedFile&& other) {
+    map = other.map;
+    len = other.len;
+    other.map = reinterpret_cast<char*>(MAP_FAILED);
+    other.len = 0;
+    return *this;
 }

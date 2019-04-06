@@ -26,12 +26,11 @@
 
 #include "core/window.h"
 
-#include <chrono>
-#include <thread>
-
 #include "core/client-conf.h"
 #include "core/display-list.h"
 #include "core/world.h"
+#include "os/chrono.h"
+#include "os/thread.h"
 #include "util/string-view.h"
 
 class NullGameWindow : public GameWindow {
@@ -49,22 +48,20 @@ class NullGameWindow : public GameWindow {
     void setCaption(StringView) final {}
 
     void mainLoop() final {
-        using namespace std::chrono;
-
-        time_point<steady_clock> last;
+        TimePoint last = 0;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
         while (true) {
-            auto now = steady_clock::now();
-            double time = duration_cast<milliseconds>(now - last).count();
+            TimePoint now = SteadyClock::now();
+            time_t time = ns_to_ms(now - last);
 
             World::instance().update(static_cast<time_t>(time));
             DisplayList dl;
             World::instance().draw(&dl);
 
-            auto nextFrame = last + microseconds(1000000) / 60;
-            std::this_thread::sleep_until(nextFrame);
+            TimePoint nextFrame = last + s_to_ns(1) / 60;
+            SleepFor(nextFrame - SteadyClock::now());
 
             last = now;
         }
@@ -96,8 +93,6 @@ GameWindow::instance() {
 
 time_t
 GameWindow::time() {
-    using namespace std::chrono;
-
-    auto now = steady_clock::now();
-    return now.time_since_epoch().count() / 1000000;
+    TimePoint now = SteadyClock::now();
+    return ns_to_ms(now);
 }

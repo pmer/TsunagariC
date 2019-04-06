@@ -160,6 +160,7 @@ target_sources(tsunagari
 )
 
 target_sources(tsunagari
+    PUBLIC  src/os/chrono.h
 	PUBLIC  src/os/cstdlib.h
     PUBLIC  src/os/os.h
 )
@@ -199,6 +200,7 @@ elseif(APPLE)
     target_sources(tsunagari
         PRIVATE src/os/mac-gui.mm
         PUBLIC  src/os/mac-gui.h
+        PUBLIC  src/os/unix-chrono.h
         PRIVATE src/os/unix.cpp
         PUBLIC  src/os/unix.h
     )

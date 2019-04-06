@@ -26,11 +26,8 @@
 
 #include "core/measure.h"
 
-#include <chrono>
-#include <string>  // for std::to_string<duration>
-
 #include "core/log.h"
-
+#include "os/chrono.h"
 
 #ifdef __APPLE__
 #    include <sys/kdebug_signpost.h>
@@ -57,7 +54,7 @@ getSignpost(String description) {
 
 struct TimeMeasureImpl {
     String description;
-    std::chrono::time_point<std::chrono::system_clock> start;
+    TimePoint start;
 #ifdef __APPLE__
     uint32_t signpost;
 #endif
@@ -66,7 +63,7 @@ struct TimeMeasureImpl {
 TimeMeasure::TimeMeasure(String description) {
     impl = new TimeMeasureImpl;
     impl->description = move_(description);
-    impl->start = std::chrono::system_clock::now();
+    impl->start = SteadyClock::now();
 #ifdef __APPLE__
     impl->signpost = getSignpost(impl->description);
     kdebug_signpost_start(impl->signpost, 0, 0, 0, 0);
@@ -78,13 +75,12 @@ TimeMeasure::~TimeMeasure() {
     kdebug_signpost_end(impl->signpost, 0, 0, 0, 0);
 #endif
 
-    std::chrono::time_point<std::chrono::system_clock> end;
-    end = std::chrono::system_clock::now();
+    TimePoint end = SteadyClock::now();
 
-    std::chrono::duration<double> elapsed_seconds = end - impl->start;
+    Duration elapsed = end - impl->start;
     Log::info("Measure",
               String() << impl->description << " took "
-                       << std::to_string(elapsed_seconds.count()).c_str()
+                       << ns_to_s_d(elapsed)
                        << " seconds");
 
     delete impl;

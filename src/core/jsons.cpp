@@ -24,12 +24,17 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/jsons.h"
-
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
 
 #include "rapidjson/document.h"
 #include "rapidjson/reader.h"
+
+// Skip later headers that conflict with ones that rapidjson includes.
+#define SRC_OS_UNIX_CSTRING_H_
+#define SRC_UTIL_INT_H_
+#define SRC_UTIL_NEW_H_
+
+#include "core/jsons.h"
 
 #include "cache/cache-template.h"
 #include "cache/readercache.h"

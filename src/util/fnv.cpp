@@ -29,7 +29,7 @@
 
 #if __SIZEOF_SIZE_T__ == 4 || (defined(_WIN32) && !defined(_WIN64))
 
-size_t fnvHash(const char* data, size_t size) {
+size_t fnvHash(const char* data, size_t size) noexcept {
     size_t hash = 0x811c9dc5;
 
     const uint8_t* begin = (const uint8_t*)data;
@@ -44,7 +44,7 @@ size_t fnvHash(const char* data, size_t size) {
 
 #elif __SIZEOF_SIZE_T__ == 8 || (defined(_WIN32) && defined(_WIN64))
 
-size_t fnvHash(const char* data, size_t size) {
+size_t fnvHash(const char* data, size_t size) noexcept {
     size_t hash = 0xcbf29ce484222325;
 
     const uint8_t* begin = (const uint8_t*)data;

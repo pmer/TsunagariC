@@ -27,10 +27,21 @@
 #ifndef SRC_OS_CHRONO_H_
 #define SRC_OS_CHRONO_H_
 
-#ifdef _WIN32
-#    include "os/windows-chrono.h"
-#else
-#    include "os/unix-chrono.h"
-#endif
+#include "util/assert.h"
+
+typedef long long Duration;  // Nanoseconds.
+typedef long long TimePoint;  // Nanoseconds.
+
+constexpr Duration ns_to_ms(Duration d) { return d / 1000000; }
+constexpr Duration ns_to_s(Duration d) { return d / 1000000000; }
+constexpr Duration s_to_ns(Duration d) { return d * 1000000000; }
+constexpr double ns_to_s_d(Duration d) { return d / 1000000000.0; }
+
+class SteadyClock {
+public:
+    static TimePoint now() noexcept;
+};
+
+void SleepFor(Duration d) noexcept;
 
 #endif  // SRC_OS_CHRONO_H_

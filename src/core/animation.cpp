@@ -25,7 +25,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "animation.h"
+#include "core/animation.h"
 
 #include "util/assert.h"
 #include "util/move.h"

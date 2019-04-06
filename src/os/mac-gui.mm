@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine               **
 ** os/mac-gui.mm                       **
 ** Copyright 2013      Michael Reiley  **
-** Copyright 2013-2016 Paul Merrill    **
+** Copyright 2013-2019 Paul Merrill    **
 ****************************************/
 
 // **********
@@ -27,41 +27,112 @@
 
 #ifdef __APPLE__
 
-#include <stdlib.h>
-
-#import <Foundation/Foundation.h>
-#import <AppKit/AppKit.h>
+#include "os/mac-gui.h"
 
 #include "core/world.h"
+#include "util/assert.h"
+#include "util/string-view.h"
 
-void macSetWorkingDirectory() {
+extern "C" {
+int chdir(const char *) noexcept;
+
+typedef signed long CFIndex;
+typedef signed char BOOL;
+typedef unsigned char Boolean;
+typedef unsigned char UInt8;
+
+typedef struct CFBundle *CFBundleRef;
+typedef const __attribute__((objc_bridge(id))) void* CFTypeRef;
+typedef struct __CFURL *CFURLRef;
+
+CFURLRef CFBundleCopyBundleURL(CFBundleRef bundle) noexcept;
+CFBundleRef CFBundleGetMainBundle() noexcept;
+void CFRelease(CFTypeRef cf) noexcept;
+Boolean CFURLGetFileSystemRepresentation(CFURLRef url, Boolean resolveAgainstBase, UInt8 *buffer, CFIndex maxBufLen) noexcept;
+
+typedef long NSInteger;
+typedef unsigned long NSUInteger;
+
+typedef NSInteger NSModalResponse;
+typedef NSUInteger NSStringEncoding;
+#define NSUTF8StringEncoding 4
+    
+@protocol NSObject
+- (oneway void)release;
+@end
+@interface NSObject <NSObject>
++ (instancetype)alloc;
+- (instancetype)init;
+@end
+
+@interface NSString : NSObject
+- (nullable instancetype)initWithBytesNoCopy:(const void *)bytes length:(NSUInteger)len encoding:(NSStringEncoding)encoding freeWhenDone:(BOOL)freeBuffer;
+@end
+
+@interface NSFileManager : NSObject
+@property (class, readonly, strong) NSFileManager *defaultManager;
+- (BOOL)changeCurrentDirectoryPath:(NSString *)path;
+@end
+}
+
+@interface NSButton
+@end
+
+typedef NSUInteger NSAlertStyle;
+enum {
+    NSAlertStyleCritical = 2
+};
+
+@interface NSAlert : NSObject
+@property (copy) NSString *messageText;
+@property (copy) NSString *informativeText;
+@property NSAlertStyle alertStyle;
+- (NSButton *)addButtonWithTitle:(NSString *)title;
+- (NSModalResponse)runModal;
+@end
+
+void macSetWorkingDirectory() noexcept {
     UInt8 pathBytes[512];
     CFBundleRef mainBundle;
     CFURLRef url;
     NSString* appPath;
 
-    /* FIXME: memory leaks? */
     mainBundle = CFBundleGetMainBundle();
+    assert_(mainBundle);
+    
     url = CFBundleCopyBundleURL(mainBundle);
-    CFURLGetFileSystemRepresentation(url, true, pathBytes, sizeof(pathBytes));
-    appPath = [[NSString alloc] initWithBytes:pathBytes
-                                       length:strlen((char*)pathBytes)+1
-                                     encoding:NSUTF8StringEncoding];
-    [[NSFileManager defaultManager] changeCurrentDirectoryPath:appPath];
+    assert_(url);
+    
+    assert_(CFURLGetFileSystemRepresentation(url,
+                                             true,
+                                             pathBytes,
+                                             sizeof(pathBytes)));
+    
+    appPath = [[NSString alloc] initWithBytesNoCopy:pathBytes
+                                             length:StringView((char*)pathBytes).size + 1
+                                           encoding:NSUTF8StringEncoding
+                                       freeWhenDone:false];
+    assert_(appPath);
+    
+    assert_([[NSFileManager defaultManager] changeCurrentDirectoryPath:appPath]);
 
-    chdir("Contents/Resources");
+    assert_(chdir("Contents/Resources") == 0);
 
     [appPath release];
     CFRelease(url);
 }
 
-void macMessageBox(const char* title, const char* msg) {
+void macMessageBox(StringView title, StringView msg) noexcept {
     World::instance().setPaused(true);
 
-    NSString *nsTitle = [[NSString alloc] initWithCString:title
-                                                 encoding:NSUTF8StringEncoding];
-    NSString *nsMsg = [[NSString alloc] initWithCString:msg
-                                               encoding:NSUTF8StringEncoding];
+    NSString *nsTitle = [[NSString alloc] initWithBytesNoCopy:title.data
+                                                       length:title.size
+                                                     encoding:NSUTF8StringEncoding
+                                                 freeWhenDone:false];
+    NSString *nsMsg = [[NSString alloc] initWithBytesNoCopy:msg.data
+                                                     length:msg.size
+                                                   encoding:NSUTF8StringEncoding
+                                               freeWhenDone:false];
 
     NSAlert *alert = [[NSAlert alloc] init];
     [alert addButtonWithTitle:@"OK"];

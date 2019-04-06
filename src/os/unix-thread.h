@@ -29,6 +29,7 @@
 
 #include "os/thread.h"
 #include "util/assert.h"
+#include "util/function.h"
 #include "util/int.h"
 #include "util/move.h"
 

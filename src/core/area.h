@@ -126,7 +126,9 @@ class Area {
     bool loopsInY() const;
 
     // Create an NPC and insert it into the Area.
-    Rc<NPC> spawnNPC(StringView descriptor, vicoord coord, StringView phase);
+    Rc<Character> spawnNPC(StringView descriptor,
+                           vicoord coord,
+                           StringView phase);
     // Create an Overlay and insert it into the Area.
     Rc<Overlay> spawnOverlay(StringView descriptor,
                              vicoord coord,

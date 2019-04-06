@@ -132,7 +132,6 @@ target_sources(tsunagari
     PRIVATE src/core/player.cpp
     PUBLIC  src/core/player.h
     PUBLIC  src/core/resources.h
-    PRIVATE src/core/sounds.cpp
     PUBLIC  src/core/sounds.h
     PRIVATE src/core/tile.cpp
     PUBLIC  src/core/tile.h
@@ -200,7 +199,7 @@ elseif(APPLE)
     target_sources(tsunagari
         PRIVATE src/os/mac-gui.mm
         PUBLIC  src/os/mac-gui.h
-        PUBLIC  src/os/unix-chrono.h
+        PRIVATE src/os/unix-chrono.cpp
         PRIVATE src/os/unix.cpp
         PUBLIC  src/os/unix.h
     )

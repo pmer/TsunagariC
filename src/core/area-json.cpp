@@ -27,8 +27,6 @@
 
 #include "core/area-json.h"
 
-#include <limits.h>
-
 #include "core/area.h"
 #include "core/character.h"
 #include "core/entity.h"
@@ -43,6 +41,7 @@
 #include "core/world.h"
 #include "os/cmath.h"
 #include "util/assert.h"
+#include "util/int.h"
 #include "util/move.h"
 #include "util/optional.h"
 #include "util/string2.h"
@@ -414,7 +413,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
 
     // If a Tile is animated, it needs both member frames and a speed.
     vector<Rc<Image>> framesvec;
-    int frameLen = -1;
+    Optional<int> frameLen;
 
     if (obj->hasString("flags")) {
         StringView flags = obj->stringAt("flags");
@@ -451,14 +450,13 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
         // Add frames to our animation.
         // We already have one from TileType's constructor.
         for (String& frame : frames) {
-            int idx = atoi(frame.null());
-            if (idx < 0 || (int)img->size() <= idx) {
+            unsigned idx = parseUInt(frame);
+            if (img->size() <= idx) {
                 Log::err(descriptor,
-                         "frame index out "
-                         "of range for animated tile");
+                         "frame index out of range for animated tile");
                 return false;
             }
-            framesvec.push_back((*img.get())[(size_t)idx]);
+            framesvec.push_back((*img.get())[idx]);
         }
     }
     if (obj->hasString("speed")) {
@@ -468,11 +466,11 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
         frameLen = (int)(1000.0 / *hertz);
     }
 
-    if (framesvec.size() || frameLen != -1) {
-        if (framesvec.empty() || frameLen == -1) {
-            Log::err(descriptor,
-                     "Tile type must either have both "
-                     "frames and speed or none");
+    if (framesvec.size() || frameLen) {
+        if (framesvec.empty() || !frameLen) {
+            Log::err(
+                    descriptor,
+                    "Tile type must either have both frames and speed or none");
             return false;
         }
         // Add 'now' to Animation constructor??
@@ -827,16 +825,20 @@ isIntegerOrPlus(StringView s) {
 
     for (char c : s) {
         if (state == space) {
-            if (isspace(c))
+            if (c == ' ') {
                 continue;
-            else
+            }
+            else {
                 state++;
+            }
         }
         if (state == digit) {
-            if (isdigit(c))
+            if ('0' <= c && c <= '9') {
                 continue;
-            else
+            }
+            else {
                 state++;
+            }
         }
         if (state == sign) {
             return c == '+';
@@ -862,15 +864,21 @@ AreaJSON::parseExit(StringView dest,
         return false;
     }
 
-    String area = move_(strs[0]), x = move_(strs[1]), y = move_(strs[2]),
-           z = move_(strs[3]);
+    String area = move_(strs[0]);
+    String x = move_(strs[1]);
+    String y = move_(strs[2]);
+    String z = move_(strs[3]);
 
     if (!isIntegerOrPlus(x) || !isIntegerOrPlus(y) || !isIntegerOrPlus(z)) {
         Log::err(descriptor, "exit: Invalid format");
         return false;
     }
 
-    exit = Exit(area, atoi(x.null()), atoi(y.null()), atof(z.null()));
+    Optional<int> _x = parseInt(x);
+    Optional<int> _y = parseInt(y);
+    Optional<double> _z = parseDouble(z);
+
+    exit = Exit(area, *_x, *_y, *_z);
 
     *wwide = x.view().find('+');
     *hwide = y.view().find('+');

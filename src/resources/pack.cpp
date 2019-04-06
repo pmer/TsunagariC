@@ -76,7 +76,7 @@ resourceLoad(StringView path) {
     uint32_t blobSize = pack->getBlobSize(index);
 
     // Will it fit in memory?
-    if (blobSize > SIZE_T_MAX) {
+    if (blobSize > UINT32_MAX) {
         Log::err("PackResources",
                  String() << getFullPath(path) << ": file too large");
         return Optional<StringView>();

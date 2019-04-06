@@ -29,6 +29,6 @@
 
 #include "util/int.h"
 
-size_t fnvHash(const char* data, size_t size);
+size_t fnvHash(const char* data, size_t size) noexcept;
 
 #endif  // SRC_UTIL_FNV_H_

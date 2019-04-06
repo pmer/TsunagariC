@@ -44,7 +44,20 @@ typedef unsigned long size_t;
 
 typedef size_t uintptr_t;
 
-static constexpr size_t SIZE_T_MAX = 0xffffffff;
+static constexpr int INT_MAX = 0x7fffffff;
+static constexpr int UINT_MAX = 0xffffffff;
 static constexpr uint32_t UINT32_MAX = 0xffffffff;
+
+#ifdef __APPLE__
+#ifdef __LP64__
+static constexpr size_t SIZE_T_MAX = 0xffffffffffffffff;
+#else
+static constexpr size_t SIZE_T_MAX = 0xffffffff;
+#endif
+#endif
+
+#ifdef __APPLE__
+static constexpr double DBL_MAX = __DBL_MAX__;
+#endif
 
 #endif  // SRC_UTIL_INT_H_

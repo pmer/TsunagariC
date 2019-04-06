@@ -35,7 +35,7 @@ operator<(const TaskContext& lhs, const TaskContext& rhs) {
 }
 
 DispatchQueueImpl::DispatchQueueImpl() {
-    unsigned n = std::thread::hardware_concurrency();
+    unsigned n = Thread::hardware_concurrency();
     // n = 1;
     // debug, and to help with MusicWorker until better mechanism for
     // series-of-tasks implemented

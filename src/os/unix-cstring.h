@@ -30,13 +30,13 @@
 #include "util/int.h"
 
 extern "C" {
-void* memchr(const void* s, int c, size_t n);
-int memcmp(void const* s1, void const* s2, size_t n);
+void* memchr(const void* s, int c, size_t n) noexcept;
+int memcmp(void const* s1, void const* s2, size_t n) noexcept;
 void* memmem(const void* haystack,
              size_t h_sz,
              const void* needle,
-             size_t n_sz);
-size_t strlen(char const* s);
+             size_t n_sz) noexcept;
+size_t strlen(char const* s) noexcept;
 }
 
 #endif  // SRC_OS_UNIX_CSTRING_H_

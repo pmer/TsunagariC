@@ -1,8 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** random.cpp                         **
-** Copyright 2011-2013 PariahSoft LLC **
-** Copyright 2016 Paul Merrill        **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,7 +27,8 @@
 
 #include "util/random.h"
 
-#include <stdlib.h>
+#include "os/cstdlib.h"
+#include "util/int.h"
 
 int randInt(int min, int max) {
     return rand() % ((max+1)-min) + min;
@@ -35,6 +36,6 @@ int randInt(int min, int max) {
 
 double randFloat(double min, double max) {
         int i = rand();
-        double d = (double)i / RAND_MAX;
+        double d = (double)i / INT_MAX;
         return d * (max-min) + min;
 }

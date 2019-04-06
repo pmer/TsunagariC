@@ -34,16 +34,16 @@
 
 extern char dirSeparator;
 
-Optional<uint64_t> getFileSize(StringView path);
-bool writeFile(StringView path, uint32_t length, void* data);
+Optional<uint64_t> getFileSize(StringView path) noexcept;
+bool writeFile(StringView path, uint32_t length, void* data) noexcept;
 bool writeFileVec(StringView path,
                   uint32_t count,
                   uint32_t* lengths,
-                  void** datas);
-bool isDir(StringView path);
-void makeDirectory(StringView path);
-vector<String> listDir(StringView path);
-Optional<String> readFile(StringView path);
+                  void** datas) noexcept;
+bool isDir(StringView path) noexcept;
+void makeDirectory(StringView path) noexcept;
+vector<String> listDir(StringView path) noexcept;
+Optional<String> readFile(StringView path) noexcept;
 
 enum TermColor {
     TC_RESET,
@@ -52,7 +52,7 @@ enum TermColor {
     TC_RED,
 };
 
-void setTermColor(TermColor color);
+void setTermColor(TermColor color) noexcept;
 
 #ifdef _WIN32
 #    include "windows.h"

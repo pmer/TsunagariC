@@ -26,12 +26,12 @@
 
 #include "core/display-list.h"
 
-#include <limits>
-
 #include "core/window.h"
 #include "util/function.h"
+#include "util/int.h"
 #include "util/math2.h"
 
+/*
 static void
 pushLetterbox(DisplayList* display, Function<void()> op) {
     GameWindow& window = GameWindow::instance();
@@ -67,11 +67,13 @@ pushLetterbox(DisplayList* display, Function<void()> op) {
 
     window.clip(x, y, width, height, op);
 }
+*/
 
 void
 displayListPresent(DisplayList* display) {
     GameWindow& window = GameWindow::instance();
 
+    /*
     pushLetterbox(display, [&] {
         // Zoom and pan the Area to fit on-screen.
         window.translate(-display->padding.x, -display->padding.y, [&] {
@@ -91,17 +93,17 @@ displayListPresent(DisplayList* display) {
             window.drawRect(0, ww, 0, wh, display->colorOverlayARGB);
         }
     });
+    */
 
     if (display->paused) {
         unsigned ww = window.width();
         unsigned wh = window.height();
         window.drawRect(0, ww, 0, wh, 0x7F000000);
-
         auto pauseInfo = Images::instance().load("resource/pause_overlay.png");
         if (pauseInfo) {
             unsigned iw = pauseInfo->width();
             unsigned ih = pauseInfo->height();
-            double top = std::numeric_limits<double>::max();
+            double top = DBL_MAX;
             pauseInfo->draw(ww / 2 - iw / 2, wh / 2 - ih / 2, top);
         }
     }

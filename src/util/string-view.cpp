@@ -31,12 +31,11 @@
 
 Optional<size_t>
 StringView::find(char needle) const noexcept {
-    for (size_t i = 0; i < size; i++) {
-        if (data[i] == needle) {
-            return Optional<size_t>(i);
-        }
+    char* result = static_cast<char*>(memchr(data, needle, size));
+    if (result == nullptr) {
+        return Optional<size_t>();
     }
-    return Optional<size_t>();
+    return Optional<size_t>(result - data);
 }
 
 Optional<size_t>
@@ -66,7 +65,7 @@ StringView::rfind(char needle) const noexcept {
     if (size == 0) {
         return Optional<size_t>();
     }
-    for (size_t i = size - 1; i >= size; i++) {
+    for (size_t i = size - 1; i >= 0; i--) {
         if (data[i] == needle) {
             return Optional<size_t>(i);
         }
@@ -75,6 +74,6 @@ StringView::rfind(char needle) const noexcept {
 }
 
 size_t
-hash_(StringView s) {
+hash_(StringView s) noexcept {
     return fnvHash(s.data, s.size);
 }

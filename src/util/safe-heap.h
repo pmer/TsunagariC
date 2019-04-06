@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** safe-heap.h                 **
-** Copyright 2016 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** safe-heap.h                      **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,52 +27,47 @@
 #ifndef SRC_UTIL_SAFE_HEAP_H_
 #define SRC_UTIL_SAFE_HEAP_H_
 
-#include <condition_variable>
-#include <mutex>
-#include <queue>
-
+#include "os/condition-variable.h"
+#include "os/mutex.h"
 #include "util/optional.h"
+#include "util/vector.h"
 
 // TODO: Replace with lock-free variant.
-template <class T>
-class SafeHeap {
+template<class T> class SafeHeap {
  public:
-    SafeHeap()
-        : q()
-        , m()
-        , c()
-        , alive(true) {}
+    SafeHeap() : alive(true) {}
 
-     void push(T t) {
-         std::lock_guard<std::mutex> lock(m);
-         q.push(t);
-         c.notify_one();
-     }
+    void push(T t) {
+        LockGuard lock(m);
+        q.push_back(t);
+        c.notifyOne();
+    }
 
-     Optional<T> pop() {
-         std::unique_lock<std::mutex> lock(m);
-         while (alive && q.empty()) {
-                 c.wait(lock);
-         }
-         if (!q.empty()) {
-             T val = q.top();
-             q.pop();
-             return Optional<T>(val);
-         } else {
-             return Optional<T>();
-         }
-     }
+    Optional<T> pop() {
+        LockGuard lock(m);
+        while (alive && q.empty()) {
+            c.wait(lock);
+        }
+        if (!q.empty()) {
+            T val = move_(q.front());
+            q.erase(q.begin());
+            return Optional<T>(val);
+        }
+        else {
+            return Optional<T>();
+        }
+    }
 
-     void end() {
+    void end() {
         alive = false;
-        c.notify_all();
-     }
+        c.notifyAll();
+    }
 
  private:
-     std::priority_queue<T> q;
-     std::mutex m;
-     std::condition_variable c;
-     bool alive;
+    vector<T> q;
+    Mutex m;
+    ConditionVariable c;
+    bool alive;
 };
 
 #endif  // SRC_UTIL_SAFE_HEAP_H_

@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** unix-chrono.h               **
+** unix-chrono.cpp             **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,9 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_UNIX_CHRONO_H_
-#define SRC_OS_UNIX_CHRONO_H_
-
+#include "os/chrono.h"
 #include "util/assert.h"
 #include "util/int.h"
 
@@ -39,39 +37,26 @@ extern "C" {
     enum clockid_t {
         CLOCK_UPTIME_RAW = 8,
     };
-    int clock_gettime(clockid_t clock_id, struct timespec *tp);
-    int nanosleep(const struct timespec *rqtp, struct timespec *rmtp);
-    extern int * __error(void);
+    int clock_gettime(clockid_t clock_id, struct timespec *tp) noexcept;
+    int nanosleep(const struct timespec *rqtp, struct timespec *rmtp) noexcept;
+    extern int * __error(void) noexcept;
 #define errno (*__error())
 #define EINTR 4
 }
 
-typedef long long Duration;  // Nanoseconds.
-typedef long long TimePoint;  // Nanoseconds.
+TimePoint SteadyClock::now() noexcept {
+    struct timespec tp;
+    assert_(clock_gettime(CLOCK_UPTIME_RAW, &tp) == 0);
+    return TimePoint(s_to_ns(tp.tv_sec) + tp.tv_nsec);
+}
 
-constexpr Duration ns_to_ms(Duration d) { return d / 1000000; }
-constexpr Duration ns_to_s(Duration d) { return d / 1000000000; }
-constexpr Duration s_to_ns(Duration d) { return d * 1000000000; }
-constexpr double ns_to_s_d(Duration d) { return d / 1000000000.0; }
-
-class SteadyClock {
-public:
-    static TimePoint now() {
-        struct timespec tp;
-        assert_(clock_gettime(CLOCK_UPTIME_RAW, &tp) == 0);
-        return TimePoint(s_to_ns(tp.tv_sec) + tp.tv_nsec);
-    }
-};
-
-void SleepFor(Duration d) {
+void SleepFor(Duration d) noexcept {
     if (d <= 0) {
         return;
     }
     long long s = ns_to_s(d);
     timespec ts;
-    ts.tv_sec = static_cast<decltype(ts.tv_sec)>(s);
-    ts.tv_nsec = static_cast<decltype(ts.tv_nsec)>(d - s_to_ns(s));
+    ts.tv_sec = static_cast<time_t>(s);
+    ts.tv_nsec = static_cast<long>(d - s_to_ns(s));
     while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
 }
-
-#endif  // SRC_OS_UNIX_CHRONO_H_

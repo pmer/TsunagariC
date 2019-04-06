@@ -30,16 +30,18 @@
 #    ifndef SRC_OS_MAC_H_
 #        define SRC_OS_MAC_H_
 
+#include "util/string-view.h"
+
 /**
  * Sets the current working directory to the "Resources" folder in the .app
  * package.
  */
-void macSetWorkingDirectory();
+void macSetWorkingDirectory() noexcept;
 
 /**
  * Displays a message box window.
  */
-void macMessageBox(const char* title, const char* msg);
+void macMessageBox(StringView title, StringView msg) noexcept;
 
 #    endif  // SRC_OS_MAC_H_
 

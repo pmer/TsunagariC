@@ -44,7 +44,7 @@
 char dirSeparator = '/';
 
 Optional<uint64_t>
-getFileSize(String& path) {
+getFileSize(String& path) noexcept {
     struct stat status;
     if (stat(path.null(), &status)) {
         return Optional<uint64_t>();
@@ -53,13 +53,13 @@ getFileSize(String& path) {
 }
 
 Optional<uint64_t>
-getFileSize(StringView path) {
+getFileSize(StringView path) noexcept {
     String path_(path);
     return getFileSize(path_);
 }
 
 bool
-isDir(String& path) {
+isDir(String& path) noexcept {
     struct stat status;
     if (stat(path.null(), &status)) {
         return false;
@@ -68,24 +68,24 @@ isDir(String& path) {
 }
 
 bool
-isDir(StringView path) {
+isDir(StringView path) noexcept {
     String path_(path);
     return isDir(path_);
 }
 
 void
-makeDirectory(String& path) {
+makeDirectory(String& path) noexcept {
     mkdir(path.null(), 0777);
 }
 
 void
-makeDirectory(StringView path) {
+makeDirectory(StringView path) noexcept {
     String path_(path);
     return makeDirectory(path_);
 }
 
 vector<String>
-listDir(String& path) {
+listDir(String& path) noexcept {
     DIR* dir = nullptr;
     struct dirent* entry = nullptr;
     vector<String> names;
@@ -116,13 +116,13 @@ listDir(String& path) {
 }
 
 vector<String>
-listDir(StringView path) {
+listDir(StringView path) noexcept {
     String path_(path);
     return listDir(path_);
 }
 
 bool
-writeFile(String& path, uint32_t length, void* data) {
+writeFile(String& path, uint32_t length, void* data) noexcept {
     int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
     if (fd == -1) {
         return false;
@@ -137,13 +137,13 @@ writeFile(String& path, uint32_t length, void* data) {
 }
 
 bool
-writeFile(StringView path, uint32_t length, void* data) {
+writeFile(StringView path, uint32_t length, void* data) noexcept {
     String path_(path);
     return writeFile(path_, length, data);
 }
 
 bool
-writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas) {
+writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas) noexcept {
     int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
     if (fd == -1) {
         return false;
@@ -169,15 +169,16 @@ writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas) {
 }
 
 bool
-writeFileVec(StringView path, uint32_t count, uint32_t* lengths, void** datas) {
+writeFileVec(StringView path, uint32_t count, uint32_t* lengths, void** datas) noexcept {
     String path_(path);
     return writeFileVec(path_, count, lengths, datas);
 }
 
 /*
-bool writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas)
-{ int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666); if (fd == -1)
-{ return false;
+bool writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas) noexcept {
+    int fd = open(path.null(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+    if (fd == -1) {
+        return false;
     }
     for (size_t i = 0; i < count; i++) {
         size_t length = lengths[i];
@@ -194,7 +195,7 @@ bool writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas)
 */
 
 Optional<String>
-readFile(String& path) {
+readFile(String& path) noexcept {
     Optional<uint64_t> size = getFileSize(path);
     if (!size) {
         return Optional<String>();
@@ -220,13 +221,13 @@ readFile(String& path) {
 }
 
 Optional<String>
-readFile(StringView s) {
+readFile(StringView s) noexcept {
     String s_(s);
     return readFile(s_);
 }
 
 static bool
-isaTTY() {
+isaTTY() noexcept {
     static bool checked = false;
     static bool tty = false;
 
@@ -237,7 +238,7 @@ isaTTY() {
 }
 
 void
-setTermColor(TermColor color) {
+setTermColor(TermColor color) noexcept {
     if (!isaTTY()) {
         return;
     }
@@ -264,7 +265,7 @@ setTermColor(TermColor color) {
 }
 
 Optional<MappedFile>
-MappedFile::fromPath(String& path) {
+MappedFile::fromPath(String& path) noexcept {
     int fd = open(path.null(), O_RDONLY);
     if (fd == -1) {
         return Optional<MappedFile>();
@@ -305,27 +306,27 @@ MappedFile::fromPath(String& path) {
 }
 
 Optional<MappedFile>
-MappedFile::fromPath(StringView path) {
+MappedFile::fromPath(StringView path) noexcept {
     String path_(path);
     return MappedFile::fromPath(path_);
 }
 
-MappedFile::MappedFile() : map(reinterpret_cast<char*>(MAP_FAILED)), len(0) {}
+MappedFile::MappedFile() noexcept : map(reinterpret_cast<char*>(MAP_FAILED)), len(0) {}
 
-MappedFile::MappedFile(MappedFile&& other) {
+MappedFile::MappedFile(MappedFile&& other) noexcept {
     *this = move_(other);
 }
 
-MappedFile::MappedFile(char* map, size_t len) : map(map), len(len) {}
+MappedFile::MappedFile(char* map, size_t len) noexcept : map(map), len(len) {}
 
-MappedFile::~MappedFile() {
+MappedFile::~MappedFile() noexcept {
     if (map != MAP_FAILED) {
         munmap(map, len);
     }
 }
 
 MappedFile&
-MappedFile::operator=(MappedFile&& other) {
+MappedFile::operator=(MappedFile&& other) noexcept {
     map = other.map;
     len = other.len;
     other.map = reinterpret_cast<char*>(MAP_FAILED);

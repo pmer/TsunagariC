@@ -27,10 +27,9 @@
 
 #include "core/log.h"
 
-#include <iostream>
-
 #include "core/client-conf.h"
 #include "core/window.h"
+#include "os/cstdio.h"
 #include "os/mutex.h"
 #include "os/os.h"
 #include "util/algorithm.h"
@@ -52,8 +51,9 @@ static Mutex stdoutMutex;
 static StringView
 chomp(StringView str) {
     size_t size = str.size;
-    while (str.data[str.size - 1] == ' ' || str.data[str.size - 1] == '\t' ||
-           str.data[str.size - 1] == '\n' || str.data[str.size - 1] == '\r') {
+    while (size > 0 &&
+           (str.data[str.size - 1] == ' ' || str.data[str.size - 1] == '\t' ||
+            str.data[str.size - 1] == '\n' || str.data[str.size - 1] == '\r')) {
         size -= 1;
     }
     return str.substr(0, size);
@@ -98,17 +98,17 @@ Log::info(StringView domain, StringView msg) {
         LockGuard lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
-        std::cout << makeTimestamp().null();
+        printf("%s", makeTimestamp().null().get());
 
         setTermColor(TC_YELLOW);
         String s;
         s << "Info [" << domain << "]";
-        std::cout << s.null();
+        printf("%s", s.null().get());
 
         setTermColor(TC_RESET);
         s.clear();
         s << " - " << chomp(msg) << "\n";
-        std::cout << s.null();
+        printf("%s", s.null().get());
     }
 }
 
@@ -119,17 +119,17 @@ Log::err(StringView domain, StringView msg) {
             LockGuard lock(stdoutMutex);
 
             setTermColor(TC_GREEN);
-            std::cerr << makeTimestamp().null();
+            fprintf(stderr, "%s", makeTimestamp().null().get());
 
             setTermColor(TC_RED);
             String s;
             s << "Error [" << domain << "]";
-            std::cerr << s.null();
+            fprintf(stderr, "%s", s.null().get());
 
             setTermColor(TC_RESET);
             s.clear();
             s << " - " << chomp(msg) << "\n";
-            std::cerr << s.null();
+            fprintf(stderr, "%s", s.null().get());
         }
 
         String s;
@@ -139,7 +139,7 @@ Log::err(StringView domain, StringView msg) {
         wMessageBox("Tsunagari - Error", s.null());
 #endif
 #ifdef __APPLE__
-        macMessageBox("Tsunagari - Error", s.null());
+        macMessageBox(StringView("Tsunagari - Error"), s);
 #endif
     }
 }
@@ -150,17 +150,17 @@ Log::fatal(StringView domain, StringView msg) {
         LockGuard lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
-        std::cerr << makeTimestamp().null();
+        fprintf(stderr, "%s", makeTimestamp().null().get());
 
         setTermColor(TC_RED);
         String s;
         s << "Fatal [" << domain << "]";
-        std::cerr << s.null();
+        fprintf(stderr, "%s", s.null().get());
 
         setTermColor(TC_RESET);
         s.clear();
         s << " - " << chomp(msg) << "\n";
-        std::cerr << s.null();
+        fprintf(stderr, "%s", s.null().get());
     }
 
     String s;
@@ -170,7 +170,7 @@ Log::fatal(StringView domain, StringView msg) {
     wMessageBox("Tsunagari - Fatal", s.null());
 #endif
 #ifdef __APPLE__
-    macMessageBox("Tsunagari - Fatal", s.null());
+    macMessageBox(StringView("Tsunagari - Fatal"), s);
 #endif
 
     exit(1);
@@ -194,10 +194,10 @@ Log::reportVerbosityOnStartup() {
     }
 
     setTermColor(TC_GREEN);
-    std::cout << makeTimestamp().null();
+    printf("%s", makeTimestamp().null().get());
 
     setTermColor(TC_RESET);
     String s;
     s << "Reporting engine messages in " << verbString << " mode.\n";
-    std::cout << s.null();
+    printf("%s", s.null().get());
 }

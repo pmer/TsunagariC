@@ -27,6 +27,7 @@
 #ifndef SRC_UTIL_STRING_VIEW_H_
 #define SRC_UTIL_STRING_VIEW_H_
 
+#include "os/cstring.h"
 #include "util/int.h"
 #include "util/optional.h"
 
@@ -34,12 +35,7 @@ class StringView {
  public:
     inline constexpr StringView() noexcept : data(nullptr), size(0) {};
     inline StringView(const char* data) noexcept
-            : data(data) {
-        size_t len = 0;
-        for (; *data != 0; ++data)
-            ++len;
-        size = len;
-    }
+            : data(data), size(strlen(data)) {}
     inline constexpr StringView(const char* data, size_t size) noexcept
             : data(data), size(size) {};
     inline constexpr StringView(const StringView& s) noexcept
@@ -76,16 +72,7 @@ inline constexpr bool operator==(const StringView& a,
         return false;
     }
 
-    size_t s = a.size;
-    const char* ad = a.data;
-    const char* bd = b.data;
-
-    while (s--) {
-        if (*ad++ != *bd++) {
-            return false;
-        }
-    }
-    return true;
+    return memcmp(a.data, b.data, a.size) == 0;
 }
 
 inline constexpr bool operator!=(const StringView& a,
@@ -98,7 +85,7 @@ inline constexpr bool operator>(const StringView& a,
     size_t s = a.size < b.size ? a.size : b.size;
     const char* ad = a.data;
     const char* bd = b.data;
-    
+
     while (s--) {
         if (*ad != *bd) {
             return *ad > *bd;
@@ -131,6 +118,6 @@ inline constexpr bool operator<(const StringView& a,
     return false;
 }
 
-size_t hash_(StringView s);
+size_t hash_(StringView s) noexcept;
 
 #endif  // SRC_UTIL_STRING_VIEW_H_

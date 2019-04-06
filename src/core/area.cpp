@@ -385,12 +385,12 @@ Area::loopsInY() const {
     return grid.loopY;
 }
 
-Rc<NPC>
+Rc<Character>
 Area::spawnNPC(StringView descriptor, vicoord coord, StringView phase) {
-    auto c = Rc<NPC>(new NPC);
+    auto c = Rc<Character>(new Character);
     if (!c->init(descriptor, phase)) {
         // Error logged.
-        return Rc<NPC>();
+        return Rc<Character>();
     }
     c->setArea(this);
     c->setTileCoords(coord);

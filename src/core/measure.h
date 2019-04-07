@@ -28,6 +28,7 @@
 #define SRC_CORE_MEASURE_H_
 
 #include "os/chrono.h"
+#include "util/int.h"
 #include "util/string.h"
 
 //

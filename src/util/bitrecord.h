@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_BITRECORD_H_
-#define SRC_CORE_BITRECORD_H_
+#ifndef SRC_UTIL_BITRECORD_H_
+#define SRC_UTIL_BITRECORD_H_
 
 #include "util/int.h"
 #include "util/vector.h"
@@ -42,4 +42,4 @@ class BitRecord {
     Vector<bool> states;
 };
 
-#endif  // SRC_CORE_BITRECORD_H_
+#endif  // SRC_UTIL_BITRECORD_H_

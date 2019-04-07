@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_ARC_H_
-#define SRC_CORE_ARC_H_
+#ifndef SRC_UTIL_ARC_H_
+#define SRC_UTIL_ARC_H_
 
 #include <atomic>
 
@@ -61,4 +61,4 @@ struct Atomic {
 template<typename T>
 using CompactArc = CompactSharedPtr<T, Atomic>;
 
-#endif  // SRC_CORE_ARC_H_
+#endif  // SRC_UTIL_ARC_H_

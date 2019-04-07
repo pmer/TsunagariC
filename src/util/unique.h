@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_UNIQUE_H_
-#define SRC_CORE_UNIQUE_H_
+#ifndef SRC_UTIL_UNIQUE_H_
+#define SRC_UTIL_UNIQUE_H_
 
 #include "util/assert.h"
 
@@ -88,4 +88,4 @@ class Unique {
     bool operator==(const Unique&) const { return false; }
 };
 
-#endif  // SRC_CORE_UNIQUE_H_
+#endif  // SRC_UTIL_UNIQUE_H_

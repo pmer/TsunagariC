@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_ASSERT_H_
-#define SRC_CORE_ASSERT_H_
+#ifndef SRC_UTIL_ASSERT_H_
+#define SRC_UTIL_ASSERT_H_
 
 #include "util/likely.h"
 
@@ -38,4 +38,4 @@ void assert__(const char* func, const char* file, int line, const char* expr);
 #    define assert_(expr)
 #endif
 
-#endif  // SRC_CORE_ASSERT_H_
+#endif  // SRC_UTIL_ASSERT_H_

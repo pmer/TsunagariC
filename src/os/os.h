@@ -56,8 +56,6 @@ void setTermColor(TermColor color) noexcept;
 
 #ifdef _WIN32
 #    include "windows.h"
-#else
-#    include "unix.h"
 #endif
 
 #endif  // SRC_OS_OS_H_

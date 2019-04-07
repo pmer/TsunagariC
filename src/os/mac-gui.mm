@@ -25,8 +25,6 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifdef __APPLE__
-
 #include "os/mac-gui.h"
 
 #include "core/world.h"
@@ -147,5 +145,3 @@ void macMessageBox(StringView title, StringView msg) noexcept {
 
     World::instance().setPaused(false);
 }
-
-#endif  // __APPLE__

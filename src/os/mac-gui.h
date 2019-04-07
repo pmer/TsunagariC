@@ -1,8 +1,8 @@
 /****************************************
 ** Tsunagari Tile Engine               **
-** os/mac.h                            **
+** os/mac-gui.h                        **
 ** Copyright 2013      Michael Reiley  **
-** Copyright 2013-2016 Paul Merrill    **
+** Copyright 2013-2019 Paul Merrill    **
 ****************************************/
 
 // **********
@@ -25,10 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifdef __APPLE__
-
-#    ifndef SRC_OS_MAC_H_
-#        define SRC_OS_MAC_H_
+#ifndef SRC_OS_MAC_GUI_H_
+#define SRC_OS_MAC_GUI_H_
 
 #include "util/string-view.h"
 
@@ -43,6 +41,4 @@ void macSetWorkingDirectory() noexcept;
  */
 void macMessageBox(StringView title, StringView msg) noexcept;
 
-#    endif  // SRC_OS_MAC_H_
-
-#endif  // __APPLE__
+#endif  // SRC_OS_MAC_GUI_H_

@@ -203,7 +203,6 @@ elseif(APPLE)
         PUBLIC  src/os/unix-mutex.h
         PUBLIC  src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
-        PUBLIC  src/os/unix.h
     )
     target_sources(pack-tool
         PRIVATE src/os/unix-condition-variable.h
@@ -213,19 +212,16 @@ elseif(APPLE)
         PRIVATE src/os/unix-mutex.h
         PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
-        PRIVATE src/os/unix.h
     )
 else()
     target_sources(tsunagari
         PRIVATE src/os/unix.cpp
-        PUBLIC  src/os/unix.h
     )
     target_sources(pack-tool
         PRIVATE src/os/unix-condition-variable.h
         PRIVATE src/os/unix-mutex.h
         PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
-        PUBLIC  src/os/unix.h
     )
 endif()
 

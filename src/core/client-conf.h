@@ -25,8 +25,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef CLIENT_CONF_H
-#define CLIENT_CONF_H
+#ifndef SRC_CORE_CLIENT_CONF_H_
+#define SRC_CORE_CLIENT_CONF_H_
 
 #include "core/log.h"
 #include "core/vec.h"
@@ -51,4 +51,4 @@ extern Conf conf;
 
 bool parseConfig(StringView filename);
 
-#endif
+#endif  // SRC_CORE_CLIENT_CONF_H_

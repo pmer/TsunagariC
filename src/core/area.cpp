@@ -47,17 +47,6 @@
 #include "util/hashtable.h"
 #include "util/math2.h"
 
-#define CHECK(x)      \
-    if (!(x)) {       \
-        return false; \
-    }
-
-/* NOTE: In the TMX map format used by Tiled, tileset tiles start counting
-         their Y-positions from 0, while layer tiles start counting from 1. I
-         can't imagine why the author did this, but we have to take it into
-         account.
-*/
-
 Area::Area(Player* player, StringView descriptor)
         : dataArea(DataWorld::instance().area(descriptor)),
           player(player),

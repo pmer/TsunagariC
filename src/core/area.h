@@ -163,7 +163,7 @@ class Area {
     Vector<Rc<Character>> characters;
     Vector<Rc<Overlay>> overlays;
 
-    TileGrid<Tile> grid;
+    TileGrid grid;
 
     Hashmap<String, TileSet> tileSets;
 

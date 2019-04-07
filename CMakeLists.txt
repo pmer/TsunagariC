@@ -135,6 +135,7 @@ target_sources(tsunagari
     PUBLIC  src/core/sounds.h
     PRIVATE src/core/tile.cpp
     PUBLIC  src/core/tile.h
+    PRIVATE src/core/tile-grid.cpp
     PUBLIC  src/core/tile-grid.h
     PRIVATE src/core/viewport.cpp
     PUBLIC  src/core/viewport.h

@@ -31,7 +31,6 @@
 #include "util/int.h"
 #include "util/math2.h"
 
-/*
 static void
 pushLetterbox(DisplayList* display, Function<void()> op) {
     GameWindow& window = GameWindow::instance();
@@ -67,13 +66,11 @@ pushLetterbox(DisplayList* display, Function<void()> op) {
 
     window.clip(x, y, width, height, op);
 }
-*/
 
 void
 displayListPresent(DisplayList* display) {
     GameWindow& window = GameWindow::instance();
 
-    /*
     pushLetterbox(display, [&] {
         // Zoom and pan the Area to fit on-screen.
         window.translate(-display->padding.x, -display->padding.y, [&] {
@@ -93,7 +90,6 @@ displayListPresent(DisplayList* display) {
             window.drawRect(0, ww, 0, wh, display->colorOverlayARGB);
         }
     });
-    */
 
     if (display->paused) {
         unsigned ww = window.width();

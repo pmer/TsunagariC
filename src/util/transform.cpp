@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** transform.cpp               **
-** Copyright 2017 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** transform.cpp                    **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,42 +26,31 @@
 
 #include "transform.h"
 
-Transform Transform::identity() {
-    return Transform{{
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
-    }};
+Transform
+Transform::identity() noexcept {
+    return Transform{{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
 }
 
-Transform Transform::scale(float factor) {
-    return Transform{{
-        factor, 0,      0, 0,
-        0,      factor, 0, 0,
-        0,      0,      1, 0,
-        0,      0,      0, 1
-    }};
+Transform
+Transform::scale(float factor) noexcept {
+    return Transform{
+            {factor, 0, 0, 0, 0, factor, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
 }
 
-Transform Transform::translate(float x, float y) {
-    return Transform{{
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        x, y, 0, 1
-    }};
+Transform
+Transform::translate(float x, float y) noexcept {
+    return Transform{{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, 0, 1}};
 }
 
-float& Transform::operator[](int i) {
+float& Transform::operator[](int i) noexcept {
     return matrix[i];
 }
 
-const float& Transform::operator[](int i) const {
+const float& Transform::operator[](int i) const noexcept {
     return matrix[i];
 }
 
-Transform Transform::operator*(const Transform& right) {
+Transform Transform::operator*(const Transform& right) noexcept {
     const Transform& left = *this;
 
     Transform result;

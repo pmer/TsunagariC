@@ -49,6 +49,6 @@ struct Conf {
 };
 extern Conf conf;
 
-bool parseConfig(StringView filename);
+bool parseConfig(StringView filename) noexcept;
 
 #endif  // SRC_CORE_CLIENT_CONF_H_

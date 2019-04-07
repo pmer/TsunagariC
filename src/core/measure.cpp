@@ -33,15 +33,23 @@
 
 // sys/kdebug_signpost.h
 extern "C" {
-int kdebug_signpost_start(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
-int kdebug_signpost_end(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
+int kdebug_signpost_start(uint32_t,
+                          uintptr_t,
+                          uintptr_t,
+                          uintptr_t,
+                          uintptr_t) noexcept;
+int kdebug_signpost_end(uint32_t,
+                        uintptr_t,
+                        uintptr_t,
+                        uintptr_t,
+                        uintptr_t) noexcept;
 }
 
 static uint32_t nextSignpost = 0;
 static Hashmap<String, uint32_t> signposts;
 
 static uint32_t
-getSignpost(String description) {
+getSignpost(String description) noexcept {
     if (signposts.find(description) != signposts.end()) {
         return signposts[description];
     }
@@ -54,7 +62,7 @@ getSignpost(String description) {
 }
 #endif  // defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
 
-TimeMeasure::TimeMeasure(String description) {
+TimeMeasure::TimeMeasure(String description) noexcept {
     description = move_(description);
     start = SteadyClock::now();
 #if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
@@ -63,7 +71,7 @@ TimeMeasure::TimeMeasure(String description) {
 #endif
 }
 
-TimeMeasure::~TimeMeasure() {
+TimeMeasure::~TimeMeasure() noexcept {
 #if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
     kdebug_signpost_end(signpost, 0, 0, 0, 0);
 #endif

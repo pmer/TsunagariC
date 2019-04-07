@@ -47,18 +47,23 @@
 // Wrapper to increase clarity of error messages.
 struct Atomic {
     std::atomic<size_t> x;
-    Atomic(size_t x) : x(x) {}
-    Atomic& operator++() { ++x; return *this; }
-    Atomic& operator--() { --x; return *this; }
-    bool operator==(size_t x) { return this->x == x; }
-    size_t get() { return x; }
+    Atomic(size_t x) noexcept : x(x) {}
+    Atomic& operator++() noexcept {
+        ++x;
+        return *this;
+    }
+    Atomic& operator--() noexcept {
+        --x;
+        return *this;
+    }
+    bool operator==(size_t x) noexcept { return this->x == x; }
+    size_t get() noexcept { return x; }
 };
 
 // FIXME: The symbol Arc already exists in Windows. Rename?
-//template<typename T>
-//using Arc = SharedPtr<T, Atomic>;
+// template<typename T>
+// using Arc = SharedPtr<T, Atomic>;
 
-template<typename T>
-using CompactArc = CompactSharedPtr<T, Atomic>;
+template<typename T> using CompactArc = CompactSharedPtr<T, Atomic>;
 
 #endif  // SRC_UTIL_ARC_H_

@@ -33,19 +33,19 @@
 #include "util/random.h"
 
 void
-DataArea::onLoad() {}
+DataArea::onLoad() noexcept {}
 
 void
-DataArea::onFocus() {}
+DataArea::onFocus() noexcept {}
 
 void
-DataArea::onTick(time_t) {}
+DataArea::onTick(time_t) noexcept {}
 
 void
-DataArea::onTurn() {}
+DataArea::onTurn() noexcept {}
 
 void
-DataArea::tick(time_t dt) {
+DataArea::tick(time_t dt) noexcept {
     // Only iterate over inProgresses that existed at the time of the
     // beginning of the loop.  Also, iterate by index instead of by
     // iterator because iterators are invalidated if the vector is
@@ -59,38 +59,38 @@ DataArea::tick(time_t dt) {
 }
 
 void
-DataArea::turn() {
+DataArea::turn() noexcept {
     onTurn();
 }
 
 void
-DataArea::playSoundEffect(StringView sound) {
+DataArea::playSoundEffect(StringView sound) noexcept {
     Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.03, 0.03));
 }
 
 void
-DataArea::playSoundAndThen(StringView sound, ThenFn then) {
+DataArea::playSoundAndThen(StringView sound, ThenFn then) noexcept {
     inProgresses.emplace_back(new InProgressSound(sound, then));
 }
 
 void
-DataArea::timerProgress(time_t duration, ProgressFn progress) {
+DataArea::timerProgress(time_t duration, ProgressFn progress) noexcept {
     inProgresses.emplace_back(new InProgressTimer(duration, progress));
 }
 
 void
-DataArea::timerThen(time_t duration, ThenFn then) {
+DataArea::timerThen(time_t duration, ThenFn then) noexcept {
     inProgresses.emplace_back(new InProgressTimer(duration, then));
 }
 
 void
 DataArea::timerProgressAndThen(time_t duration,
                                ProgressFn progress,
-                               ThenFn then) {
+                               ThenFn then) noexcept {
     inProgresses.emplace_back(new InProgressTimer(duration, progress, then));
 }
 
 DataArea::TileScript
-DataArea::script(StringView scriptName) {
+DataArea::script(StringView scriptName) noexcept {
     return scripts[scriptName];
 }

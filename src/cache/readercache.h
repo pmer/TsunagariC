@@ -29,16 +29,13 @@
 #define SRC_CACHE_READERCACHE_H_
 
 #include "cache/cache.h"
-
 #include "util/string-view.h"
 
-template<typename T>
-using GenFn = T (*)(StringView name);
+template<typename T> using GenFn = T (*)(StringView name);
 
-template<typename T, GenFn<T> fn>
-class ReaderCache {
+template<typename T, GenFn<T> fn> class ReaderCache {
  public:
-    T momentaryRequest(StringView name) {
+    T momentaryRequest(StringView name) noexcept {
         T t = cache.momentaryRequest(name);
         if (t) {
             return t;
@@ -49,7 +46,7 @@ class ReaderCache {
         return t;
     }
 
-    T lifetimeRequest(StringView name) {
+    T lifetimeRequest(StringView name) noexcept {
         T t = cache.lifetimeRequest(name);
         if (t) {
             return t;
@@ -60,9 +57,7 @@ class ReaderCache {
         return t;
     }
 
-    void garbageCollect() {
-        cache.garbageCollect();
-    }
+    void garbageCollect() noexcept { cache.garbageCollect(); }
 
  private:
     Cache<T> cache;

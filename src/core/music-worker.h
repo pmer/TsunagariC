@@ -32,24 +32,24 @@
 
 class MusicWorker {
  public:
-    static MusicWorker& instance();
+    static MusicWorker& instance() noexcept;
 
     virtual ~MusicWorker() = default;
 
-    virtual void play(StringView path);
+    virtual void play(StringView path) noexcept;
 
-    virtual void stop();
+    virtual void stop() noexcept;
 
-    virtual void pause();
-    virtual void resume();
+    virtual void pause() noexcept;
+    virtual void resume() noexcept;
 
-    double getVolume();
-    virtual void setVolume(double volume);
+    double getVolume() noexcept;
+    virtual void setVolume(double volume) noexcept;
 
-    virtual void garbageCollect() = 0;
+    virtual void garbageCollect() noexcept = 0;
 
  protected:
-    MusicWorker();
+    MusicWorker() noexcept;
 
     double volume;
     int paused;

@@ -56,11 +56,11 @@ class InProgress {
  public:
     virtual ~InProgress() = default;
 
-    virtual void tick(time_t dt);
-    bool isOver();
+    virtual void tick(time_t dt) noexcept;
+    bool isOver() noexcept;
 
  protected:
-    InProgress();
+    InProgress() noexcept;
 
     bool over;
 
@@ -79,9 +79,9 @@ class InProgressSound : public InProgress {
  public:
     typedef Function<void()> ThenFn;
 
-    InProgressSound(StringView sound, ThenFn then);
+    InProgressSound(StringView sound, ThenFn then) noexcept;
 
-    void tick(time_t dt);
+    void tick(time_t dt) noexcept;
 
  private:
     Rc<SoundInstance> sound;
@@ -103,11 +103,11 @@ class InProgressTimer : public InProgress {
     typedef Function<void(double)> ProgressFn;
     typedef Function<void()> ThenFn;
 
-    InProgressTimer(time_t duration, ProgressFn progress);
-    InProgressTimer(time_t duration, ThenFn then);
-    InProgressTimer(time_t duration, ProgressFn progress, ThenFn then);
+    InProgressTimer(time_t duration, ProgressFn progress) noexcept;
+    InProgressTimer(time_t duration, ThenFn then) noexcept;
+    InProgressTimer(time_t duration, ProgressFn progress, ThenFn then) noexcept;
 
-    void tick(time_t dt);
+    void tick(time_t dt) noexcept;
 
  private:
     time_t duration, passed;

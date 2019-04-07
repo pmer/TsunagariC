@@ -38,7 +38,7 @@ static String buf;
 bool verbose = false;
 
 static void
-flush() {
+flush() noexcept {
     LockGuard lock(mutex);
     printf("%s", buf.null().get());
     buf.clear();
@@ -46,7 +46,7 @@ flush() {
 }
 
 static void
-scheduleMessage(StringView message) {
+scheduleMessage(StringView message) noexcept {
     if (!verbose) {
         return;
     }
@@ -60,27 +60,27 @@ scheduleMessage(StringView message) {
 }
 
 void
-uiShowSkippedMissingFile(StringView path) {
+uiShowSkippedMissingFile(StringView path) noexcept {
     scheduleMessage(String() << "Skipped " << path << ": file not found\n");
 }
 
 void
-uiShowAddedFile(StringView path, size_t size) {
+uiShowAddedFile(StringView path, size_t size) noexcept {
     scheduleMessage(String() << "Added " << path << ": " << size << " bytes\n");
 }
 
 void
-uiShowWritingArchive(StringView archivePath) {
+uiShowWritingArchive(StringView archivePath) noexcept {
     scheduleMessage(String() << "Writing to " << archivePath << "\n");
 }
 
 void
-uiShowListingEntry(StringView blobPath, uint64_t blobSize) {
+uiShowListingEntry(StringView blobPath, uint64_t blobSize) noexcept {
     scheduleMessage(String() << blobPath << ": " << blobSize << " bytes\n");
 }
 
 void
-uiShowExtractingFile(StringView blobPath, uint64_t blobSize) {
+uiShowExtractingFile(StringView blobPath, uint64_t blobSize) noexcept {
     scheduleMessage(String() << "Extracting " << blobPath << ": " << blobSize
                              << " bytes\n");
 }

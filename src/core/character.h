@@ -38,53 +38,53 @@ class Tile;
 
 class Character : public Entity {
  public:
-    Character();
+    Character() noexcept;
     virtual ~Character() = default;
 
-    virtual void tick(time_t dt);
-    virtual void turn();
+    virtual void tick(time_t dt) noexcept;
+    virtual void turn() noexcept;
 
-    virtual void destroy();
+    virtual void destroy() noexcept;
 
     //! Retrieve position within Area.
-    icoord getTileCoords_i() const;
-    vicoord getTileCoords_vi() const;
+    icoord getTileCoords_i() const noexcept;
+    vicoord getTileCoords_vi() const noexcept;
 
     //! Set location within Area.
-    void setTileCoords(int x, int y);
-    void setTileCoords(int x, int y, double z);
-    void setTileCoords(icoord phys);
-    void setTileCoords(vicoord virt);
-    void setTileCoords(rcoord virt);
+    void setTileCoords(int x, int y) noexcept;
+    void setTileCoords(int x, int y, double z) noexcept;
+    void setTileCoords(icoord phys) noexcept;
+    void setTileCoords(vicoord virt) noexcept;
+    void setTileCoords(rcoord virt) noexcept;
 
     //! Get the Tile that we are standing on.
-    const Tile* getTile() const;
-    Tile* getTile();
+    const Tile* getTile() const noexcept;
+    Tile* getTile() noexcept;
 
-    void setArea(Area* area);
+    void setArea(Area* area) noexcept;
 
     //! Initiate a movement within the Area.
-    void moveByTile(ivec2 delta);
+    void moveByTile(ivec2 delta) noexcept;
 
  protected:
     //! Indicates which coordinate we will move into if we proceed in
     //! direction specified.
-    icoord moveDest(ivec2 facing);
+    icoord moveDest(ivec2 facing) noexcept;
 
     //! Returns true if we can move in the desired direction.
-    bool canMove(icoord dest);
+    bool canMove(icoord dest) noexcept;
 
-    bool nowalked(Tile& t);
+    bool nowalked(Tile& t) noexcept;
 
-    void arrived();
+    void arrived() noexcept;
 
-    void leaveTile();
-    void leaveTile(Tile* t);
-    void enterTile();
-    void enterTile(Tile* t);
+    void leaveTile() noexcept;
+    void leaveTile(Tile* t) noexcept;
+    void enterTile() noexcept;
+    void enterTile(Tile* t) noexcept;
 
-    void runTileExitScript();
-    void runTileEntryScript();
+    void runTileExitScript() noexcept;
+    void runTileEntryScript() noexcept;
 
  protected:
     unsigned nowalkFlags;

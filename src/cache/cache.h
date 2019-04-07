@@ -32,18 +32,17 @@
 #include "util/string-view.h"
 #include "util/string.h"
 
-template<class T>
-class Cache {
+template<class T> class Cache {
  public:
-    T momentaryRequest(StringView name);
+    T momentaryRequest(StringView name) noexcept;
 
-    T lifetimeRequest(StringView name);
+    T lifetimeRequest(StringView name) noexcept;
 
-    void momentaryPut(StringView name, T data);
+    void momentaryPut(StringView name, T data) noexcept;
 
-    void lifetimePut(StringView name, T data);
+    void lifetimePut(StringView name, T data) noexcept;
 
-    void garbageCollect();
+    void garbageCollect() noexcept;
 
  private:
     struct CacheEntry {

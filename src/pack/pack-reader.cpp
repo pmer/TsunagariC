@@ -62,18 +62,18 @@ struct BlobMetadata {
 
 class PackReaderImpl : public PackReader {
  public:
-    BlobIndex size() const;
+    BlobIndex size() const noexcept;
 
-    BlobIndex findIndex(StringView path);
+    BlobIndex findIndex(StringView path) noexcept;
 
-    StringView getBlobPath(BlobIndex index) const;
-    BlobSize getBlobSize(BlobIndex index) const;
-    void* getBlobData(BlobIndex index);
+    StringView getBlobPath(BlobIndex index) const noexcept;
+    BlobSize getBlobSize(BlobIndex index) const noexcept;
+    void* getBlobData(BlobIndex index) noexcept;
 
-    Vector<void*> getBlobDatas(Vector<BlobIndex> indicies);
+    Vector<void*> getBlobDatas(Vector<BlobIndex> indicies) noexcept;
 
  public:
-    void constructLookups();
+    void constructLookups() noexcept;
 
  public:
     MappedFile file;
@@ -90,7 +90,7 @@ class PackReaderImpl : public PackReader {
 };
 
 Unique<PackReader>
-PackReader::fromFile(StringView path) {
+PackReader::fromFile(StringView path) noexcept {
     Optional<MappedFile> maybeFile = MappedFile::fromPath(path);
     if (!maybeFile) {
         return Unique<PackReader>();
@@ -133,12 +133,12 @@ PackReader::fromFile(StringView path) {
 }
 
 PackReader::BlobIndex
-PackReaderImpl::size() const {
+PackReaderImpl::size() const noexcept {
     return header->blobCount;
 }
 
 PackReader::BlobIndex
-PackReaderImpl::findIndex(StringView path) {
+PackReaderImpl::findIndex(StringView path) noexcept {
     if (!lookupsConstructed) {
         lookupsConstructed = true;
         constructLookups();
@@ -154,24 +154,24 @@ PackReaderImpl::findIndex(StringView path) {
 }
 
 StringView
-PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const {
+PackReaderImpl::getBlobPath(PackReader::BlobIndex index) const noexcept {
     uint32_t begin = pathOffsets[index];
     uint32_t end = pathOffsets[index + 1];
     return StringView(paths + begin, end - begin);
 }
 
 PackReader::BlobSize
-PackReaderImpl::getBlobSize(PackReader::BlobIndex index) const {
+PackReaderImpl::getBlobSize(PackReader::BlobIndex index) const noexcept {
     return metadatas[index].uncompressedSize;
 }
 
 void*
-PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
+PackReaderImpl::getBlobData(PackReader::BlobIndex index) noexcept {
     return file.at<void*>(dataOffsets[index]);
 }
 
 Vector<void*>
-PackReaderImpl::getBlobDatas(Vector<BlobIndex> indicies) {
+PackReaderImpl::getBlobDatas(Vector<BlobIndex> indicies) noexcept {
     Vector<void*> datas;
 
     for (BlobIndex i : indicies) {
@@ -182,7 +182,7 @@ PackReaderImpl::getBlobDatas(Vector<BlobIndex> indicies) {
 }
 
 void
-PackReaderImpl::constructLookups() {
+PackReaderImpl::constructLookups() noexcept {
     for (PackReader::BlobIndex i = 0; i < header->blobCount; i++) {
         uint32_t pathBegin = pathOffsets[i];
         uint32_t pathEnd = pathOffsets[i + 1];

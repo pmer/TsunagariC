@@ -2,7 +2,7 @@
 ** Tsunagari Tile Engine              **
 ** player.h                           **
 ** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2018 Paul Merrill   **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -36,28 +36,28 @@ class Exit;
 
 class Player : public Character {
  public:
-    static Player& instance();
+    static Player& instance() noexcept;
 
-    Player();
-    void destroy() final;
+    Player() noexcept;
+    void destroy() noexcept final;
 
     //! Smooth continuous movement.
-    void startMovement(ivec2 delta);
-    void stopMovement(ivec2 delta);
+    void startMovement(ivec2 delta) noexcept;
+    void stopMovement(ivec2 delta) noexcept;
 
     //! Move the player by dx, dy. Not guaranteed to be smooth if called
     //! on each update().
-    void moveByTile(ivec2 delta);
+    void moveByTile(ivec2 delta) noexcept;
 
     //! Try to use an object in front of the player.
-    void useTile();
+    void useTile() noexcept;
 
-    void setFrozen(bool b) final;
+    void setFrozen(bool b) noexcept final;
 
  protected:
-    void arrived() final;
+    void arrived() noexcept final;
 
-    void takeExit(const Exit& exit);
+    void takeExit(const Exit& exit) noexcept;
 
  private:
     //! Stores intent to move continuously in some direction.

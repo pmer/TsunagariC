@@ -41,7 +41,7 @@
 static String exe;
 
 static void
-usage() {
+usage() noexcept {
     fprintf(stderr,
             "usage: %s create [-v] <output-archive> [input-file]...\n",
             exe.null().get());
@@ -57,7 +57,7 @@ struct CreateArchiveContext {
 };
 
 static void
-addFile(CreateArchiveContext& ctx, StringView path) {
+addFile(CreateArchiveContext& ctx, StringView path) noexcept {
     Optional<String> data = readFile(path);
 
     if (!data) {
@@ -76,7 +76,7 @@ addFile(CreateArchiveContext& ctx, StringView path) {
 }
 
 static bool
-createArchive(StringView archivePath, Vector<StringView> paths) {
+createArchive(StringView archivePath, Vector<StringView> paths) noexcept {
     CreateArchiveContext ctx;
     ctx.pack = PackWriter::make();
 
@@ -88,7 +88,7 @@ createArchive(StringView archivePath, Vector<StringView> paths) {
 }
 
 static bool
-listArchive(StringView archivePath) {
+listArchive(StringView archivePath) noexcept {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
@@ -116,7 +116,7 @@ listArchive(StringView archivePath) {
 }
 
 static Optional<StringView>
-getParentPath(StringView path) {
+getParentPath(StringView path) noexcept {
     Optional<size_t> sep = path.rfind('/');
     if (!sep) {
         return Optional<StringView>();
@@ -127,7 +127,7 @@ getParentPath(StringView path) {
 }
 
 static void
-createDirs(StringView path) {
+createDirs(StringView path) noexcept {
     Optional<StringView> parentPath = getParentPath(path);
     if (parentPath) {
         // Make sure parentPath's parent exists.
@@ -138,7 +138,7 @@ createDirs(StringView path) {
 }
 
 static void
-putFile(StringView path, uint32_t size, void* data) {
+putFile(StringView path, uint32_t size, void* data) noexcept {
     createDirs(path);
 
     // TODO: Propagate error up.
@@ -146,7 +146,7 @@ putFile(StringView path, uint32_t size, void* data) {
 }
 
 static bool
-extractArchive(StringView archivePath) {
+extractArchive(StringView archivePath) noexcept {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
@@ -179,7 +179,7 @@ extractArchive(StringView archivePath) {
 }
 
 int
-main(int argc, char* argv[]) {
+main(int argc, char* argv[]) noexcept {
     exe = argv[0];
     Optional<size_t> dir = exe.view().rfind(dirSeparator);
     if (dir) {

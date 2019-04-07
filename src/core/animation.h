@@ -48,7 +48,7 @@ class Animation {
      * Constructs an empty, but safe, Animation. All methods on this
      * object will be null.
      */
-    Animation();
+    Animation() noexcept;
 
     /**
      * Constructs a single-frame Animation. It will function like a static
@@ -56,7 +56,7 @@ class Animation {
      *
      * @param frame static image
      */
-    explicit Animation(Rc<Image> frame);
+    explicit Animation(Rc<Image> frame) noexcept;
 
     /**
      * Constructs a Animation from a list of frames.
@@ -68,33 +68,33 @@ class Animation {
      * @param frameTime length of time in milliseconds that each frame
      *        will display for
      */
-    Animation(Vector<Rc<Image>> frames, time_t frameTime);
+    Animation(Vector<Rc<Image>> frames, time_t frameTime) noexcept;
 
     /**
      * Starts the animation over.
      *
      * @now current time in milliseconds
      */
-    void startOver(time_t now);
+    void startOver(time_t now) noexcept;
 
     /**
      * Has this Animation switched frames since frame() was last called?
      *
      * @now current time in milliseconds
      */
-    bool needsRedraw(time_t now) const;
+    bool needsRedraw(time_t now) const noexcept;
 
     /**
      * Returns the image that should be displayed at this time.
      *
      * @now current time in milliseconds
      */
-    Image* frame(time_t now);
+    Image* frame(time_t now) noexcept;
 
     /**
      * Returns the last image that should have been displayed.
      */
-    Image* frame() const;
+    Image* frame() const noexcept;
 
  private:
     /** List of images in animation. */

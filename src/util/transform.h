@@ -1,8 +1,8 @@
-/********************************
-** Tsunagari Tile Engine       **
-** transform.h                 **
-** Copyright 2017 Paul Merrill **
-********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** transform.h                      **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,14 +29,14 @@
 
 // An affine transformation.
 struct Transform {
-    static Transform identity();
-    static Transform scale(float factor);
-    static Transform translate(float x, float y);
+    static Transform identity() noexcept;
+    static Transform scale(float factor) noexcept;
+    static Transform translate(float x, float y) noexcept;
 
-    Transform operator*(const Transform& other);
+    Transform operator*(const Transform& other) noexcept;
 
-    float& operator[](int i);
-    const float& operator[](int i) const;
+    float& operator[](int i) noexcept;
+    const float& operator[](int i) const noexcept;
 
     float matrix[16];
 };

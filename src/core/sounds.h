@@ -36,24 +36,24 @@ class SoundInstance {
     virtual ~SoundInstance() = default;
 
     //! Whether the sound is currently playing.
-    virtual bool playing() = 0;
+    virtual bool playing() noexcept = 0;
     //! Stop playing the sound.  SoundInstances cannot resume from stop().
     //! Create a new one to play again.
-    virtual void stop() = 0;
+    virtual void stop() noexcept = 0;
 
     //! Whether the sound is paused.
-    virtual bool paused() = 0;
+    virtual bool paused() noexcept = 0;
     //! Pause playback of the sound.
-    virtual void pause() = 0;
+    virtual void pause() noexcept = 0;
     //! Resume playback of the sound.
-    virtual void resume() = 0;
+    virtual void resume() noexcept = 0;
 
     //! Between 0.0 (silence) and 1.0 (full).
-    virtual void volume(double volume) = 0;
+    virtual void volume(double volume) noexcept = 0;
     //! Between -1.0 (left) and 1.0 (right).
-    virtual void pan(double pan) = 0;
+    virtual void pan(double pan) noexcept = 0;
     //! 1.0 is normal speed
-    virtual void speed(double speed) = 0;
+    virtual void speed(double speed) noexcept = 0;
 
  protected:
     SoundInstance() = default;
@@ -69,15 +69,15 @@ class SoundInstance {
 class Sounds {
  public:
     //! Acquire the global Sounds object.
-    static Sounds& instance();
+    static Sounds& instance() noexcept;
 
     virtual ~Sounds() = default;
 
     //! Play a sound from the file at the given path.
-    virtual Rc<SoundInstance> play(StringView path) = 0;
+    virtual Rc<SoundInstance> play(StringView path) noexcept = 0;
 
     //! Free sounds not recently played.
-    virtual void garbageCollect() = 0;
+    virtual void garbageCollect() noexcept = 0;
 
  protected:
     Sounds() = default;

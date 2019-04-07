@@ -130,19 +130,19 @@ enum ExitDirection {
  */
 class FlagManip {
  public:
-    FlagManip(unsigned* flags);
+    FlagManip(unsigned* flags) noexcept;
 
-    bool isNowalk() const;
-    bool isNowalkPlayer() const;
-    bool isNowalkNPC() const;
-    bool isNowalkExit() const;
-    bool isNowalkAreaBound() const;
+    bool isNowalk() const noexcept;
+    bool isNowalkPlayer() const noexcept;
+    bool isNowalkNPC() const noexcept;
+    bool isNowalkExit() const noexcept;
+    bool isNowalkAreaBound() const noexcept;
 
-    void setNowalk(bool nowalk);
-    void setNowalkPlayer(bool nowalk);
-    void setNowalkNPC(bool nowalk);
-    void setNowalkExit(bool nowalk);
-    void setNowalkAreaBound(bool nowalk);
+    void setNowalk(bool nowalk) noexcept;
+    void setNowalkPlayer(bool nowalk) noexcept;
+    void setNowalkNPC(bool nowalk) noexcept;
+    void setNowalkExit(bool nowalk) noexcept;
+    void setNowalkAreaBound(bool nowalk) noexcept;
 
  private:
     unsigned* flags;
@@ -156,7 +156,7 @@ class FlagManip {
 */
 class Exit {
  public:
-    Exit(String area, int x, int y, double z);
+    Exit(String area, int x, int y, double z) noexcept;
 
  public:
     String area;
@@ -165,16 +165,16 @@ class Exit {
 
 class TileBase {
  public:
-    TileBase();
+    TileBase() noexcept;
 
-    FlagManip flagManip();
+    FlagManip flagManip() noexcept;
 
     //! Determines whether this tile or one of its parent types embodies a
     //! flag.
-    bool hasFlag(unsigned flag) const;
+    bool hasFlag(unsigned flag) const noexcept;
 
-    TileType* getType() const;
-    void setType(TileType* type);
+    TileType* getType() const noexcept;
+    void setType(TileType* type) noexcept;
 
  public:
     TileBase* parent;
@@ -191,8 +191,8 @@ class TileBase {
 */
 class Tile : public TileBase {
  public:
-    Tile();  // Should not be used. Wanted by std::containers.
-    Tile(Area* area);
+    Tile() noexcept;  // Should not be used. Wanted by std::containers.
+    Tile(Area* area) noexcept;
 
     /**
      * Gets the correct destination for an Entity wanting to
@@ -204,14 +204,14 @@ class Tile : public TileBase {
      * @param here    area-space coordinate for this Tile
      * @param facing  facing vector
      */
-    icoord moveDest(icoord here, ivec2 facing) const;
+    icoord moveDest(icoord here, ivec2 facing) const noexcept;
 
-    Optional<Exit> exitAt(ivec2 dir) const;
-    Optional<double> layermodAt(ivec2 dir) const;
+    Optional<Exit> exitAt(ivec2 dir) const noexcept;
+    Optional<double> layermodAt(ivec2 dir) const noexcept;
 
-    void runEnterScript(Entity* triggeredBy);
-    void runLeaveScript(Entity* triggeredBy);
-    void runUseScript(Entity* triggeredBy);
+    void runEnterScript(Entity* triggeredBy) noexcept;
+    void runLeaveScript(Entity* triggeredBy) noexcept;
+    void runUseScript(Entity* triggeredBy) noexcept;
 
  public:
     Area* area;
@@ -230,10 +230,10 @@ class Tile : public TileBase {
 class TileType : public TileBase {
  public:
     TileType() = default;
-    TileType(const Rc<Image>& img);
+    TileType(const Rc<Image>& img) noexcept;
 
     //! Returns true if onscreen and we need to update our animation.
-    bool needsRedraw() const;
+    bool needsRedraw() const noexcept;
 
  public:
     // Graphical details.
@@ -250,16 +250,16 @@ extern int maxTileTypeId;
 class TileSet {
  public:
     TileSet() = default;
-    TileSet(size_t width, size_t height);
+    TileSet(size_t width, size_t height) noexcept;
 
-    void add(TileType* type);
-    void set(size_t idx, TileType* type);
-    TileType* at(size_t x, size_t y);
-    size_t getWidth() const;
-    size_t getHeight() const;
+    void add(TileType* type) noexcept;
+    void set(size_t idx, TileType* type) noexcept;
+    TileType* at(size_t x, size_t y) noexcept;
+    size_t getWidth() const noexcept;
+    size_t getHeight() const noexcept;
 
  private:
-    size_t idx(size_t x, size_t y) const;
+    size_t idx(size_t x, size_t y) const noexcept;
 
     Vector<TileType*> types;
     size_t width, height;

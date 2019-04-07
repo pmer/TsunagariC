@@ -39,18 +39,18 @@ class PackReader {
 
     static constexpr BlobIndex BLOB_NOT_FOUND = UINT32_MAX;
 
-    static Unique<PackReader> fromFile(StringView path);
+    static Unique<PackReader> fromFile(StringView path) noexcept;
     virtual ~PackReader() = default;
 
-    virtual BlobIndex size() const = 0;
+    virtual BlobIndex size() const noexcept = 0;
 
-    virtual BlobIndex findIndex(StringView path) = 0;
+    virtual BlobIndex findIndex(StringView path) noexcept = 0;
 
-    virtual StringView getBlobPath(BlobIndex index) const = 0;
-    virtual BlobSize getBlobSize(BlobIndex index) const = 0;
-    virtual void* getBlobData(BlobIndex index) = 0;
+    virtual StringView getBlobPath(BlobIndex index) const noexcept = 0;
+    virtual BlobSize getBlobSize(BlobIndex index) const noexcept = 0;
+    virtual void* getBlobData(BlobIndex index) noexcept = 0;
 
-    virtual Vector<void*> getBlobDatas(Vector<BlobIndex> indicies) = 0;
+    virtual Vector<void*> getBlobDatas(Vector<BlobIndex> indicies) noexcept = 0;
 };
 
 #endif  // SRC_PACK_PACK_READER_H_

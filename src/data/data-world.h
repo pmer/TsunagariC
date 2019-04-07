@@ -30,21 +30,20 @@
 
 #include "core/client-conf.h"
 #include "data/data-area.h"
-
-#include "util/string-view.h"
 #include "util/hashtable.h"
+#include "util/string-view.h"
 #include "util/unique.h"
 
 class DataWorld {
  public:
-    static DataWorld& instance();
+    static DataWorld& instance() noexcept;
 
     virtual ~DataWorld() = default;
 
     //! After the engine has booted, initialize the world.
-    virtual bool init() = 0;
+    virtual bool init() noexcept = 0;
 
-    DataArea* area(StringView areaName);
+    DataArea* area(StringView areaName) noexcept;
 
     // Miscellaneous engine parameters set by world's author.
     struct {

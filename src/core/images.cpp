@@ -27,15 +27,15 @@
 
 #include "core/images.h"
 
-Image::Image(unsigned width, unsigned height)
+Image::Image(unsigned width, unsigned height) noexcept
         : _width(width), _height(height) {}
 
 unsigned
-Image::width() const {
+Image::width() const noexcept {
     return _width;
 }
 
 unsigned
-Image::height() const {
+Image::height() const noexcept {
     return _height;
 }

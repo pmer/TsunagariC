@@ -35,8 +35,8 @@ class DispatchQueueImpl;
 
 class DispatchQueue {
  public:
-    DispatchQueue();
-    ~DispatchQueue();
+    DispatchQueue() noexcept;
+    ~DispatchQueue() noexcept;
 
     enum QualityOfService {
         BACKGROUND,
@@ -46,7 +46,8 @@ class DispatchQueue {
         USER_INTERACTIVE
     };
 
-    void async(Task task, QualityOfService qos = QualityOfService::DEFAULT);
+    void async(Task task,
+               QualityOfService qos = QualityOfService::DEFAULT) noexcept;
 
  private:
     DispatchQueueImpl* impl;

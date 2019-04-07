@@ -24,14 +24,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/resources.h"
-
 #include <string>
 
 #include "core/future-utils.cpp"
+#include "core/resources.h"
 
 // Default implementation doesn't actually load asynchronously.
-std::future<Resource> Resources::loadAsync(ResourceLoadPriority /* unused */,
-                                           const std::string& path) {
+std::future<Resource>
+Resources::loadAsync(ResourceLoadPriority /* unused */,
+                     const std::string& path) {
     return makeFuture(load(path));
 }

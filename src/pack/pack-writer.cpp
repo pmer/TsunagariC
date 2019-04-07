@@ -68,7 +68,7 @@ struct Blob {
 };
 
 static bool
-operator<(const Blob& a, const Blob& b) {
+operator<(const Blob& a, const Blob& b) noexcept {
     FileType typeA = determineFileType(a.path);
     FileType typeB = determineFileType(b.path);
     if (typeA < typeB) {
@@ -85,9 +85,9 @@ operator<(const Blob& a, const Blob& b) {
 
 class PackWriterImpl : public PackWriter {
  public:
-    bool writeToFile(StringView path);
+    bool writeToFile(StringView path) noexcept;
 
-    void addBlob(String path, BlobSize size, const void* data);
+    void addBlob(String path, BlobSize size, const void* data) noexcept;
 
  private:
     Vector<Blob> blobs;
@@ -95,12 +95,12 @@ class PackWriterImpl : public PackWriter {
 };
 
 Unique<PackWriter>
-PackWriter::make() {
+PackWriter::make() noexcept {
     return Unique<PackWriter>(new PackWriterImpl);
 }
 
 bool
-PackWriterImpl::writeToFile(StringView path) {
+PackWriterImpl::writeToFile(StringView path) noexcept {
     uint32_t blobCount = blobs.size();
 
     // Sort blobs by size (smallest first).
@@ -215,7 +215,7 @@ PackWriterImpl::writeToFile(StringView path) {
 }
 
 void
-PackWriterImpl::addBlob(String path, BlobSize size, const void* data) {
+PackWriterImpl::addBlob(String path, BlobSize size, const void* data) noexcept {
     blobs.push_back({move_(path), size, data});
     sorted = false;
 }

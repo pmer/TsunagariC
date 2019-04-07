@@ -34,11 +34,11 @@ class String;
 
 class NullTerminatedString {
  public:
-    explicit NullTerminatedString(String& s);
-    ~NullTerminatedString();
+    explicit NullTerminatedString(String& s) noexcept;
+    ~NullTerminatedString() noexcept;
 
-    const char* get();
-    operator const char*();
+    const char* get() noexcept;
+    operator const char*() noexcept;
 
  public:
     String& s;
@@ -47,8 +47,8 @@ class NullTerminatedString {
 class String : public Vector<char> {
  public:
     String() = default;
-    String(const char* value);
-    String(StringView value);
+    String(const char* value) noexcept;
+    String(StringView value) noexcept;
     String(const String& other) = default;
     String(String&& other) noexcept;
     ~String() = default;
@@ -58,24 +58,24 @@ class String : public Vector<char> {
     bool operator<(const String& other) const noexcept;
     bool operator>(const String& other) const noexcept;
 
-    String& operator<<(char value);
-    String& operator<<(const char* value);
-    String& operator<<(StringView value);
+    String& operator<<(char value) noexcept;
+    String& operator<<(const char* value) noexcept;
+    String& operator<<(StringView value) noexcept;
 
-    String& operator<<(bool value);
-    String& operator<<(int value);
-    String& operator<<(unsigned int value);
-    String& operator<<(long value);
-    String& operator<<(unsigned long value);
-    String& operator<<(long long value);
-    String& operator<<(unsigned long long value);
-    String& operator<<(float value);
-    String& operator<<(double value);
+    String& operator<<(bool value) noexcept;
+    String& operator<<(int value) noexcept;
+    String& operator<<(unsigned int value) noexcept;
+    String& operator<<(long value) noexcept;
+    String& operator<<(unsigned long value) noexcept;
+    String& operator<<(long long value) noexcept;
+    String& operator<<(unsigned long long value) noexcept;
+    String& operator<<(float value) noexcept;
+    String& operator<<(double value) noexcept;
 
-    operator StringView() const;
-    StringView view() const;
+    operator StringView() const noexcept;
+    StringView view() const noexcept;
 
-    NullTerminatedString null();
+    NullTerminatedString null() noexcept;
 };
 
 #endif  // SRC_UTIL_STRING_H_

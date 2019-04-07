@@ -53,7 +53,7 @@ static StringView directions[][3] = {
 };
 
 
-Entity::Entity()
+Entity::Entity() noexcept
         : dead(false),
           redraw(true),
           area(nullptr),
@@ -65,7 +65,7 @@ Entity::Entity()
           facing{0, 0} {}
 
 bool
-Entity::init(StringView descriptor, StringView initialPhase) {
+Entity::init(StringView descriptor, StringView initialPhase) noexcept {
     this->descriptor = descriptor;
     CHECK(processDescriptor());
     setPhase(initialPhase);
@@ -73,7 +73,7 @@ Entity::init(StringView descriptor, StringView initialPhase) {
 }
 
 void
-Entity::destroy() {
+Entity::destroy() noexcept {
     dead = true;
     if (area) {
         area->requestRedraw();
@@ -81,7 +81,7 @@ Entity::destroy() {
 }
 
 void
-Entity::draw(DisplayList* display) {
+Entity::draw(DisplayList* display) noexcept {
     redraw = false;
     if (!phase) {
         return;
@@ -96,7 +96,7 @@ Entity::draw(DisplayList* display) {
 }
 
 bool
-Entity::needsRedraw(const icube& visiblePixels) const {
+Entity::needsRedraw(const icube& visiblePixels) const noexcept {
     time_t now = World::instance().time();
 
     // Don't need to redraw
@@ -116,32 +116,32 @@ Entity::needsRedraw(const icube& visiblePixels) const {
 }
 
 bool
-Entity::isDead() const {
+Entity::isDead() const noexcept {
     return dead;
 }
 
 
 void
-Entity::tick(time_t dt) {
+Entity::tick(time_t dt) noexcept {
     for (auto& fn : onTickFns) {
         fn(dt);
     }
 }
 
 void
-Entity::turn() {
+Entity::turn() noexcept {
     for (auto& fn : onTurnFns) {
         fn();
     }
 }
 
 const StringView
-Entity::getFacing() const {
+Entity::getFacing() const noexcept {
     return directionStr(facing);
 }
 
 bool
-Entity::setPhase(StringView name) {
+Entity::setPhase(StringView name) noexcept {
     enum SetPhaseResult res;
     res = _setPhase(name);
     if (res == PHASE_NOTFOUND) {
@@ -155,33 +155,33 @@ Entity::setPhase(StringView name) {
 }
 
 ivec2
-Entity::getImageSize() const {
+Entity::getImageSize() const noexcept {
     return imgsz;
 }
 
 void
-Entity::setAnimationStanding() {
+Entity::setAnimationStanding() noexcept {
     setPhase(getFacing());
 }
 
 void
-Entity::setAnimationMoving() {
+Entity::setAnimationMoving() noexcept {
     setPhase(String() << "moving " << getFacing());
 }
 
 
 rcoord
-Entity::getPixelCoord() const {
+Entity::getPixelCoord() const noexcept {
     return r;
 }
 
 Area*
-Entity::getArea() {
+Entity::getArea() noexcept {
     return area;
 }
 
 void
-Entity::setArea(Area* area) {
+Entity::setArea(Area* area) noexcept {
     this->area = area;
     calcDraw();
 
@@ -190,33 +190,33 @@ Entity::setArea(Area* area) {
 }
 
 double
-Entity::getSpeedInPixels() const {
+Entity::getSpeedInPixels() const noexcept {
     double tileWidth = area->getTileDimensions().x;
     return getSpeedInTiles() * tileWidth;
 }
 
 double
-Entity::getSpeedInTiles() const {
+Entity::getSpeedInTiles() const noexcept {
     return tilesPerSecond;
 }
 
 void
-Entity::setFrozen(bool b) {
+Entity::setFrozen(bool b) noexcept {
     frozen = b;
 }
 
 void
-Entity::attach(OnTickFn fn) {
+Entity::attach(OnTickFn fn) noexcept {
     onTickFns.push_back(fn);
 }
 
 void
-Entity::attach(OnTurnFn fn) {
+Entity::attach(OnTurnFn fn) noexcept {
     onTurnFns.push_back(fn);
 }
 
 void
-Entity::calcDraw() {
+Entity::calcDraw() noexcept {
     if (area) {
         ivec2 tile = area->getTileDimensions();
 
@@ -228,18 +228,18 @@ Entity::calcDraw() {
 }
 
 ivec2
-Entity::setFacing(ivec2 facing) {
+Entity::setFacing(ivec2 facing) noexcept {
     this->facing = ivec2{bound(facing.x, -1, 1), bound(facing.y, -1, 1)};
     return this->facing;
 }
 
 StringView
-Entity::directionStr(ivec2 facing) const {
+Entity::directionStr(ivec2 facing) const noexcept {
     return directions[facing.y + 1][facing.x + 1];
 }
 
 enum SetPhaseResult
-Entity::_setPhase(StringView name) {
+Entity::_setPhase(StringView name) noexcept {
     auto it = phases.find(name);
     if (it == phases.end()) {
         return PHASE_NOTFOUND;
@@ -257,7 +257,7 @@ Entity::_setPhase(StringView name) {
 }
 
 void
-Entity::setDestinationCoordinate(rcoord destCoord) {
+Entity::setDestinationCoordinate(rcoord destCoord) noexcept {
     // Set z right away so that we're on-level with the square we're
     // entering.
     r.z = destCoord.z;
@@ -267,7 +267,7 @@ Entity::setDestinationCoordinate(rcoord destCoord) {
 }
 
 void
-Entity::moveTowardDestination(time_t dt) {
+Entity::moveTowardDestination(time_t dt) noexcept {
     if (!moving) {
         return;
     }
@@ -301,7 +301,7 @@ Entity::moveTowardDestination(time_t dt) {
 }
 
 void
-Entity::arrived() {
+Entity::arrived() noexcept {
     // for (auto& fn : onArrivedFns)
     //     fn();
 }
@@ -312,7 +312,7 @@ Entity::arrived() {
  */
 
 bool
-Entity::processDescriptor() {
+Entity::processDescriptor() noexcept {
     Rc<JSONObject> doc = JSONs::instance().load(descriptor);
     if (!doc) {
         return false;
@@ -339,7 +339,7 @@ Entity::processDescriptor() {
 }
 
 bool
-Entity::processSprite(Unique<JSONObject> sprite) {
+Entity::processSprite(Unique<JSONObject> sprite) noexcept {
     Rc<TiledImage> tiles;
 
     CHECK(sprite->hasObject("sheet"));
@@ -362,7 +362,7 @@ Entity::processSprite(Unique<JSONObject> sprite) {
 }
 
 bool
-Entity::processPhases(Unique<JSONObject> phases, TiledImage& tiles) {
+Entity::processPhases(Unique<JSONObject> phases, TiledImage& tiles) noexcept {
     for (StringView name : phases->names()) {
         CHECK(phases->hasObject(name));
         CHECK(processPhase(name, phases->objectAt(name), tiles));
@@ -371,7 +371,7 @@ Entity::processPhases(Unique<JSONObject> phases, TiledImage& tiles) {
 }
 
 Vector<int>
-intArrayToVector(Unique<JSONArray> array) {
+intArrayToVector(Unique<JSONArray> array) noexcept {
     Vector<int> v;
     for (size_t i = 0; i < array->size(); i++) {
         if (array->isUnsigned(i)) {
@@ -384,7 +384,7 @@ intArrayToVector(Unique<JSONArray> array) {
 bool
 Entity::processPhase(StringView name,
                      Unique<JSONObject> phase,
-                     TiledImage& tiles) {
+                     TiledImage& tiles) noexcept {
     // Each phase requires a 'name' and a 'frame' or 'frames'. Additionally,
     // 'speed' is required if 'frames' is found.
     CHECK(phase->hasUnsigned("frame") || phase->hasArray("frames"));
@@ -431,7 +431,7 @@ Entity::processPhase(StringView name,
 }
 
 bool
-Entity::processSounds(Unique<JSONObject> sounds) {
+Entity::processSounds(Unique<JSONObject> sounds) noexcept {
     for (StringView name : sounds->names()) {
         CHECK(sounds->hasString(name));
         CHECK(processSound(name, sounds->stringAt(name)));
@@ -440,7 +440,7 @@ Entity::processSounds(Unique<JSONObject> sounds) {
 }
 
 bool
-Entity::processSound(StringView name, StringView path) {
+Entity::processSound(StringView name, StringView path) noexcept {
     if (!path.size) {
         Log::err(descriptor, "sound path is empty");
         return false;
@@ -451,7 +451,7 @@ Entity::processSound(StringView name, StringView path) {
 }
 
 bool
-Entity::processScripts(Unique<JSONObject> scripts) {
+Entity::processScripts(Unique<JSONObject> scripts) noexcept {
     for (StringView name : scripts->names()) {
         CHECK(scripts->hasString(name));
         CHECK(processScript(name, scripts->stringAt(name)));
@@ -460,7 +460,7 @@ Entity::processScripts(Unique<JSONObject> scripts) {
 }
 
 bool
-Entity::processScript(StringView /*name*/, StringView path) {
+Entity::processScript(StringView /*name*/, StringView path) noexcept {
     if (!path.size) {
         Log::err(descriptor, "script path is empty");
         return false;
@@ -480,7 +480,7 @@ Entity::processScript(StringView /*name*/, StringView path) {
 }
 
 /*
-bool Entity::setScript(StringView trigger, ScriptRef& script) {
+bool Entity::setScript(StringView trigger, ScriptRef& script) noexcept {
     if (trigger == "on_tick") {
         tickScript = script;
         return true;

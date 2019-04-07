@@ -44,26 +44,26 @@
 class Music {
  public:
     //! Acquire the global Music object.
-    static Music& instance();
+    static Music& instance() noexcept;
 
     virtual ~Music() = default;
 
     //! If the music filepath has changed, start playing it.
-    virtual void play(String filepath) = 0;
+    virtual void play(String filepath) noexcept = 0;
 
     //! Stop playing music.  To begin again, set a new intro or loop.
-    virtual void stop() = 0;
+    virtual void stop() noexcept = 0;
 
     //! Pause playback of music.
-    virtual void pause() = 0;
+    virtual void pause() noexcept = 0;
     //! Resume playback of music.
-    virtual void resume() = 0;
+    virtual void resume() noexcept = 0;
 
     //! Between 0.0 (silence) and 1.0 (full).
-    virtual void setVolume(double volume) = 0;
+    virtual void setVolume(double volume) noexcept = 0;
 
     //! Free music not recently played.
-    virtual void garbageCollect() = 0;
+    virtual void garbageCollect() noexcept = 0;
 
  protected:
     Music() = default;

@@ -32,7 +32,7 @@
 #include "core/sounds.h"
 #include "core/tile.h"
 
-Character::Character()
+Character::Character() noexcept
         : nowalkFlags(TILE_NOWALK | TILE_NOWALK_NPC),
           nowalkExempt(0),
           fromCoord({0.0, 0.0, 0.0}),
@@ -42,7 +42,7 @@ Character::Character()
 }
 
 void
-Character::tick(time_t dt) {
+Character::tick(time_t dt) noexcept {
     Entity::tick(dt);
 
     switch (conf.moveMode) {
@@ -53,31 +53,32 @@ Character::tick(time_t dt) {
         moveTowardDestination(dt);
         break;
     case NOTILE:
-        throw "not implemented";
+        assert_(false && "not implemented");
+        break;
     }
 }
 
 void
-Character::turn() {}
+Character::turn() noexcept {}
 
 void
-Character::destroy() {
+Character::destroy() noexcept {
     leaveTile();
     Entity::destroy();
 }
 
 icoord
-Character::getTileCoords_i() const {
+Character::getTileCoords_i() const noexcept {
     return area->virt2phys(r);
 }
 
 vicoord
-Character::getTileCoords_vi() const {
+Character::getTileCoords_vi() const noexcept {
     return area->virt2virt(r);
 }
 
 void
-Character::setTileCoords(int x, int y) {
+Character::setTileCoords(int x, int y) noexcept {
     leaveTile();
     redraw = true;
     r = area->virt2virt(vicoord{x, y, r.z});
@@ -85,7 +86,7 @@ Character::setTileCoords(int x, int y) {
 }
 
 void
-Character::setTileCoords(int x, int y, double z) {
+Character::setTileCoords(int x, int y, double z) noexcept {
     leaveTile();
     redraw = true;
     r = area->virt2virt(vicoord{x, y, z});
@@ -93,7 +94,7 @@ Character::setTileCoords(int x, int y, double z) {
 }
 
 void
-Character::setTileCoords(icoord phys) {
+Character::setTileCoords(icoord phys) noexcept {
     leaveTile();
     redraw = true;
     r = area->phys2virt_r(phys);
@@ -101,7 +102,7 @@ Character::setTileCoords(icoord phys) {
 }
 
 void
-Character::setTileCoords(vicoord virt) {
+Character::setTileCoords(vicoord virt) noexcept {
     leaveTile();
     redraw = true;
     r = area->virt2virt(virt);
@@ -109,7 +110,7 @@ Character::setTileCoords(vicoord virt) {
 }
 
 void
-Character::setTileCoords(rcoord virt) {
+Character::setTileCoords(rcoord virt) noexcept {
     leaveTile();
     redraw = true;
     r = virt;
@@ -117,24 +118,24 @@ Character::setTileCoords(rcoord virt) {
 }
 
 const Tile*
-Character::getTile() const {
+Character::getTile() const noexcept {
     return area ? area->getTile(r) : nullptr;
 }
 
 Tile*
-Character::getTile() {
+Character::getTile() noexcept {
     return area ? area->getTile(r) : nullptr;
 }
 
 void
-Character::setArea(Area* area) {
+Character::setArea(Area* area) noexcept {
     leaveTile();
     Entity::setArea(area);
     enterTile();
 }
 
 void
-Character::moveByTile(ivec2 delta) {
+Character::moveByTile(ivec2 delta) noexcept {
     if (moving) {
         return;
     }
@@ -193,7 +194,7 @@ Character::moveByTile(ivec2 delta) {
 }
 
 icoord
-Character::moveDest(ivec2 facing) {
+Character::moveDest(ivec2 facing) noexcept {
     Tile* tile = getTile();
     icoord here = getTileCoords_i();
 
@@ -207,7 +208,7 @@ Character::moveDest(ivec2 facing) {
 }
 
 bool
-Character::canMove(icoord dest) {
+Character::canMove(icoord dest) noexcept {
     if (destExit) {
         // We can always take exits as long as we can take exits.
         // (Even if they would cause us to be out of bounds.)
@@ -235,13 +236,13 @@ Character::canMove(icoord dest) {
 }
 
 bool
-Character::nowalked(Tile& t) {
+Character::nowalked(Tile& t) noexcept {
     unsigned flags = nowalkFlags & ~nowalkExempt;
     return t.hasFlag(flags);
 }
 
 void
-Character::arrived() {
+Character::arrived() noexcept {
     Entity::arrived();
 
     if (destTile) {
@@ -270,31 +271,31 @@ Character::arrived() {
 }
 
 void
-Character::leaveTile() {
+Character::leaveTile() noexcept {
     leaveTile(getTile());
 }
 
 void
-Character::leaveTile(Tile* t) {
+Character::leaveTile(Tile* t) noexcept {
     if (t) {
         t->entCnt--;
     }
 }
 
 void
-Character::enterTile() {
+Character::enterTile() noexcept {
     enterTile(getTile());
 }
 
 void
-Character::enterTile(Tile* t) {
+Character::enterTile(Tile* t) noexcept {
     if (t) {
         t->entCnt++;
     }
 }
 
 void
-Character::runTileExitScript() {
+Character::runTileExitScript() noexcept {
     // if (!tileExitScript) {
     //     return;
     // }
@@ -305,7 +306,7 @@ Character::runTileExitScript() {
 }
 
 void
-Character::runTileEntryScript() {
+Character::runTileEntryScript() noexcept {
     // if (!tileEntryScript) {
     //     return;
     // }

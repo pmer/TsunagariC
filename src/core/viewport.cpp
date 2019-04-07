@@ -36,14 +36,14 @@
 static Viewport globalViewport;
 
 Viewport&
-Viewport::instance() {
+Viewport::instance() noexcept {
     return globalViewport;
 }
 
-Viewport::Viewport() : off{0, 0}, mode(TM_MANUAL), area(nullptr) {}
+Viewport::Viewport() noexcept : off{0, 0}, mode(TM_MANUAL), area(nullptr) {}
 
 void
-Viewport::setSize(rvec2 virtRes) {
+Viewport::setSize(rvec2 virtRes) noexcept {
     this->virtRes = virtRes;
 
     // Calculate or recalculate the aspect ratio.
@@ -53,27 +53,27 @@ Viewport::setSize(rvec2 virtRes) {
 }
 
 void
-Viewport::tick(time_t) {
+Viewport::tick(time_t) noexcept {
     update();
 }
 
 void
-Viewport::turn() {
+Viewport::turn() noexcept {
     update();
 }
 
 rvec2
-Viewport::getMapOffset() const {
+Viewport::getMapOffset() const noexcept {
     return off;
 }
 
 rvec2
-Viewport::getLetterboxOffset() const {
+Viewport::getLetterboxOffset() const noexcept {
     return addLetterboxOffset(rvec2{0.0, 0.0});
 }
 
 rvec2
-Viewport::getScale() const {
+Viewport::getScale() const noexcept {
     const GameWindow& window = GameWindow::instance();
     rvec2 letterbox = getLetterbox();
     rvec2 physRes = rvec2{(double)window.width(), (double)window.height()};
@@ -83,30 +83,30 @@ Viewport::getScale() const {
 }
 
 rvec2
-Viewport::getPhysRes() const {
+Viewport::getPhysRes() const noexcept {
     const GameWindow& window = GameWindow::instance();
     return rvec2{(double)window.width(), (double)window.height()};
 }
 
 rvec2
-Viewport::getVirtRes() const {
+Viewport::getVirtRes() const noexcept {
     return virtRes;
 }
 
 // Immediatly center render offset. Stop any tracking.
 void
-Viewport::jumpToPt(ivec2 pt) {
+Viewport::jumpToPt(ivec2 pt) noexcept {
     jumpToPt(rvec2{(double)pt.x, (double)pt.y});
 }
 
 void
-Viewport::jumpToPt(rvec2 pt) {
+Viewport::jumpToPt(rvec2 pt) noexcept {
     mode = TM_MANUAL;
     off = offsetForPt(pt);
 }
 
 void
-Viewport::jumpToEntity(const Entity* e) {
+Viewport::jumpToEntity(const Entity* e) noexcept {
     mode = TM_MANUAL;  // API implies mode change.
     _jumpToEntity(e);
 }
@@ -114,7 +114,7 @@ Viewport::jumpToEntity(const Entity* e) {
 
 // Continuously follow.
 void
-Viewport::trackEntity(const Entity* e) {
+Viewport::trackEntity(const Entity* e) noexcept {
     mode = TM_FOLLOW_ENTITY;
     targete = e;
     update();
@@ -122,13 +122,13 @@ Viewport::trackEntity(const Entity* e) {
 
 
 void
-Viewport::setArea(const Area* a) {
+Viewport::setArea(const Area* a) noexcept {
     area = a;
 }
 
 
 void
-Viewport::update() {
+Viewport::update() noexcept {
     switch (mode) {
     case TM_MANUAL:
         // Do nothing.
@@ -140,7 +140,7 @@ Viewport::update() {
 }
 
 void
-Viewport::_jumpToEntity(const Entity* e) {
+Viewport::_jumpToEntity(const Entity* e) noexcept {
     rcoord pos = e->getPixelCoord();
     ivec2 td = area->getTileDimensions();
     rvec2 center = rvec2{pos.x + td.x / 2, pos.y + td.y / 2};
@@ -149,7 +149,7 @@ Viewport::_jumpToEntity(const Entity* e) {
 
 
 rvec2
-Viewport::getLetterbox() const {
+Viewport::getLetterbox() const noexcept {
     rvec2 physRes = getPhysRes();
     double physAspect = physRes.x / physRes.y;
     double virtAspect = virtRes.x / virtRes.y;
@@ -167,17 +167,17 @@ Viewport::getLetterbox() const {
 }
 
 rvec2
-Viewport::offsetForPt(rvec2 pt) const {
+Viewport::offsetForPt(rvec2 pt) const noexcept {
     return boundToArea(centerOn(pt));
 }
 
 rvec2
-Viewport::centerOn(rvec2 pt) const {
+Viewport::centerOn(rvec2 pt) const noexcept {
     return pt - virtRes / 2;
 }
 
 rvec2
-Viewport::boundToArea(rvec2 pt) const {
+Viewport::boundToArea(rvec2 pt) const noexcept {
     icoord ad = area->getDimensions();
     ivec2 td = area->getTileDimensions();
     double areaWidth = ad.x * td.x;
@@ -190,10 +190,8 @@ Viewport::boundToArea(rvec2 pt) const {
 }
 
 double
-Viewport::boundDimension(double screen,
-                         double area,
-                         double pt,
-                         bool loop) const {
+Viewport::boundDimension(double screen, double area, double pt, bool loop) const
+        noexcept {
     // Since looping areas continue without bound, this is a no-op.
     if (loop) {
         return pt;
@@ -206,7 +204,7 @@ Viewport::boundDimension(double screen,
 }
 
 rvec2
-Viewport::addLetterboxOffset(rvec2 pt) const {
+Viewport::addLetterboxOffset(rvec2 pt) const noexcept {
     rvec2 physRes = getPhysRes();
     rvec2 letterbox = getLetterbox();
     return pt - letterbox * physRes / 2;

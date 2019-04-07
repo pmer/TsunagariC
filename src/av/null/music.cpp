@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** music.cpp                        **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -28,21 +28,22 @@
 
 class NullMusic : public MusicWorker {
  public:
-    void stop() final {}
+    void stop() noexcept final {}
 
-    void pause() final {}
-    void resume() final {}
+    void pause() noexcept final {}
+    void resume() noexcept final {}
 
-    void setVolume(double) final {}
+    void setVolume(double) noexcept final {}
 
-    void tick() {}
+    void tick() noexcept {}
 
-    void garbageCollect() final {}
+    void garbageCollect() noexcept final {}
 };
 
 
 static NullMusic globalMusicWorker;
 
-MusicWorker& MusicWorker::instance() {
+MusicWorker&
+MusicWorker::instance() noexcept {
     return globalMusicWorker;
 }

@@ -27,19 +27,19 @@
 
 #include "bitrecord.h"
 
-BitRecord::BitRecord(size_t length) {
+BitRecord::BitRecord(size_t length) noexcept {
     states.resize(length);
     for (size_t i = 0; i < length; i++) {
         states[i] = false;
     }
 }
 
-bool& BitRecord::operator[](size_t idx) {
+bool& BitRecord::operator[](size_t idx) noexcept {
     return states[idx];
 }
 
 Vector<size_t>
-BitRecord::diff(const BitRecord& other) {
+BitRecord::diff(const BitRecord& other) noexcept {
     Vector<size_t> changes;
 
     for (size_t i = 0; i < states.size(); i++) {

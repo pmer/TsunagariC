@@ -43,30 +43,25 @@
 //
 
 // Unique pointers delete their object when destroyed.
-template<typename T>
-class Unique {
+template<typename T> class Unique {
     T* x;
 
  public:
-    Unique() : x(nullptr) {}
+    Unique() noexcept : x(nullptr) {}
 
-    Unique(Unique&& other) noexcept : x(other.x) {
-        other.x = nullptr;
-    }
+    Unique(Unique&& other) noexcept : x(other.x) { other.x = nullptr; }
 
-    Unique(T* x) : x(x) {}
+    Unique(T* x) noexcept : x(x) {}
 
-    ~Unique() {
-        delete x;
-    }
+    ~Unique() noexcept { delete x; }
 
-    Unique& operator=(T* x) {
+    Unique& operator=(T* x) noexcept {
         delete this->x;
         this->x = x;
         return *this;
     }
 
-    Unique& operator=(Unique&& other) {
+    Unique& operator=(Unique&& other) noexcept {
         x = other.x;
         other.x = nullptr;
         return *this;
@@ -75,17 +70,20 @@ class Unique {
     operator bool() const noexcept { return x != nullptr; }
 
     T* get() const noexcept { return x; }
-    T* operator->() const noexcept { assert_(x); return x; }
+    T* operator->() const noexcept {
+        assert_(x);
+        return x;
+    }
     T& operator*() const noexcept { return *x; }
 
  private:
     // Unique pointers cannot be copied.
-    Unique(const Unique&) {}
-    Unique& operator=(const Unique&) { return *this; }
+    Unique(const Unique&) noexcept {}
+    Unique& operator=(const Unique&) noexcept { return *this; }
 
     // Meaningless...
-    bool operator==(Unique&&) { return false; }
-    bool operator==(const Unique&) const { return false; }
+    bool operator==(Unique&&) noexcept { return false; }
+    bool operator==(const Unique&) const noexcept { return false; }
 };
 
 #endif  // SRC_UTIL_UNIQUE_H_

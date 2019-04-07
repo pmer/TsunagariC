@@ -34,10 +34,10 @@ class Pool {
  public:
     static constexpr size_t ONE_PER_CORE = 0;
 
-    static Pool* makePool(StringView name, size_t workerLimit = ONE_PER_CORE);
+    static Pool* makePool(StringView name, size_t workerLimit = ONE_PER_CORE) noexcept;
     virtual ~Pool() = default;
 
-    virtual void schedule(Function<void()> job) = 0;
+    virtual void schedule(Function<void()> job) noexcept = 0;
 };
 
 #endif  // SRC_PACK_POOL_H_

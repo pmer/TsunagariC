@@ -37,11 +37,11 @@
 #include "util/int.h"
 
 #ifdef _WIN32
-#    include "os/windows.h"
+#include "os/windows.h"
 #endif
 
 #ifdef __APPLE__
-#    include "os/mac-gui.h"
+#include "os/mac-gui.h"
 #endif
 
 /**
@@ -51,7 +51,7 @@
  * we're going to load. The GameWindow class then loads and plays the game.
  */
 int
-main(int argc, char** argv) {
+main(int argc, char** argv) noexcept {
 #ifdef _WIN32
     wFixConsole();
 #endif

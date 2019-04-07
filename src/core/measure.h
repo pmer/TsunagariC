@@ -38,8 +38,8 @@
 
 class TimeMeasure {
  public:
-    TimeMeasure(String description);
-    ~TimeMeasure();
+    TimeMeasure(String description) noexcept;
+    ~TimeMeasure() noexcept;
 
  private:
     String description;

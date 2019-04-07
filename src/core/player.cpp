@@ -43,24 +43,24 @@
 static Player* globalPlayer = nullptr;
 
 Player&
-Player::instance() {
+Player::instance() noexcept {
     return *globalPlayer;
 }
 
 
-Player::Player() : Character(), velocity{0, 0} {
+Player::Player() noexcept : Character(), velocity{0, 0} {
     globalPlayer = this;
     nowalkFlags = TILE_NOWALK | TILE_NOWALK_PLAYER;
     nowalkExempt = TILE_NOWALK_EXIT;
 }
 
 void
-Player::destroy() {
+Player::destroy() noexcept {
     Log::fatal("Player", "destroy(): Player should not be destroyed");
 }
 
 void
-Player::startMovement(ivec2 delta) {
+Player::startMovement(ivec2 delta) noexcept {
     switch (conf.moveMode) {
     case TURN:
         moveByTile(delta);
@@ -77,7 +77,7 @@ Player::startMovement(ivec2 delta) {
 }
 
 void
-Player::stopMovement(ivec2 delta) {
+Player::stopMovement(ivec2 delta) noexcept {
     switch (conf.moveMode) {
     case TURN:
         break;
@@ -100,7 +100,7 @@ Player::stopMovement(ivec2 delta) {
 }
 
 void
-Player::moveByTile(ivec2 delta) {
+Player::moveByTile(ivec2 delta) noexcept {
     if (frozen) {
         return;
     }
@@ -124,7 +124,7 @@ Player::moveByTile(ivec2 delta) {
 }
 
 void
-Player::useTile() {
+Player::useTile() noexcept {
     Tile* t = area->getTile(moveDest(facing));
     if (t) {
         t->runUseScript(this);
@@ -132,7 +132,7 @@ Player::useTile() {
 }
 
 void
-Player::setFrozen(bool b) {
+Player::setFrozen(bool b) noexcept {
     World& world = World::instance();
 
     if (b) {
@@ -149,7 +149,7 @@ Player::setFrozen(bool b) {
 }
 
 void
-Player::arrived() {
+Player::arrived() noexcept {
     Entity::arrived();
 
     if (destExit) {
@@ -163,7 +163,7 @@ Player::arrived() {
 }
 
 void
-Player::takeExit(const Exit& exit) {
+Player::takeExit(const Exit& exit) noexcept {
     World& world = World::instance();
     if (!world.focusArea(exit.area, exit.coords)) {
         // Roll back movement if exit failed to open.

@@ -31,24 +31,24 @@
 #include "core/client-conf.h"
 
 void
-Overlay::tick(time_t dt) {
+Overlay::tick(time_t dt) noexcept {
     Entity::tick(dt);
     moveTowardDestination(dt);
 }
 
 void
-Overlay::teleport(vicoord coord) {
+Overlay::teleport(vicoord coord) noexcept {
     r = area->virt2virt(coord);
     redraw = true;
 }
 
 void
-Overlay::drift(ivec2 xy) {
+Overlay::drift(ivec2 xy) noexcept {
     driftTo(ivec2{(int)r.x + xy.x, (int)r.y + xy.y});
 }
 
 void
-Overlay::driftTo(ivec2 xy) {
+Overlay::driftTo(ivec2 xy) noexcept {
     setDestinationCoordinate(rcoord{(double)xy.x, (double)xy.y, r.z});
     pickFacingForAngle();
     moving = true;
@@ -58,6 +58,6 @@ Overlay::driftTo(ivec2 xy) {
 }
 
 void
-Overlay::pickFacingForAngle() {
+Overlay::pickFacingForAngle() noexcept {
     // TODO
 }

@@ -35,19 +35,19 @@
 
 class NullGameWindow : public GameWindow {
  public:
-    bool init() { return true; }
+    bool init() noexcept { return true; }
 
-    unsigned width() const final {
+    unsigned width() const noexcept final {
         return static_cast<unsigned>(conf.windowSize.x);
     }
 
-    unsigned height() const final {
+    unsigned height() const noexcept final {
         return static_cast<unsigned>(conf.windowSize.y);
     }
 
-    void setCaption(StringView) final {}
+    void setCaption(StringView) noexcept final {}
 
-    void mainLoop() final {
+    void mainLoop() noexcept final {
         TimePoint last = 0;
 
 #pragma clang diagnostic push
@@ -68,31 +68,32 @@ class NullGameWindow : public GameWindow {
 #pragma clang diagnostic pop
     }
 
-    void drawRect(double, double, double, double, uint32_t) final {}
+    void drawRect(double, double, double, double, uint32_t) noexcept final {}
 
-    void scale(double, double, Function<void()>) final {}
-    void translate(double, double, Function<void()>) final {}
-    void clip(double, double, double, double, Function<void()>) final {}
+    void scale(double, double, Function<void()>) noexcept final {}
+    void translate(double, double, Function<void()>) noexcept final {}
+    void clip(double, double, double, double, Function<void()>) noexcept final {
+    }
 
-    void close() final {}
+    void close() noexcept final {}
 };
 
 
 static NullGameWindow globalWindow;
 
 GameWindow*
-GameWindow::create() {
+GameWindow::create() noexcept {
     return &globalWindow;
 }
 
 GameWindow&
-GameWindow::instance() {
+GameWindow::instance() noexcept {
     return globalWindow;
 }
 
 
 time_t
-GameWindow::time() {
+GameWindow::time() noexcept {
     TimePoint now = SteadyClock::now();
     return ns_to_ms(now);
 }

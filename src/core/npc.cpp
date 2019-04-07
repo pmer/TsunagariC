@@ -28,7 +28,7 @@
 #include "core/npc.h"
 
 void
-NPC::arrived() {
+NPC::arrived() noexcept {
     Entity::arrived();
 
     if (destExit) {

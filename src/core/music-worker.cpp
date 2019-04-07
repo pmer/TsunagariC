@@ -31,46 +31,46 @@
 #include "util/math2.h"
 
 static void
-clientIniVolumeVerify() {
+clientIniVolumeVerify() noexcept {
     if (conf.musicVolume < 0 || 100 < conf.musicVolume) {
         Log::err("MusicWorker", "Music volume not within bounds [0,100]");
     }
 }
 
 static double
-clientIniVolumeApply(double volume) {
+clientIniVolumeApply(double volume) noexcept {
     clientIniVolumeVerify();
     return volume * conf.musicVolume / 100.0;
 }
 
 static double
-clientIniVolumeUnapply(double volume) {
+clientIniVolumeUnapply(double volume) noexcept {
     clientIniVolumeVerify();
     return volume / conf.musicVolume * 100.0;
 }
 
 
-MusicWorker::MusicWorker() : volume(1.0), paused(0) {}
+MusicWorker::MusicWorker() noexcept : volume(1.0), paused(0) {}
 
 void
-MusicWorker::play(StringView filename) {
+MusicWorker::play(StringView filename) noexcept {
     paused = 0;
     path = filename;
 }
 
 void
-MusicWorker::stop() {
+MusicWorker::stop() noexcept {
     paused = 0;
     path = "";
 }
 
 void
-MusicWorker::pause() {
+MusicWorker::pause() noexcept {
     paused++;
 }
 
 void
-MusicWorker::resume() {
+MusicWorker::resume() noexcept {
     if (paused <= 0) {
         Log::err("MusicWorker", "Unpausing, but music not paused");
         return;
@@ -79,12 +79,12 @@ MusicWorker::resume() {
 }
 
 double
-MusicWorker::getVolume() {
+MusicWorker::getVolume() noexcept {
     return clientIniVolumeUnapply(volume);
 }
 
 void
-MusicWorker::setVolume(double attemptedVolume) {
+MusicWorker::setVolume(double attemptedVolume) noexcept {
     double newVolume = bound(attemptedVolume, 0.0, 1.0);
     if (attemptedVolume != newVolume) {
         Log::info("MusicWorker",

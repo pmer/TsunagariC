@@ -54,11 +54,11 @@
 static World globalWorld;
 
 World&
-World::instance() {
+World::instance() noexcept {
     return globalWorld;
 }
 
-World::World()
+World::World() noexcept
         : player(new Player),
           lastTime(0),
           total(0),
@@ -67,7 +67,7 @@ World::World()
           paused(0) {}
 
 bool
-World::init() {
+World::init() noexcept {
     alive = true;
 
     auto& parameters = DataWorld::instance().parameters;
@@ -95,12 +95,12 @@ World::init() {
 }
 
 time_t
-World::time() const {
+World::time() const noexcept {
     return total;
 }
 
 void
-World::buttonDown(KeyboardKey key) {
+World::buttonDown(KeyboardKey key) noexcept {
     switch (key) {
     case KBEscape:
         setPaused(paused == 0);
@@ -117,7 +117,7 @@ World::buttonDown(KeyboardKey key) {
 }
 
 void
-World::buttonUp(KeyboardKey key) {
+World::buttonUp(KeyboardKey key) noexcept {
     switch (key) {
     case KBEscape:
         break;
@@ -132,7 +132,7 @@ World::buttonUp(KeyboardKey key) {
 }
 
 void
-World::draw(DisplayList* display) {
+World::draw(DisplayList* display) noexcept {
     // TimeMeasure m("Drew world");
 
     Viewport& view = Viewport::instance();
@@ -154,12 +154,12 @@ World::draw(DisplayList* display) {
 }
 
 bool
-World::needsRedraw() const {
+World::needsRedraw() const noexcept {
     return redraw || (!paused && area->needsRedraw());
 }
 
 void
-World::update(time_t now) {
+World::update(time_t now) noexcept {
     if (lastTime == 0) {
         // There is no dt on the first update().  Don't tick.
         lastTime = now;
@@ -174,19 +174,19 @@ World::update(time_t now) {
 }
 
 void
-World::tick(time_t dt) {
+World::tick(time_t dt) noexcept {
     area->tick(dt);
 }
 
 void
-World::turn() {
+World::turn() noexcept {
     if (conf.moveMode == TURN) {
         area->turn();
     }
 }
 
 bool
-World::focusArea(StringView filename, vicoord playerPos) {
+World::focusArea(StringView filename, vicoord playerPos) noexcept {
     auto entry = areas.find(filename);
     if (entry != areas.end()) {
         Area* rawArea = entry.value().get();
@@ -220,7 +220,7 @@ World::focusArea(StringView filename, vicoord playerPos) {
 }
 
 void
-World::focusArea(Area* area, vicoord playerPos) {
+World::focusArea(Area* area, vicoord playerPos) noexcept {
     this->area = area;
     player->setArea(area);
     player->setTileCoords(playerPos);
@@ -229,7 +229,7 @@ World::focusArea(Area* area, vicoord playerPos) {
 }
 
 void
-World::setPaused(bool b) {
+World::setPaused(bool b) noexcept {
     if (!alive) {
         return;
     }
@@ -260,12 +260,12 @@ World::setPaused(bool b) {
 }
 
 void
-World::storeKeys() {
+World::storeKeys() noexcept {
     keyStates.push_back(GameWindow::instance().getKeysDown());
 }
 
 void
-World::restoreKeys() {
+World::restoreKeys() noexcept {
     BitRecord now = GameWindow::instance().getKeysDown();
     BitRecord then = keyStates.back();
     Vector<size_t> diffs = now.diff(then);
@@ -284,7 +284,7 @@ World::restoreKeys() {
 }
 
 void
-World::garbageCollect() {
+World::garbageCollect() noexcept {
     Images::instance().garbageCollect();
     JSONs::instance().garbageCollect();
     Music::instance().garbageCollect();
@@ -292,7 +292,7 @@ World::garbageCollect() {
 }
 
 time_t
-World::calculateDt(time_t now) {
+World::calculateDt(time_t now) noexcept {
     time_t dt = now - lastTime;
     lastTime = now;
     return dt;

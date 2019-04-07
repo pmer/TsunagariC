@@ -50,6 +50,6 @@ struct DisplayList {
     bool paused;  // TODO: Move to colorOverlay & overlay.
 };
 
-void displayListPresent(DisplayList* display);
+void displayListPresent(DisplayList* display) noexcept;
 
 #endif  // SRC_CORE_DISPLAY_LIST_H_

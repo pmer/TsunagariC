@@ -39,13 +39,13 @@ struct TaskContext {
 
 class DispatchQueueImpl {
  public:
-    DispatchQueueImpl();
-    ~DispatchQueueImpl();
+    DispatchQueueImpl() noexcept;
+    ~DispatchQueueImpl() noexcept;
 
-    void async(Task task, DispatchQueue::QualityOfService qos);
+    void async(Task task, DispatchQueue::QualityOfService qos) noexcept;
 
  private:
-    void runTasks();
+    void runTasks() noexcept;
 
     SafeHeap<TaskContext> tasks;
     Vector<Thread> threads;

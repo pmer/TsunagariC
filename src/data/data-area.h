@@ -51,27 +51,27 @@ class DataArea {
 
     Area* area;  // borrowed reference
 
-    virtual void onLoad();
-    virtual void onFocus();
-    virtual void onTick(time_t dt);
-    virtual void onTurn();
+    virtual void onLoad() noexcept;
+    virtual void onFocus() noexcept;
+    virtual void onTick(time_t dt) noexcept;
+    virtual void onTurn() noexcept;
 
     // For scripts
 
     //! Play a sound with a 3% speed variation applied to it.
-    void playSoundEffect(StringView sound);
+    void playSoundEffect(StringView sound) noexcept;
 
-    void playSoundAndThen(StringView sound, ThenFn then);
-    void timerProgress(time_t duration, ProgressFn progress);
-    void timerThen(time_t duration, ThenFn then);
+    void playSoundAndThen(StringView sound, ThenFn then) noexcept;
+    void timerProgress(time_t duration, ProgressFn progress) noexcept;
+    void timerThen(time_t duration, ThenFn then) noexcept;
     void timerProgressAndThen(time_t duration,
                               ProgressFn progress,
-                              ThenFn then);
+                              ThenFn then) noexcept;
 
     // For engine
-    void tick(time_t dt);
-    void turn();
-    TileScript script(StringView scriptName);
+    void tick(time_t dt) noexcept;
+    void turn() noexcept;
+    TileScript script(StringView scriptName) noexcept;
 
  protected:
     DataArea() = default;

@@ -1,7 +1,8 @@
 /***************************************
 ** Tsunagari Tile Engine              **
 ** random.h                           **
-** Copyright 2011-2013 PariahSoft LLC **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
 // **********
@@ -27,20 +28,20 @@
 #ifndef SRC_UTIL_RANDOM_H_
 #define SRC_UTIL_RANDOM_H_
 
-    //! Produce a random integer.
-    /*!
-        @param min Minimum value.
-        @param max Maximum value.
-        @return random integer between min and max.
-    */
-int randInt(int min, int max);
+//! Produce a random integer.
+/*!
+    @param min Minimum value.
+    @param max Maximum value.
+    @return random integer between min and max.
+*/
+int randInt(int min, int max) noexcept;
 
-    //! Produce a random double floating point number.
-    /*!
-        @param min Minimum value.
-        @param max Maximum value.
-        @return random floating point number between min and max.
-    */
-double randFloat(double min, double max);
+//! Produce a random double floating point number.
+/*!
+    @param min Minimum value.
+    @param max Maximum value.
+    @return random floating point number between min and max.
+*/
+double randFloat(double min, double max) noexcept;
 
 #endif  // SRC_UTIL_RANDOM_H_

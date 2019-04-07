@@ -30,12 +30,14 @@
 #include "os/c.h"
 #include "util/int.h"
 
-int randInt(int min, int max) {
-    return rand() % ((max+1)-min) + min;
+int
+randInt(int min, int max) noexcept {
+    return rand() % ((max + 1) - min) + min;
 }
 
-double randFloat(double min, double max) {
-        int i = rand();
-        double d = (double)i / INT_MAX;
-        return d * (max-min) + min;
+double
+randFloat(double min, double max) noexcept {
+    int i = rand();
+    double d = (double)i / INT_MAX;
+    return d * (max - min) + min;
 }

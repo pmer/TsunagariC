@@ -34,12 +34,12 @@ static const DispatchQueue::QualityOfService WORKER_QOS =
 
 class MusicImpl : public Music {
  public:
-    void play(String filepath);
-    void stop();
-    void pause();
-    void resume();
-    void setVolume(double volume);
-    void garbageCollect();
+    void play(String filepath) noexcept;
+    void stop() noexcept;
+    void pause() noexcept;
+    void resume() noexcept;
+    void setVolume(double volume) noexcept;
+    void garbageCollect() noexcept;
 
  private:
     DispatchQueue queue;
@@ -48,7 +48,7 @@ class MusicImpl : public Music {
 static MusicImpl* globalMusic = nullptr;
 
 Music&
-Music::instance() {
+Music::instance() noexcept {
     if (globalMusic == nullptr) {
         globalMusic = new MusicImpl;
     }
@@ -56,28 +56,28 @@ Music::instance() {
 }
 
 void
-MusicImpl::play(String filename) {
+MusicImpl::play(String filename) noexcept {
     queue.async([filename]() { MusicWorker::instance().play(filename); },
                 WORKER_QOS);
 }
 
 void
-MusicImpl::stop() {
+MusicImpl::stop() noexcept {
     queue.async([]() { MusicWorker::instance().stop(); }, WORKER_QOS);
 }
 
 void
-MusicImpl::pause() {
+MusicImpl::pause() noexcept {
     queue.async([]() { MusicWorker::instance().pause(); }, WORKER_QOS);
 }
 
 void
-MusicImpl::resume() {
+MusicImpl::resume() noexcept {
     queue.async([]() { MusicWorker::instance().resume(); }, WORKER_QOS);
 }
 
 void
-MusicImpl::setVolume(double attemptedVolume) {
+MusicImpl::setVolume(double attemptedVolume) noexcept {
     queue.async(
             [attemptedVolume]() {
                 MusicWorker::instance().setVolume(attemptedVolume);
@@ -86,6 +86,6 @@ MusicImpl::setVolume(double attemptedVolume) {
 }
 
 void
-MusicImpl::garbageCollect() {
+MusicImpl::garbageCollect() noexcept {
     queue.async([]() { MusicWorker::instance().garbageCollect(); }, WORKER_QOS);
 }

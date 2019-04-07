@@ -37,26 +37,26 @@
  */
 class Cooldown {
  public:
-    Cooldown();
-    Cooldown(time_t duration);
+    Cooldown() noexcept;
+    Cooldown(time_t duration) noexcept;
 
     /**
      * Sets a new duration for the Cooldown and resets any current
      * expirations.
      */
-    void setDuration(time_t duration);
+    void setDuration(time_t duration) noexcept;
 
     /**
      * Let the Cooldown know that the specified number of milliseconds have
      * passed.
      */
-    void advance(time_t dt);
+    void advance(time_t dt) noexcept;
 
     /**
      * Whether enough time has passed that the Cooldown has expired at
      * least once over.
      */
-    bool hasExpired();
+    bool hasExpired() noexcept;
 
     /**
      * Begin the next session, rolling over any time passed since the
@@ -66,7 +66,7 @@ class Cooldown {
      * the cooldown has expired multiple times.  In that case, hasExpired()
      * will still return true and you may wrap again.
      */
-    void wrap();
+    void wrap() noexcept;
 
  private:
     time_t duration, passed;

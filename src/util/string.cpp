@@ -28,28 +28,28 @@
 
 #include "os/c.h"
 
-NullTerminatedString::NullTerminatedString(String& s) : s(s) {
+NullTerminatedString::NullTerminatedString(String& s) noexcept : s(s) {
     s.push_back('\0');
 }
 
-NullTerminatedString::~NullTerminatedString() {
+NullTerminatedString::~NullTerminatedString() noexcept {
     s.pop_back();
 }
 
 const char*
-NullTerminatedString::get() {
+NullTerminatedString::get() noexcept {
     return s.data();
 }
 
-NullTerminatedString::operator const char*() {
+NullTerminatedString::operator const char*() noexcept {
     return s.data();
 }
 
-String::String(const char* value) {
+String::String(const char* value) noexcept {
     *this << value;
 }
 
-String::String(StringView value) {
+String::String(StringView value) noexcept {
     *this << value;
 }
 
@@ -74,94 +74,94 @@ String::operator>(const String& other) const noexcept {
 }
 
 String&
-String::operator<<(char value) {
+String::operator<<(char value) noexcept {
     push_back(value);
     return *this;
 }
 
 String&
-String::operator<<(const char* value) {
+String::operator<<(const char* value) noexcept {
     append(value, strlen(value));
     return *this;
 }
 
 String&
-String::operator<<(StringView value) {
+String::operator<<(StringView value) noexcept {
     append(value.data, value.size);
     return *this;
 }
 
 String&
-String::operator<<(bool value) {
+String::operator<<(bool value) noexcept {
     return *this << (value ? "true" : "false");
 }
 
 String&
-String::operator<<(int value) {
+String::operator<<(int value) noexcept {
     char buf[64];
     sprintf(buf, "%d", value);
     return *this << buf;
 }
 
 String&
-String::operator<<(unsigned int value) {
+String::operator<<(unsigned int value) noexcept {
     char buf[64];
     sprintf(buf, "%u", value);
     return *this << buf;
 }
 
 String&
-String::operator<<(long value) {
+String::operator<<(long value) noexcept {
     char buf[64];
     sprintf(buf, "%ld", value);
     return *this << buf;
 }
 
 String&
-String::operator<<(unsigned long value) {
+String::operator<<(unsigned long value) noexcept {
     char buf[64];
     sprintf(buf, "%lu", value);
     return *this << buf;
 }
 
 String&
-String::operator<<(long long value) {
+String::operator<<(long long value) noexcept {
     char buf[64];
     sprintf(buf, "%lld", value);
     return *this << buf;
 }
 
 String&
-String::operator<<(unsigned long long value) {
+String::operator<<(unsigned long long value) noexcept {
     char buf[64];
     sprintf(buf, "%llu", value);
     return *this << buf;
 }
 
 String&
-String::operator<<(float value) {
+String::operator<<(float value) noexcept {
     char buf[64];
     sprintf(buf, "%f", value);
     return *this << buf;
 }
 
 String&
-String::operator<<(double value) {
+String::operator<<(double value) noexcept {
     char buf[64];
     sprintf(buf, "%f", value);
     return *this << buf;
 }
 
-String::operator StringView() const {
+String::operator StringView() const noexcept {
     return StringView(data(), size());
 }
 
 StringView
-String::view() const {
+String::view() const noexcept {
     return StringView(data(), size());
 }
 
 NullTerminatedString
-String::null() {
+String::null() noexcept {
     return NullTerminatedString(*this);
 }

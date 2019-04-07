@@ -37,7 +37,7 @@ static Mutex mutex;
 static Unique<PackReader> pack;
 
 static bool
-openPackFile() {
+openPackFile() noexcept {
     StringView path = DataWorld::instance().datafile;
 
     // TimeMeasure m("Opened " + path);
@@ -53,12 +53,12 @@ openPackFile() {
 }
 
 static String
-getFullPath(StringView path) {
+getFullPath(StringView path) noexcept {
     return String() << DataWorld::instance().datafile << "/" << path;
 }
 
 Optional<StringView>
-resourceLoad(StringView path) {
+resourceLoad(StringView path) noexcept {
     LockGuard lock(mutex);
 
     if (!openPackFile()) {

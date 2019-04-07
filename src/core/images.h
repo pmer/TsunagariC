@@ -35,20 +35,20 @@ class Image {
  public:
     virtual ~Image() = default;
 
-    virtual void draw(double dstX, double dstY, double z) = 0;
+    virtual void draw(double dstX, double dstY, double z) noexcept = 0;
     virtual void drawSubrect(double dstX,
                              double dstY,
                              double z,
                              double srcX,
                              double srcY,
                              double srcW,
-                             double srcH) = 0;
+                             double srcH) noexcept = 0;
 
-    unsigned width() const;
-    unsigned height() const;
+    unsigned width() const noexcept;
+    unsigned height() const noexcept;
 
  protected:
-    Image(unsigned width, unsigned height);
+    Image(unsigned width, unsigned height) noexcept;
 
     unsigned _width;
     unsigned _height;
@@ -63,9 +63,9 @@ class TiledImage {
  public:
     virtual ~TiledImage() = default;
 
-    virtual size_t size() const = 0;
+    virtual size_t size() const noexcept = 0;
 
-    virtual Rc<Image> operator[](size_t n) const = 0;
+    virtual Rc<Image> operator[](size_t n) const noexcept = 0;
 
  protected:
     TiledImage() = default;
@@ -79,21 +79,21 @@ class TiledImage {
 class Images {
  public:
     //! Acquire the global Images object.
-    static Images& instance();
+    static Images& instance() noexcept;
 
     virtual ~Images() = default;
 
     //! Load an image from the file at the given path.
-    virtual Rc<Image> load(StringView path) = 0;
+    virtual Rc<Image> load(StringView path) noexcept = 0;
 
     //! Load an image of tiles from the file at the given path. Each tile
     //! with have width and heigh as specified.
     virtual Rc<TiledImage> loadTiles(StringView path,
                                      unsigned tileW,
-                                     unsigned tileH) = 0;
+                                     unsigned tileH) noexcept = 0;
 
     //! Free images not recently used.
-    virtual void garbageCollect() = 0;
+    virtual void garbageCollect() noexcept = 0;
 
  protected:
     Images() = default;

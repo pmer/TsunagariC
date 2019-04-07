@@ -28,31 +28,32 @@
 
 class NullSoundInstance : public SoundInstance {
  public:
-    bool playing() final { return false; }
-    void stop() final {}
+    bool playing() noexcept final { return false; }
+    void stop() noexcept final {}
 
-    bool paused() final { return false; }
-    void pause() final {}
-    void resume() final {}
+    bool paused() noexcept final { return false; }
+    void pause() noexcept final {}
+    void resume() noexcept final {}
 
-    void volume(double) final {}
-    void pan(double) final {}
-    void speed(double) final {}
+    void volume(double) noexcept final {}
+    void pan(double) noexcept final {}
+    void speed(double) noexcept final {}
 };
 
 
 class NullSounds : public Sounds {
  public:
-    Rc<SoundInstance> play(StringView) final {
+    Rc<SoundInstance> play(StringView) noexcept final {
         return Rc<SoundInstance>();
     }
 
-    void garbageCollect() final {}
+    void garbageCollect() noexcept final {}
 };
 
 
 static NullSounds globalSounds;
 
-Sounds& Sounds::instance() {
+Sounds&
+Sounds::instance() noexcept {
     return globalSounds;
 }

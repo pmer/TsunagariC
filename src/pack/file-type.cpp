@@ -35,7 +35,7 @@ static const StringView mediaExtensions[] = {
     ".png"
 };
 
-FileType determineFileType(StringView path) {
+FileType determineFileType(StringView path) noexcept {
     auto dot = path.rfind('.');
     if (!dot) {
         return FT_UNKNOWN;

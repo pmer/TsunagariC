@@ -30,11 +30,11 @@
 #include "util/move.h"
 
 bool
-operator<(const TaskContext& lhs, const TaskContext& rhs) {
+operator<(const TaskContext& lhs, const TaskContext& rhs) noexcept {
     return lhs.qualityOfService < rhs.qualityOfService;
 }
 
-DispatchQueueImpl::DispatchQueueImpl() {
+DispatchQueueImpl::DispatchQueueImpl() noexcept {
     unsigned n = Thread::hardware_concurrency();
     // n = 1;
     // debug, and to help with MusicWorker until better mechanism for
@@ -45,7 +45,7 @@ DispatchQueueImpl::DispatchQueueImpl() {
     }
 }
 
-DispatchQueueImpl::~DispatchQueueImpl() {
+DispatchQueueImpl::~DispatchQueueImpl() noexcept {
     tasks.end();
     for (auto& thread : threads) {
         thread.join();
@@ -53,12 +53,13 @@ DispatchQueueImpl::~DispatchQueueImpl() {
 }
 
 void
-DispatchQueueImpl::async(Task task, DispatchQueue::QualityOfService qos) {
+DispatchQueueImpl::async(Task task,
+                         DispatchQueue::QualityOfService qos) noexcept {
     tasks.push({task, qos});
 }
 
 void
-DispatchQueueImpl::runTasks() {
+DispatchQueueImpl::runTasks() noexcept {
     while (true) {
         Optional<TaskContext> context = tasks.pop();
         if (context) {

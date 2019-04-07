@@ -26,12 +26,15 @@
 
 #ifndef NDEBUG
 
-#    include "util/assert.h"
+#include "util/assert.h"
 
-#    include "os/c.h"
+#include "os/c.h"
 
 void
-assert__(const char* func, const char* file, int line, const char* expr) {
+assert__(const char* func,
+         const char* file,
+         int line,
+         const char* expr) noexcept {
     printf("Assertion failed: %s, function %s, file %s, line %d\n",
            expr,
            func,

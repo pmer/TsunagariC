@@ -33,16 +33,16 @@
 
 class StringView {
  public:
-    inline constexpr StringView() noexcept : data(nullptr), size(0) {};
+    inline constexpr StringView() noexcept : data(nullptr), size(0){};
     inline StringView(const char* data) noexcept
             : data(data), size(strlen(data)) {}
     inline constexpr StringView(const char* data, size_t size) noexcept
-            : data(data), size(size) {};
+            : data(data), size(size){};
     inline constexpr StringView(const StringView& s) noexcept
-            : data(s.data), size(s.size) {};
+            : data(s.data), size(s.size){};
 
     StringView& operator=(const StringView& s) = default;
-    
+
     inline constexpr const char* begin() const noexcept { return data; }
     inline constexpr const char* end() const noexcept { return data + size; }
 
@@ -55,7 +55,8 @@ class StringView {
         assert_(from <= this->size);
         return StringView(data + from, size - from);
     }
-    constexpr StringView substr(const size_t from, const size_t span) const noexcept {
+    constexpr StringView substr(const size_t from, const size_t span) const
+            noexcept {
         assert_(from <= size);
         assert_(from + span <= size);
         return StringView(data + from, span);
@@ -66,8 +67,8 @@ class StringView {
     size_t size;
 };
 
-inline constexpr bool operator==(const StringView& a,
-                                 const StringView& b) noexcept {
+inline constexpr bool
+operator==(const StringView& a, const StringView& b) noexcept {
     if (a.size != b.size) {
         return false;
     }
@@ -75,13 +76,13 @@ inline constexpr bool operator==(const StringView& a,
     return memcmp(a.data, b.data, a.size) == 0;
 }
 
-inline constexpr bool operator!=(const StringView& a,
-                                 const StringView& b) noexcept {
+inline constexpr bool
+operator!=(const StringView& a, const StringView& b) noexcept {
     return !(a == b);
 }
 
-inline constexpr bool operator>(const StringView& a,
-                                const StringView& b) noexcept {
+inline constexpr bool
+operator>(const StringView& a, const StringView& b) noexcept {
     size_t s = a.size < b.size ? a.size : b.size;
     const char* ad = a.data;
     const char* bd = b.data;
@@ -99,12 +100,12 @@ inline constexpr bool operator>(const StringView& a,
     return false;
 }
 
-inline constexpr bool operator<(const StringView& a,
-                                const StringView& b) noexcept {
+inline constexpr bool
+operator<(const StringView& a, const StringView& b) noexcept {
     size_t s = a.size < b.size ? a.size : b.size;
     const char* ad = a.data;
     const char* bd = b.data;
-    
+
     while (s--) {
         if (*ad != *bd) {
             return *ad < *bd;

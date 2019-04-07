@@ -31,8 +31,7 @@
 //
 // template struct If
 //
-template<bool Cond, typename WhenTrue, typename WhenFalse>
-struct If_;
+template<bool Cond, typename WhenTrue, typename WhenFalse> struct If_;
 
 template<typename WhenTrue, typename WhenFalse>
 struct If_<true, WhenTrue, WhenFalse> {
@@ -55,30 +54,26 @@ struct Unit {};
 struct Yes {};
 
 template<bool Cond> struct EnableIf_;
-template<>          struct EnableIf_<true> { typedef Yes value; };
+template<> struct EnableIf_<true> { typedef Yes value; };
 
 template<bool Cond> using EnableIf = typename EnableIf_<Cond>::value;
 
-template<typename T> constexpr bool IsUnit       = false;
-template<>           constexpr bool IsUnit<Unit> = true;
-
+template<typename T> constexpr bool IsUnit = false;
+template<> constexpr bool IsUnit<Unit> = true;
 
 
 //
 // template DeclVal()
 //
-template<typename T>
-T&& DeclVal();
+template<typename T> T&& DeclVal();
 
 
 //
 // template struct IsConvertible
 //
-template<typename T>
-void ConvertibleTest(T);
+template<typename T> void ConvertibleTest(T);
 
-template<typename From, typename To, typename = void>
-struct IsConvertible {
+template<typename From, typename To, typename = void> struct IsConvertible {
     static constexpr bool value = false;
 };
 
@@ -98,8 +93,7 @@ using EnableIfSubclass = typename EnableIf_<IsConvertible<D, B>::value>::value;
 //
 // template struct IsAbstract
 //
-template<typename T>
-struct IsAbstract {
+template<typename T> struct IsAbstract {
     typedef char yes[1];
     typedef char no[2];
 

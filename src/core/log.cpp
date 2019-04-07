@@ -35,11 +35,11 @@
 #include "util/algorithm.h"
 
 #ifdef _WIN32
-#    include "os/windows.h"
+#include "os/windows.h"
 #endif
 
 #ifdef __APPLE__
-#    include "os/mac-gui.h"
+#include "os/mac-gui.h"
 #endif
 
 static verbosity_t verb = V_NORMAL;
@@ -49,7 +49,7 @@ static time_t startTime;
 static Mutex stdoutMutex;
 
 static StringView
-chomp(StringView str) {
+chomp(StringView str) noexcept {
     size_t size = str.size;
     while (size > 0 &&
            (str.data[str.size - 1] == ' ' || str.data[str.size - 1] == '\t' ||
@@ -60,7 +60,7 @@ chomp(StringView str) {
 }
 
 static String
-makeTimestamp() {
+makeTimestamp() noexcept {
     time_t now = GameWindow::time();
 
     double secs = (now - startTime) / (long double)1000.0;
@@ -82,18 +82,18 @@ makeTimestamp() {
 }
 
 bool
-Log::init() {
+Log::init() noexcept {
     startTime = GameWindow::time();
     return true;
 }
 
 void
-Log::setVerbosity(verbosity_t v) {
+Log::setVerbosity(verbosity_t v) noexcept {
     verb = v;
 }
 
 void
-Log::info(StringView domain, StringView msg) {
+Log::info(StringView domain, StringView msg) noexcept {
     if (verb > V_NORMAL) {
         LockGuard lock(stdoutMutex);
 
@@ -113,7 +113,7 @@ Log::info(StringView domain, StringView msg) {
 }
 
 void
-Log::err(StringView domain, StringView msg) {
+Log::err(StringView domain, StringView msg) noexcept {
     if (verb > V_QUIET) {
         {
             LockGuard lock(stdoutMutex);
@@ -145,7 +145,7 @@ Log::err(StringView domain, StringView msg) {
 }
 
 void
-Log::fatal(StringView domain, StringView msg) {
+Log::fatal(StringView domain, StringView msg) noexcept {
     {
         LockGuard lock(stdoutMutex);
 
@@ -177,7 +177,7 @@ Log::fatal(StringView domain, StringView msg) {
 }
 
 void
-Log::reportVerbosityOnStartup() {
+Log::reportVerbosityOnStartup() noexcept {
     LockGuard lock(stdoutMutex);
 
     StringView verbString;

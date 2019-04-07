@@ -39,7 +39,7 @@ Conf conf;  // Project-wide global configuration.
 // Parse and process the client config file, and set configuration defaults for
 // missing options.
 bool
-parseConfig(StringView filename) {
+parseConfig(StringView filename) noexcept {
     Optional<String> file = slurp(filename);
 
     if (!file) {

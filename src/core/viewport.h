@@ -40,64 +40,63 @@ class Entity;
  */
 class Viewport {
  public:
-    static Viewport& instance();
+    static Viewport& instance() noexcept;
 
-    Viewport();
+    Viewport() noexcept;
     ~Viewport() = default;
 
-    void setSize(rvec2 virtRes);
+    void setSize(rvec2 virtRes) noexcept;
 
-    void tick(time_t dt);
-    void turn();
+    void tick(time_t dt) noexcept;
+    void turn() noexcept;
 
     //! How far the map is scrolled in pixels, counting from the upper-left.
-    rvec2 getMapOffset() const;
+    rvec2 getMapOffset() const noexcept;
 
     //! Size of the letterbox matte bars in pixels.
-    rvec2 getLetterboxOffset() const;
+    rvec2 getLetterboxOffset() const noexcept;
 
     //! Multiplier in X and Y dimensions to get from virtRes to physRes.
-    rvec2 getScale() const;
+    rvec2 getScale() const noexcept;
 
     //! The resolution our game is actually being drawn at.
-    rvec2 getPhysRes() const;
+    rvec2 getPhysRes() const noexcept;
 
     //! The resolution our game thinks it is being drawn at. Chosen by a
     //! world's creator. This allows graphics to look the same on any
     //! setups of any resolution.
-    rvec2 getVirtRes() const;
+    rvec2 getVirtRes() const noexcept;
 
     // Immediatly center render offset. Stop any tracking.
-    void jumpToPt(ivec2 pt);
-    void jumpToPt(rvec2 pt);
-    void jumpToEntity(const Entity* e);
+    void jumpToPt(ivec2 pt) noexcept;
+    void jumpToPt(rvec2 pt) noexcept;
+    void jumpToEntity(const Entity* e) noexcept;
 
     // Continuously follow.
-    void trackEntity(const Entity* e);
+    void trackEntity(const Entity* e) noexcept;
 
-    void setArea(const Area* a);
+    void setArea(const Area* a) noexcept;
 
  private:
-    void update();
+    void update() noexcept;
 
-    void _jumpToEntity(const Entity* e);
+    void _jumpToEntity(const Entity* e) noexcept;
 
     //! Returns as a normalized vector the percentage of screen that should
     //! be blanked to preserve the aspect ratio. It can also be thought of
     //! as the correcting aspect ratio.
-    rvec2 getLetterbox() const;
+    rvec2 getLetterbox() const noexcept;
 
-    rvec2 offsetForPt(rvec2 pt) const;
-    rvec2 centerOn(rvec2 pt) const;
-    rvec2 boundToArea(rvec2 pt) const;
-    double boundDimension(double window, double area, double pt,
-                          bool loop) const;
-    rvec2 addLetterboxOffset(rvec2 pt) const;
+    rvec2 offsetForPt(rvec2 pt) const noexcept;
+    rvec2 centerOn(rvec2 pt) const noexcept;
+    rvec2 boundToArea(rvec2 pt) const noexcept;
+    double boundDimension(double window,
+                          double area,
+                          double pt,
+                          bool loop) const noexcept;
+    rvec2 addLetterboxOffset(rvec2 pt) const noexcept;
 
-    enum TrackingMode {
-        TM_MANUAL,
-        TM_FOLLOW_ENTITY
-    };
+    enum TrackingMode { TM_MANUAL, TM_FOLLOW_ENTITY };
 
     double aspectRatio;
     rvec2 off;

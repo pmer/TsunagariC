@@ -30,14 +30,14 @@
 #include "util/assert.h"
 #include "util/move.h"
 
-Animation::Animation() : frameTime(1), cycleTime(1), frameShowing(0) {}
+Animation::Animation() noexcept : frameTime(1), cycleTime(1), frameShowing(0) {}
 
-Animation::Animation(Rc<Image> frame)
+Animation::Animation(Rc<Image> frame) noexcept
         : frameTime(1), cycleTime(1), frameShowing(0) {
     frames.push_back(move_(frame));
 }
 
-Animation::Animation(Vector<Rc<Image>> frames, time_t frameTime)
+Animation::Animation(Vector<Rc<Image>> frames, time_t frameTime) noexcept
         : frames(move_(frames)),
           frameTime(frameTime),
           cycleTime(1),
@@ -49,13 +49,13 @@ Animation::Animation(Vector<Rc<Image>> frames, time_t frameTime)
 }
 
 void
-Animation::startOver(time_t now) {
+Animation::startOver(time_t now) noexcept {
     offset = now;
     frameShowing = 0;
 }
 
 bool
-Animation::needsRedraw(time_t now) const {
+Animation::needsRedraw(time_t now) const noexcept {
     if (frames.size() == 1) {
         return false;
     }
@@ -65,7 +65,7 @@ Animation::needsRedraw(time_t now) const {
 }
 
 Image*
-Animation::frame(time_t now) {
+Animation::frame(time_t now) noexcept {
     if (frames.empty()) {
         return nullptr;
     }
@@ -80,7 +80,7 @@ Animation::frame(time_t now) {
 }
 
 Image*
-Animation::frame() const {
+Animation::frame() const noexcept {
     if (frames.empty()) {
         return nullptr;
     }

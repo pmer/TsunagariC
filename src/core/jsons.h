@@ -40,68 +40,70 @@ class JSONObject {
  public:
     virtual ~JSONObject() = default;
 
-    virtual Vector<StringView> names() = 0;
+    virtual Vector<StringView> names() noexcept = 0;
 
-    virtual bool hasBool(StringView name) = 0;
-    virtual bool hasInt(StringView name) = 0;
-    virtual bool hasUnsigned(StringView name) = 0;
-    virtual bool hasDouble(StringView name) = 0;
-    virtual bool hasString(StringView name) = 0;
-    virtual bool hasObject(StringView name) = 0;
-    virtual bool hasArray(StringView name) = 0;
+    virtual bool hasBool(StringView name) noexcept = 0;
+    virtual bool hasInt(StringView name) noexcept = 0;
+    virtual bool hasUnsigned(StringView name) noexcept = 0;
+    virtual bool hasDouble(StringView name) noexcept = 0;
+    virtual bool hasString(StringView name) noexcept = 0;
+    virtual bool hasObject(StringView name) noexcept = 0;
+    virtual bool hasArray(StringView name) noexcept = 0;
 
-    virtual bool hasStringDouble(StringView name) = 0;
+    virtual bool hasStringDouble(StringView name) noexcept = 0;
 
-    virtual bool boolAt(StringView name) = 0;
-    virtual int intAt(StringView name) = 0;
-    virtual int intAt(StringView name, int lowerBound, int upperBound) = 0;
-    virtual unsigned unsignedAt(StringView name) = 0;
-    virtual double doubleAt(StringView name) = 0;
-    virtual StringView stringAt(StringView name) = 0;
-    virtual Unique<JSONObject> objectAt(StringView name) = 0;
-    virtual Unique<JSONArray> arrayAt(StringView name) = 0;
+    virtual bool boolAt(StringView name) noexcept = 0;
+    virtual int intAt(StringView name) noexcept = 0;
+    virtual int intAt(StringView name,
+                      int lowerBound,
+                      int upperBound) noexcept = 0;
+    virtual unsigned unsignedAt(StringView name) noexcept = 0;
+    virtual double doubleAt(StringView name) noexcept = 0;
+    virtual StringView stringAt(StringView name) noexcept = 0;
+    virtual Unique<JSONObject> objectAt(StringView name) noexcept = 0;
+    virtual Unique<JSONArray> arrayAt(StringView name) noexcept = 0;
 
-    virtual double stringDoubleAt(StringView name) = 0;
+    virtual double stringDoubleAt(StringView name) noexcept = 0;
 };
 
 class JSONArray {
  public:
     virtual ~JSONArray() = default;
 
-    virtual size_t size() = 0;
+    virtual size_t size() noexcept = 0;
 
-    virtual bool isBool(size_t index) = 0;
-    virtual bool isInt(size_t index) = 0;
-    virtual bool isUnsigned(size_t index) = 0;
-    virtual bool isDouble(size_t index) = 0;
-    virtual bool isString(size_t index) = 0;
-    virtual bool isObject(size_t index) = 0;
-    virtual bool isArray(size_t index) = 0;
+    virtual bool isBool(size_t index) noexcept = 0;
+    virtual bool isInt(size_t index) noexcept = 0;
+    virtual bool isUnsigned(size_t index) noexcept = 0;
+    virtual bool isDouble(size_t index) noexcept = 0;
+    virtual bool isString(size_t index) noexcept = 0;
+    virtual bool isObject(size_t index) noexcept = 0;
+    virtual bool isArray(size_t index) noexcept = 0;
 
-    virtual bool boolAt(size_t index) = 0;
-    virtual int intAt(size_t index) = 0;
-    virtual unsigned unsignedAt(size_t index) = 0;
-    virtual double doubleAt(size_t index) = 0;
-    virtual StringView stringAt(size_t index) = 0;
-    virtual Unique<JSONObject> objectAt(size_t index) = 0;
-    virtual Unique<JSONArray> arrayAt(size_t index) = 0;
+    virtual bool boolAt(size_t index) noexcept = 0;
+    virtual int intAt(size_t index) noexcept = 0;
+    virtual unsigned unsignedAt(size_t index) noexcept = 0;
+    virtual double doubleAt(size_t index) noexcept = 0;
+    virtual StringView stringAt(size_t index) noexcept = 0;
+    virtual Unique<JSONObject> objectAt(size_t index) noexcept = 0;
+    virtual Unique<JSONArray> arrayAt(size_t index) noexcept = 0;
 };
 
 class JSONs {
  public:
     //! Acquire the global JSONs object.
-    static JSONs& instance();
+    static JSONs& instance() noexcept;
 
     virtual ~JSONs() = default;
 
     //! Load a JSON document.
-    virtual Rc<JSONObject> load(StringView path) = 0;
+    virtual Rc<JSONObject> load(StringView path) noexcept = 0;
 
     //! Parse a document from the outside world.
-    static Unique<JSONObject> parse(String data);
+    static Unique<JSONObject> parse(String data) noexcept;
 
     //! Free JSON documents not recently used.
-    virtual void garbageCollect() = 0;
+    virtual void garbageCollect() noexcept = 0;
 };
 
 #endif  // SRC_CORE_JSONS_H_

@@ -59,7 +59,7 @@
 
 namespace pdqsort_detail {
     template<typename T>
-    void sift_down(T* first, T* /*last*/, size_t len, T* start) {
+    void sift_down(T* first, T* /*last*/, size_t len, T* start) noexcept {
         // left-child of start is at 2 * start + 1
         // right-child of start is at 2 * start + 2
         size_t child = start - first;
@@ -106,8 +106,7 @@ namespace pdqsort_detail {
         *start = move_(top);
     }
 
-    template<typename T>
-    void make_heap(T* first, T* last) {
+    template<typename T> void make_heap(T* first, T* last) noexcept {
         size_t n = last - first;
         if (n <= 1) {
             return;
@@ -117,21 +116,19 @@ namespace pdqsort_detail {
         }
     }
 
-    template<typename T>
-    void pop_heap(T* first, T* last, size_t len) {
+    template<typename T> void pop_heap(T* first, T* last, size_t len) noexcept {
         if (len > 1) {
             swap_(*first, *--last);
             sift_down(first, last, len - 1, first);
         }
     }
 
-    template<typename T>
-    void sort_heap(T* first, T* last) {
+    template<typename T> void sort_heap(T* first, T* last) noexcept {
         for (size_t n = last - first; n > 1; last--, n--) {
             pop_heap(first, last, n);
         }
     }
-}
+}  // namespace pdqsort_detail
 
 namespace pdqsort_detail {
     enum {
@@ -141,11 +138,13 @@ namespace pdqsort_detail {
         // Partitions above this size use Tukey's ninther to select the pivot.
         ninther_threshold = 128,
 
-        // When we detect an already sorted partition, attempt an insertion sort that allows this
+        // When we detect an already sorted partition, attempt an insertion sort
+        // that allows this
         // amount of element moves before giving up.
         partial_insertion_sort_limit = 8,
 
-        // Must be multiple of 8 due to loop unrolling, and < 256 to fit in unsigned char.
+        // Must be multiple of 8 due to loop unrolling, and < 256 to fit in
+        // unsigned char.
         block_size = 64,
 
         // Cacheline size, assumes power of two.
@@ -154,8 +153,7 @@ namespace pdqsort_detail {
     };
 
     // Returns floor(log2(n)), assumes n > 0.
-    template<typename T>
-    inline int log2(T n) {
+    template<typename T> inline int log2(T n) noexcept {
         int log = 0;
         while (n >>= 1) {
             ++log;
@@ -164,8 +162,7 @@ namespace pdqsort_detail {
     }
 
     // Sorts [begin, end) using insertion sort.
-    template<typename T>
-    inline void insertion_sort(T* begin, T* end) {
+    template<typename T> inline void insertion_sort(T* begin, T* end) noexcept {
         if (begin == end) {
             return;
         }
@@ -174,7 +171,8 @@ namespace pdqsort_detail {
             T* sift = cur;
             T* sift_1 = cur - 1;
 
-            // Compare first so we can avoid 2 moves for an element already positioned correctly.
+            // Compare first so we can avoid 2 moves for an element already
+            // positioned correctly.
             if (*sift < *sift_1) {
                 T tmp = move_(*sift);
 
@@ -187,17 +185,21 @@ namespace pdqsort_detail {
         }
     }
 
-    // Sorts [begin, end) using insertion sort with the given comparison function. Assumes
-    // *(begin - 1) is an element smaller than or equal to any element in [begin, end).
+    // Sorts [begin, end) using insertion sort with the given comparison
+    // function. Assumes
+    // *(begin - 1) is an element smaller than or equal to any element in
+    // [begin, end).
     template<typename T>
-    inline void unguarded_insertion_sort(T* begin, T* end) {
-        if (begin == end) return;
+    inline void unguarded_insertion_sort(T* begin, T* end) noexcept {
+        if (begin == end)
+            return;
 
         for (T* cur = begin + 1; cur != end; ++cur) {
             T* sift = cur;
             T* sift_1 = cur - 1;
 
-            // Compare first so we can avoid 2 moves for an element already positioned correctly.
+            // Compare first so we can avoid 2 moves for an element already
+            // positioned correctly.
             if (*sift < *sift_1) {
                 T tmp = move_(*sift);
 
@@ -210,11 +212,11 @@ namespace pdqsort_detail {
         }
     }
 
-    // Attempts to use insertion sort on [begin, end). Will return false if more than
-    // partial_insertion_sort_limit elements were moved, and abort sorting. Otherwise it will
-    // successfully sort and return true.
+    // Attempts to use insertion sort on [begin, end). Will return false if more
+    // than partial_insertion_sort_limit elements were moved, and abort sorting.
+    // Otherwise it will successfully sort and return true.
     template<typename T>
-    inline bool partial_insertion_sort(T* begin, T* end) {
+    inline bool partial_insertion_sort(T* begin, T* end) noexcept {
         if (begin == end) {
             return true;
         }
@@ -228,7 +230,8 @@ namespace pdqsort_detail {
             T* sift = cur;
             T* sift_1 = cur - 1;
 
-            // Compare first so we can avoid 2 moves for an element already positioned correctly.
+            // Compare first so we can avoid 2 moves for an element already
+            // positioned correctly.
             if (*sift < *sift_1) {
                 T tmp = move_(*sift);
 
@@ -244,88 +247,101 @@ namespace pdqsort_detail {
         return true;
     }
 
-    template<typename T>
-    inline void sort2(T* a, T* b) {
+    template<typename T> inline void sort2(T* a, T* b) noexcept {
         if (*b < *a) {
             swap_(*a, *b);
         }
     }
 
     // Sorts the elements *a, *b and *c.
-    template<typename T>
-    inline void sort3(T* a, T* b, T* c) {
+    template<typename T> inline void sort3(T* a, T* b, T* c) noexcept {
         sort2(a, b);
         sort2(b, c);
         sort2(a, b);
     }
 
-    template<typename T>
-    inline T* align_cacheline(T* p) {
+    template<typename T> inline T* align_cacheline(T* p) noexcept {
         size_t ip = reinterpret_cast<size_t>(p);
         ip = (ip + cacheline_size - 1) & -cacheline_size;
         return reinterpret_cast<T*>(ip);
     }
 
     template<typename T>
-    inline void swap_offsets(T* first, T* last,
-                             unsigned char* offsets_l, unsigned char* offsets_r,
-                             int num, bool use_swaps) {
+    inline void swap_offsets(T* first,
+                             T* last,
+                             unsigned char* offsets_l,
+                             unsigned char* offsets_r,
+                             int num,
+                             bool use_swaps) noexcept {
         if (use_swaps) {
-            // This case is needed for the descending distribution, where we need
-            // to have proper swapping for pdqsort to remain O(n).
+            // This case is needed for the descending distribution, where we
+            // need to have proper swapping for pdqsort to remain O(n).
             for (int i = 0; i < num; ++i) {
                 swap_(*(first + offsets_l[i]), *(last - offsets_r[i]));
             }
-        } else if (num > 0) {
-            T* l = first + offsets_l[0]; T* r = last - offsets_r[0];
-            T tmp(move_(*l)); *l = move_(*r);
+        }
+        else if (num > 0) {
+            T* l = first + offsets_l[0];
+            T* r = last - offsets_r[0];
+            T tmp(move_(*l));
+            *l = move_(*r);
             for (int i = 1; i < num; ++i) {
-                l = first + offsets_l[i]; *r = move_(*l);
-                r = last - offsets_r[i]; *l = move_(*r);
+                l = first + offsets_l[i];
+                *r = move_(*l);
+                r = last - offsets_r[i];
+                *l = move_(*r);
             }
             *r = move_(tmp);
         }
     }
 
-    template<typename T>
-    struct partition_result {
+    template<typename T> struct partition_result {
         T* pivot_pos;
         bool already_partitioned;
     };
 
-    // Partitions [begin, end) around pivot *begin using comparison function comp. Elements equal
-    // to the pivot are put in the right-hand partition. Returns the position of the pivot after
-    // partitioning and whether the passed sequence already was correctly partitioned. Assumes the
-    // pivot is a median of at least 3 elements and that [begin, end) is at least
+    // Partitions [begin, end) around pivot *begin using comparison function
+    // comp. Elements equal to the pivot are put in the right-hand partition.
+    // Returns the position of the pivot after partitioning and whether the
+    // passed sequence already was correctly partitioned. Assumes the pivot is a
+    // median of at least 3 elements and that [begin, end) is at least
     // insertion_sort_threshold long.
     template<typename T>
-    inline partition_result<T> partition_right(T* begin, T* end) {
+    inline partition_result<T> partition_right(T* begin, T* end) noexcept {
         // Move pivot into local for speed.
         T pivot(move_(*begin));
 
         T* first = begin;
         T* last = end;
 
-        // Find the first element greater than or equal than the pivot (the median of 3 guarantees
-        // this exists).
-        while (*++first < pivot);
+        // Find the first element greater than or equal than the pivot (the
+        // median of 3 guarantees this exists).
+        while (*++first < pivot)
+            ;
 
-        // Find the first element strictly smaller than the pivot. We have to guard this search if
-        // there was no element before *first.
-        if (first - 1 == begin) while (first < last && !(*--last < pivot));
-        else                    while (                !(*--last < pivot));
+        // Find the first element strictly smaller than the pivot. We have to
+        // guard this search if there was no element before *first.
+        if (first - 1 == begin)
+            while (first < last && !(*--last < pivot))
+                ;
+        else
+            while (!(*--last < pivot))
+                ;
 
-        // If the first pair of elements that should be swapped to partition are the same element,
-        // the passed in sequence already was correctly partitioned.
+        // If the first pair of elements that should be swapped to partition are
+        // the same element, the passed in sequence already was correctly
+        // partitioned.
         bool already_partitioned = first >= last;
 
-        // Keep swapping pairs of elements that are on the wrong side of the pivot. Previously
-        // swapped pairs guard the searches, which is why the first iteration is special-cased
-        // above.
+        // Keep swapping pairs of elements that are on the wrong side of the
+        // pivot. Previously swapped pairs guard the searches, which is why the
+        // first iteration is special-cased above.
         while (first < last) {
             swap_(*first, *last);
-            while (*++first < pivot);
-            while (!(*--last < pivot));
+            while (*++first < pivot)
+                ;
+            while (!(*--last < pivot))
+                ;
         }
 
         // Put the pivot in the right place.
@@ -336,25 +352,32 @@ namespace pdqsort_detail {
         return partition_result<T>{pivot_pos, already_partitioned};
     }
 
-    // Similar function to the one above, except elements equal to the pivot are put to the left of
-    // the pivot and it doesn't check or return if the passed sequence already was partitioned.
-    // Since this is rarely used (the many equal case), and in that case pdqsort already has O(n)
-    // performance, no block quicksort is applied here for simplicity.
-    template<typename T>
-    inline T* partition_left(T* begin, T* end) {
+    // Similar function to the one above, except elements equal to the pivot are
+    // put to the left of the pivot and it doesn't check or return if the passed
+    // sequence already was partitioned. Since this is rarely used (the many
+    // equal case), and in that case pdqsort already has O(n) performance, no
+    // block quicksort is applied here for simplicity.
+    template<typename T> inline T* partition_left(T* begin, T* end) noexcept {
         T pivot(move_(*begin));
         T* first = begin;
         T* last = end;
 
-        while (pivot < *--last);
+        while (pivot < *--last)
+            ;
 
-        if (last + 1 == end) while (first < last && !(pivot < *++first));
-        else                 while (                !(pivot < *++first));
+        if (last + 1 == end)
+            while (first < last && !(pivot < *++first))
+                ;
+        else
+            while (!(pivot < *++first))
+                ;
 
         while (first < last) {
             swap_(*first, *last);
-            while (pivot < *--last);
-            while (!(pivot < *++first));
+            while (pivot < *--last)
+                ;
+            while (!(pivot < *++first))
+                ;
         }
 
         T* pivot_pos = last;
@@ -365,7 +388,10 @@ namespace pdqsort_detail {
     }
 
     template<typename T>
-    inline void pdqsort_loop(T* begin, T* end, int bad_allowed, bool leftmost = true) {
+    inline void pdqsort_loop(T* begin,
+                             T* end,
+                             int bad_allowed,
+                             bool leftmost = true) noexcept {
         // Use a while loop for tail recursion elimination.
         while (true) {
             size_t size = end - begin;
@@ -394,11 +420,13 @@ namespace pdqsort_detail {
                 sort3(begin + s2, begin, end - 1);
             }
 
-            // If *(begin - 1) is the end of the right partition of a previous partition operation
-            // there is no element in [begin, end) that is smaller than *(begin - 1). Then if our
-            // pivot compares equal to *(begin - 1) we change strategy, putting equal elements in
-            // the left partition, greater elements in the right partition. We do not have to
-            // recurse on the left partition, since it's sorted (all equal).
+            // If *(begin - 1) is the end of the right partition of a previous
+            // partition operation there is no element in [begin, end) that is
+            // smaller than *(begin - 1). Then if our pivot compares equal to
+            // *(begin - 1) we change strategy, putting equal elements in the
+            // left partition, greater elements in the right partition. We do
+            // not have to recurse on the left partition, since it's sorted (all
+            // equal).
             if (!leftmost && !(*(begin - 1) < *begin)) {
                 begin = partition_left(begin, end) + 1;
                 continue;
@@ -414,9 +442,11 @@ namespace pdqsort_detail {
             size_t r_size = end - (pivot_pos + 1);
             bool highly_unbalanced = l_size < size / 8 || r_size < size / 8;
 
-            // If we got a highly unbalanced partition we shuffle elements to break many patterns.
+            // If we got a highly unbalanced partition we shuffle elements to
+            // break many patterns.
             if (highly_unbalanced) {
-                // If we had too many bad partitions, switch to heapsort to guarantee O(n log n).
+                // If we had too many bad partitions, switch to heapsort to
+                // guarantee O(n log n).
                 if (--bad_allowed == 0) {
                     make_heap(begin, end);
                     sort_heap(begin, end);
@@ -424,12 +454,12 @@ namespace pdqsort_detail {
                 }
 
                 if (l_size >= insertion_sort_threshold) {
-                    swap_(begin[0],      begin[l_size / 4]);
+                    swap_(begin[0], begin[l_size / 4]);
                     swap_(pivot_pos[-1], pivot_pos[0 - l_size / 4]);
 
                     if (l_size > ninther_threshold) {
-                        swap_(begin[1],      begin[l_size / 4 + 1]);
-                        swap_(begin[2],      begin[l_size / 4 + 2]);
+                        swap_(begin[1], begin[l_size / 4 + 1]);
+                        swap_(begin[2], begin[l_size / 4 + 2]);
                         swap_(pivot_pos[-2], pivot_pos[0 - (l_size / 4 + 1)]);
                         swap_(pivot_pos[-3], pivot_pos[0 - (l_size / 4 + 2)]);
                     }
@@ -437,41 +467,44 @@ namespace pdqsort_detail {
 
                 if (r_size >= insertion_sort_threshold) {
                     swap_(pivot_pos[1], pivot_pos[1 + r_size / 4]);
-                    swap_(end[-1],      end[0 - r_size / 4]);
+                    swap_(end[-1], end[0 - r_size / 4]);
 
                     if (r_size > ninther_threshold) {
                         swap_(pivot_pos[2], pivot_pos[2 + r_size / 4]);
                         swap_(pivot_pos[3], pivot_pos[3 + r_size / 4]);
-                        swap_(end[-2],             end[0 - (1 + r_size / 4)]);
-                        swap_(end[-3],             end[0 - (2 + r_size / 4)]);
+                        swap_(end[-2], end[0 - (1 + r_size / 4)]);
+                        swap_(end[-3], end[0 - (2 + r_size / 4)]);
                     }
                 }
-            } else {
-                // If we were decently balanced and we tried to sort an already partitioned
-                // sequence try to use insertion sort.
-                if (already_partitioned && partial_insertion_sort(begin, pivot_pos)
-                    && partial_insertion_sort(pivot_pos + 1, end)) {
+            }
+            else {
+                // If we were decently balanced and we tried to sort an already
+                // partitioned sequence try to use insertion sort.
+                if (already_partitioned &&
+                    partial_insertion_sort(begin, pivot_pos) &&
+                    partial_insertion_sort(pivot_pos + 1, end)) {
                     return;
                 }
             }
 
-            // Sort the left partition first using recursion and do tail recursion elimination for
-            // the right-hand partition.
+            // Sort the left partition first using recursion and do tail
+            // recursion elimination for the right-hand partition.
             pdqsort_loop<T>(begin, pivot_pos, bad_allowed, leftmost);
             begin = pivot_pos + 1;
             leftmost = false;
         }
     }
-}
+}  // namespace pdqsort_detail
 
 template<typename T>
-inline void pdqsort(T* begin, T* end) {
+inline void
+pdqsort(T* begin, T* end) noexcept {
     if (begin == end) {
         return;
     }
 
-    pdqsort_detail::pdqsort_loop<T>(begin, end,
-                                    pdqsort_detail::log2(end - begin));
+    pdqsort_detail::pdqsort_loop<T>(
+            begin, end, pdqsort_detail::log2(end - begin));
 }
 
 #endif  // SRC_UTIL_SORT_H_

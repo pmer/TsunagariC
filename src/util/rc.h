@@ -55,7 +55,7 @@ template<typename T, typename Count> class SharedPtr {
 
  public:
     // Default constructor
-    SharedPtr() : x(nullptr), count(nullptr) {}
+    SharedPtr() noexcept : x(nullptr), count(nullptr) {}
 
     // Move constructors
     SharedPtr(SharedPtr&& other) noexcept : x(other.x), count(other.count) {
@@ -63,43 +63,42 @@ template<typename T, typename Count> class SharedPtr {
         other.count = nullptr;
     }
 
-	/*
+    /*
     template<typename D>
     SharedPtr(SharedPtr<D, Count>&& other, EnableIfSubclass<T, D> = Yes())
-            : x(other.x), count(other.count) {
-        other.x = nullptr;
-        other.count = nullptr;
+    noexcept : x(other.x), count(other.count) { other.x = nullptr; other.count =
+    nullptr;
     }
     */
 
     /*
-    SharedPtr(SharedPtr& other) : x(other.x), count(other.count) { incref(); }
+    SharedPtr(SharedPtr& other) noexcept : x(other.x), count(other.count) {
+    incref(); }
     */
 
     /*
     template<typename D>
     SharedPtr(SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Yes())
-            : x(other.x), count(other.count) {
-        incref();
+    noexcept : x(other.x), count(other.count) { incref();
     }
     */
 
     // Copy constructors
-    SharedPtr(const SharedPtr& other) : x(other.x), count(other.count) {
+    SharedPtr(const SharedPtr& other) noexcept
+            : x(other.x), count(other.count) {
         incref();
     }
 
-	/*
+    /*
     template<typename D>
     SharedPtr(const SharedPtr<D, Count>& other, EnableIfSubclass<T, D> = Yes())
-            : x(other.x), count(other.count) {
-        incref();
+    noexcept : x(other.x), count(other.count) { incref();
     }
     */
 
     // Raw-pointer constructor
     template<typename D>
-    SharedPtr(D* d, EnableIfSubclass<T*, D*> = Yes()) : x(d) {
+    SharedPtr(D* d, EnableIfSubclass<T*, D*> = Yes()) noexcept : x(d) {
         count = d ? new Count(1) : nullptr;
     }
 
@@ -109,11 +108,12 @@ template<typename T, typename Count> class SharedPtr {
     // Emplace constructor
     // FIXME: Optimize SharedData with a custom impl that does not have a
     deleter. Just like the stdlib does. template<typename ...Args> explicit
-    SharedPtr(Args&& ...args) : x(new T(std::forward<Args>(args)...)), count(1)
+    SharedPtr(Args&& ...args) noexcept : x(new T(std::forward<Args>(args)...)),
+    count(1)
     {}
     */
 
-    ~SharedPtr() { decref(); }
+    ~SharedPtr() noexcept { decref(); }
 
     SharedPtr& operator=(T* x) noexcept {
         decref();
@@ -158,15 +158,15 @@ template<typename T, typename Count> class SharedPtr {
 
  private:
     // Meaningless...
-    bool operator==(SharedPtr&&) { return false; }
+    bool operator==(SharedPtr&&) noexcept { return false; }
 
-    inline void incref() {
+    inline void incref() noexcept {
         if (count) {
             ++*count;
         }
     }
 
-    inline void decref() {
+    inline void decref() noexcept {
         if (count) {
             --*count;
             if (*count == 0) {
@@ -186,7 +186,7 @@ template<typename T, typename Count> struct CompactSharedData {
 
     /*
     template<typename ...Args>
-    explicit CompactSharedData(Args&& ...args)
+    explicit CompactSharedData(Args&& ...args) noexcept
             : x(new T(std::forward<Args>(args)...)),
               count{1} {}
     */
@@ -217,7 +217,7 @@ template<typename T, typename Count> class CompactSharedPtr {
 
     /*
     template<typename ...Args>
-    explicit CompactSharedPtr(Args&& ...args)
+    explicit CompactSharedPtr(Args&& ...args) noexcept
             : data(std::forward<Args>(args)...) {}
     */
 
@@ -241,7 +241,7 @@ template<typename T, typename Count> class CompactSharedPtr {
         return *this;
     }
 
-    operator bool() const { return data != nullptr; }
+    operator bool() const noexcept { return data != nullptr; }
 
     T* get() const noexcept { return data->x; }
     T* operator->() const noexcept {
@@ -263,7 +263,7 @@ template<typename T, typename Count> class CompactSharedPtr {
 
  private:
     // Meaningless...
-    bool operator==(CompactSharedPtr&&) { return false; }
+    bool operator==(CompactSharedPtr&&) noexcept { return false; }
 
     inline void incref() noexcept {
         if (data) {
@@ -282,17 +282,17 @@ template<typename T, typename Count> class CompactSharedPtr {
 // Wrapper to increase clarity of error messages.
 struct NonAtomic {
     size_t x;
-    NonAtomic(size_t x) : x(x) {}
-    NonAtomic& operator++() {
+    NonAtomic(size_t x) noexcept : x(x) {}
+    NonAtomic& operator++() noexcept {
         ++x;
         return *this;
     }
-    NonAtomic& operator--() {
+    NonAtomic& operator--() noexcept {
         --x;
         return *this;
     }
-    bool operator==(size_t x) { return this->x == x; }
-    size_t get() { return x; }
+    bool operator==(size_t x) noexcept { return this->x == x; }
+    size_t get() noexcept { return x; }
 };
 
 // Shared pointers delete their pointer only when the last pointer to the same

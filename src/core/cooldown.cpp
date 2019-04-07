@@ -29,28 +29,28 @@
 
 #include "core/log.h"
 
-Cooldown::Cooldown() : duration(0), passed(0) {}
+Cooldown::Cooldown() noexcept : duration(0), passed(0) {}
 
-Cooldown::Cooldown(time_t duration) : duration(duration), passed(0) {}
+Cooldown::Cooldown(time_t duration) noexcept : duration(duration), passed(0) {}
 
 void
-Cooldown::setDuration(time_t duration) {
+Cooldown::setDuration(time_t duration) noexcept {
     this->duration = duration;
     passed = 0;
 }
 
 void
-Cooldown::advance(time_t dt) {
+Cooldown::advance(time_t dt) noexcept {
     passed += dt;
 }
 
 bool
-Cooldown::hasExpired() {
+Cooldown::hasExpired() noexcept {
     return passed > duration;
 }
 
 void
-Cooldown::wrap() {
+Cooldown::wrap() noexcept {
     if (hasExpired()) {
         passed -= duration;
     }

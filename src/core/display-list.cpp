@@ -32,7 +32,7 @@
 #include "util/math2.h"
 
 static void
-pushLetterbox(DisplayList* display, Function<void()> op) {
+pushLetterbox(DisplayList* display, Function<void()> op) noexcept {
     GameWindow& window = GameWindow::instance();
 
     // Aspect ratio correction.
@@ -68,7 +68,7 @@ pushLetterbox(DisplayList* display, Function<void()> op) {
 }
 
 void
-displayListPresent(DisplayList* display) {
+displayListPresent(DisplayList* display) noexcept {
     GameWindow& window = GameWindow::instance();
 
     pushLetterbox(display, [&] {

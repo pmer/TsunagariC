@@ -37,7 +37,7 @@ struct WalkContext {
 };
 
 static void
-walkPath(WalkContext& ctx, StringView path) {
+walkPath(WalkContext& ctx, StringView path) noexcept {
     if (isDir(path)) {
         Vector<String> names = listDir(path);
         for (auto& name : names) {
@@ -52,7 +52,7 @@ walkPath(WalkContext& ctx, StringView path) {
 }
 
 void
-walk(Vector<StringView> paths, Function<void(StringView)> op) {
+walk(Vector<StringView> paths, Function<void(StringView)> op) noexcept {
     WalkContext ctx;
     ctx.pool = Pool::makePool("walk");
     ctx.op = move_(op);

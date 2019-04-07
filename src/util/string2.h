@@ -34,40 +34,40 @@
 #include "util/vector.h"
 
 //! Returns true if the string contains only digits, whitespace, and minus.
-bool isInteger(StringView s);
+bool isInteger(StringView s) noexcept;
 
 //! Returns true if the string contains only digits, whitespace, minus, and
 //! period.
-bool isDecimal(StringView s);
+bool isDecimal(StringView s) noexcept;
 
-bool isRanges(StringView s);
+bool isRanges(StringView s) noexcept;
 
 
 //! Whether two strings are case-insensative equals.
-bool iequals(StringView a, StringView b);
+bool iequals(StringView a, StringView b) noexcept;
 
 //! Return a bool from a "true"/"false" string.
-Optional<bool> parseBool(StringView s);
+Optional<bool> parseBool(StringView s) noexcept;
 
-Optional<int> parseInt(String& s);
-Optional<int> parseInt(StringView s);
-Optional<unsigned> parseUInt(String& s);
-Optional<unsigned> parseUInt(StringView s);
-Optional<double> parseDouble(String& s);
-Optional<double> parseDouble(StringView s);
+Optional<int> parseInt(String& s) noexcept;
+Optional<int> parseInt(StringView s) noexcept;
+Optional<unsigned> parseUInt(String& s) noexcept;
+Optional<unsigned> parseUInt(StringView s) noexcept;
+Optional<double> parseDouble(String& s) noexcept;
+Optional<double> parseDouble(StringView s) noexcept;
 
-int parseInt100(const char* s);
+int parseInt100(const char* s) noexcept;
 
 //! Split a string by a delimiter.
-Vector<String> splitStr(StringView str, StringView delimiter);
+Vector<String> splitStr(StringView str, StringView delimiter) noexcept;
 
 /**
  * Parse ranges of integers separated by commas.
  * Can take things such as "5-7,2,12-18".
  */
-Optional<Vector<int>> parseRanges(StringView format);
+Optional<Vector<int>> parseRanges(StringView format) noexcept;
 
-Optional<String> slurp(String& path);
-Optional<String> slurp(StringView path);
+Optional<String> slurp(String& path) noexcept;
+Optional<String> slurp(StringView path) noexcept;
 
 #endif  // SRC_UTIL_STRING2_H_

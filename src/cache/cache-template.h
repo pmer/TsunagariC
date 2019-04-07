@@ -29,7 +29,6 @@
 #define SRC_CACHE_CACHE_TEMPLATE_CPP_
 
 #include "cache/cache.h"
-
 #include "core/client-conf.h"
 #include "core/log.h"
 #include "core/world.h"
@@ -38,10 +37,11 @@
 #define IN_USE_NOW -1
 
 template<class T>
-T Cache<T>::momentaryRequest(StringView name) {
+T
+Cache<T>::momentaryRequest(StringView name) noexcept {
     auto it = map.find(name);
     if (it != map.end()) {
-//      Log::info("Cache", String() << name << ": requested (cached)");
+        //      Log::info("Cache", String() << name << ": requested (cached)");
         CacheEntry& entry = it.value();
         // Set lastUsed to now because it won't be used
         // by the time garbageCollect() gets to it.
@@ -53,10 +53,11 @@ T Cache<T>::momentaryRequest(StringView name) {
 }
 
 template<class T>
-T Cache<T>::lifetimeRequest(StringView name) {
+T
+Cache<T>::lifetimeRequest(StringView name) noexcept {
     auto it = map.find(name);
     if (it != map.end()) {
-//      Log::info("Cache", String() << name << ": requested (cached)");
+        //      Log::info("Cache", String() << name << ": requested (cached)");
         CacheEntry& entry = it.value();
         entry.lastUsed = IN_USE_NOW;
         return entry.resource;
@@ -66,7 +67,8 @@ T Cache<T>::lifetimeRequest(StringView name) {
 }
 
 template<class T>
-void Cache<T>::momentaryPut(StringView name, T data){
+void
+Cache<T>::momentaryPut(StringView name, T data) noexcept {
     CacheEntry entry;
     entry.resource = data;
     time_t now = World::instance().time();
@@ -75,7 +77,8 @@ void Cache<T>::momentaryPut(StringView name, T data){
 }
 
 template<class T>
-void Cache<T>::lifetimePut(StringView name, T data) {
+void
+Cache<T>::lifetimePut(StringView name, T data) noexcept {
     CacheEntry entry;
     entry.resource = data;
     entry.lastUsed = IN_USE_NOW;
@@ -83,7 +86,8 @@ void Cache<T>::lifetimePut(StringView name, T data) {
 }
 
 template<class T>
-void Cache<T>::garbageCollect() {
+void
+Cache<T>::garbageCollect() noexcept {
     time_t now = World::instance().time();
     Vector<String> dead;
     for (auto it = map.begin(); it != map.end(); it++) {
@@ -95,7 +99,7 @@ void Cache<T>::garbageCollect() {
         }
         if (cache.lastUsed == IN_USE_NOW) {
             cache.lastUsed = now;
-//          Log::info("Cache", String() << name << ": unused");
+            //          Log::info("Cache", String() << name << ": unused");
         }
         else if (now > cache.lastUsed + conf.cacheTTL * 1000) {
             dead.push_back(name);

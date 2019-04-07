@@ -28,13 +28,16 @@
 #ifndef SRC_CORE_ALGORITHM_H_
 #define SRC_CORE_ALGORITHM_H_
 
-template <class Container, class Predicate>
-void erase_if(Container& container, Predicate pred) {
-    for (auto it = container.begin(); it != container.end(); ) {
-        if (pred(*it))
+template<class Container, class Predicate>
+void
+erase_if(Container& container, Predicate pred) noexcept {
+    for (auto it = container.begin(); it != container.end();) {
+        if (pred(*it)) {
             it = container.erase(it);
-        else
+        }
+        else {
             ++it;
+        }
     }
 }
 

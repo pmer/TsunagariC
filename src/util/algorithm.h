@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** algorithm.h                   **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** algorithm.h                      **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,12 +28,14 @@
 #define SRC_UTIL_ALGORITHM_H_
 
 template<typename T>
-inline constexpr T min_(T a, T b) {
+inline constexpr T
+min_(T a, T b) noexcept {
     return a < b ? a : b;
 }
 
 template<typename T>
-inline constexpr T max_(T a, T b) {
+inline constexpr T
+max_(T a, T b) noexcept {
     return a < b ? b : a;
 }
 

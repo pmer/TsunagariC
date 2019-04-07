@@ -33,21 +33,20 @@
 template<class F> class Function;  // Undefined.
 
 namespace function {
-
     template<class R> class base;
 
     template<class R, class... ArgTypes> class base<R(ArgTypes...)> {
-        base(const base&);
-        base& operator=(const base&);
+        base(const base&) noexcept;
+        base& operator=(const base&) noexcept;
 
      public:
-        inline base() {}
-        inline virtual ~base() {}
-        virtual base* clone() const = 0;
-        virtual void clone(base*) const = 0;
+        inline base() noexcept {}
+        inline virtual ~base() noexcept {}
+        virtual base* clone() const noexcept = 0;
+        virtual void clone(base*) const noexcept = 0;
         virtual void destroy() noexcept = 0;
         virtual void destroyDeallocate() noexcept = 0;
-        virtual R operator()(ArgTypes&&...) = 0;
+        virtual R operator()(ArgTypes&&...) noexcept = 0;
     };
 
     template<class F, class R> class func;
@@ -60,20 +59,20 @@ namespace function {
         inline explicit func(F&& f) noexcept : f(move_(f)) {}
         inline explicit func(const F& f) noexcept : f(f) {}
 
-        virtual base<R(ArgTypes...)>* clone() const;
-        virtual void clone(base<R(ArgTypes...)>*) const;
+        virtual base<R(ArgTypes...)>* clone() const noexcept;
+        virtual void clone(base<R(ArgTypes...)>*) const noexcept;
         virtual void destroy() noexcept;
         virtual void destroyDeallocate() noexcept;
-        virtual R operator()(ArgTypes&&... args);
+        virtual R operator()(ArgTypes&&... args) noexcept;
     };
 
     template<class F, class R, class... ArgTypes>
-    base<R(ArgTypes...)>* func<F, R(ArgTypes...)>::clone() const {
+    base<R(ArgTypes...)>* func<F, R(ArgTypes...)>::clone() const noexcept {
         return new func(f);
     }
 
     template<class F, class R, class... ArgTypes>
-    void func<F, R(ArgTypes...)>::clone(base<R(ArgTypes...)>* p) const {
+    void func<F, R(ArgTypes...)>::clone(base<R(ArgTypes...)>* p) const noexcept {
         new (p) func(f);
     }
 
@@ -89,7 +88,7 @@ namespace function {
     }
 
     template<class Class, class Ret, class This, class... Args>
-    decltype(auto) invoke(Ret Class::*f, This&& t, Args&&... args) {
+    decltype(auto) invoke(Ret Class::*f, This&& t, Args&&... args) noexcept {
         return (forward_<This>(t).*f)(forward_<Args>(args)...);
     }
 
@@ -99,7 +98,7 @@ namespace function {
     }
 
     template<class F, class R, class... ArgTypes>
-    R func<F, R(ArgTypes...)>::operator()(ArgTypes&&... args) {
+    R func<F, R(ArgTypes...)>::operator()(ArgTypes&&... args) noexcept {
         return invoke(f, forward_<ArgTypes>(args)...);
     }
 
@@ -110,24 +109,24 @@ template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
     inline Function() noexcept : f(nullptr) {}
     Function(const Function&) noexcept;
     Function(Function&&) noexcept;
-    template<class F> Function(F);
+    template<class F> Function(F) noexcept;
 
-    ~Function();
+    ~Function() noexcept;
 
     Function& operator=(const Function&) noexcept;
     Function& operator=(Function&&) noexcept;
-    template<class F> Function& operator=(F&&);
+    template<class F> Function& operator=(F&&) noexcept;
 
     void swap(Function&) noexcept;
 
     inline explicit operator bool() const noexcept { return f; }
 
-    R operator()(ArgTypes...) const;
+    R operator()(ArgTypes...) const noexcept;
 
  private:
     typedef function::base<R(ArgTypes...)> base;
 
-    static base* asBase(void* p) { return reinterpret_cast<base*>(p); }
+    static base* asBase(void* p) noexcept { return reinterpret_cast<base*>(p); }
 
     alignas(alignof(void * [3])) char buf[3 * sizeof(void*)];
     base* f;
@@ -163,7 +162,7 @@ Function<R(ArgTypes...)>::Function(Function&& other) noexcept {
 
 template<class R, class... ArgTypes>
 template<class F>
-Function<R(ArgTypes...)>::Function(F something) : f(nullptr) {
+Function<R(ArgTypes...)>::Function(F something) noexcept : f(nullptr) {
     typedef function::func<F, R(ArgTypes...)> FF;
     if (sizeof(FF) <= sizeof(buf)) {
         f = new ((void*)&buf) FF(move_(something));
@@ -201,12 +200,12 @@ Function<R(ArgTypes...)>::operator=(Function&& other) noexcept {
 template<class R, class... ArgTypes>
 template<class F>
 Function<R(ArgTypes...)>&
-Function<R(ArgTypes...)>::operator=(F&& other) {
+Function<R(ArgTypes...)>::operator=(F&& other) noexcept {
     Function(forward_<F>(other)).swap(*this);
     return *this;
 }
 
-template<class R, class... ArgTypes> Function<R(ArgTypes...)>::~Function() {
+template<class R, class... ArgTypes> Function<R(ArgTypes...)>::~Function() noexcept {
     if ((void*)f == &buf) {
         f->destroy();
     }
@@ -255,7 +254,7 @@ Function<R(ArgTypes...)>::swap(Function& other) noexcept {
 
 template<class R, class... ArgTypes>
 R
-Function<R(ArgTypes...)>::operator()(ArgTypes... args) const {
+Function<R(ArgTypes...)>::operator()(ArgTypes... args) const noexcept {
     assert_(f != nullptr);
     return (*f)(forward_<ArgTypes>(args)...);
 }

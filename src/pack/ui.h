@@ -32,10 +32,10 @@
 
 extern bool verbose;
 
-void uiShowSkippedMissingFile(StringView path);
-void uiShowAddedFile(StringView path, size_t size);
-void uiShowWritingArchive(StringView arhivePath);
-void uiShowListingEntry(StringView blobPath, uint64_t blobSize);
-void uiShowExtractingFile(StringView blobPath, uint64_t blogSize);
+void uiShowSkippedMissingFile(StringView path) noexcept;
+void uiShowAddedFile(StringView path, size_t size) noexcept;
+void uiShowWritingArchive(StringView arhivePath) noexcept;
+void uiShowListingEntry(StringView blobPath, uint64_t blobSize) noexcept;
+void uiShowExtractingFile(StringView blobPath, uint64_t blogSize) noexcept;
 
 #endif  // SRC_PACK_UI_H_

@@ -35,15 +35,15 @@
 // TODO: Replace with lock-free variant.
 template<class T> class SafeHeap {
  public:
-    SafeHeap() : alive(true) {}
+    SafeHeap() noexcept : alive(true) {}
 
-    void push(T t) {
+    void push(T t) noexcept {
         LockGuard lock(m);
         q.push_back(t);
         c.notifyOne();
     }
 
-    Optional<T> pop() {
+    Optional<T> pop() noexcept {
         LockGuard lock(m);
         while (alive && q.empty()) {
             c.wait(lock);
@@ -58,7 +58,7 @@ template<class T> class SafeHeap {
         }
     }
 
-    void end() {
+    void end() noexcept {
         alive = false;
         c.notifyAll();
     }

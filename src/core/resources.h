@@ -37,6 +37,6 @@
  */
 
 //! Load a resource from the file at the given path.
-Optional<StringView> resourceLoad(StringView path);
+Optional<StringView> resourceLoad(StringView path) noexcept;
 
 #endif  // SRC_CORE_RESOURCES_H_

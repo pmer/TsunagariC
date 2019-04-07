@@ -34,6 +34,6 @@
 class Area;
 class Player;
 
-Unique<Area> makeAreaFromJSON(Player* player, StringView filename);
+Unique<Area> makeAreaFromJSON(Player* player, StringView filename) noexcept;
 
 #endif  // SRC_CORE_AREA_JSON_H_

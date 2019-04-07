@@ -36,9 +36,9 @@
 
 class PoolImpl : public Pool {
  public:
-    ~PoolImpl() final;
+    ~PoolImpl() noexcept final;
 
-    void schedule(Function<void()> job) final;
+    void schedule(Function<void()> job) noexcept final;
 
     String name;
 
@@ -66,7 +66,7 @@ class PoolImpl : public Pool {
 };
 
 Pool*
-Pool::makePool(StringView name, size_t workerLimit) {
+Pool::makePool(StringView name, size_t workerLimit) noexcept {
     auto pool = new PoolImpl;
     pool->name = name;
     pool->workerLimit =
@@ -78,7 +78,7 @@ Pool::makePool(StringView name, size_t workerLimit) {
 }
 
 static void
-jobWorker(PoolImpl* pool) {
+jobWorker(PoolImpl* pool) noexcept {
     Function<void()> job;
 
     do {
@@ -112,7 +112,7 @@ jobWorker(PoolImpl* pool) {
 }
 
 void
-PoolImpl::schedule(Function<void()> job) {
+PoolImpl::schedule(Function<void()> job) noexcept {
     {
         LockGuard lock(jobsMutex);
 
@@ -131,7 +131,7 @@ PoolImpl::schedule(Function<void()> job) {
     }
 }
 
-PoolImpl::~PoolImpl() {
+PoolImpl::~PoolImpl() noexcept {
     // Wait for all jobs to finish.
     {
         Mutex m;

@@ -27,18 +27,9 @@
 #ifndef SRC_UTIL_MOVE_H_
 #define SRC_UTIL_MOVE_H_
 
-template<typename T>
-struct Refless {
-    typedef T value;
-};
-template<typename T>
-struct Refless<T&&> {
-    typedef T value;
-};
-template<typename T>
-struct Refless<T&> {
-    typedef T value;
-};
+template<typename T> struct Refless { typedef T value; };
+template<typename T> struct Refless<T&&> { typedef T value; };
+template<typename T> struct Refless<T&> { typedef T value; };
 
 //
 // Move
@@ -46,7 +37,8 @@ struct Refless<T&> {
 //
 
 template<typename T>
-inline constexpr typename Refless<T>::value&& move_(T&& x) noexcept {
+inline constexpr typename Refless<T>::value&&
+move_(T&& x) noexcept {
     return static_cast<typename Refless<T>::value&&>(x);
 }
 
@@ -55,13 +47,15 @@ inline constexpr typename Refless<T>::value&& move_(T&& x) noexcept {
 //   forward_()  same as std::forward
 //
 
-template <typename T>
-inline constexpr T&& forward_(typename Refless<T>::value& x) noexcept {
+template<typename T>
+inline constexpr T&&
+forward_(typename Refless<T>::value& x) noexcept {
     return static_cast<T&&>(x);
 }
 
-template <typename T>
-inline constexpr T&& forward_(typename Refless<T>::value&& x) noexcept {
+template<typename T>
+inline constexpr T&&
+forward_(typename Refless<T>::value&& x) noexcept {
     return static_cast<T&&>(x);
 }
 
@@ -69,8 +63,9 @@ inline constexpr T&& forward_(typename Refless<T>::value&& x) noexcept {
 // Swap
 //   swap_()  same as std::swap
 //
-template <typename T>
-inline void swap_(T& a, T& b) noexcept {
+template<typename T>
+inline void
+swap_(T& a, T& b) noexcept {
     T temp(move_(a));
     a = move_(b);
     b = move_(temp);

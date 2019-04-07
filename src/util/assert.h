@@ -30,12 +30,15 @@
 #include "util/likely.h"
 
 #ifndef NDEBUG
-#    define assert_(expr) \
-        (likely(expr) ? (void)0 : assert__(__func__, __FILE__, __LINE__, #expr))
+#define assert_(expr) \
+    (likely(expr) ? (void)0 : assert__(__func__, __FILE__, __LINE__, #expr))
 
-void assert__(const char* func, const char* file, int line, const char* expr);
+void assert__(const char* func,
+              const char* file,
+              int line,
+              const char* expr) noexcept;
 #else
-#    define assert_(expr)
+#define assert_(expr)
 #endif
 
 #endif  // SRC_UTIL_ASSERT_H_

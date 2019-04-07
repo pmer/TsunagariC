@@ -32,7 +32,7 @@
 
 class NPC : public Character {
  protected:
-    void arrived() final;
+    void arrived() noexcept final;
 };
 
 #endif  // SRC_CORE_NPC_H_

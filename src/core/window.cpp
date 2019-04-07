@@ -30,10 +30,10 @@
 #include "core/world.h"
 #include "os/c.h"
 
-GameWindow::GameWindow() : keysDown(KB_SIZE) {}
+GameWindow::GameWindow() noexcept : keysDown(KB_SIZE) {}
 
 void
-GameWindow::emitKeyDown(KeyboardKey key) {
+GameWindow::emitKeyDown(KeyboardKey key) noexcept {
     bool wasDown = keysDown[key];
 
     keysDown[key] = true;
@@ -50,7 +50,7 @@ GameWindow::emitKeyDown(KeyboardKey key) {
 }
 
 void
-GameWindow::emitKeyUp(KeyboardKey key) {
+GameWindow::emitKeyUp(KeyboardKey key) noexcept {
     bool wasDown = keysDown[key];
 
     keysDown[key] = false;
@@ -61,11 +61,11 @@ GameWindow::emitKeyUp(KeyboardKey key) {
 }
 
 bool
-GameWindow::isKeyDown(KeyboardKey key) {
+GameWindow::isKeyDown(KeyboardKey key) noexcept {
     return keysDown[key];
 }
 
 BitRecord
-GameWindow::getKeysDown() {
+GameWindow::getKeysDown() noexcept {
     return keysDown;
 }

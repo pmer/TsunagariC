@@ -53,25 +53,25 @@ enum KeyboardKey {
 */
 class GameWindow {
  public:
-    static GameWindow* create();
-    static GameWindow& instance();
+    static GameWindow* create() noexcept;
+    static GameWindow& instance() noexcept;
 
     //! Time since epoch.
-    static time_t time();
+    static time_t time() noexcept;
 
     virtual ~GameWindow() = default;
 
     //! Width of the window in pixels.
-    virtual unsigned width() const = 0;
+    virtual unsigned width() const noexcept = 0;
 
     //! Height of the window in pixels.
-    virtual unsigned height() const = 0;
+    virtual unsigned height() const noexcept = 0;
 
     //! Set window manager caption.
-    virtual void setCaption(StringView caption) = 0;
+    virtual void setCaption(StringView caption) noexcept = 0;
 
     //! Show the window and start the main loop.
-    virtual void mainLoop() = 0;
+    virtual void mainLoop() noexcept = 0;
 
     /**
      * Draws a rectangle on the screen of the specified color. Coordinates
@@ -81,25 +81,27 @@ class GameWindow {
                           double x2,
                           double y1,
                           double y2,
-                          uint32_t argb) = 0;
+                          uint32_t argb) noexcept = 0;
 
-    virtual void scale(double x, double y, Function<void()> op) = 0;
-    virtual void translate(double x, double y, Function<void()> op) = 0;
+    virtual void scale(double x, double y, Function<void()> op) noexcept = 0;
+    virtual void translate(double x,
+                           double y,
+                           Function<void()> op) noexcept = 0;
     virtual void clip(double x,
                       double y,
                       double width,
                       double height,
-                      Function<void()> op) = 0;
+                      Function<void()> op) noexcept = 0;
 
-    void emitKeyDown(KeyboardKey key);
-    void emitKeyUp(KeyboardKey key);
-    bool isKeyDown(KeyboardKey key);
-    BitRecord getKeysDown();
+    void emitKeyDown(KeyboardKey key) noexcept;
+    void emitKeyUp(KeyboardKey key) noexcept;
+    bool isKeyDown(KeyboardKey key) noexcept;
+    BitRecord getKeysDown() noexcept;
 
  protected:
-    GameWindow();
+    GameWindow() noexcept;
 
-    virtual void close() = 0;
+    virtual void close() noexcept = 0;
 
     BitRecord keysDown;
 };

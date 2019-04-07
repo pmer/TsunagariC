@@ -27,6 +27,7 @@
 
 #include "data/data-world.h"
 
-DataArea* DataWorld::area(StringView areaName) {
+DataArea*
+DataWorld::area(StringView areaName) noexcept {
     return areas[areaName].get();
 }

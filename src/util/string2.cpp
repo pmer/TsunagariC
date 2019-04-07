@@ -37,7 +37,8 @@
 /**
  * Matches regex /\s*-?\d+/
  */
-bool isInteger(StringView s) {
+bool
+isInteger(StringView s) noexcept {
     constexpr int space = 0;
     constexpr int sign = 1;
     constexpr int digit = 2;
@@ -47,16 +48,21 @@ bool isInteger(StringView s) {
     for (size_t i = 0; i < s.size; i++) {
         char c = s.data[i];
         if (state == space) {
-            if (c == ' ') continue;
-            else state++;
+            if (c == ' ')
+                continue;
+            else
+                state++;
         }
         if (state == sign) {
             state++;
-            if (c == '-') continue;
+            if (c == '-')
+                continue;
         }
         if (state == digit) {
-            if ('0' <= c && c <= '9') continue;
-            else return false;
+            if ('0' <= c && c <= '9')
+                continue;
+            else
+                return false;
         }
     }
     return true;
@@ -65,7 +71,8 @@ bool isInteger(StringView s) {
 /**
  * Matches regex /\s*-?\d+\.?\d* /   [sic: star-slash ends comment]
  */
-bool isDecimal(StringView s) {
+bool
+isDecimal(StringView s) noexcept {
     constexpr int space = 0;
     constexpr int sign = 1;
     constexpr int digit = 2;
@@ -78,21 +85,30 @@ bool isDecimal(StringView s) {
         char c = s.data[i];
         switch (state) {
         case space:
-            if (c == ' ') continue;
-            else state++;
+            if (c == ' ')
+                continue;
+            else
+                state++;
         case sign:
             state++;
-            if (c == '-') continue;
+            if (c == '-')
+                continue;
         case digit:
-            if ('0' <= c && c <= '9') continue;
-            else state++;
+            if ('0' <= c && c <= '9')
+                continue;
+            else
+                state++;
         case dot:
             state++;
-            if (c == '.') continue;
-            else return false;
+            if (c == '.')
+                continue;
+            else
+                return false;
         case digit2:
-            if ('0' <= c && c <= '9') continue;
-            else return false;
+            if ('0' <= c && c <= '9')
+                continue;
+            else
+                return false;
         }
     }
     return true;
@@ -101,7 +117,8 @@ bool isDecimal(StringView s) {
 /**
  * Matches "5-7,2,12-14" no whitespace.
  */
-bool isRanges(StringView s) {
+bool
+isRanges(StringView s) noexcept {
     constexpr int sign = 0;
     constexpr int digit = 1;
     constexpr int dash = 3;
@@ -116,14 +133,17 @@ bool isRanges(StringView s) {
         switch (state) {
         case sign:
             state++;
-            if (c == '-' || c == '+') break;
+            if (c == '-' || c == '+')
+                break;
         case digit:
-            if ('0' <= c && c <= '9') break;
+            if ('0' <= c && c <= '9')
+                break;
             state++;
         case dash:
             state++;
             if (c == '-') {
-                if (dashed) return false;
+                if (dashed)
+                    return false;
                 dashed = true;
                 state = sign;
                 break;
@@ -141,15 +161,18 @@ bool isRanges(StringView s) {
     return true;
 }
 
-static inline char tolower(char c) {
+static inline char
+tolower(char c) noexcept {
     if ('A' <= c && c <= 'Z') {
         return c + 'a' - 'A';
-    } else {
+    }
+    else {
         return c;
     }
 }
 
-bool iequals(StringView a, StringView b) {
+bool
+iequals(StringView a, StringView b) noexcept {
     if (a.size != b.size) {
         return false;
     }
@@ -161,35 +184,31 @@ bool iequals(StringView a, StringView b) {
     return true;
 }
 
-Optional<bool> parseBool(StringView s) {
+Optional<bool>
+parseBool(StringView s) noexcept {
     static const StringView true_ = "true";
     static const StringView yes = "yes";
     static const StringView on = "on";
-    
-    if (iequals(s, true_) ||
-        iequals(s, yes) ||
-        iequals(s, on) ||
-        s == "1") {
+
+    if (iequals(s, true_) || iequals(s, yes) || iequals(s, on) || s == "1") {
         return Optional<bool>(true);
     }
 
     static const StringView false_ = "false";
     static const StringView no = "no";
     static const StringView off = "off";
-    
-    if (iequals(s, false_) ||
-        iequals(s, no) ||
-        iequals(s, off) ||
-        s == "0") {
+
+    if (iequals(s, false_) || iequals(s, no) || iequals(s, off) || s == "0") {
         return Optional<bool>(false);
     }
-    
+
     return Optional<bool>();
 }
 
-Optional<unsigned> parseUInt(String& s) {
+Optional<unsigned>
+parseUInt(String& s) noexcept {
     errno = 0;
-    
+
     char* end;
     unsigned long ul = strtoul(s.null(), &end, 10);
 
@@ -209,21 +228,23 @@ Optional<unsigned> parseUInt(String& s) {
     return Optional<unsigned>(static_cast<unsigned>(ul));
 }
 
-Optional<unsigned> parseUInt(StringView s) {
+Optional<unsigned>
+parseUInt(StringView s) noexcept {
     String s_(s);
     return parseUInt(s_);
 }
 
-Optional<int> parseInt(String& s) {
+Optional<int>
+parseInt(String& s) noexcept {
     errno = 0;
-    
+
     char* end;
     long l = strtol(s.null(), &end, 10);
-    
+
     if (end != s.data() + s.size()) {
         return Optional<int>();
     }
-    
+
     if (errno != 0) {
         // Overflow.
         return Optional<int>();
@@ -232,16 +253,18 @@ Optional<int> parseInt(String& s) {
         // Overflow.
         return Optional<int>();
     }
-    
+
     return Optional<int>(static_cast<int>(l));
 }
 
-Optional<int> parseInt(StringView s) {
+Optional<int>
+parseInt(StringView s) noexcept {
     String s_(s);
     return parseInt(s_);
 }
 
-Optional<double> parseDouble(String& s) {
+Optional<double>
+parseDouble(String& s) noexcept {
     errno = 0;
 
     char* end;
@@ -259,22 +282,24 @@ Optional<double> parseDouble(String& s) {
     return Optional<double>(d);
 }
 
-Optional<double> parseDouble(StringView s) {
+Optional<double>
+parseDouble(StringView s) noexcept {
     String s_(s);
     return parseDouble(s_);
 }
 
-int parseInt100(const char* s) {
+int
+parseInt100(const char* s) noexcept {
     int i = atoi(s);
     return bound(i, 0, 100);
 }
 
-Vector<String> splitStr(StringView input, StringView delimiter) {
+Vector<String>
+splitStr(StringView input, StringView delimiter) noexcept {
     Vector<String> strlist;
     size_t i = 0;
 
-    for (Optional<size_t> pos = input.find(delimiter);
-         pos;
+    for (Optional<size_t> pos = input.find(delimiter); pos;
          pos = input.find(delimiter, i)) {
         strlist.push_back(input.substr(i, *pos - i));
         i = *pos + delimiter.size;
@@ -286,7 +311,8 @@ Vector<String> splitStr(StringView input, StringView delimiter) {
     return strlist;
 }
 
-Optional<Vector<int>> parseRanges(StringView format) {
+Optional<Vector<int>>
+parseRanges(StringView format) noexcept {
     Vector<int> ints;
     for (StringView range : splitStr(format, ",")) {
         Optional<size_t> dash = range.find("-");

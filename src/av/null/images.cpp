@@ -28,18 +28,24 @@
 
 class NullImage : public Image {
  public:
-    NullImage() : Image(0, 0) {}
+    NullImage() noexcept : Image(0, 0) {}
 
-    void draw(double, double, double) final {}
-    void drawSubrect(double, double, double, double, double, double, double) final {}
+    void draw(double, double, double) noexcept final {}
+    void drawSubrect(double,
+                     double,
+                     double,
+                     double,
+                     double,
+                     double,
+                     double) noexcept final {}
 };
 
 
-class NullTiledImage: public TiledImage {
+class NullTiledImage : public TiledImage {
  public:
-    size_t size() const final { return 1000; }
+    size_t size() const noexcept final { return 1000; }
 
-    Rc<Image> operator[](size_t) const final {
+    Rc<Image> operator[](size_t) const noexcept final {
         return Rc<Image>(new NullImage);
     }
 };
@@ -47,20 +53,19 @@ class NullTiledImage: public TiledImage {
 
 class NullImages : public Images {
  public:
-    Rc<Image> load(StringView) final {
-        return Rc<Image>();
-    }
+    Rc<Image> load(StringView) noexcept final { return Rc<Image>(); }
 
-    Rc<TiledImage> loadTiles(StringView, unsigned, unsigned) final {
+    Rc<TiledImage> loadTiles(StringView, unsigned, unsigned) noexcept final {
         return Rc<TiledImage>(new NullTiledImage);
     }
 
-    void garbageCollect() final {}
+    void garbageCollect() noexcept final {}
 };
 
 
 static NullImages globalImages;
 
-Images& Images::instance() {
+Images&
+Images::instance() noexcept {
     return globalImages;
 }

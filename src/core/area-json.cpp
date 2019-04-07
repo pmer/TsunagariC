@@ -48,7 +48,7 @@
 #include "util/vector.h"
 
 #ifdef _WIN32
-#    include "os/windows.h"
+#include "os/windows.h"
 #endif
 
 #define CHECK(x)      \
@@ -64,69 +64,69 @@
 
 class AreaJSON : public Area {
  public:
-    AreaJSON(Player* player, StringView filename);
+    AreaJSON(Player* player, StringView filename) noexcept;
 
     //! Parse the file specified in the constructor, generating a full Area
     //! object. Must be called before use.
-    virtual bool init();
+    virtual bool init() noexcept;
 
  private:
     //! Allocate Tile objects for one layer of map.
-    void allocateMapLayer();
+    void allocateMapLayer() noexcept;
 
     //! Parse an Area file.
-    bool processDescriptor();
-    bool processMapProperties(Unique<JSONObject> obj);
-    bool processTileSet(Unique<JSONObject> obj);
+    bool processDescriptor() noexcept;
+    bool processMapProperties(Unique<JSONObject> obj) noexcept;
+    bool processTileSet(Unique<JSONObject> obj) noexcept;
     bool processTileSetFile(Rc<JSONObject> obj,
                             StringView source,
-                            int firstGid);
+                            int firstGid) noexcept;
     bool processTileType(Unique<JSONObject> obj,
                          TileType& type,
                          Rc<TiledImage>& img,
-                         int id);
-    bool processLayer(Unique<JSONObject> obj);
-    bool processLayerProperties(Unique<JSONObject> obj);
-    bool processLayerData(Unique<JSONArray> arr);
-    bool processObjectGroup(Unique<JSONObject> obj);
-    bool processObjectGroupProperties(Unique<JSONObject> obj);
-    bool processObject(Unique<JSONObject> obj);
-    bool splitTileFlags(StringView strOfFlags, unsigned* flags);
+                         int id) noexcept;
+    bool processLayer(Unique<JSONObject> obj) noexcept;
+    bool processLayerProperties(Unique<JSONObject> obj) noexcept;
+    bool processLayerData(Unique<JSONArray> arr) noexcept;
+    bool processObjectGroup(Unique<JSONObject> obj) noexcept;
+    bool processObjectGroupProperties(Unique<JSONObject> obj) noexcept;
+    bool processObject(Unique<JSONObject> obj) noexcept;
+    bool splitTileFlags(StringView strOfFlags, unsigned* flags) noexcept;
     bool parseExit(StringView dest,
                    Optional<Exit>& exit,
                    bool* wwide,
-                   bool* hwide);
+                   bool* hwide) noexcept;
     bool parseARGB(StringView str,
                    unsigned char& a,
                    unsigned char& r,
                    unsigned char& g,
-                   unsigned char& b);
+                   unsigned char& b) noexcept;
 
     Vector<TileType*> gids;
 };
 
 
 Unique<Area>
-makeAreaFromJSON(Player* player, StringView filename) {
+makeAreaFromJSON(Player* player, StringView filename) noexcept {
     return Unique<Area>(new AreaJSON(player, filename));
 }
 
 
-AreaJSON::AreaJSON(Player* player, StringView descriptor)
+AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept
         : Area(player, descriptor) {
     // Add TileType #0. Not used, but Tiled's gids start from 1.
     gids.push_back(nullptr);
 }
 
 bool
-AreaJSON::init() {
+AreaJSON::init() noexcept {
     TimeMeasure m(String() << "Constructed " << descriptor << " as area-json");
     return processDescriptor();
 }
 
 
 void
-AreaJSON::allocateMapLayer() {
+AreaJSON::allocateMapLayer() noexcept {
     ivec3 dim = grid.dim;
 
     // FIXME: Better int overflow check that multiplies x,y,z together.
@@ -144,7 +144,7 @@ AreaJSON::allocateMapLayer() {
 }
 
 bool
-AreaJSON::processDescriptor() {
+AreaJSON::processDescriptor() noexcept {
     Rc<JSONObject> doc = JSONs::instance().load(descriptor);
 
     CHECK(doc);
@@ -196,7 +196,7 @@ AreaJSON::processDescriptor() {
 }
 
 bool
-AreaJSON::processMapProperties(Unique<JSONObject> obj) {
+AreaJSON::processMapProperties(Unique<JSONObject> obj) noexcept {
     /*
      {
        "name": "Wooded Area"
@@ -237,13 +237,13 @@ AreaJSON::processMapProperties(Unique<JSONObject> obj) {
  * there is no directory component, return an empty string.
  */
 static StringView
-dirname(StringView path) {
+dirname(StringView path) noexcept {
     Optional<size_t> slash = path.rfind('/');
     return !slash ? "" : path.substr(0, slash + 1);
 }
 
 bool
-AreaJSON::processTileSet(Unique<JSONObject> obj) {
+AreaJSON::processTileSet(Unique<JSONObject> obj) noexcept {
     /*
      {
        "firstgid": 1,
@@ -277,7 +277,7 @@ AreaJSON::processTileSet(Unique<JSONObject> obj) {
 bool
 AreaJSON::processTileSetFile(Rc<JSONObject> obj,
                              StringView source,
-                             int firstGid) {
+                             int firstGid) noexcept {
     /*
      {
        "image": "forest.png",
@@ -393,7 +393,7 @@ bool
 AreaJSON::processTileType(Unique<JSONObject> obj,
                           TileType& type,
                           Rc<TiledImage>& img,
-                          int id) {
+                          int id) noexcept {
     /*
       {
         "flags": "nowalk",
@@ -483,7 +483,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
 }
 
 bool
-AreaJSON::processLayer(Unique<JSONObject> obj) {
+AreaJSON::processLayer(Unique<JSONObject> obj) noexcept {
     /*
      {
        "data": [9, 9, 9, ..., 3, 9, 9],
@@ -518,7 +518,7 @@ AreaJSON::processLayer(Unique<JSONObject> obj) {
 }
 
 bool
-AreaJSON::processLayerProperties(Unique<JSONObject> obj) {
+AreaJSON::processLayerProperties(Unique<JSONObject> obj) noexcept {
     /*
      {
        "depth": "-0.5"
@@ -545,7 +545,7 @@ AreaJSON::processLayerProperties(Unique<JSONObject> obj) {
 }
 
 bool
-AreaJSON::processLayerData(Unique<JSONArray> arr) {
+AreaJSON::processLayerData(Unique<JSONArray> arr) noexcept {
     /*
      [9, 9, 9, ..., 3, 9, 9]
     */
@@ -584,7 +584,7 @@ AreaJSON::processLayerData(Unique<JSONArray> arr) {
 }
 
 bool
-AreaJSON::processObjectGroup(Unique<JSONObject> obj) {
+AreaJSON::processObjectGroup(Unique<JSONObject> obj) noexcept {
     /*
      {
        "name": "Prop(1)",
@@ -608,7 +608,7 @@ AreaJSON::processObjectGroup(Unique<JSONObject> obj) {
 }
 
 bool
-AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) {
+AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) noexcept {
     /*
      {
        "depth": "0.0"
@@ -636,7 +636,7 @@ AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) {
 }
 
 bool
-AreaJSON::processObject(Unique<JSONObject> obj) {
+AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
     /*
      {
        "height": 16,
@@ -792,7 +792,7 @@ AreaJSON::processObject(Unique<JSONObject> obj) {
 }
 
 bool
-AreaJSON::splitTileFlags(StringView strOfFlags, unsigned* flags) {
+AreaJSON::splitTileFlags(StringView strOfFlags, unsigned* flags) noexcept {
     for (auto str : splitStr(strOfFlags, ",")) {
         if (str == "nowalk") {
             *flags |= TILE_NOWALK;
@@ -816,7 +816,7 @@ AreaJSON::splitTileFlags(StringView strOfFlags, unsigned* flags) {
  * Matches regex /^\s*\d+\+?$/
  */
 static bool
-isIntegerOrPlus(StringView s) {
+isIntegerOrPlus(StringView s) noexcept {
     const int space = 0;
     const int digit = 1;
     const int sign = 2;
@@ -851,7 +851,7 @@ bool
 AreaJSON::parseExit(StringView dest,
                     Optional<Exit>& exit,
                     bool* wwide,
-                    bool* hwide) {
+                    bool* hwide) noexcept {
     /*
       Format: destination area, x, y, z
       E.g.:   "babysfirst.area,1,3,0"
@@ -891,7 +891,7 @@ AreaJSON::parseARGB(StringView str,
                     unsigned char& a,
                     unsigned char& r,
                     unsigned char& g,
-                    unsigned char& b) {
+                    unsigned char& b) noexcept {
     unsigned char* channels[] = {&a, &r, &g, &b};
 
     Vector<String> strs = splitStr(str, ",");

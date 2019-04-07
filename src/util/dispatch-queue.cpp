@@ -29,13 +29,13 @@
 #include "util/dispatch-queue-impl.h"
 #include "util/move.h"
 
-DispatchQueue::DispatchQueue() : impl(new DispatchQueueImpl) {}
+DispatchQueue::DispatchQueue() noexcept : impl(new DispatchQueueImpl) {}
 
-DispatchQueue::~DispatchQueue() {
+DispatchQueue::~DispatchQueue() noexcept {
     delete impl;
 }
 
 void
-DispatchQueue::async(Task task, QualityOfService qos) {
+DispatchQueue::async(Task task, QualityOfService qos) noexcept {
     impl->async(move_(task), qos);
 }

@@ -54,38 +54,38 @@ class World {
     /**
      * Get the currently open World.
      */
-    static World& instance();
+    static World& instance() noexcept;
 
-    World();
+    World() noexcept;
     ~World() = default;
 
     /**
      * Initialize the world for use.
      */
-    bool init();
+    bool init() noexcept;
 
     /**
      * Syncronized time value used throughout the engine.
      */
-    time_t time() const;
+    time_t time() const noexcept;
 
     /**
      * Process key presses.
      */
-    void buttonDown(KeyboardKey btn);
-    void buttonUp(KeyboardKey btn);
+    void buttonDown(KeyboardKey btn) noexcept;
+    void buttonUp(KeyboardKey btn) noexcept;
 
     /**
      * Draw game state to the screen.
      */
-    void draw(DisplayList* display);
+    void draw(DisplayList* display) noexcept;
 
     /**
      * Do we need to redraw the screen?
      */
-    bool needsRedraw() const;
+    bool needsRedraw() const noexcept;
 
-    void update(time_t now);
+    void update(time_t now) noexcept;
 
     /**
      * Updates the game state within this World as if dt milliseconds had
@@ -97,7 +97,7 @@ class World {
      * Character       no       yes      yes
      * Overlay         yes      yes      yes
      */
-    void tick(time_t dt);
+    void tick(time_t dt) noexcept;
 
     /**
      * Update the game world when the turn is over (Player moves).
@@ -108,25 +108,25 @@ class World {
      * Character       yes      no       no
      * Overlay         yes      no       no
      */
-    void turn();
+    void turn() noexcept;
 
     /**
      * Switch the game to a new Area, moving the player to the specified
      * position in the Area.
      */
-    bool focusArea(StringView filename, vicoord playerPos);
-    void focusArea(Area* area, vicoord playerPos);
+    bool focusArea(StringView filename, vicoord playerPos) noexcept;
+    void focusArea(Area* area, vicoord playerPos) noexcept;
 
-    void setPaused(bool b);
+    void setPaused(bool b) noexcept;
 
-    void storeKeys();
-    void restoreKeys();
+    void storeKeys() noexcept;
+    void restoreKeys() noexcept;
 
-    void runAreaLoadScript(Area* area);
+    void runAreaLoadScript(Area* area) noexcept;
 
     //! Expunge old resources cached in memory. Decisions on which are
     //! removed and which are kept are based on the global Conf struct.
-    void garbageCollect();
+    void garbageCollect() noexcept;
 
     // ScriptRef keydownScript, keyupScript;
 
@@ -134,14 +134,14 @@ class World {
     /**
      * Calculate time passed since engine state was last updated.
      */
-    time_t calculateDt(time_t now);
+    time_t calculateDt(time_t now) noexcept;
 
     /**
      * Draws black borders around the screen. Used to correct the aspect
      * ratio and optimize drawing if the Area doesn't fit into the
      * Viewport.
      */
-    void pushLetterbox(Function<void()> op);
+    void pushLetterbox(Function<void()> op) noexcept;
 
  protected:
     Rc<Image> pauseInfo;

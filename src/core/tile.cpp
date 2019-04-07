@@ -33,7 +33,7 @@
 #include "util/string.h"
 
 static int
-ivec2_to_dir(ivec2 v) {
+ivec2_to_dir(ivec2 v) noexcept {
     switch (v.x) {
     case -1:
         return v.y == 0 ? EXIT_LEFT : -1;
@@ -60,72 +60,72 @@ ivec2_to_dir(ivec2 v) {
 /*
  * FLAGMANIP
  */
-FlagManip::FlagManip(unsigned* flags) : flags(flags) {}
+FlagManip::FlagManip(unsigned* flags) noexcept : flags(flags) {}
 
 bool
-FlagManip::isNowalk() const {
+FlagManip::isNowalk() const noexcept {
     return (*flags & TILE_NOWALK) != 0;
 }
 
 bool
-FlagManip::isNowalkPlayer() const {
+FlagManip::isNowalkPlayer() const noexcept {
     return (*flags & TILE_NOWALK_PLAYER) != 0;
 }
 
 bool
-FlagManip::isNowalkNPC() const {
+FlagManip::isNowalkNPC() const noexcept {
     return (*flags & TILE_NOWALK_NPC) != 0;
 }
 
 bool
-FlagManip::isNowalkExit() const {
+FlagManip::isNowalkExit() const noexcept {
     return (*flags & TILE_NOWALK_EXIT) != 0;
 }
 
 bool
-FlagManip::isNowalkAreaBound() const {
+FlagManip::isNowalkAreaBound() const noexcept {
     return (*flags & TILE_NOWALK_AREA_BOUND) != 0;
 }
 
 void
-FlagManip::setNowalk(bool nowalk) {
+FlagManip::setNowalk(bool nowalk) noexcept {
     *flags &= ~TILE_NOWALK;
     *flags |= TILE_NOWALK * nowalk;
 }
 
 void
-FlagManip::setNowalkPlayer(bool nowalk) {
+FlagManip::setNowalkPlayer(bool nowalk) noexcept {
     *flags &= ~TILE_NOWALK_PLAYER;
     *flags |= TILE_NOWALK_PLAYER * nowalk;
 }
 
 void
-FlagManip::setNowalkNPC(bool nowalk) {
+FlagManip::setNowalkNPC(bool nowalk) noexcept {
     *flags &= ~TILE_NOWALK_NPC;
     *flags |= TILE_NOWALK_NPC * nowalk;
 }
 
 void
-FlagManip::setNowalkExit(bool nowalk) {
+FlagManip::setNowalkExit(bool nowalk) noexcept {
     *flags &= ~TILE_NOWALK_EXIT;
     *flags |= TILE_NOWALK_EXIT * nowalk;
 }
 
 void
-FlagManip::setNowalkAreaBound(bool nowalk) {
+FlagManip::setNowalkAreaBound(bool nowalk) noexcept {
     *flags &= ~TILE_NOWALK_AREA_BOUND;
     *flags |= TILE_NOWALK_AREA_BOUND * nowalk;
 }
 
 
-Exit::Exit(String area, int x, int y, double z)
+Exit::Exit(String area, int x, int y, double z) noexcept
         : area(move_(area)), coords{x, y, z} {}
 
 
 /*
  * TILEBASE
  */
-TileBase::TileBase()
+TileBase::TileBase() noexcept
         : parent(nullptr),
           flags(0x0),
           enterScript(nullptr),
@@ -133,22 +133,22 @@ TileBase::TileBase()
           useScript(nullptr) {}
 
 FlagManip
-TileBase::flagManip() {
+TileBase::flagManip() noexcept {
     return FlagManip(&flags);
 }
 
 bool
-TileBase::hasFlag(unsigned flag) const {
+TileBase::hasFlag(unsigned flag) const noexcept {
     return flags & flag || (parent && parent->hasFlag(flag));
 }
 
 TileType*
-TileBase::getType() const {
+TileBase::getType() const noexcept {
     return (TileType*)parent;
 }
 
 void
-TileBase::setType(TileType* type) {
+TileBase::setType(TileType* type) noexcept {
     parent = type;
 }
 
@@ -156,12 +156,12 @@ TileBase::setType(TileType* type) {
 /*
  * TILE
  */
-Tile::Tile() : entCnt(0) {}
+Tile::Tile() noexcept : entCnt(0) {}
 
-Tile::Tile(Area* area) : area(area), entCnt(0) {}
+Tile::Tile(Area* area) noexcept : area(area), entCnt(0) {}
 
 icoord
-Tile::moveDest(icoord here, ivec2 facing) const {
+Tile::moveDest(icoord here, ivec2 facing) const noexcept {
     icoord dest = here + icoord{facing.x, facing.y, 0};
 
     Optional<double> layermod = layermodAt(facing);
@@ -172,19 +172,19 @@ Tile::moveDest(icoord here, ivec2 facing) const {
 }
 
 Optional<Exit>
-Tile::exitAt(ivec2 dir) const {
+Tile::exitAt(ivec2 dir) const noexcept {
     int idx = ivec2_to_dir(dir);
     return idx == -1 ? Optional<Exit>() : exits[idx];
 }
 
 Optional<double>
-Tile::layermodAt(ivec2 dir) const {
+Tile::layermodAt(ivec2 dir) const noexcept {
     int idx = ivec2_to_dir(dir);
     return idx == -1 ? Optional<double>() : layermods[idx];
 }
 
 void
-Tile::runEnterScript(Entity* triggeredBy) {
+Tile::runEnterScript(Entity* triggeredBy) noexcept {
     DataArea* dataArea = area->getDataArea();
     for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
         DataArea::TileScript script = scripted->enterScript;
@@ -194,7 +194,7 @@ Tile::runEnterScript(Entity* triggeredBy) {
 }
 
 void
-Tile::runLeaveScript(Entity* triggeredBy) {
+Tile::runLeaveScript(Entity* triggeredBy) noexcept {
     DataArea* dataArea = area->getDataArea();
     for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
         DataArea::TileScript script = scripted->leaveScript;
@@ -204,7 +204,7 @@ Tile::runLeaveScript(Entity* triggeredBy) {
 }
 
 void
-Tile::runUseScript(Entity* triggeredBy) {
+Tile::runUseScript(Entity* triggeredBy) noexcept {
     DataArea* dataArea = area->getDataArea();
     for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
         DataArea::TileScript script = scripted->useScript;
@@ -219,13 +219,13 @@ Tile::runUseScript(Entity* triggeredBy) {
  */
 int maxTileTypeId = 0;
 
-TileType::TileType(const Rc<Image>& img) {
+TileType::TileType(const Rc<Image>& img) noexcept {
     id = maxTileTypeId++;
     anim = Animation(img);
 }
 
 bool
-TileType::needsRedraw() const {
+TileType::needsRedraw() const noexcept {
     time_t now = World::instance().time();
     return anim.needsRedraw(now);
 }
@@ -233,20 +233,21 @@ TileType::needsRedraw() const {
 /*
  * TILESET
  */
-TileSet::TileSet(size_t width, size_t height) : width(width), height(height) {}
+TileSet::TileSet(size_t width, size_t height) noexcept
+        : width(width), height(height) {}
 
 void
-TileSet::add(TileType* type) {
+TileSet::add(TileType* type) noexcept {
     types.push_back(type);
 }
 
 void
-TileSet::set(size_t idx, TileType* type) {
+TileSet::set(size_t idx, TileType* type) noexcept {
     types[idx] = type;
 }
 
 TileType*
-TileSet::at(size_t x, size_t y) {
+TileSet::at(size_t x, size_t y) noexcept {
     size_t i = idx(x, y);
     if (i > types.size()) {
         Log::err("TileSet",
@@ -257,16 +258,16 @@ TileSet::at(size_t x, size_t y) {
 }
 
 size_t
-TileSet::getWidth() const {
+TileSet::getWidth() const noexcept {
     return height;
 }
 
 size_t
-TileSet::getHeight() const {
+TileSet::getHeight() const noexcept {
     return width;
 }
 
 size_t
-TileSet::idx(size_t x, size_t y) const {
+TileSet::idx(size_t x, size_t y) const noexcept {
     return y * width + x;
 }

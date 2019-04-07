@@ -59,65 +59,65 @@ enum SetPhaseResult { PHASE_NOTFOUND, PHASE_NOTCHANGED, PHASE_CHANGED };
 */
 class Entity {
  public:
-    Entity();
+    Entity() noexcept;
     virtual ~Entity() = default;
 
     //! Entity initializer
-    virtual bool init(StringView descriptor, StringView initialPhase);
+    virtual bool init(StringView descriptor, StringView initialPhase) noexcept;
 
     //! Entity destroyer.
-    virtual void destroy();
+    virtual void destroy() noexcept;
 
-    void draw(DisplayList* display);
-    bool needsRedraw(const icube& visiblePixels) const;
-    bool isDead() const;
+    void draw(DisplayList* display) noexcept;
+    bool needsRedraw(const icube& visiblePixels) const noexcept;
+    bool isDead() const noexcept;
 
-    virtual void tick(time_t dt);
-    virtual void turn();
+    virtual void tick(time_t dt) noexcept;
+    virtual void turn() noexcept;
 
     //! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
     //! to 'facing'.
-    ivec2 setFacing(ivec2 facing);
+    ivec2 setFacing(ivec2 facing) noexcept;
 
-    const StringView getFacing() const;
+    const StringView getFacing() const noexcept;
 
     //! Change the graphic. Returns true if it was changed to something
     //! different.
-    bool setPhase(StringView name);
+    bool setPhase(StringView name) noexcept;
 
-    ivec2 getImageSize() const;
+    ivec2 getImageSize() const noexcept;
 
-    void setAnimationStanding();
-    void setAnimationMoving();
+    void setAnimationStanding() noexcept;
+    void setAnimationMoving() noexcept;
 
 
     //! The offset from the upper-left of the Area to the upper-left of the
     //! Tile the Entity is standing on.
-    rcoord getPixelCoord() const;
+    rcoord getPixelCoord() const noexcept;
 
 
     //! Gets the Entity's current Area.
-    Area* getArea();
+    Area* getArea() noexcept;
 
     //! Specifies the Area object this entity will ask when looking for
     //! nearby Tiles. Doesn't change x,y,z position.
-    virtual void setArea(Area* area);
+    virtual void setArea(Area* area) noexcept;
 
 
     //! Gets speed in pixels per second.
-    double getSpeedInPixels() const;
+    double getSpeedInPixels() const noexcept;
     //! Gets speed in tiles per second.
-    double getSpeedInTiles() const;
+    double getSpeedInTiles() const noexcept;
 
 
-    virtual void setFrozen(bool b);
+    virtual void setFrozen(bool b) noexcept;
 
 
     typedef Function<void(time_t)> OnTickFn;
     typedef Function<void()> OnTurnFn;
 
-    void attach(OnTickFn fn);
-    void attach(OnTurnFn fn);
+    void attach(OnTickFn fn) noexcept;
+    void attach(OnTurnFn fn) noexcept;
 
     //! Script hooks.
     // ScriptRef tickScript, turnScript, tileEntryScript,
@@ -126,34 +126,34 @@ class Entity {
 
  protected:
     //! Precalculate various drawing measurements.
-    void calcDraw();
+    void calcDraw() noexcept;
 
     //! Gets a string describing a direction.
-    StringView directionStr(ivec2 facing) const;
+    StringView directionStr(ivec2 facing) const noexcept;
 
-    enum SetPhaseResult _setPhase(StringView name);
+    enum SetPhaseResult _setPhase(StringView name) noexcept;
 
-    void setDestinationCoordinate(rcoord destCoord);
+    void setDestinationCoordinate(rcoord destCoord) noexcept;
 
-    void moveTowardDestination(time_t dt);
+    void moveTowardDestination(time_t dt) noexcept;
 
     //! arrived() is called when an Entity arrives at its destination.  If
     //! it is ordered to begin moving again from within arrived(), then the
     //! Entity’s graphics will appear as if it never stopped moving.
-    virtual void arrived();
+    virtual void arrived() noexcept;
 
     // JSON parsing functions used in constructing an Entity
-    bool processDescriptor();
-    bool processSprite(Unique<JSONObject> sprite);
-    bool processPhases(Unique<JSONObject> phases, TiledImage& tiles);
+    bool processDescriptor() noexcept;
+    bool processSprite(Unique<JSONObject> sprite) noexcept;
+    bool processPhases(Unique<JSONObject> phases, TiledImage& tiles) noexcept;
     bool processPhase(StringView name,
                       Unique<JSONObject> phase,
-                      TiledImage& tiles);
-    bool processSounds(Unique<JSONObject> sounds);
-    bool processSound(StringView name, StringView path);
-    bool processScripts(Unique<JSONObject> scripts);
-    bool processScript(StringView name, StringView path);
-    // bool setScript(StringView trigger, ScriptRef& script);
+                      TiledImage& tiles) noexcept;
+    bool processSounds(Unique<JSONObject> sounds) noexcept;
+    bool processSound(StringView name, StringView path) noexcept;
+    bool processScripts(Unique<JSONObject> scripts) noexcept;
+    bool processScript(StringView name, StringView path) noexcept;
+    // bool setScript(StringView trigger, ScriptRef& script) noexcept;
 
 
  protected:

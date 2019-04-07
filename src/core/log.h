@@ -41,34 +41,34 @@ class Log {
     /**
      * Initialize the clock for log timestamps.
      */
-    static bool init();
+    static bool init() noexcept;
 
     /**
      * Set the logging verbosity. Some log messages may be suppressed depending
      * on this setting.
      */
-    static void setVerbosity(verbosity_t mode);
+    static void setVerbosity(verbosity_t mode) noexcept;
 
     /**
      * Log an info message to the console if verbosity is "V_VERBOSE".
      */
-    static void info(StringView domain, StringView msg);
+    static void info(StringView domain, StringView msg) noexcept;
 
     /**
      * Log an error message to the console if verbosity is "V_VERBOSE" or
      * "V_NORMAL".
      */
-    static void err(StringView domain, StringView msg);
+    static void err(StringView domain, StringView msg) noexcept;
 
     /**
      * Log a fatal error message to the console.
      */
-    static void fatal(StringView domain, StringView msg);
+    static void fatal(StringView domain, StringView msg) noexcept;
 
     /**
      * Used by main() to report the verbosity setting on engine startup.
      */
-    static void reportVerbosityOnStartup();
+    static void reportVerbosityOnStartup() noexcept;
 
  private:
     Log() = delete;

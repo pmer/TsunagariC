@@ -36,12 +36,12 @@ class PackWriter {
  public:
     typedef uint32_t BlobSize;
 
-    static Unique<PackWriter> make();
+    static Unique<PackWriter> make() noexcept;
     virtual ~PackWriter() = default;
 
-    virtual bool writeToFile(StringView path) = 0;
+    virtual bool writeToFile(StringView path) noexcept = 0;
 
-    virtual void addBlob(String path, BlobSize size, const void* data) = 0;
+    virtual void addBlob(String path, BlobSize size, const void* data) noexcept = 0;
 };
 
 #endif  // SRC_PACK_PACK_WRITER_H_

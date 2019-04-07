@@ -25,11 +25,13 @@
 // **********
 
 #include "util/fnv.h"
+
 #include "util/int.h"
 
 #if __SIZEOF_SIZE_T__ == 4 || (defined(_WIN32) && !defined(_WIN64))
 
-size_t fnvHash(const char* data, size_t size) noexcept {
+size_t
+fnvHash(const char* data, size_t size) noexcept {
     size_t hash = 0x811c9dc5;
 
     const uint8_t* begin = (const uint8_t*)data;
@@ -37,23 +39,25 @@ size_t fnvHash(const char* data, size_t size) noexcept {
 
     while (begin < end) {
         hash ^= (size_t)*begin++;
-        hash += (hash<<1) + (hash<<4) + (hash<<7) + (hash<<8) + (hash<<24);
+        hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) +
+                (hash << 24);
     }
     return hash;
 }
 
 #elif __SIZEOF_SIZE_T__ == 8 || (defined(_WIN32) && defined(_WIN64))
 
-size_t fnvHash(const char* data, size_t size) noexcept {
+size_t
+fnvHash(const char* data, size_t size) noexcept {
     size_t hash = 0xcbf29ce484222325;
 
     const uint8_t* begin = (const uint8_t*)data;
     const uint8_t* end = begin + size;
-    
+
     while (begin < end) {
         hash ^= (size_t)*begin++;
-        hash += (hash << 1) + (hash << 4) + (hash << 5) +
-                (hash << 7) + (hash << 8) + (hash << 40);
+        hash += (hash << 1) + (hash << 4) + (hash << 5) + (hash << 7) +
+                (hash << 8) + (hash << 40);
     }
     return hash;
 }

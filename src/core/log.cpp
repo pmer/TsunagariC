@@ -29,7 +29,7 @@
 
 #include "core/client-conf.h"
 #include "core/window.h"
-#include "os/cstdio.h"
+#include "os/c.h"
 #include "os/mutex.h"
 #include "os/os.h"
 #include "util/algorithm.h"

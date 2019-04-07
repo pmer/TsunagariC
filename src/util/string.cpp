@@ -26,8 +26,7 @@
 
 #include "util/string.h"
 
-#include "os/cstdio.h"
-#include "os/cstring.h"
+#include "os/c.h"
 
 NullTerminatedString::NullTerminatedString(String& s) : s(s) {
     s.push_back('\0');

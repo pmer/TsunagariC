@@ -25,15 +25,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "string2.h"
+#include "util/string2.h"
 
-#include <ctype.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-
+#include "os/c.h"
 #include "os/os.h"
-
 #include "util/int.h"
 #include "util/math2.h"
 #include "util/string-view.h"
@@ -52,7 +47,7 @@ bool isInteger(StringView s) {
     for (size_t i = 0; i < s.size; i++) {
         char c = s.data[i];
         if (state == space) {
-            if (isspace(c)) continue;
+            if (c == ' ') continue;
             else state++;
         }
         if (state == sign) {
@@ -60,7 +55,7 @@ bool isInteger(StringView s) {
             if (c == '-') continue;
         }
         if (state == digit) {
-            if (isdigit(c)) continue;
+            if ('0' <= c && c <= '9') continue;
             else return false;
         }
     }
@@ -83,20 +78,20 @@ bool isDecimal(StringView s) {
         char c = s.data[i];
         switch (state) {
         case space:
-            if (isspace(c)) continue;
+            if (c == ' ') continue;
             else state++;
         case sign:
             state++;
             if (c == '-') continue;
         case digit:
-            if (isdigit(c)) continue;
+            if ('0' <= c && c <= '9') continue;
             else state++;
         case dot:
             state++;
             if (c == '.') continue;
             else return false;
         case digit2:
-            if (isdigit(c)) continue;
+            if ('0' <= c && c <= '9') continue;
             else return false;
         }
     }
@@ -123,7 +118,7 @@ bool isRanges(StringView s) {
             state++;
             if (c == '-' || c == '+') break;
         case digit:
-            if (isdigit(c)) break;
+            if ('0' <= c && c <= '9') break;
             state++;
         case dash:
             state++;
@@ -144,6 +139,14 @@ bool isRanges(StringView s) {
         }
     }
     return true;
+}
+
+static inline char tolower(char c) {
+    if ('A' <= c && c <= 'Z') {
+        return c + 'a' - 'A';
+    } else {
+        return c;
+    }
 }
 
 bool iequals(StringView a, StringView b) {

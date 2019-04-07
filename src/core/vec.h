@@ -28,7 +28,7 @@
 #ifndef SRC_CORE_VEC_H_
 #define SRC_CORE_VEC_H_
 
-#include "os/cmath.h"
+#include "os/c.h"
 
 /**
  * Virtual integer coordinate.

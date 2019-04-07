@@ -27,7 +27,7 @@
 
 #include "util/random.h"
 
-#include "os/cstdlib.h"
+#include "os/c.h"
 #include "util/int.h"
 
 int randInt(int min, int max) {

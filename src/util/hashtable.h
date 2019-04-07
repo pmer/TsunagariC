@@ -49,7 +49,7 @@
 #ifndef SRC_UTIL_HASHTABLE_H_
 #define SRC_UTIL_HASHTABLE_H_
 
-#include "os/cmath.h"
+#include "os/c.h"
 #include "util/algorithm.h"
 #include "util/assert.h"
 #include "util/int.h"

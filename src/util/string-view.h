@@ -27,7 +27,7 @@
 #ifndef SRC_UTIL_STRING_VIEW_H_
 #define SRC_UTIL_STRING_VIEW_H_
 
-#include "os/cstring.h"
+#include "os/c.h"
 #include "util/int.h"
 #include "util/optional.h"
 

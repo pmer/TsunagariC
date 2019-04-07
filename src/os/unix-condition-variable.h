@@ -27,27 +27,9 @@
 #ifndef SRC_OS_UNIX_CONDITION_VARIBLE_H_
 #define SRC_OS_UNIX_CONDITION_VARIBLE_H_
 
+#include "os/c.h"
 #include "os/mutex.h"
 #include "util/assert.h"
-
-extern "C" {
-#define __PTHREAD_COND_SIZE__ 40
-#define _PTHREAD_COND_SIG_init 0x3CB0B1BB
-#define PTHREAD_COND_INITIALIZER      \
-    {                                 \
-        _PTHREAD_COND_SIG_init, { 0 } \
-    }
-
-struct pthread_cond_t {
-    long __sig;
-    char __opaque[__PTHREAD_COND_SIZE__];
-};
-
-int pthread_cond_destroy(pthread_cond_t*);
-int pthread_cond_signal(pthread_cond_t*);
-int pthread_cond_broadcast(pthread_cond_t*);
-int pthread_cond_wait(pthread_cond_t*, pthread_mutex_t*);
-}
 
 class ConditionVariable {
  public:

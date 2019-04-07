@@ -28,7 +28,7 @@
 #include "core/window.h"
 
 #include "core/world.h"
-#include "os/cstdlib.h"
+#include "os/c.h"
 
 GameWindow::GameWindow() : keysDown(KB_SIZE) {}
 

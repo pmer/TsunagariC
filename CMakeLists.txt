@@ -154,20 +154,16 @@ target_sources(tsunagari
 )
 
 target_sources(tsunagari
-    PRIVATE src/nbcl/nbcl.cpp
-    PRIVATE src/nbcl/nbcl.h
-)
-
-target_sources(tsunagari
+    PUBLIC  src/os/c.h
     PUBLIC  src/os/chrono.h
-	PUBLIC  src/os/cstdlib.h
+    PUBLIC  src/os/mapped-file.h
+    PUBLIC  src/os/mutex.h
+    PUBLIC  src/os/thread.h
     PUBLIC  src/os/os.h
 )
 target_sources(pack-tool
+    PRIVATE src/os/c.h
     PRIVATE src/os/condition-variable.h
-	PRIVATE src/os/cmath.h
-	PRIVATE src/os/cstdio.h
-	PRIVATE src/os/cstring.h
 	PRIVATE src/os/mapped-file.h
     PRIVATE src/os/mutex.h
     PUBLIC  src/os/os.h
@@ -178,15 +174,15 @@ if (WIN32)
     target_sources(tsunagari
         PRIVATE src/os/windows.cpp
         PUBLIC  src/os/windows.h
-		PUBLIC  src/os/windows-cstdlib.h
+        PRIVATE src/os/windows-c.cpp
+        PUBLIC  src/os/windows-c.h
+        PRIVATE src/os/windows-mapped-file.cpp
+        PRIVATE src/os/windows-mapped-file.h
     )
     target_sources(pack-tool
+        PRIVATE src/os/windows-c.cpp
+        PRIVATE src/os/windows-c.h
         PRIVATE src/os/windows-condition-variable.h
-		PRIVATE src/os/windows-cmath.h
-		PRIVATE src/os/windows-cstdio.cpp
-		PRIVATE src/os/windows-cstdio.h
-		PRIVATE src/os/windows-cstring.cpp
-		PRIVATE src/os/windows-cstring.h
 		PRIVATE src/os/windows-mapped-file.cpp
 		PRIVATE src/os/windows-mapped-file.h
         PRIVATE src/os/windows-mutex.h
@@ -199,19 +195,24 @@ elseif(APPLE)
     target_sources(tsunagari
         PRIVATE src/os/mac-gui.mm
         PUBLIC  src/os/mac-gui.h
+        PUBLIC  src/os/mac-c.h
         PRIVATE src/os/unix-chrono.cpp
+        PRIVATE src/os/unix-mapped-file.cpp
+        PUBLIC  src/os/unix-mapped-file.h
+        PUBLIC  src/os/unix-mutex.h
+        PUBLIC  src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
         PUBLIC  src/os/unix.h
     )
     target_sources(pack-tool
         PRIVATE src/os/unix-condition-variable.h
-        PRIVATE src/os/unix-cstdio.h
-        PRIVATE src/os/unix-cstdlib.h
-        PRIVATE src/os/unix-cstring.h
+        PRIVATE src/os/mac-c.h
+        PRIVATE src/os/unix-mapped-file.cpp
+        PRIVATE src/os/unix-mapped-file.h
         PRIVATE src/os/unix-mutex.h
         PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
-        PUBLIC  src/os/unix.h
+        PRIVATE src/os/unix.h
     )
 else()
     target_sources(tsunagari

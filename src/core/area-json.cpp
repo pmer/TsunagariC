@@ -39,7 +39,7 @@
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"
-#include "os/cmath.h"
+#include "os/c.h"
 #include "util/assert.h"
 #include "util/int.h"
 #include "util/move.h"

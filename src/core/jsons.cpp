@@ -30,9 +30,12 @@
 #include "rapidjson/reader.h"
 
 // Skip later headers that conflict with ones that rapidjson includes.
-#define SRC_OS_UNIX_CSTRING_H_
+// clang-format off
+#define SRC_OS_MAC_C_H_
 #define SRC_UTIL_INT_H_
 #define SRC_UTIL_NEW_H_
+#include <math.h>
+// clang-format on
 
 #include "core/jsons.h"
 

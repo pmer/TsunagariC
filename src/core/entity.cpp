@@ -35,7 +35,7 @@
 #include "core/log.h"
 #include "core/resources.h"
 #include "core/world.h"
-#include "os/cmath.h"
+#include "os/c.h"
 #include "util/assert.h"
 #include "util/math2.h"
 #include "util/move.h"

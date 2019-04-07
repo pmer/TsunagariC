@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** math.h                        **
+** c.h                           **
 ** Copyright 2019 Paul Merrill   **
 **********************************/
 
@@ -24,13 +24,15 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_MATH_H_
-#define SRC_OS_MATH_H_
+#ifndef SRC_OS_C_H_
+#define SRC_OS_C_H_
 
 #ifdef _WIN32
-#    include "os/windows-cmath.h"
+#    include "os/windows-c.h"
+#elif defined(__APPLE__)
+#    include "os/mac-c.h"
 #else
-#    include "os/unix-cmath.h"
+#    error Not implemented yet
 #endif
 
-#endif  // SRC_OS_MATH_H_
+#endif  // SRC_OS_C_H_

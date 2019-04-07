@@ -24,8 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "os/cstdio.h"
-#include "os/cstring.h"
+#include "os/c.h"
 #include "os/mutex.h"
 #include "os/os.h"
 #include "pack/pack-reader.h"

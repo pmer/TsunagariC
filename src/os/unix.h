@@ -27,31 +27,4 @@
 #ifndef SRC_OS_UNIX_H_
 #define SRC_OS_UNIX_H_
 
-#include "util/int.h"
-#include "util/optional.h"
-#include "util/string-view.h"
-#include "util/string.h"
-
-class MappedFile {
- public:
-    static Optional<MappedFile> fromPath(String& path) noexcept;
-    static Optional<MappedFile> fromPath(StringView path) noexcept;
-
-    MappedFile() noexcept;
-    MappedFile(MappedFile&& other) noexcept;
-    MappedFile(const MappedFile& other) = delete;
-    MappedFile(char* map, size_t len) noexcept;
-    ~MappedFile() noexcept;
-
-    MappedFile& operator=(MappedFile&& other) noexcept;
-
-    template<typename T> const T at(size_t offset) const noexcept {
-        return reinterpret_cast<T>(map + offset);
-    }
-
- private:
-    char* map;
-    size_t len;
-};
-
 #endif  // SRC_OS_UNIX_H_

@@ -26,7 +26,7 @@
 
 #include "pack/pack-reader.h"
 
-#include "os/cstring.h"
+#include "os/c.h"
 #include "os/mapped-file.h"
 #include "util/hashtable.h"
 #include "util/int.h"

@@ -24,7 +24,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "os/cstdio.h"
+#include "os/c.h"
 #include "os/mutex.h"
 #include "pack/pool.h"
 #include "pack/ui.h"

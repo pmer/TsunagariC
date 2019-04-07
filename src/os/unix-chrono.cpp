@@ -25,24 +25,9 @@
 // **********
 
 #include "os/chrono.h"
+#include "os/mac-c.h"
 #include "util/assert.h"
 #include "util/int.h"
-
-extern "C" {
-    struct timespec {
-        time_t tv_sec;
-        long tv_nsec;
-
-    };
-    enum clockid_t {
-        CLOCK_UPTIME_RAW = 8,
-    };
-    int clock_gettime(clockid_t clock_id, struct timespec *tp) noexcept;
-    int nanosleep(const struct timespec *rqtp, struct timespec *rmtp) noexcept;
-    extern int * __error(void) noexcept;
-#define errno (*__error())
-#define EINTR 4
-}
 
 TimePoint SteadyClock::now() noexcept {
     struct timespec tp;

@@ -28,7 +28,7 @@
 
 #    include "util/assert.h"
 
-#    include "os/cstdio.h"
+#    include "os/c.h"
 
 void
 assert__(const char* func, const char* file, int line, const char* expr) {

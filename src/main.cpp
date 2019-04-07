@@ -33,7 +33,7 @@
 #include "core/window.h"
 #include "core/world.h"
 #include "data/data-world.h"
-#include "os/cstdlib.h"
+#include "os/c.h"
 #include "util/int.h"
 
 #ifdef _WIN32

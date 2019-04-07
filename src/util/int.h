@@ -27,6 +27,10 @@
 #ifndef SRC_UTIL_INT_H_
 #define SRC_UTIL_INT_H_
 
+typedef signed char int8_t;
+typedef signed short int16_t;
+typedef signed int int32_t;
+typedef signed long long int64_t;
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -38,8 +42,11 @@ typedef uint64_t time_t;
 typedef long time_t;
 #endif
 
-#ifndef _WIN32
+#ifdef _WIN32
+typedef signed long long ssize_t;
+#else
 typedef unsigned long size_t;
+typedef signed long ssize_t;
 #endif
 
 typedef size_t uintptr_t;
@@ -49,11 +56,7 @@ static constexpr int UINT_MAX = 0xffffffff;
 static constexpr uint32_t UINT32_MAX = 0xffffffff;
 
 #ifdef __APPLE__
-#ifdef __LP64__
-static constexpr size_t SIZE_T_MAX = 0xffffffffffffffff;
-#else
-static constexpr size_t SIZE_T_MAX = 0xffffffff;
-#endif
+static constexpr size_t SIZE_MAX = 0xffffffffffffffff;
 #endif
 
 #ifdef __APPLE__

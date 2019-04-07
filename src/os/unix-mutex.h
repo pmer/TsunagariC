@@ -27,33 +27,16 @@
 #ifndef SRC_OS_UNIX_MUTEX_H_
 #define SRC_OS_UNIX_MUTEX_H_
 
+#include "os/mac-c.h"
 #include "util/assert.h"
-
-extern "C" {
-#define __PTHREAD_MUTEX_SIZE__ 56
-#define _PTHREAD_MUTEX_SIG_init 0x32AAABA7
-#define PTHREAD_MUTEX_INITIALIZER      \
-    {                                  \
-        _PTHREAD_MUTEX_SIG_init, { 0 } \
-    }
-
-struct pthread_mutex_t {
-    long __sig;
-    char __opaque[__PTHREAD_MUTEX_SIZE__];
-};
-
-int pthread_mutex_destroy(pthread_mutex_t*);
-int pthread_mutex_lock(pthread_mutex_t*);
-int pthread_mutex_unlock(pthread_mutex_t*);
-}
 
 class Mutex {
  public:
     constexpr Mutex() noexcept = default;
-    inline ~Mutex() { pthread_mutex_destroy(&m); }
+    inline ~Mutex() noexcept { pthread_mutex_destroy(&m); }
 
-    inline void lock() { assert_(pthread_mutex_lock(&m) == 0); };
-    inline void unlock() { assert_(pthread_mutex_unlock(&m) == 0); }
+    inline void lock() noexcept { assert_(pthread_mutex_lock(&m) == 0); };
+    inline void unlock() noexcept { assert_(pthread_mutex_unlock(&m) == 0); }
 
     Mutex(const Mutex&) = delete;
     Mutex& operator=(const Mutex&) = delete;

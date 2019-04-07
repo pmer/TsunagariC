@@ -26,7 +26,7 @@
 
 #include "util/string-view.h"
 
-#include "os/cstring.h"
+#include "os/c.h"
 #include "util/fnv.h"
 
 Optional<size_t>

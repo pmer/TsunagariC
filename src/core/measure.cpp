@@ -29,13 +29,18 @@
 #include "core/log.h"
 #include "os/chrono.h"
 
-#ifdef __APPLE__
+//
+// Enable to profile with Xcode Instruments.
+//
+//#define MAKE_MACOS_SIGNPOSTS
+
+#if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
 #    include "util/hashtable.h"
 
 // sys/kdebug_signpost.h
 extern "C" {
-    int kdebug_signpost_start(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
-    int kdebug_signpost_end(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
+int kdebug_signpost_start(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
+int kdebug_signpost_end(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
 }
 
 static uint32_t nextSignpost = 0;
@@ -53,13 +58,13 @@ getSignpost(String description) {
         return nextSignpost++;
     }
 }
-#endif  // __APPLE__
+#endif  // defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
 
 
 struct TimeMeasureImpl {
     String description;
     TimePoint start;
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
     uint32_t signpost;
 #endif
 };
@@ -68,14 +73,14 @@ TimeMeasure::TimeMeasure(String description) {
     impl = new TimeMeasureImpl;
     impl->description = move_(description);
     impl->start = SteadyClock::now();
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
     impl->signpost = getSignpost(impl->description);
     kdebug_signpost_start(impl->signpost, 0, 0, 0, 0);
 #endif
 }
 
 TimeMeasure::~TimeMeasure() {
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
     kdebug_signpost_end(impl->signpost, 0, 0, 0, 0);
 #endif
 
@@ -83,8 +88,7 @@ TimeMeasure::~TimeMeasure() {
 
     Duration elapsed = end - impl->start;
     Log::info("Measure",
-              String() << impl->description << " took "
-                       << ns_to_s_d(elapsed)
+              String() << impl->description << " took " << ns_to_s_d(elapsed)
                        << " seconds");
 
     delete impl;

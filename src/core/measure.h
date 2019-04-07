@@ -27,9 +27,13 @@
 #ifndef SRC_CORE_MEASURE_H_
 #define SRC_CORE_MEASURE_H_
 
+#include "os/chrono.h"
 #include "util/string.h"
 
-struct TimeMeasureImpl;
+//
+// Enable to profile with Xcode Instruments.
+//
+//#define MAKE_MACOS_SIGNPOSTS
 
 class TimeMeasure {
  public:
@@ -37,7 +41,11 @@ class TimeMeasure {
     ~TimeMeasure();
 
  private:
-    TimeMeasureImpl* impl;
+    String description;
+    TimePoint start;
+#if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
+    uint32_t signpost;
+#endif
 };
 
 #endif  // SRC_CORE_MEASURE_H_

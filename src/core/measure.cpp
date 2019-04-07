@@ -27,15 +27,9 @@
 #include "core/measure.h"
 
 #include "core/log.h"
-#include "os/chrono.h"
-
-//
-// Enable to profile with Xcode Instruments.
-//
-//#define MAKE_MACOS_SIGNPOSTS
 
 #if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
-#    include "util/hashtable.h"
+#include "util/hashtable.h"
 
 // sys/kdebug_signpost.h
 extern "C" {
@@ -46,7 +40,7 @@ int kdebug_signpost_end(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
 static uint32_t nextSignpost = 0;
 static Hashmap<String, uint32_t> signposts;
 
-uint32_t
+static uint32_t
 getSignpost(String description) {
     if (signposts.find(description) != signposts.end()) {
         return signposts[description];
@@ -60,36 +54,24 @@ getSignpost(String description) {
 }
 #endif  // defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
 
-
-struct TimeMeasureImpl {
-    String description;
-    TimePoint start;
-#if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
-    uint32_t signpost;
-#endif
-};
-
 TimeMeasure::TimeMeasure(String description) {
-    impl = new TimeMeasureImpl;
-    impl->description = move_(description);
-    impl->start = SteadyClock::now();
+    description = move_(description);
+    start = SteadyClock::now();
 #if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
-    impl->signpost = getSignpost(impl->description);
-    kdebug_signpost_start(impl->signpost, 0, 0, 0, 0);
+    signpost = getSignpost(description);
+    kdebug_signpost_start(signpost, 0, 0, 0, 0);
 #endif
 }
 
 TimeMeasure::~TimeMeasure() {
 #if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
-    kdebug_signpost_end(impl->signpost, 0, 0, 0, 0);
+    kdebug_signpost_end(signpost, 0, 0, 0, 0);
 #endif
 
     TimePoint end = SteadyClock::now();
 
-    Duration elapsed = end - impl->start;
+    Duration elapsed = end - start;
     Log::info("Measure",
-              String() << impl->description << " took " << ns_to_s_d(elapsed)
+              String() << description << " took " << ns_to_s_d(elapsed)
                        << " seconds");
-
-    delete impl;
 }

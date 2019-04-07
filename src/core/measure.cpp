@@ -30,9 +30,13 @@
 #include "os/chrono.h"
 
 #ifdef __APPLE__
-#    include <sys/kdebug_signpost.h>
-
 #    include "util/hashtable.h"
+
+// sys/kdebug_signpost.h
+extern "C" {
+    int kdebug_signpost_start(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
+    int kdebug_signpost_end(uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
+}
 
 static uint32_t nextSignpost = 0;
 static Hashmap<String, uint32_t> signposts;

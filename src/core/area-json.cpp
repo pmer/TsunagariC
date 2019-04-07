@@ -102,7 +102,7 @@ class AreaJSON : public Area {
                    unsigned char& g,
                    unsigned char& b);
 
-    vector<TileType*> gids;
+    Vector<TileType*> gids;
 };
 
 
@@ -352,7 +352,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
         // Handle explicitly declared "non-vanilla" types.
 
         Unique<JSONObject> tilesProperties = obj->objectAt("tileproperties");
-        vector<StringView> tileIds = tilesProperties->names();
+        Vector<StringView> tileIds = tilesProperties->names();
 
         for (auto& id : tileIds) {
             // Must be an object... can't be an int... :)
@@ -412,7 +412,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
     // to worry about it.
 
     // If a Tile is animated, it needs both member frames and a speed.
-    vector<Rc<Image>> framesvec;
+    Vector<Rc<Image>> framesvec;
     Optional<int> frameLen;
 
     if (obj->hasString("flags")) {
@@ -433,7 +433,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
     }
     if (obj->hasString("frames")) {
         String memtemp;
-        vector<String> frames;
+        Vector<String> frames;
 
         memtemp = obj->stringAt("frames");
         frames = splitStr(memtemp, ",");
@@ -857,7 +857,7 @@ AreaJSON::parseExit(StringView dest,
       E.g.:   "babysfirst.area,1,3,0"
     */
 
-    vector<String> strs = splitStr(dest, ",");
+    Vector<String> strs = splitStr(dest, ",");
 
     if (strs.size() != 4) {
         Log::err(descriptor, "exit: Invalid format");
@@ -894,7 +894,7 @@ AreaJSON::parseARGB(StringView str,
                     unsigned char& b) {
     unsigned char* channels[] = {&a, &r, &g, &b};
 
-    vector<String> strs = splitStr(str, ",");
+    Vector<String> strs = splitStr(str, ",");
 
     if (strs.size() != 4) {
         Log::err(descriptor, "invalid ARGB format");

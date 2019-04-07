@@ -61,7 +61,7 @@ class JSONObjectImpl : public JSONObject {
  public:
     virtual ~JSONObjectImpl() override = default;
 
-    vector<StringView> names() final;
+    Vector<StringView> names() final;
 
     bool hasBool(StringView name) final;
     bool hasInt(StringView name) final;
@@ -166,9 +166,9 @@ JSONs::instance() {
     return globalJSONs;
 }
 
-vector<StringView>
+Vector<StringView>
 JSONObjectImpl::names() {
-    vector<StringView> names(get().MemberCount());
+    Vector<StringView> names(get().MemberCount());
     for (auto& property : get()) {
         auto& name = property.name;
         if (name.IsString()) {

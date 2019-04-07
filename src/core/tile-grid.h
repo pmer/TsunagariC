@@ -80,7 +80,7 @@ template<typename T> class TileGrid {
 
  public:
     //! 3-dimensional array of the tiles that make up the grid.
-    vector<T> grid;
+    Vector<T> grid;
 
     //! 3-dimensional length of map.
     ivec3 dim;
@@ -93,7 +93,7 @@ template<typename T> class TileGrid {
     Hashmap<double, int> depth2idx;
 
     //! Maps an index in our map array to a virtual float-point depth.
-    vector<double> idx2depth;
+    Vector<double> idx2depth;
 
     bool loopX, loopY;
 };

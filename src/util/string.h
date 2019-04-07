@@ -44,7 +44,7 @@ class NullTerminatedString {
     String& s;
 };
 
-class String : public vector<char> {
+class String : public Vector<char> {
  public:
     String() = default;
     String(const char* value);

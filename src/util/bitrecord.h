@@ -36,10 +36,10 @@ class BitRecord {
     explicit BitRecord(size_t length);
 
     bool& operator[](size_t idx);
-    vector<size_t> diff(const BitRecord& other);
+    Vector<size_t> diff(const BitRecord& other);
 
  private:
-    vector<bool> states;
+    Vector<bool> states;
 };
 
 #endif  // SRC_CORE_BITRECORD_H_

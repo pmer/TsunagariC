@@ -48,7 +48,7 @@ class DispatchQueueImpl {
     void runTasks();
 
     SafeHeap<TaskContext> tasks;
-    vector<Thread> threads;
+    Vector<Thread> threads;
 };
 
 #endif  // SRC_UTIL_DISPATCH_QUEUE_IMPL_H_

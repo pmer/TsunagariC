@@ -261,7 +261,7 @@ class TileSet {
  private:
     size_t idx(size_t x, size_t y) const;
 
-    vector<TileType*> types;
+    Vector<TileType*> types;
     size_t width, height;
 };
 

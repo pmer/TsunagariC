@@ -42,7 +42,7 @@ bool writeFileVec(StringView path,
                   void** datas) noexcept;
 bool isDir(StringView path) noexcept;
 void makeDirectory(StringView path) noexcept;
-vector<String> listDir(StringView path) noexcept;
+Vector<String> listDir(StringView path) noexcept;
 Optional<String> readFile(StringView path) noexcept;
 
 enum TermColor {

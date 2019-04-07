@@ -84,7 +84,7 @@ class DataArea {
     DataArea& operator=(const DataArea&) = delete;
     DataArea& operator=(DataArea&&) = delete;
 
-    vector<Unique<InProgress>> inProgresses;
+    Vector<Unique<InProgress>> inProgresses;
 };
 
 #endif  // SRC_DATA_DATA_AREA_H_

@@ -90,7 +90,7 @@ class PackWriterImpl : public PackWriter {
     void addBlob(String path, BlobSize size, const void* data);
 
  private:
-    vector<Blob> blobs;
+    Vector<Blob> blobs;
     bool sorted = true;
 };
 
@@ -152,10 +152,10 @@ PackWriterImpl::writeToFile(StringView path) {
                     pathsBlockSize + metadataBlockSize,
     };
 
-    vector<PathOffset> pathOffsetsBlock;
+    Vector<PathOffset> pathOffsetsBlock;
     String pathsBlock;
-    vector<BlobMetadata> metadatasBlock;
-    vector<uint32_t> dataOffsetsBlock;
+    Vector<BlobMetadata> metadatasBlock;
+    Vector<uint32_t> dataOffsetsBlock;
 
     pathOffsetsBlock.reserve(blobCount + 1);
     pathsBlock.reserve(pathsBlockSize);
@@ -186,8 +186,8 @@ PackWriterImpl::writeToFile(StringView path) {
     }
 
     // Build IO vector.
-    vector<uint32_t> writeLengths;
-    vector<void*> writeDatas;
+    Vector<uint32_t> writeLengths;
+    Vector<void*> writeDatas;
 
     writeLengths.reserve(5 + blobCount);
     writeDatas.reserve(5 + blobCount);

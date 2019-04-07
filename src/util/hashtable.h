@@ -353,7 +353,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
     using Bucket = hopscotch::Bucket<KV, NeighborhoodSize>;
     using NeighborhoodBitmap = typename Bucket::NeighborhoodBitmap;
 
-    using BucketsContainer = vector<Bucket>;
+    using BucketsContainer = Vector<Bucket>;
 
     using BucketsIterator = typename BucketsContainer::iterator;
     using ConstBucketIterator = typename BucketsContainer::const_iterator;

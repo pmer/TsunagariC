@@ -269,8 +269,8 @@ int parseInt100(const char* s) {
     return bound(i, 0, 100);
 }
 
-vector<String> splitStr(StringView input, StringView delimiter) {
-    vector<String> strlist;
+Vector<String> splitStr(StringView input, StringView delimiter) {
+    Vector<String> strlist;
     size_t i = 0;
 
     for (Optional<size_t> pos = input.find(delimiter);
@@ -286,15 +286,15 @@ vector<String> splitStr(StringView input, StringView delimiter) {
     return strlist;
 }
 
-Optional<vector<int>> parseRanges(StringView format) {
-    vector<int> ints;
+Optional<Vector<int>> parseRanges(StringView format) {
+    Vector<int> ints;
     for (StringView range : splitStr(format, ",")) {
         Optional<size_t> dash = range.find("-");
 
         if (!dash) {
             Optional<int> i = parseInt(range);
             if (!i) {
-                return Optional<vector<int>>();
+                return Optional<Vector<int>>();
             }
 
             ints.push_back(*i);
@@ -308,13 +308,13 @@ Optional<vector<int>> parseRanges(StringView format) {
             Optional<int> beg = parseInt(rngbeg);
             Optional<int> end = parseInt(rngend);
             if (!beg || !end) {
-                return Optional<vector<int>>();
+                return Optional<Vector<int>>();
             }
 
             int beg_ = *beg;
             int end_ = *end;
             if (beg_ > end_) {
-                return Optional<vector<int>>();
+                return Optional<Vector<int>>();
             }
 
             for (int i = beg_; i <= end_; i++) {
@@ -322,5 +322,5 @@ Optional<vector<int>> parseRanges(StringView format) {
             }
         }
     }
-    return Optional<vector<int>>(move_(ints));
+    return Optional<Vector<int>>(move_(ints));
 }

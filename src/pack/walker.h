@@ -34,6 +34,6 @@
 // Recursively walk the file system under the following paths, calling op on
 // each regular file (non-directory) found. Uses one thread per logical core, so
 // op can be called multiple times in parallel.
-void walk(vector<StringView> paths, Function<void(StringView)> op);
+void walk(Vector<StringView> paths, Function<void(StringView)> op);
 
 #endif  // SRC_PACK_WALKER_H_

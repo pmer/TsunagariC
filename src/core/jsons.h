@@ -40,7 +40,7 @@ class JSONObject {
  public:
     virtual ~JSONObject() = default;
 
-    virtual vector<StringView> names() = 0;
+    virtual Vector<StringView> names() = 0;
 
     virtual bool hasBool(StringView name) = 0;
     virtual bool hasInt(StringView name) = 0;

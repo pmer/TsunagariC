@@ -68,7 +68,7 @@ class Animation {
      * @param frameTime length of time in milliseconds that each frame
      *        will display for
      */
-    Animation(vector<Rc<Image>> frames, time_t frameTime);
+    Animation(Vector<Rc<Image>> frames, time_t frameTime);
 
     /**
      * Starts the animation over.
@@ -98,7 +98,7 @@ class Animation {
 
  private:
     /** List of images in animation. */
-    vector<Rc<Image>> frames;
+    Vector<Rc<Image>> frames;
 
     /** Length of each frame in animation in milliseconds. */
     time_t frameTime;

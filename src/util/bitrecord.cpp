@@ -38,9 +38,9 @@ bool& BitRecord::operator[](size_t idx) {
     return states[idx];
 }
 
-vector<size_t>
+Vector<size_t>
 BitRecord::diff(const BitRecord& other) {
-    vector<size_t> changes;
+    Vector<size_t> changes;
 
     for (size_t i = 0; i < states.size(); i++) {
         if (states[i] != other.states[i]) {

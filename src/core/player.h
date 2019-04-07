@@ -65,7 +65,7 @@ class Player : public Character {
 
     //! Stack storing depressed keyboard keys in the form of movement
     //! vectors.
-    vector<ivec2> movements;
+    Vector<ivec2> movements;
 };
 
 #endif  // SRC_CORE_PLAYER_H_

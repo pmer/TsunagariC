@@ -370,9 +370,9 @@ Entity::processPhases(Unique<JSONObject> phases, TiledImage& tiles) {
     return true;
 }
 
-vector<int>
+Vector<int>
 intArrayToVector(Unique<JSONArray> array) {
-    vector<int> v;
+    Vector<int> v;
     for (size_t i = 0; i < array->size(); i++) {
         if (array->isUnsigned(i)) {
             v.push_back(array->intAt(i));
@@ -407,8 +407,8 @@ Entity::processPhase(StringView name,
         }
         double fps = phase->doubleAt("speed");
 
-        vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
-        vector<Rc<Image>> images;
+        Vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
+        Vector<Rc<Image>> images;
         for (auto it = frames.begin(); it != frames.end(); it++) {
             int i = *it;
             if (i < 0 || (int)tiles.size() < i) {

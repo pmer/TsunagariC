@@ -50,7 +50,7 @@ class PackReader {
     virtual BlobSize getBlobSize(BlobIndex index) const = 0;
     virtual void* getBlobData(BlobIndex index) = 0;
 
-    virtual vector<void*> getBlobDatas(vector<BlobIndex> indicies) = 0;
+    virtual Vector<void*> getBlobDatas(Vector<BlobIndex> indicies) = 0;
 };
 
 #endif  // SRC_PACK_PACK_READER_H_

@@ -45,10 +45,10 @@ class PoolImpl : public Pool {
     size_t workerLimit;
 
     size_t numWorkers;
-    vector<Thread> workers;
+    Vector<Thread> workers;
 
     // Empty jobs are the signal to quit.
-    vector<Function<void()>> jobs;
+    Vector<Function<void()>> jobs;
 
     int jobsRunning;
 

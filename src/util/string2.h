@@ -59,13 +59,13 @@ Optional<double> parseDouble(StringView s);
 int parseInt100(const char* s);
 
 //! Split a string by a delimiter.
-vector<String> splitStr(StringView str, StringView delimiter);
+Vector<String> splitStr(StringView str, StringView delimiter);
 
 /**
  * Parse ranges of integers separated by commas.
  * Can take things such as "5-7,2,12-18".
  */
-Optional<vector<int>> parseRanges(StringView format);
+Optional<Vector<int>> parseRanges(StringView format);
 
 Optional<String> slurp(String& path);
 Optional<String> slurp(StringView path);

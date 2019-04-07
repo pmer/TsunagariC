@@ -76,7 +76,7 @@ addFile(CreateArchiveContext& ctx, StringView path) {
 }
 
 static bool
-createArchive(StringView archivePath, vector<StringView> paths) {
+createArchive(StringView archivePath, Vector<StringView> paths) {
     CreateArchiveContext ctx;
     ctx.pack = PackWriter::make();
 
@@ -150,12 +150,12 @@ extractArchive(StringView archivePath) {
     Unique<PackReader> pack = PackReader::fromFile(archivePath);
 
     if (pack) {
-        vector<PackReader::BlobIndex> blobIndicies;
+        Vector<PackReader::BlobIndex> blobIndicies;
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             blobIndicies.push_back(i);
         }
 
-        vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
+        Vector<void*> blobDatas = pack->getBlobDatas(blobIndicies);
 
         for (PackReader::BlobIndex i = 0; i < pack->size(); i++) {
             StringView blobPath = pack->getBlobPath(i);
@@ -196,7 +196,7 @@ main(int argc, char* argv[]) {
     }
 
     StringView command = argv[1];
-    vector<StringView> args;
+    Vector<StringView> args;
 
     for (int i = 2; i < argc; i++) {
         args.push_back(argv[i]);

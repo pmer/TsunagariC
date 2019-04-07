@@ -64,7 +64,7 @@ template<class T> class SafeHeap {
     }
 
  private:
-    vector<T> q;
+    Vector<T> q;
     Mutex m;
     ConditionVariable c;
     bool alive;

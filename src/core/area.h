@@ -160,8 +160,8 @@ class Area {
     Player* player;
     uint32_t colorOverlayARGB;
 
-    vector<Rc<Character>> characters;
-    vector<Rc<Overlay>> overlays;
+    Vector<Rc<Character>> characters;
+    Vector<Rc<Overlay>> overlays;
 
     TileGrid<Tile> grid;
 

@@ -70,7 +70,7 @@ class PackReaderImpl : public PackReader {
     BlobSize getBlobSize(BlobIndex index) const;
     void* getBlobData(BlobIndex index);
 
-    vector<void*> getBlobDatas(vector<BlobIndex> indicies);
+    Vector<void*> getBlobDatas(Vector<BlobIndex> indicies);
 
  public:
     void constructLookups();
@@ -170,9 +170,9 @@ PackReaderImpl::getBlobData(PackReader::BlobIndex index) {
     return file.at<void*>(dataOffsets[index]);
 }
 
-vector<void*>
-PackReaderImpl::getBlobDatas(vector<BlobIndex> indicies) {
-    vector<void*> datas;
+Vector<void*>
+PackReaderImpl::getBlobDatas(Vector<BlobIndex> indicies) {
+    Vector<void*> datas;
 
     for (BlobIndex i : indicies) {
         datas.push_back(file.at<void*>(dataOffsets[i]));

@@ -37,7 +37,7 @@ Animation::Animation(Rc<Image> frame)
     frames.push_back(move_(frame));
 }
 
-Animation::Animation(vector<Rc<Image>> frames, time_t frameTime)
+Animation::Animation(Vector<Rc<Image>> frames, time_t frameTime)
         : frames(move_(frames)),
           frameTime(frameTime),
           cycleTime(1),

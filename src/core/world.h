@@ -165,7 +165,7 @@ class World {
     bool userPaused;
     int paused;
 
-    vector<BitRecord> keyStates;
+    Vector<BitRecord> keyStates;
 };
 
 #endif  // SRC_CORE_WORLD_H_

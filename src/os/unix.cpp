@@ -73,11 +73,11 @@ makeDirectory(StringView path) noexcept {
     return makeDirectory(path_);
 }
 
-vector<String>
+Vector<String>
 listDir(String& path) noexcept {
     DIR* dir = nullptr;
     struct dirent* entry = nullptr;
-    vector<String> names;
+    Vector<String> names;
 
     if ((dir = opendir(path.null())) == nullptr) {
         return names;
@@ -105,7 +105,7 @@ listDir(String& path) noexcept {
     return names;
 }
 
-vector<String>
+Vector<String>
 listDir(StringView path) noexcept {
     String path_(path);
     return listDir(path_);
@@ -140,7 +140,7 @@ writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas) noex
     }
 
     ssize_t total = 0;
-    vector<iovec> ios;
+    Vector<iovec> ios;
 
     ios.reserve(count);
     for (size_t i = 0; i < count; i++) {

@@ -268,7 +268,7 @@ void
 World::restoreKeys() {
     BitRecord now = GameWindow::instance().getKeysDown();
     BitRecord then = keyStates.back();
-    vector<size_t> diffs = now.diff(then);
+    Vector<size_t> diffs = now.diff(then);
 
     keyStates.pop_back();
 

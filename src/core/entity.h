@@ -191,8 +191,8 @@ class Entity {
     //!  e.g.: ["step"] = "sounds/player_step.oga"
     Hashmap<String, String> soundPaths;
 
-    vector<OnTickFn> onTickFns;
-    vector<OnTurnFn> onTurnFns;
+    Vector<OnTickFn> onTickFns;
+    Vector<OnTurnFn> onTurnFns;
 };
 
 #endif  // SRC_CORE_ENTITY_H_

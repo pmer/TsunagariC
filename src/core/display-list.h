@@ -44,7 +44,7 @@ struct DisplayList {
     rvec2 scroll;
     rvec2 size;
 
-    vector<DisplayItem> items;
+    Vector<DisplayItem> items;
 
     uint32_t colorOverlayARGB;
     bool paused;  // TODO: Move to colorOverlay & overlay.

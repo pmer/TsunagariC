@@ -85,7 +85,7 @@ void Cache<T>::lifetimePut(StringView name, T data) {
 template<class T>
 void Cache<T>::garbageCollect() {
     time_t now = World::instance().time();
-    vector<String> dead;
+    Vector<String> dead;
     for (auto it = map.begin(); it != map.end(); it++) {
         StringView name = it.key();
         CacheEntry& cache = it.value();

@@ -1,7 +1,11 @@
 # TsunagariC Tile Engine
 
-![MIT Licensed](https://img.shields.io/github/license/pmer/TsunagariC.svg)
-[![Code Climate](https://codeclimate.com/github/pmer/TsunagariC/badges/gpa.svg)](https://codeclimate.com/github/pmer/TsunagariC)
+| BUILD   | STATUS                                                                                                                                      |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows | [![Appveyor](https://ci.appveyor.com/api/projects/status/github/pmer/TsunagariC?svg=true)](https://ci.appveyor.com/project/pmer/TsunagariC) |
+| macOS   | [![TravisCI](https://api.travis-ci.com/pmer/TsunagariC.svg)](https://travis-ci.com/pmer/TsunagariC)                                         |
+| Linux   | [![CircleCI](https://circleci.com/gh/pmer/TsunagariC.svg?style=svg)](https://circleci.com/gh/pmer/TsunagariC)                               |
+
 [![LoC](https://tokei.rs/b1/github/pmer/TsunagariC)](https://github.com/Aaronepower/tokei)
 
 TsunagariC is a tiling game engine inspired by the cult classic game Yume

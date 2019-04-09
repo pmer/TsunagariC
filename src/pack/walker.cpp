@@ -43,7 +43,9 @@ walkPath(WalkContext& ctx, StringView path) noexcept {
         for (auto& name : names) {
             String child;
             child << path << dirSeparator << name;
-            ctx.pool->schedule([&ctx, child] { walkPath(ctx, child); });
+            ctx.pool->schedule([&ctx, child = move_(child)] {
+                walkPath(ctx, child);
+            });
         }
     }
     else {

@@ -83,7 +83,6 @@ namespace function {
 
     template<class F, class R, class... ArgTypes>
     void func<F, R(ArgTypes...)>::destroyDeallocate() noexcept {
-        f.~F();
         delete this;
     }
 

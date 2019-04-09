@@ -27,10 +27,12 @@
 #ifndef SRC_OS_C_H_
 #define SRC_OS_C_H_
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #    include "os/windows-c.h"
 #elif defined(__APPLE__)
 #    include "os/mac-c.h"
+#elif defined(__linux__)
+#    include "os/linux-c.h"
 #else
 #    error Not implemented yet
 #endif

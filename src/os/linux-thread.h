@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** unix-thread.h                 **
+** linux-thread.h                **
 ** Copyright 2019 Paul Merrill   **
 **********************************/
 
@@ -24,8 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_UNIX_THREAD_H_
-#define SRC_OS_UNIX_THREAD_H_
+#ifndef SRC_OS_LINUX_THREAD_H_
+#define SRC_OS_LINUX_THREAD_H_
 
 #include "os/c.h"
 #include "os/thread.h"
@@ -59,14 +59,14 @@ class Thread {
         t = 0;
     }
     static inline unsigned hardware_concurrency() noexcept {
-        unsigned n;
-        int mib[2] = {CTL_HW, HW_NCPU};
-        size_t s = sizeof(n);
-        sysctl(mib, 2, &n, &s, 0, 0);
-        return n;
+        long result = sysconf(_SC_NPROCESSORS_ONLN);
+        if (result < 0) {
+            return 0;
+        }
+        return static_cast<unsigned>(result);
     }
 
     pthread_t t = 0;
 };
 
-#endif  // SRC_OS_UNIX_THREAD_H_
+#endif  // SRC_OS_LINUX_THREAD_H_

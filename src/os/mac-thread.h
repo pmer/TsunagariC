@@ -1,6 +1,6 @@
 /**********************************
 ** Tsunagari Tile Engine         **
-** unix-mutex.h                  **
+** macos-thread.h                **
 ** Copyright 2019 Paul Merrill   **
 **********************************/
 
@@ -24,24 +24,49 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_UNIX_MUTEX_H_
-#define SRC_OS_UNIX_MUTEX_H_
+#ifndef SRC_OS_MAC_THREAD_H_
+#define SRC_OS_MAC_THREAD_H_
 
 #include "os/c.h"
+#include "os/thread.h"
 #include "util/assert.h"
+#include "util/function.h"
+#include "util/int.h"
+#include "util/move.h"
 
-class Mutex {
+static void*
+run(void* f) noexcept {
+    Function<void()>* fun = reinterpret_cast<Function<void()>*>(f);
+    (*fun)();
+    return nullptr;
+}
+
+class Thread {
  public:
-    constexpr Mutex() noexcept = default;
-    inline ~Mutex() noexcept { pthread_mutex_destroy(&m); }
+    inline explicit Thread(Function<void()> f) noexcept {
+        Function<void()>* fun = new Function<void()>(move_(f));
+        assert_(pthread_create(&t, nullptr, run, static_cast<void*>(fun)) == 0);
+    }
+    Thread(Thread&& other) noexcept : t(other.t) { other.t = 0; }
+    inline ~Thread() noexcept { assert_(t == 0); }
 
-    inline void lock() noexcept { assert_(pthread_mutex_lock(&m) == 0); };
-    inline void unlock() noexcept { assert_(pthread_mutex_unlock(&m) == 0); }
+    Thread(const Thread&) = delete;
+    Thread& operator=(const Thread&) = delete;
 
-    Mutex(const Mutex&) = delete;
-    Mutex& operator=(const Mutex&) = delete;
+    inline void join() noexcept {
+        assert_(t != 0);
+        assert_(pthread_join(t, 0) == 0);
+        t = 0;
+    }
+    static inline unsigned hardware_concurrency() noexcept {
+        unsigned n;
+        int mib[2] = {CTL_HW, HW_NCPU};
+        size_t s = sizeof(n);
+        sysctl(mib, 2, &n, &s, 0, 0);
+        return n;
+    }
 
-    pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+    pthread_t t = 0;
 };
 
-#endif  // SRC_OS_UNIX_MUTEX_H_
+#endif  // SRC_OS_MAC_THREAD_H_

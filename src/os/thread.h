@@ -27,10 +27,12 @@
 #ifndef SRC_OS_THREAD_H_
 #define SRC_OS_THREAD_H_
 
-#ifdef _WIN32
-#    include "os/windows-thread.h"
-#else
-#    include "os/unix-thread.h"
+#if defined(_WIN32)
+#include "os/windows-thread.h"
+#elif defined(__APPLE__)
+#include "os/mac-thread.h"
+#elif defined(__linux__)
+#include "os/linux-thread.h"
 #endif
 
 #endif  // SRC_OS_THREAD_H_

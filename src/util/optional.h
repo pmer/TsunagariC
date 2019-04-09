@@ -143,8 +143,9 @@ template<typename T> class Optional {
         return x;
     }
 
-    friend constexpr bool operator==(const Optional<T>& a,
-                                     const Optional<T>& b) noexcept;
+    template<typename S>
+    friend constexpr bool operator==(const Optional<S>& a,
+                                     const Optional<S>& b) noexcept;
 };
 
 template<typename T>

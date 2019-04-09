@@ -173,12 +173,12 @@ target_sources(pack-tool
 
 if (WIN32)
     target_sources(tsunagari
-        PRIVATE src/os/windows.cpp
-        PUBLIC  src/os/windows.h
         PRIVATE src/os/windows-c.cpp
         PUBLIC  src/os/windows-c.h
         PRIVATE src/os/windows-mapped-file.cpp
-        PRIVATE src/os/windows-mapped-file.h
+        PUBLIC  src/os/windows-mapped-file.h
+        PRIVATE src/os/windows.cpp
+        PUBLIC  src/os/windows.h
     )
     target_sources(pack-tool
         PRIVATE src/os/windows-c.cpp
@@ -194,33 +194,41 @@ if (WIN32)
     )
 elseif(APPLE)
     target_sources(tsunagari
+        PUBLIC  src/os/mac-c.h
         PRIVATE src/os/mac-gui.mm
         PUBLIC  src/os/mac-gui.h
-        PUBLIC  src/os/mac-c.h
+        PUBLIC  src/os/mac-thread.h
         PRIVATE src/os/unix-chrono.cpp
         PRIVATE src/os/unix-mapped-file.cpp
         PUBLIC  src/os/unix-mapped-file.h
         PUBLIC  src/os/unix-mutex.h
-        PUBLIC  src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
     )
     target_sources(pack-tool
-        PRIVATE src/os/unix-condition-variable.h
         PRIVATE src/os/mac-c.h
+        PRIVATE src/os/mac-thread.h
+        PRIVATE src/os/unix-condition-variable.h
         PRIVATE src/os/unix-mapped-file.cpp
         PRIVATE src/os/unix-mapped-file.h
         PRIVATE src/os/unix-mutex.h
-        PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
     )
 else()
     target_sources(tsunagari
+        PUBLIC  src/os/linux-c.h
+        PUBLIC  src/os/linux-thread.h
+        PRIVATE src/os/unix-chrono.cpp
+        PRIVATE src/os/unix-mapped-file.cpp
+        PUBLIC  src/os/unix-mutex.h
         PRIVATE src/os/unix.cpp
     )
     target_sources(pack-tool
+        PRIVATE src/os/linux-c.h
+        PRIVATE src/os/linux-thread.h
         PRIVATE src/os/unix-condition-variable.h
+        PRIVATE src/os/unix-mapped-file.cpp
+        PRIVATE src/os/unix-mapped-file.h
         PRIVATE src/os/unix-mutex.h
-        PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
     )
 endif()

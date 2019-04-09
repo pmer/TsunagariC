@@ -31,7 +31,7 @@
 
 // Skip later headers that conflict with ones that rapidjson includes.
 // clang-format off
-#define SRC_OS_MAC_C_H_
+#define SRC_OS_C_H_
 #define SRC_UTIL_INT_H_
 #define SRC_UTIL_NEW_H_
 #include <math.h>

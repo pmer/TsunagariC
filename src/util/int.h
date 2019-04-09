@@ -55,11 +55,13 @@ static constexpr int INT_MAX = 0x7fffffff;
 static constexpr int UINT_MAX = 0xffffffff;
 static constexpr uint32_t UINT32_MAX = 0xffffffff;
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 static constexpr size_t SIZE_MAX = 0xffffffffffffffff;
+#elif defined(__linux__)
+static constexpr size_t SIZE_MAX = __SIZEOF_SIZE_T__;
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__linux__)
 static constexpr double DBL_MAX = __DBL_MAX__;
 #endif
 

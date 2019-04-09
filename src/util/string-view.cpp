@@ -65,10 +65,13 @@ StringView::rfind(char needle) const noexcept {
     if (size == 0) {
         return Optional<size_t>();
     }
-    for (size_t i = size - 1; i >= 0; i--) {
+    for (size_t i = size - 1; i > 0; i--) {
         if (data[i] == needle) {
             return Optional<size_t>(i);
         }
+    }
+    if (data[0] == needle) {
+        return Optional<size_t>(0);
     }
     return Optional<size_t>();
 }

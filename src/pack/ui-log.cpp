@@ -31,11 +31,21 @@
 #include "util/string.h"
 #include "util/unique.h"
 
-static Unique<Pool> pool(Pool::makePool("ui", 1));
+static Pool* pool = nullptr;
 static Mutex mutex;
 static bool scheduled = false;
 static String buf;
 bool verbose = false;
+
+UI::UI() noexcept {
+    assert_(pool == nullptr);
+    pool = Pool::makePool("ui", 1);
+}
+
+UI::~UI() noexcept {
+    delete pool;
+    pool = nullptr;
+}
 
 static void
 flush() noexcept {

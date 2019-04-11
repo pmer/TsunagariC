@@ -32,6 +32,13 @@
 
 extern bool verbose;
 
+// RAII object whose destructor waits for our UI to exit.
+class UI {
+ public:
+    UI() noexcept;
+    ~UI() noexcept;
+};
+
 void uiShowSkippedMissingFile(StringView path) noexcept;
 void uiShowAddedFile(StringView path, size_t size) noexcept;
 void uiShowWritingArchive(StringView arhivePath) noexcept;

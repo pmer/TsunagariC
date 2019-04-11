@@ -65,7 +65,9 @@ class ConditionVariable {
     inline void notifyAll() noexcept { WakeAllConditionVariable(&cv); }
 
     inline void wait(LockGuard& lock) noexcept {
-        assert_(SleepConditionVariableSRW(&cv, &lock.m.m, INFINITE, 0) == 0);
+        BOOL ok = SleepConditionVariableSRW(&cv, &lock.m.m, INFINITE, 0);
+        (void)ok;
+        assert_(ok);  // GetLastError();
     }
 
     CONDITION_VARIABLE cv = CONDITION_VARIABLE_INIT;

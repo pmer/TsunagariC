@@ -33,10 +33,24 @@
 class Mutex {
  public:
     constexpr Mutex() noexcept = default;
-    inline ~Mutex() noexcept { pthread_mutex_destroy(&m); }
 
-    inline void lock() noexcept { assert_(pthread_mutex_lock(&m) == 0); };
-    inline void unlock() noexcept { assert_(pthread_mutex_unlock(&m) == 0); }
+    inline ~Mutex() noexcept {
+        int err = pthread_mutex_destroy(&m);
+        (void)err;
+        assert_(err == 0);
+    }
+
+    inline void lock() noexcept {
+        int err = pthread_mutex_lock(&m);
+        (void)err;
+        assert_(err == 0);
+    };
+
+    inline void unlock() noexcept {
+        int err = pthread_mutex_unlock(&m);
+        (void)err;
+        assert_(err == 0);
+    }
 
     Mutex(const Mutex&) = delete;
     Mutex& operator=(const Mutex&) = delete;

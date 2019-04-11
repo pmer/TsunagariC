@@ -24,14 +24,18 @@
 // IN THE SOFTWARE.
 // **********
 
+#include "os/c.h"
 #include "os/chrono.h"
-#include "os/mac-c.h"
 #include "util/assert.h"
 #include "util/int.h"
 
 TimePoint SteadyClock::now() noexcept {
     struct timespec tp;
-    assert_(clock_gettime(CLOCK_UPTIME_RAW, &tp) == 0);
+
+    int err = clock_gettime(CLOCK_MONOTONIC, &tp);
+    (void)err;
+    assert_(err == 0);
+
     return TimePoint(s_to_ns(tp.tv_sec) + tp.tv_nsec);
 }
 

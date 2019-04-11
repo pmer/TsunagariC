@@ -96,11 +96,18 @@ class Thread {
 
     inline void join() noexcept {
         assert_(id != 0);
-        assert_(WaitForSingleObjectEx(id, INFINITE, false) !=
-                WAIT_FAILED);      // GetLastError();
-        assert_(CloseHandle(id));  // GetLastError();
+
+        DWORD err = WaitForSingleObjectEx(id, INFINITE, false);
+        (void)err;
+        assert_(err != WAIT_FAILED);  // GetLastError();
+
+        BOOL err2 = CloseHandle(id);
+        (void)err;
+        assert_(err2);  // GetLastError();
+
         id = 0;
     }
+
     static inline unsigned hardware_concurrency() noexcept {
         SYSTEM_INFO info;
         GetSystemInfo(&info);

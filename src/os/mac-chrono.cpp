@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** windows-thread.h            **
+** mac-chrono.cpp              **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,40 +24,28 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_WINDOWS_THREAD_H_
-#define SRC_OS_WINDOWS_THREAD_H_
+#include "os/c.h"
+#include "os/chrono.h"
+#include "util/assert.h"
+#include "util/int.h"
 
-#include <sysinfoapi.h>
+TimePoint SteadyClock::now() noexcept {
+    struct timespec tp;
 
-class Thread {
- public:
-    template<class Arg> inline explicit Thread(void (*f)(Arg), Arg arg) {
-        static_assert(sizeof(Arg) == sizeof(void*), "");
-        pthread_create(&t,
-                       nullptr,
-                       reinterpret_cast<void* (*)(void*)>(f),
-                       static_cast<void*>(arg));
+    int err = clock_gettime(CLOCK_UPTIME_RAW, &tp);
+    (void)err;
+    assert_(err == 0);
+
+    return TimePoint(s_to_ns(tp.tv_sec) + tp.tv_nsec);
+}
+
+void SleepFor(Duration d) noexcept {
+    if (d <= 0) {
+        return;
     }
-    Thread(Thread&& other) : t(other.t) { other.t = 0; }
-    inline ~Thread() noexcept { assert_(t == 0); }
-
-    Thread(const Thread&) = delete;
-    Thread& operator=(const Thread&) = delete;
-
-    inline void join() noexcept {
-        assert_(id != 0);
-        assert_(WaitForSingleObjectEx(t, INFINITE, FALSE) !=
-                WAIT_FAILED);        // GetLastError();
-        assert_(CloseHandle(*__t));  // GetLastError();
-        id = 0;
-    }
-    static inline unsigned hardware_concurrency() noexcept {
-        SYSTEM_INFO info;
-        GetSystemInfo(&info);
-        return info.dwNumberOfProcessors;
-    }
-
-    HANDLE id = 0;
-};
-
-#endif  // SRC_OS_WINDOWS_THREAD_H_
+    long long s = ns_to_s(d);
+    timespec ts;
+    ts.tv_sec = static_cast<time_t>(s);
+    ts.tv_nsec = static_cast<long>(d - s_to_ns(s));
+    while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
+}

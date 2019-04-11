@@ -195,10 +195,10 @@ if (WIN32)
 elseif(APPLE)
     target_sources(tsunagari
         PUBLIC  src/os/mac-c.h
+        PRIVATE src/os/mac-chrono.cpp
         PRIVATE src/os/mac-gui.mm
         PUBLIC  src/os/mac-gui.h
         PUBLIC  src/os/mac-thread.h
-        PRIVATE src/os/unix-chrono.cpp
         PRIVATE src/os/unix-mapped-file.cpp
         PUBLIC  src/os/unix-mapped-file.h
         PUBLIC  src/os/unix-mutex.h
@@ -340,7 +340,7 @@ set_target_properties(tsunagari PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(pack-tool PUBLIC cxx_std_14)
 set_target_properties(pack-tool PROPERTIES CXX_EXTENSIONS OFF)
 
-if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
+if(CMAKE_BUILD_TYPE EQUAL Release OR CMAKE_BUILD_TYPE EQUAL RelWithDebInfo OR CMAKE_BUILD_TYPE EQUAL MinSizeRel)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT result)
     if(result)
@@ -349,7 +349,7 @@ if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo O
     endif()
 endif()
 
-if(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
+if(CMAKE_BUILD_TYPE EQUAL Release OR CMAKE_BUILD_TYPE EQUAL MinSizeRel)
     target_compile_definitions(tsunagari PRIVATE NDEBUG)
     target_compile_definitions(pack-tool PRIVATE NDEBUG)
 endif()

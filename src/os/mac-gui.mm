@@ -101,10 +101,12 @@ void macSetWorkingDirectory() noexcept {
     url = CFBundleCopyBundleURL(mainBundle);
     assert_(url);
     
-    assert_(CFURLGetFileSystemRepresentation(url,
+    bool ok = CFURLGetFileSystemRepresentation(url,
                                              true,
                                              pathBytes,
-                                             sizeof(pathBytes)));
+                                             sizeof(pathBytes));
+    (void)ok;
+    assert_(ok);
     
     appPath = [[NSString alloc] initWithBytesNoCopy:pathBytes
                                              length:StringView((char*)pathBytes).size + 1
@@ -112,9 +114,12 @@ void macSetWorkingDirectory() noexcept {
                                        freeWhenDone:false];
     assert_(appPath);
     
-    assert_([[NSFileManager defaultManager] changeCurrentDirectoryPath:appPath]);
+    BOOL ok2 = [[NSFileManager defaultManager] changeCurrentDirectoryPath:appPath];
+    (void)ok2;
+    assert_(ok2);
 
-    assert_(chdir("Contents/Resources") == 0);
+    int err = chdir("Contents/Resources");
+    assert_(err == 0);
 
     [appPath release];
     CFRelease(url);

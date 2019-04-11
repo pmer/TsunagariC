@@ -34,16 +34,32 @@
 class ConditionVariable {
  public:
     inline ConditionVariable() = default;
-    inline ~ConditionVariable() noexcept { pthread_cond_destroy(&cv); }
+
+    inline ~ConditionVariable() noexcept {
+        int err = pthread_cond_destroy(&cv);
+        (void)err;
+        assert_(err == 0);
+    }
 
     ConditionVariable(const ConditionVariable&) = delete;
     ConditionVariable& operator=(const ConditionVariable&) = delete;
 
-    inline void notifyOne() noexcept { pthread_cond_signal(&cv); }
-    inline void notifyAll() noexcept { pthread_cond_broadcast(&cv); }
+    inline void notifyOne() noexcept {
+        int err = pthread_cond_signal(&cv);
+        (void)err;
+        assert_(err == 0);
+    }
+
+    inline void notifyAll() noexcept {
+        int err = pthread_cond_broadcast(&cv);
+        (void)err;
+        assert_(err == 0);
+    }
 
     inline void wait(LockGuard& lock) noexcept {
-        assert_(pthread_cond_wait(&cv, &lock.m.m) == 0);
+        int err = pthread_cond_wait(&cv, &lock.m.m);
+        (void)err;
+        assert_(err == 0);
     }
 
     pthread_cond_t cv = PTHREAD_COND_INITIALIZER;

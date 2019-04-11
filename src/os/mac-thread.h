@@ -45,8 +45,12 @@ class Thread {
  public:
     inline explicit Thread(Function<void()> f) noexcept {
         Function<void()>* fun = new Function<void()>(move_(f));
-        assert_(pthread_create(&t, nullptr, run, static_cast<void*>(fun)) == 0);
+
+        int err = pthread_create(&t, nullptr, run, static_cast<void*>(fun));
+        (void)err;
+        assert_(err == 0);
     }
+
     Thread(Thread&& other) noexcept : t(other.t) { other.t = 0; }
     inline ~Thread() noexcept { assert_(t == 0); }
 
@@ -55,9 +59,14 @@ class Thread {
 
     inline void join() noexcept {
         assert_(t != 0);
-        assert_(pthread_join(t, 0) == 0);
+
+        int err = pthread_join(t, 0);
+        (void)err;
+        assert_(err == 0);
+
         t = 0;
     }
+
     static inline unsigned hardware_concurrency() noexcept {
         unsigned n;
         int mib[2] = {CTL_HW, HW_NCPU};

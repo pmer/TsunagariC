@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** sounds.cpp                       **
-** Copyright 2016-2018 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -35,8 +35,17 @@
 
 void SDL2OpenAudio() {
     // Calling these functions more than once is okay.
-    assert_(SDL_Init(SDL_INIT_AUDIO) != -1);
-    assert_(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) != -1);
+    int err = SDL_Init(SDL_INIT_AUDIO);
+    (void)err;
+    assert_(err == 0);
+
+    err = SDL_Init(SDL_INIT_AUDIO);
+    (void)err;
+    assert_(err == 0);
+    
+    err = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+    (void)err;
+    assert_(err == 0);
 }
 
 static SDL2Sounds* globalSounds = nullptr;
@@ -97,7 +106,10 @@ void SDL2SoundInstance::volume(double volume) {
 
 void SDL2SoundInstance::pan(double pan) {
     auto angle = static_cast<Sint16>(pan * 90);
-    assert_(Mix_SetPosition(channel, angle, 0));
+    
+    int err = Mix_SetPosition(channel, angle, 0);
+    (void)err;
+    assert_(err == 0);
 }
 
 void SDL2SoundInstance::speed(double) {

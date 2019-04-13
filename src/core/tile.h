@@ -262,7 +262,8 @@ class TileSet {
     size_t idx(size_t x, size_t y) const noexcept;
 
     Vector<TileType*> types;
-    size_t width, height;
+    size_t width = 0;
+    size_t height = 0;
 };
 
 #endif  // SRC_CORE_TILE_H_

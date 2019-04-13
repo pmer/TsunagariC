@@ -136,7 +136,7 @@ Log::err(StringView domain, StringView msg) noexcept {
         s << "Error [" << domain << "] - " << chomp(msg);
 
 #ifdef _WIN32
-        wMessageBox("Tsunagari - Error", s.null());
+        wMessageBox("Tsunagari - Error", s);
 #endif
 #ifdef __APPLE__
         macMessageBox(StringView("Tsunagari - Error"), s);
@@ -167,7 +167,7 @@ Log::fatal(StringView domain, StringView msg) noexcept {
     s << "Fatal [" << domain << "] - " << chomp(msg);
 
 #ifdef _WIN32
-    wMessageBox("Tsunagari - Fatal", s.null());
+    wMessageBox("Tsunagari - Fatal", s);
 #endif
 #ifdef __APPLE__
     macMessageBox(StringView("Tsunagari - Fatal"), s);

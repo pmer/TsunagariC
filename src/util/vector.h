@@ -150,7 +150,7 @@ template<typename T>
 inline void
 destruct(T* first, T* last) noexcept {
     for (; first != last; ++first) {
-        (*first).~T();
+        first->~T();
     }
 }
 

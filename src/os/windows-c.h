@@ -70,28 +70,17 @@ typedef unsigned long ULONG_PTR, *PULONG_PTR;
 
 __pragma(pack(push, 8));
 extern "C" {
+
 typedef struct _iobuf {
     void* _Placeholder;
 } FILE;
 
 _ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned _Ix) noexcept;
-}
-__pragma(pack(pop));
 
 #define stdin (__acrt_iob_func(0))
 #define stdout (__acrt_iob_func(1))
 #define stderr (__acrt_iob_func(2))
 
-int __CRTDECL fprintf(FILE* const _Stream,
-                      char const* const _Format,
-                      ...) noexcept;
-int __CRTDECL printf(char const* const _Format, ...) noexcept;
-int __CRTDECL sprintf(char* const _Buffer,
-                      char const* const _Format,
-                      ...) noexcept;
-
-__pragma(pack(push, 8));
-extern "C" {
 typedef __int64 __time64_t;
 
 _ACRTIMP __time64_t __cdecl _time64(__time64_t* _Time) noexcept;
@@ -100,31 +89,11 @@ _ACRTIMP void __cdecl free(void* _Block) noexcept;
 _ACRTIMP _CRTRESTRICT void* __cdecl malloc(size_t _Size) noexcept;
 _ACRTIMP int __cdecl rand() noexcept;
 _ACRTIMP void __cdecl srand(unsigned int _Seed) noexcept;
-}
-__pragma(pack(pop));
 
-static inline time_t __CRTDECL
-time(time_t* _Time) noexcept {
-    return _time64(reinterpret_cast<__time64_t*>(_Time));
-}
-
-__pragma(pack(push, 8));
-extern "C" {
 void* __cdecl memchr(const void* buf, int chr, size_t cnt) noexcept;
 int __cdecl memcmp(void const* dst, void const* src, size_t size) noexcept;
 size_t __cdecl strlen(char const* _Str) noexcept;
-}
-__pragma(pack(pop));
 
-extern "C" {
-void* memmem(const void* haystack,
-             size_t h_sz,
-             const void* needle,
-             size_t n_sz) noexcept;
-}
-
-__pragma(pack(push, 8));
-extern "C" {
 double __cdecl atan2(double _Y, double _X) noexcept;
 _ACRTIMP double __cdecl ceil(double _X) noexcept;
 __inline float __CRTDECL
@@ -135,7 +104,40 @@ double __cdecl cos(double _X) noexcept;
 _ACRTIMP double __cdecl floor(double _X) noexcept;
 double __cdecl sin(double _X) noexcept;
 double __cdecl sqrt(double _X) noexcept;
+
+_ACRTIMP double __cdecl strtod(char const* _String,
+                               char** _EndPtr) noexcept;
+_ACRTIMP long __cdecl strtol(char const* _String,
+                             char** _EndPtr,
+                             int _Radix) noexcept;
+_ACRTIMP unsigned long __cdecl strtoul(char const* _String,
+                                       char** _EndPtr,
+                                       int _Radix) noexcept;
+_ACRTIMP int __cdecl atoi(char const* _String) noexcept;
+
+_ACRTIMP int* __cdecl _errno(void);
+#define errno (*_errno())
 }
 __pragma(pack(pop));
+
+extern "C" {
+void* memmem(const void* haystack,
+             size_t h_sz,
+             const void* needle,
+             size_t n_sz) noexcept;
+}
+
+static inline time_t __CRTDECL
+time(time_t* _Time) noexcept {
+    return _time64(reinterpret_cast<__time64_t*>(_Time));
+}
+
+int __CRTDECL fprintf(FILE* const _Stream,
+                      char const* const _Format,
+                      ...) noexcept;
+int __CRTDECL printf(char const* const _Format, ...) noexcept;
+int __CRTDECL sprintf(char* const _Buffer,
+                      char const* const _Format,
+                      ...) noexcept;
 
 #endif  // SRC_OS_WINDOWS_C_H_

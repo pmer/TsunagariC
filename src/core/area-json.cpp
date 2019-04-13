@@ -239,7 +239,7 @@ AreaJSON::processMapProperties(Unique<JSONObject> obj) noexcept {
 static StringView
 dirname(StringView path) noexcept {
     Optional<size_t> slash = path.rfind('/');
-    return !slash ? "" : path.substr(0, slash + 1);
+    return !slash ? "" : path.substr(0, static_cast<size_t>(slash) + 1);
 }
 
 bool
@@ -550,7 +550,7 @@ AreaJSON::processLayerData(Unique<JSONArray> arr) noexcept {
      [9, 9, 9, ..., 3, 9, 9]
     */
 
-    const int z = grid.dim.z - 1;
+    const size_t z = static_cast<size_t>(grid.dim.z) - 1;
 
     // If we ever allow finding layers out of order.
     // assert_(0 <= z && z < dim.z);
@@ -658,7 +658,7 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
         return true;
     }
 
-    const int z = grid.dim.z - 1;
+    const size_t z = static_cast<size_t>(grid.dim.z) - 1;
 
     // If we ever allow finding layers out of order.
     // assert_(0 <= z && z < dim.z);

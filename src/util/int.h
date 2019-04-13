@@ -61,8 +61,6 @@ static constexpr size_t SIZE_MAX = 0xffffffffffffffff;
 static constexpr size_t SIZE_MAX = __SIZEOF_SIZE_T__;
 #endif
 
-#if defined(__APPLE__) || defined(__linux__)
-static constexpr double DBL_MAX = __DBL_MAX__;
-#endif
+static constexpr double DBL_MAX = 1.7976931348623158e+308;
 
 #endif  // SRC_UTIL_INT_H_

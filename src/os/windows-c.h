@@ -96,10 +96,14 @@ size_t __cdecl strlen(char const* _Str) noexcept;
 
 double __cdecl atan2(double _Y, double _X) noexcept;
 _ACRTIMP double __cdecl ceil(double _X) noexcept;
+#if defined _M_X64
+_ACRTIMP float __cdecl ceilf(float _X) noexcept;
+#else
 __inline float __CRTDECL
 ceilf(float _X) noexcept {
     return (float)ceil(_X);
 }
+#endif
 double __cdecl cos(double _X) noexcept;
 _ACRTIMP double __cdecl floor(double _X) noexcept;
 double __cdecl sin(double _X) noexcept;

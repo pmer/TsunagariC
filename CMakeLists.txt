@@ -27,6 +27,7 @@ option(BUILD_SHARED_LIBS "Build Tsunagari as a shared library")
 
 set(IS_RELEASE "$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>")
 
+
 #
 # Targets
 #
@@ -341,10 +342,37 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${TSUNAGARI_SOURCES} ${P
 #
 
 target_compile_features(tsunagari PUBLIC cxx_std_14)
-set_target_properties(tsunagari PROPERTIES CXX_EXTENSIONS OFF)
-
 target_compile_features(pack-tool PUBLIC cxx_std_14)
+set_target_properties(tsunagari PROPERTIES CXX_EXTENSIONS OFF)
 set_target_properties(pack-tool PROPERTIES CXX_EXTENSIONS OFF)
+
+# Disable C++ exceptions
+if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+    string(APPEND CMAKE_CXX_FLAGS " -fno-exceptions")
+elseif(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+    string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    string(APPEND CMAKE_CXX_FLAGS " /EH")
+endif()
+
+# Disable C++ run-time type information
+if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+    string(APPEND CMAKE_CXX_FLAGS " -fno-rtti")
+elseif(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+    string(REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    string(APPEND CMAKE_CXX_FLAGS " /GR-")
+endif()
+
+# Enable floating point optimizations
+if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+    string(APPEND CMAKE_CXX_FLAGS " -ffast-math")
+elseif(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+    string(APPEND CMAKE_CXX_FLAGS " /fp:fast")
+endif()
+
+# Disable stack canary
+if(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+    string(APPEND CMAKE_CXX_FLAGS " /GS-")
+endif()
 
 include(CheckIPOSupported)
 check_ipo_supported(RESULT result)
@@ -355,7 +383,7 @@ if(result)
         INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
     )
     set_target_properties(pack-tool PROPERTIES
-    INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+        INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
         INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL TRUE
         INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
     )

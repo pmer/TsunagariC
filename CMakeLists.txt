@@ -22,6 +22,12 @@ option(BUILD_SHARED_LIBS "Build Tsunagari as a shared library")
 
 
 #
+# Variables
+#
+
+set(IS_RELEASE "$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>")
+
+#
 # Targets
 #
 
@@ -165,7 +171,7 @@ target_sources(tsunagari
 target_sources(pack-tool
     PRIVATE src/os/c.h
     PRIVATE src/os/condition-variable.h
-	PRIVATE src/os/mapped-file.h
+    PRIVATE src/os/mapped-file.h
     PRIVATE src/os/mutex.h
     PUBLIC  src/os/os.h
     PRIVATE src/os/thread.h
@@ -184,8 +190,8 @@ if (WIN32)
         PRIVATE src/os/windows-c.cpp
         PRIVATE src/os/windows-c.h
         PRIVATE src/os/windows-condition-variable.h
-		PRIVATE src/os/windows-mapped-file.cpp
-		PRIVATE src/os/windows-mapped-file.h
+        PRIVATE src/os/windows-mapped-file.cpp
+        PRIVATE src/os/windows-mapped-file.h
         PRIVATE src/os/windows-mutex.h
         PRIVATE src/os/windows-thread.h
         PRIVATE src/os/windows-types.h
@@ -304,7 +310,7 @@ target_sources(pack-tool
     PRIVATE src/util/assert.h
     PRIVATE src/util/fnv.cpp
     PRIVATE src/util/fnv.h
-	PRIVATE src/util/function.h
+    PRIVATE src/util/function.h
     PRIVATE src/util/hashtable.h
     PUBLIC  src/util/int.h
     PRIVATE src/util/list.h
@@ -340,19 +346,27 @@ set_target_properties(tsunagari PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(pack-tool PUBLIC cxx_std_14)
 set_target_properties(pack-tool PROPERTIES CXX_EXTENSIONS OFF)
 
-if(CMAKE_BUILD_TYPE EQUAL Release OR CMAKE_BUILD_TYPE EQUAL RelWithDebInfo OR CMAKE_BUILD_TYPE EQUAL MinSizeRel)
-    include(CheckIPOSupported)
-    check_ipo_supported(RESULT result)
-    if(result)
-        set_target_properties(tsunagari PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-        set_target_properties(pack-tool PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-    endif()
+include(CheckIPOSupported)
+check_ipo_supported(RESULT result)
+if(result)
+    set_target_properties(tsunagari PROPERTIES
+        INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+        INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL TRUE
+        INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
+    )
+    set_target_properties(pack-tool PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
+        INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL TRUE
+        INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
+    )
 endif()
 
-if(CMAKE_BUILD_TYPE EQUAL Release OR CMAKE_BUILD_TYPE EQUAL MinSizeRel)
-    target_compile_definitions(tsunagari PRIVATE NDEBUG)
-    target_compile_definitions(pack-tool PRIVATE NDEBUG)
-endif()
+target_compile_definitions(tsunagari
+    PRIVATE $<$<BOOL:${IS_RELEASE}>:NDEBUG>
+)
+target_compile_definitions(pack-tool
+    PRIVATE $<$<BOOL:${IS_RELEASE}>:NDEBUG>
+)
 
 
 #

@@ -1,8 +1,9 @@
-/********************************
-** Tsunagari Tile Engine       **
-** os/windows-cstdio.cpp       **
-** Copyright 2019 Paul Merrill **
-********************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** windows-c.cpp                      **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,7 +25,7 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "os/windows-cstdio.h"
+#include "os/windows-c.h"
 
 __pragma(pack(push, 8));
 extern "C" {
@@ -38,33 +39,33 @@ _ACRTIMP int __cdecl __stdio_common_vfprintf(unsigned __int64 _Options,
                                              FILE* _Stream,
                                              char const* _Format,
                                              _locale_t _Locale,
-                                             va_list _ArgList);
+                                             va_list _ArgList) noexcept;
 _ACRTIMP int __cdecl __stdio_common_vsprintf(unsigned __int64 _Options,
                                              char* _Buffer,
                                              size_t _BufferCount,
                                              char const* _Format,
                                              _locale_t _Locale,
-                                             va_list _ArgList);
+                                             va_list _ArgList) noexcept;
 
 #ifdef _WIN64
-#    define _VA_ALIGN 8
-#    define _SLOTSIZEOF(t) ((sizeof(t) + _VA_ALIGN - 1) & ~(_VA_ALIGN - 1))
-#    define _APALIGN(t, ap) (((va_list)0 - (ap)) & (__alignof(t) - 1))
+#define _VA_ALIGN 8
+#define _SLOTSIZEOF(t) ((sizeof(t) + _VA_ALIGN - 1) & ~(_VA_ALIGN - 1))
+#define _APALIGN(t, ap) (((va_list)0 - (ap)) & (__alignof(t) - 1))
 
 void __cdecl __va_start(va_list*, ...);
-#    define __crt_va_start_a(ap, v) \
-        ((void)(__va_start(&ap, &v, _SLOTSIZEOF(v), __alignof(v), &v)))
-#    define __crt_va_arg(ap, t)                                       \
-        ((sizeof(t) > (2 * sizeof(__int64)))                          \
-                 ? **(t**)((ap += sizeof(__int64)) - sizeof(__int64)) \
-                 : *(t*)((ap += _SLOTSIZEOF(t) + _APALIGN(t, ap)) -   \
-                         _SLOTSIZEOF(t)))
-#    define __crt_va_end(ap) ((void)(ap = (va_list)0))
+#define __crt_va_start_a(ap, v) \
+    ((void)(__va_start(&ap, &v, _SLOTSIZEOF(v), __alignof(v), &v)))
+#define __crt_va_arg(ap, t)                                       \
+    ((sizeof(t) > (2 * sizeof(__int64)))                          \
+             ? **(t**)((ap += sizeof(__int64)) - sizeof(__int64)) \
+             : *(t*)((ap += _SLOTSIZEOF(t) + _APALIGN(t, ap)) -   \
+                     _SLOTSIZEOF(t)))
+#define __crt_va_end(ap) ((void)(ap = (va_list)0))
 #else
-#    define _INTSIZEOF(n) ((sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
-#    define __crt_va_start_a(ap, v) ((void)(ap = (va_list)&v + _INTSIZEOF(v)))
-#    define __crt_va_arg(ap, t) (*(t*)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)))
-#    define __crt_va_end(ap) ((void)(ap = (va_list)0))
+#define _INTSIZEOF(n) ((sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
+#define __crt_va_start_a(ap, v) ((void)(ap = (va_list)&v + _INTSIZEOF(v)))
+#define __crt_va_arg(ap, t) (*(t*)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)))
+#define __crt_va_end(ap) ((void)(ap = (va_list)0))
 #endif
 }
 __pragma(pack(pop));
@@ -73,7 +74,7 @@ __pragma(pack(pop));
 #define _CRT_INTERNAL_PRINTF_LEGACY_VSPRINTF_NULL_TERMINATION (1ULL << 0)
 
 __declspec(noinline) __inline unsigned __int64* __CRTDECL
-        __local_stdio_printf_options(void) {
+        __local_stdio_printf_options(void) noexcept {
     static unsigned __int64 _OptionsStorage;
     return &_OptionsStorage;
 }
@@ -82,7 +83,7 @@ inline int __CRTDECL
 _vfprintf_l(FILE* const _Stream,
             char const* const _Format,
             _locale_t const _Locale,
-            va_list _ArgList) {
+            va_list _ArgList) noexcept {
     return __stdio_common_vfprintf(*__local_stdio_printf_options(),
                                    _Stream,
                                    _Format,
@@ -95,7 +96,7 @@ _vsnprintf_l(char* const _Buffer,
              size_t const _BufferCount,
              char const* const _Format,
              _locale_t const _Locale,
-             va_list _ArgList) {
+             va_list _ArgList) noexcept {
     int const _Result = __stdio_common_vsprintf(
             *__local_stdio_printf_options() |
                     _CRT_INTERNAL_PRINTF_LEGACY_VSPRINTF_NULL_TERMINATION,
@@ -112,12 +113,12 @@ inline int __CRTDECL
 _vsprintf_l(char* const _Buffer,
             char const* const _Format,
             _locale_t const _Locale,
-            va_list _ArgList) {
+            va_list _ArgList) noexcept {
     return _vsnprintf_l(_Buffer, (size_t)-1, _Format, _Locale, _ArgList);
 }
 
 int __CRTDECL
-fprintf(FILE* const _Stream, char const* const _Format, ...) {
+fprintf(FILE* const _Stream, char const* const _Format, ...) noexcept {
     int _Result;
     va_list _ArgList;
     __crt_va_start(_ArgList, _Format);
@@ -127,7 +128,7 @@ fprintf(FILE* const _Stream, char const* const _Format, ...) {
 }
 
 int __CRTDECL
-printf(char const* const _Format, ...) {
+printf(char const* const _Format, ...) noexcept {
     int _Result;
     va_list _ArgList;
     __crt_va_start(_ArgList, _Format);
@@ -137,7 +138,7 @@ printf(char const* const _Format, ...) {
 }
 
 int __CRTDECL
-sprintf(char* const _Buffer, char const* const _Format, ...) {
+sprintf(char* const _Buffer, char const* const _Format, ...) noexcept {
     int _Result;
     va_list _ArgList;
     __crt_va_start(_ArgList, _Format);

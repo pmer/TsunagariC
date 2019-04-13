@@ -27,7 +27,7 @@
 #ifndef SRC_OS_WINDOWS_MUTEX_H_
 #define SRC_OS_WINDOWS_MUTEX_H_
 
-#include "os/windows-types.h"
+#include "os/c.h"
 
 extern "C" {
 typedef struct {

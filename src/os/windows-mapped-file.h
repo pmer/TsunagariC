@@ -27,22 +27,22 @@
 #ifndef SRC_OS_WINDOWS_MAPPED_FILE_H_
 #define SRC_OS_WINDOWS_MAPPED_FILE_H_
 
-#include "os/windows-types.h"
+#include "os/c.h"
 #include "util/optional.h"
 #include "util/string-view.h"
 
 class MappedFile {
  public:
-    static Optional<MappedFile> fromPath(StringView path);
+    static Optional<MappedFile> fromPath(StringView path) noexcept;
 
-    MappedFile();
-    MappedFile(MappedFile&& other);
+    MappedFile() noexcept;
+    MappedFile(MappedFile&& other) noexcept;
     MappedFile(const MappedFile& other) = delete;
-    ~MappedFile();
+    ~MappedFile() noexcept;
 
-    MappedFile& operator=(MappedFile&& other);
+    MappedFile& operator=(MappedFile&& other) noexcept;
 
-    template<typename T> const T at(size_t offset) const {
+    template<typename T> const T at(size_t offset) const noexcept {
         return reinterpret_cast<T>(data + offset);
     }
 

@@ -27,7 +27,7 @@
 #ifndef SRC_OS_WINDOWS_THREAD_H_
 #define SRC_OS_WINDOWS_THREAD_H_
 
-#include "os/windows-types.h"
+#include "os/c.h"
 #include "util/function.h"
 #include "util/int.h"
 
@@ -51,25 +51,25 @@ typedef struct _SYSTEM_INFO {
     WORD wProcessorRevision;
 } SYSTEM_INFO, *LPSYSTEM_INFO;
 
-WINBASEAPI BOOL WINAPI CloseHandle(HANDLE hObject);
-WINBASEAPI VOID WINAPI GetSystemInfo(LPSYSTEM_INFO lpSystemInfo);
+WINBASEAPI BOOL WINAPI CloseHandle(HANDLE hObject) noexcept;
+WINBASEAPI VOID WINAPI GetSystemInfo(LPSYSTEM_INFO lpSystemInfo) noexcept;
 WINBASEAPI DWORD WINAPI WaitForSingleObjectEx(HANDLE hHandle,
                                               DWORD dwMilliseconds,
-                                              BOOL bAlertable);
+                                              BOOL bAlertable) noexcept;
 _ACRTIMP uintptr_t __cdecl _beginthreadex(
         void* security,
         unsigned stack_size,
         unsigned(WINAPI* start_address)(void*),
         void* arglist,
         unsigned initflag,
-        unsigned* thrdaddr);
+        unsigned* thrdaddr) noexcept;
 
 #define INFINITE 0xFFFFFFFF  // Infinite timeout.
 constexpr DWORD WAIT_FAILED = 0xFFFFFFFF;
 }
 
 static unsigned WINAPI
-beginthreadex_thunk(void* data) {
+beginthreadex_thunk(void* data) noexcept {
     auto f = static_cast<Function<void()>*>(data);
     (*f)();
     delete f;
@@ -78,7 +78,7 @@ beginthreadex_thunk(void* data) {
 
 class Thread {
  public:
-    inline explicit Thread(Function<void()> f) {
+    inline explicit Thread(Function<void()> f) noexcept {
         auto data = new Function<void()>(move_(f));
         id = reinterpret_cast<HANDLE>(_beginthreadex(nullptr,
                                                      0,
@@ -88,7 +88,7 @@ class Thread {
                                                      nullptr));
         assert_(id);
     }
-    Thread(Thread&& other) : id(other.id) { other.id = 0; }
+    Thread(Thread&& other) noexcept : id(other.id) { other.id = 0; }
     inline ~Thread() noexcept { assert_(id == 0); }
 
     Thread(const Thread&) = delete;

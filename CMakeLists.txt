@@ -180,6 +180,7 @@ target_sources(pack-tool
 
 if (WIN32)
     target_sources(tsunagari
+        PRIVATE src/os/memmove.cpp
         PRIVATE src/os/windows-c.cpp
         PUBLIC  src/os/windows-c.h
         PRIVATE src/os/windows-mapped-file.cpp
@@ -188,6 +189,7 @@ if (WIN32)
         PUBLIC  src/os/windows.h
     )
     target_sources(pack-tool
+        PRIVATE src/os/memmove.cpp
         PRIVATE src/os/windows-c.cpp
         PRIVATE src/os/windows-c.h
         PRIVATE src/os/windows-condition-variable.h
@@ -195,7 +197,6 @@ if (WIN32)
         PRIVATE src/os/windows-mapped-file.h
         PRIVATE src/os/windows-mutex.h
         PRIVATE src/os/windows-thread.h
-        PRIVATE src/os/windows-types.h
         PRIVATE src/os/windows.cpp
         PUBLIC  src/os/windows.h
     )
@@ -351,7 +352,6 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
     string(APPEND CMAKE_CXX_FLAGS " -fno-exceptions")
 elseif(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
     string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-    string(APPEND CMAKE_CXX_FLAGS " /EH")
 endif()
 
 # Disable C++ run-time type information

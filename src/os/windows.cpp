@@ -29,9 +29,8 @@
 #include "os/windows.h"
 
 //#include "core/world.h"
+#include "os/c.h"
 #include "os/os.h"
-#include "os/windows-cstdio.h"
-#include "os/windows-types.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/vector.h"
@@ -40,11 +39,11 @@ extern "C" {
 WINBASEAPI BOOL WINAPI AttachConsole(DWORD processId);
 _ACRTIMP FILE* __cdecl freopen(const char* filename,
                                const char* mode,
-                               FILE* stream);
+                               FILE* stream) noexcept;
 WINUSERAPI int WINAPI MessageBoxA(HWND hwnd,
                                   LPCSTR text,
                                   LPCSTR caption,
-                                  UINT type);
+                                  UINT type) noexcept;
 
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 #define MessageBox MessageBoxA
@@ -56,45 +55,48 @@ constexpr UINT MB_OK = 0x00000000L;
 char dirSeparator = '\\';
 
 Optional<uint64_t>
-getFileSize(StringView path) {
+getFileSize(StringView path) noexcept {
     return Optional<uint64_t>();
 }
 
 bool
-writeFile(StringView path, uint32_t length, void* data) {
+writeFile(StringView path, uint32_t length, void* data) noexcept {
     return false;
 }
 
 bool
-writeFileVec(StringView path, uint32_t count, uint32_t* lengths, void** datas) {
+writeFileVec(StringView path,
+             uint32_t count,
+             uint32_t* lengths,
+             void** datas) noexcept {
     return false;
 }
 
 bool
-isDir(StringView path) {
+isDir(StringView path) noexcept {
     return false;
 }
 
 void
-makeDirectory(StringView path) {}
+makeDirectory(StringView path) noexcept {}
 
-vector<String>
-listDir(StringView path) {
-    return vector<String>();
+Vector<String>
+listDir(StringView path) noexcept {
+    return Vector<String>();
 }
 
 Optional<String>
-readFile(StringView path) {
+readFile(StringView path) noexcept {
     return Optional<String>();
 }
 
 void
-setTermColor(TermColor color) {
+setTermColor(TermColor color) noexcept {
     // TODO
 }
 
 void
-wFixConsole() {
+wFixConsole() noexcept {
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         freopen("CONOUT$", "wb", stdout);  // Attach STDOUT.
         freopen("CONOUT$", "wb", stderr);  // Attach STDERR.
@@ -103,7 +105,7 @@ wFixConsole() {
 
 /* From gosu/src/Utility.cpp by Julian Raschke in 2007 */
 /*
-std::wstring widen(StringView s) {
+std::wstring widen(StringView s) noexcept {
   size_t wideLen = mbstowcs(0, String(s).null(), 0);
   if (wideLen == static_cast<size_t>(-1)) {
     throw std::runtime_error("Could not convert from string to wstring: " + s);
@@ -117,7 +119,7 @@ std::wstring widen(StringView s) {
 */
 
 void
-wMessageBox(StringView title, StringView text) {
+wMessageBox(StringView title, StringView text) noexcept {
     // World::instance().setPaused(true);
     // FIXME: Try to get the window's native handle instead of passing nullptr.
     MessageBox(nullptr, String(text).null(), String(title).null(), MB_OK);

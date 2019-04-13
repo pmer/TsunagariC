@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** os/windows-types.h          **
+** os/windows-c.h              **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,8 +24,11 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_WINDOWS_TYPES_H_
-#define SRC_OS_WINDOWS_TYPES_H_
+#ifndef SRC_OS_WINDOWS_C_H_
+#define SRC_OS_WINDOWS_C_H_
+
+#include "util/int.h"
+
 
 #define VOID void
 
@@ -65,4 +68,74 @@ typedef unsigned long ULONG_PTR, *PULONG_PTR;
 #define WINBASEAPI __declspec(dllimport)
 #define WINUSERAPI __declspec(dllimport)
 
-#endif  // SRC_OS_WINDOWS_TYPES_H_
+__pragma(pack(push, 8));
+extern "C" {
+typedef struct _iobuf {
+    void* _Placeholder;
+} FILE;
+
+_ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned _Ix) noexcept;
+}
+__pragma(pack(pop));
+
+#define stdin (__acrt_iob_func(0))
+#define stdout (__acrt_iob_func(1))
+#define stderr (__acrt_iob_func(2))
+
+int __CRTDECL fprintf(FILE* const _Stream,
+                      char const* const _Format,
+                      ...) noexcept;
+int __CRTDECL printf(char const* const _Format, ...) noexcept;
+int __CRTDECL sprintf(char* const _Buffer,
+                      char const* const _Format,
+                      ...) noexcept;
+
+__pragma(pack(push, 8));
+extern "C" {
+typedef __int64 __time64_t;
+
+_ACRTIMP __time64_t __cdecl _time64(__time64_t* _Time) noexcept;
+_ACRTIMP __declspec(noreturn) void __cdecl exit(int _Code) noexcept;
+_ACRTIMP void __cdecl free(void* _Block) noexcept;
+_ACRTIMP _CRTRESTRICT void* __cdecl malloc(size_t _Size) noexcept;
+_ACRTIMP int __cdecl rand() noexcept;
+_ACRTIMP void __cdecl srand(unsigned int _Seed) noexcept;
+}
+__pragma(pack(pop));
+
+static inline time_t __CRTDECL
+time(time_t* _Time) noexcept {
+    return _time64(reinterpret_cast<__time64_t*>(_Time));
+}
+
+__pragma(pack(push, 8));
+extern "C" {
+void* __cdecl memchr(const void* buf, int chr, size_t cnt) noexcept;
+int __cdecl memcmp(void const* dst, void const* src, size_t size) noexcept;
+size_t __cdecl strlen(char const* _Str) noexcept;
+}
+__pragma(pack(pop));
+
+extern "C" {
+void* memmem(const void* haystack,
+             size_t h_sz,
+             const void* needle,
+             size_t n_sz) noexcept;
+}
+
+__pragma(pack(push, 8));
+extern "C" {
+double __cdecl atan2(double _Y, double _X) noexcept;
+_ACRTIMP double __cdecl ceil(double _X) noexcept;
+__inline float __CRTDECL
+ceilf(float _X) noexcept {
+    return (float)ceil(_X);
+}
+double __cdecl cos(double _X) noexcept;
+_ACRTIMP double __cdecl floor(double _X) noexcept;
+double __cdecl sin(double _X) noexcept;
+double __cdecl sqrt(double _X) noexcept;
+}
+__pragma(pack(pop));
+
+#endif  // SRC_OS_WINDOWS_C_H_

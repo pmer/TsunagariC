@@ -101,7 +101,7 @@ PackWriter::make() noexcept {
 
 bool
 PackWriterImpl::writeToFile(StringView path) noexcept {
-    uint32_t blobCount = blobs.size();
+    uint32_t blobCount = static_cast<uint32_t>(blobs.size());
 
     // Sort blobs by size (smallest first).
     if (!sorted) {
@@ -116,7 +116,7 @@ PackWriterImpl::writeToFile(StringView path) noexcept {
     uint32_t dataOffsetsBlockSize = blobCount * sizeof(uint32_t);
 
     for (auto& blob : blobs) {
-        pathsBlockSize += blob.path.size();
+        pathsBlockSize += static_cast<uint32_t>(blob.path.size());
     }
 
     // Construct blocks.
@@ -164,7 +164,7 @@ PackWriterImpl::writeToFile(StringView path) noexcept {
     PathOffset pathOffset = 0;
     for (auto& blob : blobs) {
         pathOffsetsBlock.push_back(pathOffset);
-        pathOffset += blob.path.size();
+        pathOffset += static_cast<uint32_t>(blob.path.size());
     }
     pathOffsetsBlock.push_back(pathOffset);
 

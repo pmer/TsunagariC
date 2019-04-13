@@ -27,8 +27,8 @@
 #ifndef SRC_OS_WINDOWS_CONDITION_VARIBLE_H_
 #define SRC_OS_WINDOWS_CONDITION_VARIBLE_H_
 
+#include "os/c.h"
 #include "os/mutex.h"
-#include "os/windows-types.h"
 #include "util/assert.h"
 
 extern "C" {

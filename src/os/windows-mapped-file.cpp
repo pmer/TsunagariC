@@ -26,7 +26,7 @@
 
 #include "os/windows-mapped-file.h"
 
-#include "os/windows-types.h"
+#include "os/c.h"
 #include "util/string.h"
 
 extern "C" {
@@ -36,27 +36,27 @@ typedef struct {
     BOOL bInheritHandle;
 } SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
 
-WINBASEAPI BOOL WINAPI CloseHandle(HANDLE hObject);
+WINBASEAPI BOOL WINAPI CloseHandle(HANDLE hObject) noexcept;
 WINBASEAPI HANDLE WINAPI CreateFileA(LPCSTR lpFileName,
                                      DWORD dwDesiredAccess,
                                      DWORD dwShareMode,
                                      LPSECURITY_ATTRIBUTES lpSecurityAttributes,
                                      DWORD dwCreationDisposition,
                                      DWORD dwFlagsAndAttributes,
-                                     HANDLE hTemplateFile);
+                                     HANDLE hTemplateFile) noexcept;
 WINBASEAPI HANDLE WINAPI
 CreateFileMappingA(HANDLE hFile,
                    LPSECURITY_ATTRIBUTES lpFileMappingAttributes,
                    DWORD flProtect,
                    DWORD dwMaximumSizeHigh,
                    DWORD dwMaximumSizeLow,
-                   LPCSTR lpName);
+                   LPCSTR lpName) noexcept;
 WINBASEAPI LPVOID WINAPI MapViewOfFile(HANDLE hFileMappingObject,
                                        DWORD dwDesiredAccess,
                                        DWORD dwFileOffsetHigh,
                                        DWORD dwFileOffsetLow,
-                                       SIZE_T dwNumberOfBytesToMap);
-WINBASEAPI BOOL WINAPI UnmapViewOfFile(LPCVOID lpBaseAddress);
+                                       SIZE_T dwNumberOfBytesToMap) noexcept;
+WINBASEAPI BOOL WINAPI UnmapViewOfFile(LPCVOID lpBaseAddress) noexcept;
 
 #define CreateFile CreateFileA
 #define CreateFileMapping CreateFileMappingA
@@ -71,7 +71,7 @@ WINBASEAPI BOOL WINAPI UnmapViewOfFile(LPCVOID lpBaseAddress);
 }
 
 Optional<MappedFile>
-MappedFile::fromPath(StringView path) {
+MappedFile::fromPath(StringView path) noexcept {
     HANDLE file = CreateFile(String(path).null(),
                              GENERIC_READ,
                              0,
@@ -104,14 +104,15 @@ MappedFile::fromPath(StringView path) {
     return Optional<MappedFile>(move_(m));
 }
 
-MappedFile::MappedFile()
+MappedFile::MappedFile() noexcept
         : file(INVALID_HANDLE_VALUE), mapping(nullptr), data(nullptr) {}
 
-MappedFile::MappedFile(MappedFile&& other) {
+MappedFile::MappedFile(MappedFile&& other) noexcept
+        : file(INVALID_HANDLE_VALUE), mapping(nullptr), data(nullptr) {
     *this = move_(other);
 }
 
-MappedFile::~MappedFile() {
+MappedFile::~MappedFile() noexcept {
     if (data) {
         UnmapViewOfFile(static_cast<void*>(data));
     }
@@ -124,7 +125,7 @@ MappedFile::~MappedFile() {
 }
 
 MappedFile&
-MappedFile::operator=(MappedFile&& other) {
+MappedFile::operator=(MappedFile&& other) noexcept {
     file = other.file;
     mapping = other.mapping;
     data = other.data;

@@ -35,9 +35,9 @@
  * is run from the command line, this function forces Windows to reattach a
  * console to its process. Otherwise it does nothing.
  */
-void wFixConsole();
+void wFixConsole() noexcept;
 
 // Simple wrapper to create a halting (modal) message box.
-void wMessageBox(StringView title, StringView text);
+void wMessageBox(StringView title, StringView text) noexcept;
 
 #endif  // SRC_OS_WINDOWS_H_

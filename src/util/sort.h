@@ -240,7 +240,7 @@ namespace pdqsort_detail {
                 } while (sift != begin && tmp < *--sift_1);
 
                 *sift = move_(tmp);
-                limit += cur - sift;
+                limit += static_cast<int>(cur - sift);
             }
         }
 

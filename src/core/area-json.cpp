@@ -374,7 +374,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
 
             // Initialize a default TileType, we'll build on that.
             TileType* type = new TileType((*img.get())[id__]);
-            if (!processTileType(move_(tileProperties), *type, img, id__)) {
+            if (!processTileType(move_(tileProperties), *type, img, static_cast<int>(id__))) {
                 delete type;
                 return false;
             }

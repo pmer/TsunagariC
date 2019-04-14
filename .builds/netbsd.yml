@@ -3,7 +3,7 @@ image: netbsd/latest
 packages:
 - cmake
 sources:
-- https://github.com/pmer/TsunagariC.git
+- git://github.com/pmer/TsunagariC.git
 tasks:
 - cmake: |
     cd TsunagariC

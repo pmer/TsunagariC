@@ -1,0 +1,14 @@
+# Sourcehut manifest.
+image: freebsd
+packages:
+- cmake
+sources:
+- https://github.com/pmer/TsunagariC.git
+tasks:
+- cmake: |
+    mkdir build
+    cd build
+    cmake ..
+- make: |
+    cd build
+    make

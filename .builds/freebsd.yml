@@ -6,9 +6,11 @@ sources:
 - https://github.com/pmer/TsunagariC.git
 tasks:
 - cmake: |
+    cd TsunagariC
     mkdir build
     cd build
     cmake ..
 - make: |
+    cd TsunagariC
     cd build
     make

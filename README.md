@@ -6,6 +6,7 @@
 | macOS   | [![TravisCI](https://api.travis-ci.com/pmer/TsunagariC.svg)](https://travis-ci.com/pmer/TsunagariC)                                         |
 | Linux   | [![CircleCI](https://circleci.com/gh/pmer/TsunagariC.svg?style=shield)](https://circleci.com/gh/pmer/TsunagariC)                            |
 | FreeBSD | [![builds.sr.ht](https://builds.sr.ht/~pdm/tsunagaric/freebsd.yml.svg)](https://builds.sr.ht/~pdm/tsunagaric/freebsd.yml)                   |
+| NetBSD  | [![builds.sr.ht](https://builds.sr.ht/~pdm/tsunagaric/netbsd.yml.svg)](https://builds.sr.ht/~pdm/tsunagaric/netbsd.yml)                     |
 
 [![LoC](https://tokei.rs/b1/github/pmer/TsunagariC)](https://github.com/Aaronepower/tokei)
 

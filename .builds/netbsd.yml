@@ -2,12 +2,10 @@
 image: netbsd/latest
 packages:
 - cmake
-- mozilla-rootcerts
+- mozilla-rootcerts-openssl
+sources:
+- https://github.com/pmer/TsunagariC.git
 tasks:
-- certs: |
-    mozilla-rootcerts install
-- clone: |
-    git clone --recursive https://github.com/pmer/TsunagariC.git
 - cmake: |
     cd TsunagariC
     mkdir build

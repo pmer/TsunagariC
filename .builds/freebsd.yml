@@ -1,5 +1,5 @@
 # Sourcehut manifest.
-image: freebsd
+image: freebsd/latest
 packages:
 - cmake
 sources:

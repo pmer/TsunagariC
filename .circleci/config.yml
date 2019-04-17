@@ -32,9 +32,9 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  fedora_30:
+  fedora_29:
     docker:
-      - image: fedora:30
+      - image: fedora:29
     steps:
       - run: |
           dnf install -y git cmake make gcc-c++
@@ -97,7 +97,7 @@ workflows:
     jobs:
       - debian_9
       - ubuntu_19_04
-      - fedora_30
+      - fedora_29
       - arch_latest
 #     - void_latest
       - alpine_3_9

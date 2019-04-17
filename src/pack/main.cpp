@@ -126,7 +126,7 @@ getParentPath(StringView path) noexcept {
         return Optional<StringView>();
     }
     else {
-        return Optional<StringView>(path.substr(0, sep));
+        return Optional<StringView>(path.substr(0, *sep));
     }
 }
 

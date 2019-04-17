@@ -25,6 +25,18 @@ option(BUILD_SHARED_LIBS "Build Tsunagari as a shared library")
 # Variables
 #
 
+# Compiler
+if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    set(CLANG 1)
+endif()
+if(CMAKE_CXX_COMPILER_ID MATCHES GCC)
+    set(GCCk 1)
+endif()
+if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    set(MSVC 1)
+endif()
+
+# Config
 set(IS_RELEASE "$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>")
 
 
@@ -335,7 +347,9 @@ target_sources(pack-tool
 
 get_target_property(TSUNAGARI_SOURCES tsunagari SOURCES)
 get_target_property(PACK_TOOL_SOURCES pack-tool SOURCES)
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${TSUNAGARI_SOURCES} ${PACK_TOOL_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
+    FILES ${TSUNAGARI_SOURCES} ${PACK_TOOL_SOURCES}
+)
 
 
 #
@@ -348,45 +362,50 @@ set_target_properties(tsunagari PROPERTIES CXX_EXTENSIONS OFF)
 set_target_properties(pack-tool PROPERTIES CXX_EXTENSIONS OFF)
 
 # Disable C++ exceptions
-if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+if(CLANG OR GCC)
     string(APPEND CMAKE_CXX_FLAGS " -fno-exceptions")
-elseif(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+elseif(MSVC)
     string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 endif()
 
 # Disable C++ run-time type information
-if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+if(CLANG OR GCC)
     string(APPEND CMAKE_CXX_FLAGS " -fno-rtti")
-elseif(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+elseif(MSVC)
     string(REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     string(APPEND CMAKE_CXX_FLAGS " /GR-")
 endif()
 
+# Hide most symbols
+if(CLANG OR GCC)
+    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -fvisibility=hidden")
+    string(APPEND CMAKE_CXX_FLAGS_MINSIZEREL " -fvisibility=hidden")
+endif()
+
+# Reduce code size
+if(CLANG)
+    string(APPEND CMAKE_CXX_FLAGS_MINSIZEREL " -Oz")
+endif()
+
 # Enable floating point optimizations
-if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+if(CLANG OR GCC)
     string(APPEND CMAKE_CXX_FLAGS " -ffast-math")
-elseif(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+elseif(MSVC)
     string(APPEND CMAKE_CXX_FLAGS " /fp:fast")
 endif()
 
 # Disable stack canary
-if(${CMAKE_CXX_COMPILER_ID} EQUAL MSVC)
+if(CLANG OR GCC)
+    string(APPEND CMAKE_CXX_FLAGS " -fno-stack-protector")
+elseif(MSVC)
     string(APPEND CMAKE_CXX_FLAGS " /GS-")
 endif()
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT result)
-if(result)
-    set_target_properties(tsunagari PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-        INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL TRUE
-        INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
-    )
-    set_target_properties(pack-tool PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-        INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL TRUE
-        INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
-    )
+# Optimize at link time
+if(CLANG OR GCC)
+    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto=full")
+    string(APPEND CMAKE_CXX_FLAGS_MINSIZEREL " -flto=full")
+    string(APPEND CMAKE_CXX_FLAGS_RELWITHDEBINFO " -flto=thin")
 endif()
 
 target_compile_definitions(tsunagari
@@ -400,6 +419,24 @@ target_compile_definitions(pack-tool
 #
 # Linking and externally-managed dependencies
 #
+
+# Optimize at link time
+if(CLANG OR GCC)
+    string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " -flto=full")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS_MINSIZEREL " -flto=full")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO " -flto=thin")
+endif()
+
+# Do not link to libc++
+#if(APPLE)
+#   string(APPEND CMAKE_EXE_LINKER_FLAGS " -nostdlib -lSystem")
+#endif()
+
+# Strip symbols
+if(APPLE AND CLANG)
+    string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " -Wl,-x -Wl,-dead_strip")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS_MINSIZEREL " -Wl,-x -Wl,-dead_strip")
+endif()
 
 if(APPLE)
     # FIXME: Change to be target-specific.
@@ -447,7 +484,10 @@ if(AV_GOSU)
 
     target_include_directories(tsunagari PUBLIC ${GOSU_INCLUDE_DIRS})
     target_link_directories(tsunagari PUBLIC ${GOSU_LIBRARY_DIRS})
-    target_link_libraries(tsunagari PUBLIC ${GOSU_LIBRARIES} ${GOSU_DEPENDENCIES})
+    target_link_libraries(tsunagari
+        PUBLIC ${GOSU_LIBRARIES}
+               ${GOSU_DEPENDENCIES}
+    )
 
     # FIXME
     #if(APPLE)

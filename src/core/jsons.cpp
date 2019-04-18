@@ -35,6 +35,7 @@
 #define SRC_UTIL_INT_H_
 #define SRC_UTIL_NEW_H_
 #include <math.h>
+#include <time.h>
 // clang-format on
 
 #include "core/jsons.h"

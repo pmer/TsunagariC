@@ -1,6 +1,6 @@
 /*************************************
 ** Tsunagari Tile Engine            **
-** os/unix.cpp                      **
+** os/unix-mapped-file.cpp          **
 ** Copyright 2016-2019 Paul Merrill **
 *************************************/
 

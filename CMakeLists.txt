@@ -236,19 +236,19 @@ elseif(APPLE)
 else()
     target_sources(tsunagari
         PUBLIC  src/os/linux-c.h
-        PUBLIC  src/os/linux-thread.h
         PRIVATE src/os/unix-chrono.cpp
         PRIVATE src/os/unix-mapped-file.cpp
         PUBLIC  src/os/unix-mutex.h
+        PUBLIC  src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
     )
     target_sources(pack-tool
         PRIVATE src/os/linux-c.h
-        PRIVATE src/os/linux-thread.h
         PRIVATE src/os/unix-condition-variable.h
         PRIVATE src/os/unix-mapped-file.cpp
         PRIVATE src/os/unix-mapped-file.h
         PRIVATE src/os/unix-mutex.h
+        PRIVATE src/os/unix-thread.h
         PRIVATE src/os/unix.cpp
     )
 endif()

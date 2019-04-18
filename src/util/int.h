@@ -39,7 +39,7 @@ typedef unsigned long long uint64_t;
 #ifdef _WIN32
 typedef uint64_t time_t;
 #else
-typedef long time_t;
+typedef int64_t time_t;
 #endif
 
 #ifdef _WIN32
@@ -54,13 +54,7 @@ typedef size_t uintptr_t;
 static constexpr int INT_MAX = 0x7fffffff;
 static constexpr int UINT_MAX = 0xffffffff;
 static constexpr uint32_t UINT32_MAX = 0xffffffff;
-
-#if defined(__APPLE__)
-static constexpr size_t SIZE_MAX = 0xffffffffffffffff;
-#elif defined(__linux__)
-static constexpr size_t SIZE_MAX = __SIZEOF_SIZE_T__;
-#endif
-
+static constexpr size_t SIZE_MAX = __SIZE_MAX__;
 static constexpr double DBL_MAX = 1.7976931348623158e+308;
 
 #endif  // SRC_UTIL_INT_H_

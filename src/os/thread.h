@@ -32,7 +32,9 @@
 #elif defined(__APPLE__)
 #include "os/mac-thread.h"
 #elif defined(__linux__)
-#include "os/linux-thread.h"
+#include "os/unix-thread.h"
+#elif defined(__FreeBSD__)
+#include "os/unix-thread.h"
 #endif
 
 #endif  // SRC_OS_THREAD_H_

@@ -38,6 +38,8 @@ struct WalkContext {
 
 static void
 walkPath(WalkContext& ctx, StringView path) noexcept {
+    // TODO: The call to isDir can be removed on Unix-like systems, which will
+    //       save a stat(), as readdir() returns a file's type already.
     if (isDir(path)) {
         Vector<String> names = listDir(path);
         for (auto& name : names) {

@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** Function.h                  **
+** function.h                  **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -28,6 +28,7 @@
 #define SRC_UTIL_FUNCTION_H_
 
 #include "util/assert.h"
+#include "util/meta.h"
 #include "util/move.h"
 
 template<class F> class Function;  // Undefined.
@@ -104,12 +105,23 @@ namespace function {
 }  // namespace function
 
 template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
+ private:
+    typedef function::base<R(ArgTypes...)> base;
+
+    static base* asBase(void* p) noexcept { return reinterpret_cast<base*>(p); }
+
+    alignas(alignof(void * [3])) char buf[3 * sizeof(void*)];
+    base* f;
+
  public:
     inline Function() noexcept : f(nullptr) {}
     Function(const Function&) noexcept;
     Function(Function&&) noexcept;
     template<class F> Function(F) noexcept;
-
+    template<class F>
+    void set(F& something, EnableIf<sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf)> = Yes());
+    template<class F>
+    void set(F& something, EnableIf<!(sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf))> = Yes());
     ~Function() noexcept;
 
     Function& operator=(const Function&) noexcept;
@@ -121,14 +133,6 @@ template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
     inline explicit operator bool() const noexcept { return f; }
 
     R operator()(ArgTypes...) const noexcept;
-
- private:
-    typedef function::base<R(ArgTypes...)> base;
-
-    static base* asBase(void* p) noexcept { return reinterpret_cast<base*>(p); }
-
-    alignas(alignof(void * [3])) char buf[3 * sizeof(void*)];
-    base* f;
 };
 
 template<class R, class... ArgTypes>
@@ -162,13 +166,19 @@ Function<R(ArgTypes...)>::Function(Function&& other) noexcept {
 template<class R, class... ArgTypes>
 template<class F>
 Function<R(ArgTypes...)>::Function(F something) noexcept : f(nullptr) {
-    typedef function::func<F, R(ArgTypes...)> FF;
-    if (sizeof(FF) <= sizeof(buf)) {
-        f = new ((void*)&buf) FF(move_(something));
-    }
-    else {
-        f = new FF(move_(something));
-    }
+    set(something);
+}
+
+template<class R, class... ArgTypes>
+template<class F>
+void Function<R(ArgTypes...)>::set(F& something, EnableIf<sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf)>) {
+    f = new ((void*)&buf) function::func<F, R(ArgTypes...)>(move_(something));
+}
+
+template<class R, class... ArgTypes>
+template<class F>
+void Function<R(ArgTypes...)>::set(F& something, EnableIf<!(sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf))>) {
+    f = new function::func<F, R(ArgTypes...)>(move_(something));
 }
 
 template<class R, class... ArgTypes>

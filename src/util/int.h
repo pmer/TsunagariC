@@ -54,7 +54,10 @@ typedef size_t uintptr_t;
 static constexpr int INT_MAX = 0x7fffffff;
 static constexpr int UINT_MAX = 0xffffffff;
 static constexpr uint32_t UINT32_MAX = 0xffffffff;
-static constexpr size_t SIZE_MAX = __SIZE_MAX__;
 static constexpr double DBL_MAX = 1.7976931348623158e+308;
+
+#ifndef _WIN32
+static constexpr size_t SIZE_MAX = __SIZE_MAX__;
+#endif
 
 #endif  // SRC_UTIL_INT_H_

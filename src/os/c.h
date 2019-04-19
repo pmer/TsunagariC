@@ -35,6 +35,8 @@
 #include "os/linux-c.h"
 #elif defined(__FreeBSD__)
 #include "os/freebsd-c.h"
+#elif defined(__NetBSD__)
+#include "os/netbsd-c.h"
 #else
 #error Not implemented yet
 #endif

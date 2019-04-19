@@ -35,6 +35,8 @@
 #include "os/unix-thread.h"
 #elif defined(__FreeBSD__)
 #include "os/unix-thread.h"
+#elif defined(__NetBSD__)
+#include "os/unix-thread.h"
 #endif
 
 #endif  // SRC_OS_THREAD_H_

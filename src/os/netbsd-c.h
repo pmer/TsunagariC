@@ -1,6 +1,6 @@
 /********************************
 ** Tsunagari Tile Engine       **
-** os/freebsd-c.h              **
+** os/netbsd-c.h               **
 ** Copyright 2019 Paul Merrill **
 ********************************/
 
@@ -24,77 +24,73 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_OS_FREEBSD_C_H_
-#define SRC_OS_FREEBSD_C_H_
+#ifndef SRC_OS_NETBSD_C_H_
+#define SRC_OS_NETBSD_C_H_
 
 #include "util/int.h"
 
-// sys/_iovec.h
-// sys/_timespec.h
-// sys/_types.h
+// amd64/types.h
+// sys/ansi.h
 // sys/types.h
 extern "C" {
 typedef int64_t blkcnt_t;
 typedef int32_t blksize_t;
-typedef int32_t clockid_t;
+typedef int clockid_t;
 typedef uint64_t dev_t;
-typedef uint32_t fflags_t;
 typedef uint32_t gid_t;
 typedef uint64_t ino_t;
-typedef uint16_t mode_t;
-typedef uint64_t nlink_t;
+typedef uint32_t mode_t;
+typedef uint32_t nlink_t;
 typedef int64_t off_t;
+typedef int32_t pid_t;
 typedef uint32_t uid_t;
-struct iovec {
-    void* iov_base;
-    size_t iov_len;
-};
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-}
-
-// sys/_pthreadtypes.h
-extern "C" {
-struct pthread;
-struct pthread_cond;
-struct pthread_mutex;
-typedef struct pthread* pthread_t;
-typedef struct pthread_cond* pthread_cond_t;
-typedef struct pthread_mutex* pthread_mutex_t;
 }
 
 // sys/dirent.h
 extern "C" {
 struct dirent {
     ino_t d_fileno;
-    off_t d_off;
     uint16_t d_reclen;
-    uint8_t d_type;
-    uint8_t d_pad0;
     uint16_t d_namlen;
-    uint16_t d_pad1;
-    char d_name[256];
+    uint8_t d_type;
+    char d_name[512];
 };
 #define DT_DIR 4
 #define DT_REG 8
 }
 
+// sys/timespec.h
+extern "C" {
+struct timespec {
+    time_t tv_sec;
+    long tv_nsec;
+};
+}
+
+// sys/uio.h
+extern "C" {
+struct iovec {
+    void* iov_base;
+    size_t iov_len;
+};
+ssize_t writev(int, const struct iovec*, int) noexcept;
+}
+
+// sys/errno.h
 // errno.h
 extern "C" {
-int* __error() noexcept;
-#define errno (*__error())
+int* __errno() noexcept;
+#define errno (*__errno())
 #define EINTR 4
 }
 
 // fcntl.h
 extern "C" {
 int open(const char*, int, ...) noexcept;
-#define O_RDONLY 0x0000
-#define O_WRONLY 0x0001
-#define O_CREAT 0x0200
-#define O_TRUNC 0x0400
+#define O_RDONLY 0x00000000
+#define O_WRONLY 0x00000001
+#define O_CREAT 0x00000200
+#define O_TRUNC 0x00000400
 }
 
 // sys/mman.h
@@ -110,56 +106,38 @@ int munmap(void*, size_t) noexcept;
 extern "C" {
 struct stat {
     dev_t st_dev;
+    mode_t st_mode;
     ino_t st_ino;
     nlink_t st_nlink;
-    mode_t st_mode;
-    int16_t st_padding0;
     uid_t st_uid;
     gid_t st_gid;
-    int32_t st_padding1;
     dev_t st_rdev;
-#ifdef __i386__
-    int32_t st_atim_ext;
-#endif
     struct timespec st_atim;
-#ifdef __i386__
-    int32_t st_mtim_ext;
-#endif
     struct timespec st_mtim;
-#ifdef __i386__
-    int32_t st_ctim_ext;
-#endif
     struct timespec st_ctim;
-#ifdef __i386__
-    int32_t st_btim_ext;
-#endif
     struct timespec st_birthtim;
     off_t st_size;
     blkcnt_t st_blocks;
     blksize_t st_blksize;
-    fflags_t st_flags;
-    uint64_t st_gen;
-    uint64_t st_spare[10];
+    uint32_t st_flags;
+    uint32_t st_gen;
+    uint32_t st_spare[2];
 };
-int fstat(int, struct stat*) noexcept;
+int fstat(int, struct stat*) noexcept __asm("__fstat50");
 int mkdir(const char*, mode_t) noexcept;
-int stat(const char*, struct stat*) noexcept;
+int stat(const char*, struct stat*) noexcept __asm("__stat50");
 #define S_IFMT 0170000
 #define S_IFDIR 0040000
-#define S_ISDIR(m) (((m) & 0170000) == 0040000)
-}
-
-// sys/uio.h
-extern "C" {
-ssize_t writev(int, const struct iovec*, int) noexcept;
+#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
 }
 
 // dirent.h
 extern "C" {
+struct _dirdesc;
 typedef struct _dirdesc DIR;
 int closedir(DIR*) noexcept;
-DIR* opendir(const char*) noexcept;
-struct dirent* readdir(DIR*) noexcept;
+DIR* opendir(const char*) noexcept __asm("__opendir30");
+struct dirent* readdir(DIR*) noexcept __asm("__readdir30");
 #define d_ino d_fileno
 }
 
@@ -174,37 +152,113 @@ double sin(double) noexcept;
 double sqrt(double) noexcept;
 }
 
+// amd64/types.h
+// pthread_types.h
 // pthread.h
 extern "C" {
-#define PTHREAD_MUTEX_INITIALIZER nullptr
-#define PTHREAD_COND_INITIALIZER nullptr
-int pthread_mutex_destroy(pthread_mutex_t*) noexcept;
-int pthread_mutex_lock(pthread_mutex_t*) noexcept;
-int pthread_mutex_unlock(pthread_mutex_t*) noexcept;
-int pthread_cond_destroy(pthread_cond_t*) noexcept;
-int pthread_cond_signal(pthread_cond_t*) noexcept;
-int pthread_cond_broadcast(pthread_cond_t*) noexcept;
-int pthread_cond_wait(pthread_cond_t*, pthread_mutex_t*) noexcept;
+typedef unsigned char __pthread_spin_t;
+struct __pthread_st;
+typedef struct __pthread_st* pthread_t;
+struct pthread_queue_t {
+    struct __pthread_st* ptqh_first;
+    struct __pthread_st** ptqh_last;
+};
+struct pthread_mutex_t {
+    unsigned int ptm_magic;
+    __pthread_spin_t ptm_errorcheck;
+    uint8_t ptm_pad1[3];
+    union {
+        unsigned char ptm_ceiling;
+        __pthread_spin_t ptm_unused;
+    };
+    uint8_t ptm_pad2[3];
+    pthread_t ptm_owner;
+    pthread_t* ptm_waiters;
+    unsigned int ptm_recursed;
+    void* ptm_spare2;
+};
+struct pthread_cond_t {
+    unsigned int ptc_magic;
+    __pthread_spin_t ptc_lock;
+    pthread_queue_t ptc_waiters;
+    pthread_mutex_t* ptc_mutex;
+    void* ptc_private;
+};
+int __libc_mutex_destroy(pthread_mutex_t*) noexcept;
+int __libc_mutex_lock(pthread_mutex_t*) noexcept;
+int __libc_mutex_unlock(pthread_mutex_t*) noexcept;
+int __libc_cond_destroy(pthread_cond_t*) noexcept;
+int __libc_cond_signal(pthread_cond_t*) noexcept;
+int __libc_cond_broadcast(pthread_cond_t*) noexcept;
+int __libc_cond_wait(pthread_cond_t*, pthread_mutex_t*) noexcept;
 int pthread_create(pthread_t*, const void*, void* (*)(void*), void*) noexcept;
 int pthread_join(pthread_t, void**) noexcept;
+#define PTHREAD_MUTEX_INITIALIZER { \
+        0x33330003, \
+        0, \
+        {0, 0, 0}, \
+        {0}, \
+        {0, 0, 0}, \
+        nullptr, \
+        nullptr, \
+        0, \
+        nullptr \
+    }
+#define PTHREAD_COND_INITIALIZER { \
+        0x55550005, \
+        0, \
+        {nullptr, nullptr}, \
+        nullptr, \
+        nullptr \
+    }
+#define pthread_mutex_destroy __libc_mutex_destroy
+#define pthread_mutex_lock __libc_mutex_lock
+#define pthread_mutex_unlock __libc_mutex_unlock
+#define pthread_cond_destroy __libc_cond_destroy
+#define pthread_cond_signal __libc_cond_signal
+#define pthread_cond_broadcast __libc_cond_broadcast
+#define pthread_cond_wait __libc_cond_wait
 }
 
 // stdio.h
 extern "C" {
-struct __sFILE;
-typedef struct __sFILE FILE;
+struct __sbuf {
+    unsigned char* _base;
+    int _size;
+};
+struct FILE {
+    unsigned char* _p;
+    int _r;
+    int _w;
+    unsigned short _flags;
+    short _file;
+    struct __sbuf _bf;
+    int _lbfsize;
+    void* _cookie;
+    int (*_close)(void*);
+    ssize_t (*_read)(void*, void*, size_t);
+    off_t (*_seek)(void*, off_t, int);
+    ssize_t (*_write)(void*, const void*, size_t);
+    struct __sbuf _ext;
+    unsigned char *_up;
+    int _ur;
+    unsigned char _ubuf[3];
+    unsigned char _nbuf[1];
+    int (*_flush)(void*);
+    char _lb_unused[sizeof(struct __sbuf) - sizeof(int (*)(void*))];
+    int _blk_size;
+    off_t _offset;
+};
 int fclose(FILE*) noexcept;
 FILE* fopen(const char*, const char*) noexcept;
 int fprintf(FILE*, const char*, ...) noexcept;
 size_t fread(void*, size_t, size_t, FILE*) noexcept;
 int printf(const char*, ...) noexcept;
 int sprintf(char*, const char*, ...) noexcept;
-extern FILE* __stdinp;
-extern FILE* __stdoutp;
-extern FILE* __stderrp;
-#define stdin __stdinp
-#define stdout __stdoutp
-#define stderr __stderrp
+extern FILE __sF[3];
+#define stdin (&__sF[0])
+#define stdout (&__sF[1])
+#define stderr (&__sF[2])
 }
 
 // stdlib.h
@@ -228,21 +282,23 @@ void* memmem(const void*, size_t, const void*, size_t) noexcept;
 size_t strlen(char const*) noexcept;
 }
 
+// sys/time.h
 // time.h
 extern "C" {
 int clock_gettime(clockid_t, struct timespec*) noexcept;
 int nanosleep(const struct timespec*, struct timespec*) noexcept;
 time_t time(time_t*) noexcept;
-#define CLOCK_MONOTONIC 4
+#define CLOCK_MONOTONIC 3
 }
 
+// sys/unistd.h
 // unistd.h
 extern "C" {
 int close(int) noexcept;
 int isatty(int) noexcept;
 long sysconf(int) noexcept;
 ssize_t write(int, const void*, size_t) noexcept;
-#define _SC_NPROCESSORS_ONLN 58
+#define _SC_NPROCESSORS_ONLN 1002
 }
 
-#endif  // SRC_OS_FREEBSD_C_H_
+#endif  // SRC_OS_NETBSD_C_H_

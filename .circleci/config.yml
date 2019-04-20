@@ -61,21 +61,22 @@ jobs:
           cmake .. &&
           cmake --build .
 
-# FIXME: The first run step fails with an error on "/bin/sh -eo pipefail".
-#  void_latest:
-#    docker:
-#      - image: voidlinux/voidlinux:latest
-#    steps:
-#      - run: |
-#          xbps-install -S &&
-#          xbps-install git cmake make gcc
-#      - checkout
-#      - run: |
-#          git submodule update --init --recursive &&
-#          mkdir build &&
-#          cd build &&
-#          cmake .. &&
-#          cmake --build .
+  void:
+    docker:
+      - image: pmerrill/voidlinux-bash:latest
+    steps:
+      - run: |
+          xbps-install -S &&
+          xbps-install -uy &&
+          xbps-install -uy &&
+          xbps-install -y git cmake make gcc
+      - checkout
+      - run: |
+          git submodule update --init --recursive &&
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
 
   alpine_3_9:
     docker:
@@ -99,5 +100,5 @@ workflows:
       - ubuntu_19_04
       - fedora_29
       - arch_latest
-#     - void_latest
+      - void
       - alpine_3_9

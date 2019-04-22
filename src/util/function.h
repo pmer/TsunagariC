@@ -31,6 +31,9 @@
 #include "util/meta.h"
 #include "util/move.h"
 
+#pragma warning(push)
+#pragma warning(disable: 26495)  // Always initialize a member variable.
+
 template<class F> class Function;  // Undefined.
 
 namespace function {
@@ -267,5 +270,7 @@ Function<R(ArgTypes...)>::operator()(ArgTypes... args) const noexcept {
     assert_(f != nullptr);
     return (*f)(forward_<ArgTypes>(args)...);
 }
+
+#pragma warning(pop)
 
 #endif  // SRC_UTIL_FUNCTION_H_

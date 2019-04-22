@@ -49,7 +49,7 @@ class DataArea {
 
     virtual ~DataArea() = default;
 
-    Area* area;  // borrowed reference
+    Area* area = nullptr;  // borrowed reference
 
     virtual void onLoad() noexcept;
     virtual void onFocus() noexcept;

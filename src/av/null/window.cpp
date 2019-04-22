@@ -50,8 +50,10 @@ class NullGameWindow : public GameWindow {
     void mainLoop() noexcept final {
         TimePoint last = 0;
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
+#endif
         while (true) {
             TimePoint now = SteadyClock::now();
             time_t time = ns_to_ms(now - last);
@@ -65,7 +67,9 @@ class NullGameWindow : public GameWindow {
 
             last = now;
         }
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
     }
 
     void drawRect(double, double, double, double, uint32_t) noexcept final {}

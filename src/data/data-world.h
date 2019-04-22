@@ -50,11 +50,12 @@ class DataWorld {
         StringView name, author, version;
     } about;
     struct {
-        enum movement_mode_t moveMode;
-        rvec2 viewportResolution;
+        enum movement_mode_t moveMode = TURN;
+        rvec2 viewportResolution = {0.0, 0.0};
         struct {
             struct {
-                int initial, consecutive;
+                int initial = 0;
+				int consecutive = 0;
             } persistDelay;
         } input;
         struct {
@@ -62,7 +63,7 @@ class DataWorld {
                 StringView file, phase;
             } player;
             StringView area;
-            vicoord coords;
+            vicoord coords = {0, 0, 0.0};
         } gameStart;
     } parameters;
     StringView datafile;

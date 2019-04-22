@@ -94,6 +94,7 @@ void* __cdecl memchr(const void* buf, int chr, size_t cnt) noexcept;
 int __cdecl memcmp(void const* dst, void const* src, size_t size) noexcept;
 size_t __cdecl strlen(char const* _Str) noexcept;
 
+int __cdecl abs(int _X) noexcept;
 double __cdecl atan2(double _Y, double _X) noexcept;
 _ACRTIMP double __cdecl ceil(double _X) noexcept;
 #if defined _M_X64

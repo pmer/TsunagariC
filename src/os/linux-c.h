@@ -185,6 +185,7 @@ extern FILE* const stderr;
 
 // stdlib.h
 extern "C" {
+int abs(int) noexcept;
 int atoi(const char*) noexcept;
 void exit(int) noexcept;
 void free(void*) noexcept;

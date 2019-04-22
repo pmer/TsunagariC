@@ -263,6 +263,7 @@ extern FILE __sF[3];
 
 // stdlib.h
 extern "C" {
+int abs(int) noexcept;
 int atoi(const char*) noexcept;
 void exit(int) noexcept;
 void free(void*) noexcept;

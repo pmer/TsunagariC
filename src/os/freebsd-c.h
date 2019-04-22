@@ -209,6 +209,7 @@ extern FILE* __stderrp;
 
 // stdlib.h
 extern "C" {
+int abs(int) noexcept;
 int atoi(const char*) noexcept;
 void exit(int) noexcept;
 void free(void*) noexcept;

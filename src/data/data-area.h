@@ -76,7 +76,7 @@ class DataArea {
  protected:
     DataArea() = default;
 
-    Hashmap<String, TileScript> scripts;
+    Hashmap<StringView, TileScript> scripts;
 
  private:
     DataArea(const DataArea&) = delete;

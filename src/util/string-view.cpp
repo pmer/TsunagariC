@@ -80,3 +80,8 @@ size_t
 hash_(StringView s) noexcept {
     return fnvHash(s.data, s.size);
 }
+
+size_t
+hash_(const char* s) noexcept {
+    return hash_(StringView(s));
+}

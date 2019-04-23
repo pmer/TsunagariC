@@ -36,6 +36,9 @@ class StringView {
     inline constexpr StringView() noexcept : data(nullptr), size(0){};
     inline StringView(const char* data) noexcept
             : data(data), size(strlen(data)) {}
+    template<size_t N>
+    inline constexpr StringView(const char (&data)[N]) noexcept
+            : data(data), size(N){};
     inline constexpr StringView(const char* data, size_t size) noexcept
             : data(data), size(size){};
     inline constexpr StringView(const StringView& s) noexcept
@@ -120,5 +123,6 @@ operator<(const StringView& a, const StringView& b) noexcept {
 }
 
 size_t hash_(StringView s) noexcept;
+size_t hash_(const char* s) noexcept;
 
 #endif  // SRC_UTIL_STRING_VIEW_H_

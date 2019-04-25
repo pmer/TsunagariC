@@ -1,19 +1,12 @@
 language: cpp
 
 os: osx
-osx_image: xcode10.1
+osx_image: xcode10.2
 
-#FIXME: Homebrew is out of date on Travis. Uncomment when it has CMake 3.13.
-#addons:
-# homebrew:
-#   packages:
-#     - cmake
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-
-install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade cmake; fi
+addons:
+ homebrew:
+   packages:
+     - cmake
 
 script:
   - mkdir build

@@ -144,13 +144,14 @@ template<typename T> class List {
     inline ConstIterator end() const noexcept { return ConstIterator(&head); }
 
     template<typename... Args>
-    inline void emplace_back(Args&&... args) noexcept {
+    inline Iterator emplace_back(Args&&... args) noexcept {
         Node* node = new Node(forward_<Args>(args)...);
         node->next = &head;
         node->prev = head.prev;
         node->prev->next = node;
         head.prev = node;
         ++n;
+        return Iterator(next);
     }
     inline Iterator erase(Iterator it) noexcept {
         Links* prev = it.links->prev;

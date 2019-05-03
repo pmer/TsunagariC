@@ -94,16 +94,26 @@ template<typename T> class List {
         const Links* links;
     };
 
-    inline List() noexcept : n(0) {
+    inline List() noexcept {
         head.next = &head;
         head.prev = &head;
+        n = 0;
     }
-    inline List(const List& other) noexcept { *this = other; }
-    inline List(List&& other) noexcept { *this = move_(other); }
+    inline List(const List& other) noexcept { List(); *this = move_(other); }
+    inline List(List&& other) noexcept {
+        head = other.head;
+        n = other.n;
+
+        other.head.next = &other.head;
+        other.head.prev = &other.head;
+        other.n = 0;
+    }
+
     ~List() noexcept {
         for (Iterator it = begin(); it != end(); it = erase(it)) {
         }
     }
+
     List& operator=(const List& other) noexcept {
         for (ConstIterator it = other.begin(); it != other.end(); ++it) {
             emplace_back(*it);

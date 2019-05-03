@@ -63,7 +63,7 @@ getSignpost(String description) noexcept {
 #endif  // defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
 
 TimeMeasure::TimeMeasure(String description) noexcept {
-    description = move_(description);
+    this->description = move_(description);
     start = SteadyClock::now();
 #if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
     signpost = getSignpost(description);

@@ -107,8 +107,8 @@ template<typename T> class List {
     }
     inline List(List&& other) noexcept {
         head = other.head;
-        head->next->prev = head;
-        head->prev->next = head;
+        head->next->prev = &head;
+        head->prev->next = &head;
         n = other.n;
 
         other.head = {&other.head, &other.head};
@@ -130,8 +130,8 @@ template<typename T> class List {
         this->~List();
 
         head = other.head;
-        head->next->prev = head;
-        head->prev->next = head;
+        head->next->prev = &head;
+        head->prev->next = &head;
         n = other.n;
 
         other.head = {&other.head, &other.head};

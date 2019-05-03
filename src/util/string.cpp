@@ -46,8 +46,6 @@ NullTerminatedString::operator const char*() noexcept {
     return s.data();
 }
 
-void printf(const char*, ...);
-
 String::String() noexcept {
     printf("%p->String()\n", this);
 }

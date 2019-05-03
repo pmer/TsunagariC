@@ -156,10 +156,10 @@ template<typename T> class List {
     inline Iterator erase(Iterator it) noexcept {
         Links* prev = it.links->prev;
         Links* next = it.links->next;
+        delete it.links->toNode();
         prev->next = next;
         next->prev = prev;
         n--;
-        delete it.links->toNode();
         return Iterator(next);
     }
 

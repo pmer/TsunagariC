@@ -29,6 +29,7 @@
 
 #include "config.h"
 #include "core/jsons.h"
+#include "os/os.h"
 #include "util/move.h"
 #include "util/string.h"
 #include "util/string2.h"
@@ -40,7 +41,7 @@ Conf conf;  // Project-wide global configuration.
 // missing options.
 bool
 parseConfig(StringView filename) noexcept {
-    Optional<String> file = slurp(filename);
+    Optional<String> file = readFile(filename);
 
     if (!file) {
         Log::err(filename, String() << "Could not find " << filename);

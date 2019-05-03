@@ -27,6 +27,7 @@
 #include "util/string.h"
 
 #include "os/c.h"
+#include "util/fnv.h"
 
 NullTerminatedString::NullTerminatedString(String& s) noexcept : s(s) {
     s.push_back('\0');
@@ -164,4 +165,9 @@ String::view() const noexcept {
 NullTerminatedString
 String::null() noexcept {
     return NullTerminatedString(*this);
+}
+
+size_t
+hash_(const String& s) noexcept {
+    return fnvHash(s.data(), s.size());
 }

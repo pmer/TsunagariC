@@ -52,6 +52,7 @@
 #include "os/c.h"
 #include "util/algorithm.h"
 #include "util/assert.h"
+#include "util/hash.h"
 #include "util/int.h"
 #include "util/list.h"
 #include "util/meta.h"
@@ -59,8 +60,6 @@
 #include "util/new.h"
 #include "util/optional.h"
 #include "util/vector.h"
-
-template<typename T> size_t hash_(const T&) noexcept;
 
 namespace hopscotch {
     /**

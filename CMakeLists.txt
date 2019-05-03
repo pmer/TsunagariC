@@ -30,7 +30,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
     set(CLANG 1)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES GCC)
-    set(GCCk 1)
+    set(GCC 1)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     set(MSVC 1)
@@ -45,6 +45,7 @@ set(IS_RELEASE "$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebI
 #
 
 add_library(tsunagari)
+add_executable(null-world)
 add_executable(pack-tool)
 
 
@@ -62,11 +63,17 @@ target_include_directories(tsunagari
 #
 
 target_include_directories(tsunagari PUBLIC src)
+target_include_directories(null-world PUBLIC src)
 target_include_directories(pack-tool PUBLIC src)
 
 target_sources(tsunagari
     PUBLIC  src/config.h
     PRIVATE src/main.cpp
+)
+
+target_sources(null-world
+    PRIVATE src/null-world.cpp
+    PRIVATE src/null-world.h
 )
 
 if(AV_NULL)
@@ -293,6 +300,8 @@ target_sources(tsunagari
     PUBLIC  src/util/dispatch-queue.h
     PRIVATE src/util/fnv.cpp
     PUBLIC  src/util/fnv.h
+    PRIVATE src/util/hash.cpp
+    PUBLIC  src/util/hash.h
     PUBLIC  src/util/hashtable.h
     PUBLIC  src/util/int.h
     PUBLIC  src/util/likely.h
@@ -346,9 +355,12 @@ target_sources(pack-tool
 #
 
 get_target_property(TSUNAGARI_SOURCES tsunagari SOURCES)
+get_target_property(NULL_WORLD_SOURCES null-world SOURCES)
 get_target_property(PACK_TOOL_SOURCES pack-tool SOURCES)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    FILES ${TSUNAGARI_SOURCES} ${PACK_TOOL_SOURCES}
+    FILES ${TSUNAGARI_SOURCES}
+          ${NULL_WORLD_SOURCES}
+          ${PACK_TOOL_SOURCES}
 )
 
 
@@ -357,8 +369,10 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
 #
 
 target_compile_features(tsunagari PUBLIC cxx_std_14)
+target_compile_features(null-world PUBLIC cxx_std_14)
 target_compile_features(pack-tool PUBLIC cxx_std_14)
 set_target_properties(tsunagari PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(null-world PROPERTIES CXX_EXTENSIONS OFF)
 set_target_properties(pack-tool PROPERTIES CXX_EXTENSIONS OFF)
 
 # Disable C++ exceptions
@@ -494,3 +508,9 @@ if(AV_GOSU)
     #    set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES} /System/Library/Frameworks/Cocoa.framework)
     #endif()
 endif()
+
+target_link_libraries(null-world
+    tsunagari
+    /System/Library/Frameworks/Cocoa.framework
+    /System/Library/Frameworks/Foundation.framework
+)

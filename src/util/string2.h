@@ -67,7 +67,4 @@ Vector<String> splitStr(StringView str, StringView delimiter) noexcept;
  */
 Optional<Vector<int>> parseRanges(StringView format) noexcept;
 
-Optional<String> slurp(String& path) noexcept;
-Optional<String> slurp(StringView path) noexcept;
-
 #endif  // SRC_UTIL_STRING2_H_

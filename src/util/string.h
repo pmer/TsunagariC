@@ -78,4 +78,6 @@ class String : public Vector<char> {
     NullTerminatedString null() noexcept;
 };
 
+size_t hash_(const String& s) noexcept;
+
 #endif  // SRC_UTIL_STRING_H_

@@ -60,4 +60,6 @@ static constexpr double DBL_MAX = 1.7976931348623158e+308;
 static constexpr size_t SIZE_MAX = __SIZE_MAX__;
 #endif
 
+static constexpr double M_PI = 3.14159265358979323846;
+
 #endif  // SRC_UTIL_INT_H_

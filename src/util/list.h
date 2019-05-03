@@ -152,13 +152,14 @@ template<typename T> class List {
         head.prev = node;
         ++n;
     }
-    inline void erase(Iterator it) noexcept {
+    inline Iterator erase(Iterator it) noexcept {
         Links* prev = it.links->prev;
         Links* next = it.links->next;
         prev->next = next;
         next->prev = prev;
         n--;
         delete it.links->toNode();
+        return Iterator(next);
     }
 
     inline size_t size() noexcept { return n; }

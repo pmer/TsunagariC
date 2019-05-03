@@ -98,7 +98,7 @@ Log::info(StringView domain, StringView msg) noexcept {
         LockGuard lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
-        printf("%s", makeTimestamp().null().get());
+        printf("%s ", makeTimestamp().null().get());
 
         setTermColor(TC_YELLOW);
         String s;
@@ -119,7 +119,7 @@ Log::err(StringView domain, StringView msg) noexcept {
             LockGuard lock(stdoutMutex);
 
             setTermColor(TC_GREEN);
-            fprintf(stderr, "%s", makeTimestamp().null().get());
+            fprintf(stderr, "%s ", makeTimestamp().null().get());
 
             setTermColor(TC_RED);
             String s;
@@ -150,7 +150,7 @@ Log::fatal(StringView domain, StringView msg) noexcept {
         LockGuard lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
-        fprintf(stderr, "%s", makeTimestamp().null().get());
+        fprintf(stderr, "%s ", makeTimestamp().null().get());
 
         setTermColor(TC_RED);
         String s;
@@ -194,7 +194,7 @@ Log::reportVerbosityOnStartup() noexcept {
     }
 
     setTermColor(TC_GREEN);
-    printf("%s", makeTimestamp().null().get());
+    printf("%s ", makeTimestamp().null().get());
 
     setTermColor(TC_RESET);
     String s;

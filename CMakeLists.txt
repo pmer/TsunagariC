@@ -455,6 +455,11 @@ endif()
 if(APPLE)
     # FIXME: Change to be target-specific.
     set(GUI_TYPE MACOSX_BUNDLE)
+
+    target_link_libraries(tsunagari
+        /System/Library/Frameworks/Cocoa.framework
+        /System/Library/Frameworks/Foundation.framework
+    )
 endif()
 
 if(AV_SDL2)
@@ -503,8 +508,4 @@ if(AV_GOSU)
     #endif()
 endif()
 
-target_link_libraries(null-world
-    tsunagari
-    /System/Library/Frameworks/Cocoa.framework
-    /System/Library/Frameworks/Foundation.framework
-)
+target_link_libraries(null-world tsunagari)

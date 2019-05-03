@@ -75,7 +75,7 @@ String::~String() noexcept {
 
 String&
 String::operator=(String&& other) noexcept {
-    printf("%p->operator=(String&&)\n"
+    printf("%p->operator=(String&&)\n");
     swap(other);
     return *this;
 }

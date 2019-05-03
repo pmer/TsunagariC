@@ -457,12 +457,6 @@ if(APPLE)
     set(GUI_TYPE MACOSX_BUNDLE)
 endif()
 
-find_package(Threads)
-if(Threads_FOUND)
-    target_link_libraries(tsunagari Threads::Threads)
-    target_link_libraries(pack-tool Threads::Threads)
-endif()
-
 if(AV_SDL2)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(SDL2 REQUIRED SDL2 sdl2)

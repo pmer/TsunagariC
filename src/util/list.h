@@ -151,7 +151,7 @@ template<typename T> class List {
         node->prev->next = node;
         head.prev = node;
         ++n;
-        return Iterator(next);
+        return Iterator(node);
     }
     inline Iterator erase(Iterator it) noexcept {
         Links* prev = it.links->prev;

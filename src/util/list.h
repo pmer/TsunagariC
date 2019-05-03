@@ -95,28 +95,28 @@ template<typename T> class List {
     };
 
     inline List() noexcept {
-        head.next = &head;
-        head.prev = &head;
+        head = {&head, &head};
         n = 0;
     }
     inline List(const List& other) noexcept {
-        head.next = &head;
-        head.prev = &head;
+        head = {&head, &head};
         n = 0;
-        *this = other;
+        for (ConstIterator it = other.begin(); it != other.end(); ++it) {
+            emplace_back(*it);
+        }
     }
     inline List(List&& other) noexcept {
         head = other.head;
         n = other.n;
 
-        other.head.next = &other.head;
-        other.head.prev = &other.head;
+        other.head = {&other.head, &other.head};
         other.n = 0;
     }
 
     ~List() noexcept {
         for (Iterator it = begin(); it != end(); it = erase(it)) {
         }
+        n = 0;
     }
 
     List& operator=(const List& other) noexcept {
@@ -130,8 +130,7 @@ template<typename T> class List {
         head = other.head;
         n = other.n;
 
-        other.head.next = &other.head;
-        other.head.prev = &other.head;
+        other.head = {&other.head, &other.head};
         other.n = 0;
 
         return *this;
@@ -145,21 +144,21 @@ template<typename T> class List {
     inline ConstIterator end() const noexcept { return ConstIterator(&head); }
 
     template<typename... Args>
-    inline Iterator emplace_back(Args&&... args) noexcept {
+    inline void emplace_back(Args&&... args) noexcept {
         Node* node = new Node(forward_<Args>(args)...);
         node->next = &head;
         node->prev = head.prev;
         node->prev->next = node;
         head.prev = node;
         ++n;
-        return Iterator(node);
     }
-    inline Iterator erase(Iterator it) noexcept {
-        Iterator next = it;
-        ++next;
+    inline void erase(Iterator it) noexcept {
+        Links* prev = it.links->prev;
+        Links* next = it.links->next;
+        prev->next = next;
+        next->prev = prev;
+        n--;
         delete it.links->toNode();
-        --n;
-        return next;
     }
 
     inline size_t size() noexcept { return n; }

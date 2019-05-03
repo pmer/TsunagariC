@@ -27,36 +27,33 @@
 #ifndef SRC_AV_SDL2_MUSIC_H_
 #define SRC_AV_SDL2_MUSIC_H_
 
-#include <string>
-
+#include "av/sdl2/sdl2.h"
 #include "cache/cache-template.h"
 #include "cache/readercache.h"
 #include "core/music-worker.h"
 #include "core/resources.h"
+#include "util/optional.h"
 #include "util/rc.h"
+#include "util/string-view.h"
 #include "util/unique.h"
-
-// This declaration matches exactly the one found in SDL_mixer.h so in
-// music.cpp we can include both headers without the compiler complaining.
-typedef struct _Mix_Music Mix_Music;
 
 struct SDL2Song {
     ~SDL2Song();
 
     // The Mix_Music needs the music data to be kept around for its lifetime.
-    Unique<Resource> resource;
+    Optional<StringView> resource;
 
     Mix_Music* mix;
 };
 
-Rc<SDL2Song> genSong(const std::string& name);
+Rc<SDL2Song> genSong(StringView name);
 
 class SDL2Music : public MusicWorker {
  public:
     SDL2Music();
     ~SDL2Music();
 
-    void play(std::string filename);
+    void play(StringView filename);
 
     void stop();
 

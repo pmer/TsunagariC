@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** error.h                       **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** error.h                          **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,8 +27,8 @@
 #ifndef SRC_AV_SDL2_ERROR_H_
 #define SRC_AV_SDL2_ERROR_H_
 
-#include <string>
+#include "util/string-view.h"
 
-void sdlDie(std::string system, std::string function);
+void sdlDie(StringView system, StringView function);
 
 #endif  // SRC_AV_SDL2_ERROR_H_

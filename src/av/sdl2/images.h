@@ -27,12 +27,10 @@
 #ifndef SRC_AV_SDL2_IMAGE_H_
 #define SRC_AV_SDL2_IMAGE_H_
 
-#include "core/images.h"
-
+#include "av/sdl2/sdl2.h"
 #include "cache/cache-template.h"
 #include "cache/readercache.h"
-
-typedef struct SDL_Texture SDL_Texture;
+#include "core/images.h"
 
 struct SDL2Texture {
     explicit SDL2Texture(SDL_Texture* texture);
@@ -51,9 +49,13 @@ class SDL2Image : public Image {
     SDL2Image(SDL_Texture* texture, int width, int height);
 
     void draw(double dstX, double dstY, double z) final;
-    void drawSubrect(double dstX, double dstY, double z,
-                     double srcX, double srcY,
-                     double srcW, double srcH) final;
+    void drawSubrect(double dstX,
+                     double dstY,
+                     double z,
+                     double srcX,
+                     double srcY,
+                     double srcW,
+                     double srcH) final;
 
     SDL2Texture texture;
 };
@@ -61,21 +63,31 @@ class SDL2Image : public Image {
 class SDL2TiledSubImage : public Image {
  public:
     SDL2TiledSubImage(Rc<SDL2Texture> texture,
-                      int xOff, int yOff, int width, int height);
+                      int xOff,
+                      int yOff,
+                      int width,
+                      int height);
 
     void draw(double dstX, double dstY, double z) final;
-    void drawSubrect(double dstX, double dstY, double z,
-                     double srcX, double srcY,
-                     double srcW, double srcH) final;
+    void drawSubrect(double dstX,
+                     double dstY,
+                     double z,
+                     double srcX,
+                     double srcY,
+                     double srcW,
+                     double srcH) final;
 
     int xOff, yOff;
     Rc<SDL2Texture> texture;
 };
 
-class SDL2TiledImage: public TiledImage {
+class SDL2TiledImage : public TiledImage {
  public:
     SDL2TiledImage(SDL_Texture* texture,
-                   int width, int height, int tileW, int tileH);
+                   int width,
+                   int height,
+                   int tileW,
+                   int tileH);
 
     size_t size() const final;
 
@@ -91,14 +103,15 @@ class SDL2TiledImage: public TiledImage {
 };
 
 
-Rc<Image> genImage(const std::string& path);
+Rc<Image> genImage(StringView path);
 
 class SDL2Images : public Images {
  public:
-    Rc<Image> load(const std::string& path) final;
+    Rc<Image> load(StringView path) final;
 
-    Rc<TiledImage> loadTiles(const std::string& path,
-        unsigned tileW, unsigned tileH) final;
+    Rc<TiledImage> loadTiles(StringView path,
+                             unsigned tileW,
+                             unsigned tileH) final;
 
     void garbageCollect() final;
 

@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** error.cpp                     **
-** Copyright 2016 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** error.cpp                        **
+** Copyright 2016-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,15 +26,16 @@
 
 #include "av/sdl2/error.h"
 
-#include <SDL.h>
-
+#include "av/sdl2/sdl2.h"
 #include "core/log.h"
+#include "util/string.h"
 
-void sdlDie(std::string system, std::string function) {
-    std::string message = function;
-    std::string err = SDL_GetError();
-    if (err.size() > 0) {
-        message = message + ": " + err;
+void
+sdlDie(StringView system, StringView function) {
+    String message = function;
+    StringView err = SDL_GetError();
+    if (err.size > 0) {
+        message << ": " << err;
     }
     Log::fatal(system, message);
 }

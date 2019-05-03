@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** window.cpp                       **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -26,10 +26,8 @@
 
 #include "av/sdl2/window.h"
 
-#include <chrono>
-#include <thread>
-
 #include "av/sdl2/error.h"
+#include "av/sdl2/sdl2.h"
 #include "core/client-conf.h"
 #include "core/display-list.h"
 #include "core/log.h"
@@ -37,52 +35,59 @@
 #include "core/world.h"
 #include "util/optional.h"
 
-#define CHECK(x)  if (!(x)) { return false; }
+#define CHECK(x)      \
+    if (!(x)) {       \
+        return false; \
+    }
 
 static SDL2GameWindow globalWindow;
 
-GameWindow* GameWindow::create() {
-    return globalWindow.init() ? &globalWindow
-                               : nullptr;
+GameWindow*
+GameWindow::create() {
+    return globalWindow.init() ? &globalWindow : nullptr;
 }
 
-GameWindow& GameWindow::instance() {
+GameWindow&
+GameWindow::instance() {
     return globalWindow;
 }
 
-SDL2GameWindow& SDL2GameWindow::instance() {
+SDL2GameWindow&
+SDL2GameWindow::instance() {
     return globalWindow;
 }
 
-time_t GameWindow::time() {
-    std::chrono::time_point<std::chrono::steady_clock> start = globalWindow.start;
-    std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
-    return std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+time_t
+GameWindow::time() {
+    TimePoint start = globalWindow.start;
+    TimePoint end = SteadyClock::now();
+    return ns_to_ms(end - start);
 }
 
 SDL2GameWindow::SDL2GameWindow()
-    : renderer(nullptr),
-      translation(0.0, 0.0),
-      scaling(0.0, 0.0),
-      window(nullptr),
-      transform(Transform::identity()) {}
+        : renderer(nullptr),
+          translation{0.0, 0.0},
+          scaling{0.0, 0.0},
+          window(nullptr),
+          transform(Transform::identity()) {}
 
-bool SDL2GameWindow::init() {
+bool
+SDL2GameWindow::init() {
     {
-        //TimeMeasure m("Initializing SDL2");
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
+        // TimeMeasure m("Initializing SDL2");
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             sdlDie("SDL2GameWindow", "SDL_Init");
             return false;
         }
     }
 
     {
-        //TimeMeasure m("Created SDL2 window");
+        // TimeMeasure m("Created SDL2 window");
 
         int width = conf.windowSize.x;
         int height = conf.windowSize.y;
 
-        Uint32 flags = SDL_WINDOW_HIDDEN;
+        uint32_t flags = SDL_WINDOW_HIDDEN;
         if (conf.fullscreen) {
             flags |= SDL_WINDOW_FULLSCREEN;
         }
@@ -90,7 +95,9 @@ bool SDL2GameWindow::init() {
         window = SDL_CreateWindow("Tsunagari",
                                   SDL_WINDOWPOS_UNDEFINED,
                                   SDL_WINDOWPOS_UNDEFINED,
-                                  width, height, flags);
+                                  width,
+                                  height,
+                                  flags);
 
         if (window == nullptr) {
             sdlDie("SDL2GameWindow", "SDL_CreateWindow");
@@ -99,9 +106,9 @@ bool SDL2GameWindow::init() {
     }
 
     {
-        //TimeMeasure m("Created SDL2 renderer");
+        // TimeMeasure m("Created SDL2 renderer");
 
-        Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+        uint32_t flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 
         renderer = SDL_CreateRenderer(window, -1, flags);
 
@@ -116,23 +123,27 @@ bool SDL2GameWindow::init() {
     return true;
 }
 
-unsigned SDL2GameWindow::width() const {
+unsigned
+SDL2GameWindow::width() const {
     int w, h;
     SDL_GetWindowSize(window, &w, &h);
     return static_cast<unsigned>(w);
 }
 
-unsigned SDL2GameWindow::height() const {
+unsigned
+SDL2GameWindow::height() const {
     int w, h;
     SDL_GetWindowSize(window, &w, &h);
     return static_cast<unsigned>(h);
 }
 
-void SDL2GameWindow::setCaption(const std::string& caption) {
-    SDL_SetWindowTitle(window, caption.c_str());
+void
+SDL2GameWindow::setCaption(StringView caption) {
+    SDL_SetWindowTitle(window, String(caption).null());
 }
 
-static int getRefreshRate(SDL_Window* window) {
+static int
+getRefreshRate(SDL_Window* window) {
     // SDL_GetWindowDisplayIndex computes which display the window is on each
     // time.
     int display = SDL_GetWindowDisplayIndex(window);
@@ -141,7 +152,8 @@ static int getRefreshRate(SDL_Window* window) {
     return mode.refresh_rate;
 }
 
-void SDL2GameWindow::mainLoop() {
+void
+SDL2GameWindow::mainLoop() {
     DisplayList display;
 
     SDL_ShowWindow(window);
@@ -162,15 +174,17 @@ void SDL2GameWindow::mainLoop() {
             SDL_RenderPresent(renderer);
 
             // TODO: Detect dropped frames.
-        } else {
-            // TODO: Question: How do we handle freesync and gsync?
-            std::chrono::duration<float> frameLength(1.0 / getRefreshRate(window));
-            std::this_thread::sleep_for(frameLength);
+        }
+        else {
+            // TODO: Question: How do we handle variable refresh rate screens?
+            Duration frameLength{s_to_ns(1) / getRefreshRate(window)};
+            SleepFor(frameLength);
         }
     }
 }
 
-void SDL2GameWindow::handleEvents() {
+void
+SDL2GameWindow::handleEvents() {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
@@ -178,24 +192,46 @@ void SDL2GameWindow::handleEvents() {
     }
 }
 
-void SDL2GameWindow::handleEvent(const SDL_Event& event) {
+void
+SDL2GameWindow::handleEvent(const SDL_Event& event) {
     KeyboardKey key;
 
     switch (event.type) {
     case SDL_KEYUP:
     case SDL_KEYDOWN:
         switch (event.key.keysym.sym) {
-        case SDLK_ESCAPE: key = KBEscape; break;
-        case SDLK_LCTRL: key = KBLeftControl; break;
-        case SDLK_RCTRL: key = KBRightControl; break;
-        case SDLK_LSHIFT: key = KBLeftShift; break;
-        case SDLK_RSHIFT: key = KBRightShift; break;
-        case SDLK_SPACE: key = KBSpace; break;
-        case SDLK_LEFT: key = KBLeftArrow; break;
-        case SDLK_RIGHT: key = KBRightArrow; break;
-        case SDLK_UP: key = KBUpArrow; break;
-        case SDLK_DOWN: key = KBDownArrow; break;
-        default: return;
+        case SDLK_ESCAPE:
+            key = KBEscape;
+            break;
+        case SDLK_LCTRL:
+            key = KBLeftControl;
+            break;
+        case SDLK_RCTRL:
+            key = KBRightControl;
+            break;
+        case SDLK_LSHIFT:
+            key = KBLeftShift;
+            break;
+        case SDLK_RSHIFT:
+            key = KBRightShift;
+            break;
+        case SDLK_SPACE:
+            key = KBSpace;
+            break;
+        case SDLK_LEFT:
+            key = KBLeftArrow;
+            break;
+        case SDLK_RIGHT:
+            key = KBRightArrow;
+            break;
+        case SDLK_UP:
+            key = KBUpArrow;
+            break;
+        case SDLK_DOWN:
+            key = KBDownArrow;
+            break;
+        default:
+            return;
         }
         if (event.type == SDL_KEYUP) {
             emitKeyUp(key);
@@ -215,12 +251,16 @@ void SDL2GameWindow::handleEvent(const SDL_Event& event) {
     }
 }
 
-void SDL2GameWindow::drawRect(double x1, double x2, double y1, double y2,
-              uint32_t argb) {
-    auto a = static_cast<Uint8>((argb >> 24) & 0xFF);
-    auto r = static_cast<Uint8>((argb >> 16) & 0xFF);
-    auto g = static_cast<Uint8>((argb >>  8) & 0xFF);
-    auto b = static_cast<Uint8>((argb >>  0) & 0xFF);
+void
+SDL2GameWindow::drawRect(double x1,
+                         double x2,
+                         double y1,
+                         double y2,
+                         uint32_t argb) {
+    auto a = static_cast<uint8_t>((argb >> 24) & 0xFF);
+    auto r = static_cast<uint8_t>((argb >> 16) & 0xFF);
+    auto g = static_cast<uint8_t>((argb >> 8) & 0xFF);
+    auto b = static_cast<uint8_t>((argb >> 0) & 0xFF);
 
     SDL_Rect rect{static_cast<int>(x1),
                   static_cast<int>(y1),
@@ -232,7 +272,8 @@ void SDL2GameWindow::drawRect(double x1, double x2, double y1, double y2,
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void SDL2GameWindow::scale(double x, double y, std::function<void()> op) {
+void
+SDL2GameWindow::scale(double x, double y, Function<void()> op) {
     assert_(x == y);
 
     Transform prev = transform;
@@ -248,11 +289,13 @@ void SDL2GameWindow::scale(double x, double y, std::function<void()> op) {
     updateTransform();
 }
 
-void SDL2GameWindow::translate(double x, double y, std::function<void()> op) {
+void
+SDL2GameWindow::translate(double x, double y, Function<void()> op) {
     Transform prev = transform;
 
-    transform = Transform::translate(static_cast<float>(x),
-                                     static_cast<float>(y)) * transform;
+    transform =
+            Transform::translate(static_cast<float>(x), static_cast<float>(y)) *
+            transform;
     updateTransform();
 
     op();
@@ -261,17 +304,23 @@ void SDL2GameWindow::translate(double x, double y, std::function<void()> op) {
     updateTransform();
 }
 
-void SDL2GameWindow::clip(double x, double y, double width, double height,
-                          std::function<void()> op) {
+void
+SDL2GameWindow::clip(double x,
+                     double y,
+                     double width,
+                     double height,
+                     Function<void()> op) {
     op();
 }
 
-void SDL2GameWindow::close() {
+void
+SDL2GameWindow::close() {
     SDL_DestroyWindow(window);
     window = nullptr;
 }
 
-void SDL2GameWindow::updateTransform() {
+void
+SDL2GameWindow::updateTransform() {
     int w, h;
 
     SDL_GetWindowSize(window, &w, &h);

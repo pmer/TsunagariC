@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** window.h                         **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -27,14 +27,11 @@
 #ifndef SRC_AV_SDL2_WINDOW_H_
 #define SRC_AV_SDL2_WINDOW_H_
 
-#include <chrono>
-#include <map>
-#include <string>
-
-#include <SDL.h>
-
-#include "core/window.h"
+#include "av/sdl2/sdl2.h"
 #include "core/vec.h"
+#include "core/window.h"
+#include "os/chrono.h"
+#include "util/function.h"
 #include "util/transform.h"
 
 class SDL2GameWindow : public GameWindow {
@@ -49,23 +46,25 @@ class SDL2GameWindow : public GameWindow {
     unsigned width() const;
     unsigned height() const;
 
-    void setCaption(const std::string& caption);
+    void setCaption(StringView caption);
 
     void mainLoop();
     void handleEvents();
     void handleEvent(const SDL_Event& event);
 
-    void drawRect(double x1, double x2, double y1, double y2,
-                  uint32_t argb);
+    void drawRect(double x1, double x2, double y1, double y2, uint32_t argb);
 
-    void scale(double x, double y, std::function<void()> op);
-    void translate(double x, double y, std::function<void()> op);
-    void clip(double x, double y, double width, double height,
-              std::function<void()> op);
+    void scale(double x, double y, Function<void()> op);
+    void translate(double x, double y, Function<void()> op);
+    void clip(double x,
+              double y,
+              double width,
+              double height,
+              Function<void()> op);
 
     void close();
 
-    std::chrono::time_point<std::chrono::steady_clock> start;
+    TimePoint start;
 
     SDL_Renderer* renderer;
     rvec2 translation;

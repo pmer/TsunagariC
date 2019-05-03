@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
 ** music.cpp                        **
-** Copyright 2016-2017 Paul Merrill **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -26,37 +26,37 @@
 
 #include "av/sdl2/music.h"
 
-#include <limits.h>
-
-#include <SDL2/SDL_mixer.h>
-
 #include "av/sdl2/sounds.h"
 #include "core/measure.h"
 #include "core/resources.h"
+#include "util/int.h"
 #include "util/unique.h"
 
 static SDL2Music* globalMusicWorker = nullptr;
 
-MusicWorker& MusicWorker::instance() {
+MusicWorker&
+MusicWorker::instance() {
     if (globalMusicWorker == nullptr) {
         globalMusicWorker = new SDL2Music;
     }
     return *globalMusicWorker;
 }
 
-Rc<SDL2Song> genSong(const std::string& name) {
-    Unique<Resource> r = Resources::instance().load(name);
+Rc<SDL2Song>
+genSong(StringView name) {
+    Optional<StringView> r = resourceLoad(name);
     if (!r) {
         // Error logged.
         return Rc<SDL2Song>();
     }
 
-    assert_(r->size() < INT_MAX);
+    assert_(r->size < INT_MAX);
 
-    SDL_RWops* ops = SDL_RWFromMem(const_cast<void*>(r->data()),
-                                   static_cast<int>(r->size()));
+    SDL_RWops* ops =
+            SDL_RWFromMem(static_cast<void*>(const_cast<char*>(r->data)),
+                          static_cast<int>(r->size));
 
-    TimeMeasure m("Constructed " + name + " as music");
+    TimeMeasure m(String() << "Constructed " << name << " as music");
     Mix_Music* music = Mix_LoadMUS_RW(ops, 1);
 
     // We need to keep the memory (the resource) around, so put it in a struct.
@@ -81,7 +81,8 @@ SDL2Music::~SDL2Music() {
     stop();
 }
 
-void SDL2Music::play(std::string filepath) {
+void
+SDL2Music::play(StringView filepath) {
     if (path == filepath) {
         if (Mix_PausedMusic()) {
             paused = 0;
@@ -91,19 +92,19 @@ void SDL2Music::play(std::string filepath) {
     }
 
     MusicWorker::play(move_(filepath));
-    TimeMeasure m("Playing " + path);
+    TimeMeasure m(String() << "Playing " << path);
     if (currentMusic && !Mix_PausedMusic()) {
         Mix_HaltMusic();
     }
-    currentMusic = path.size() ? songs.lifetimeRequest(path)
-                               : Rc<SDL2Song>();
+    currentMusic = path.size() ? songs.lifetimeRequest(path) : Rc<SDL2Song>();
     if (currentMusic) {
         Mix_PlayMusic(currentMusic->mix, -1);
         Mix_VolumeMusic(static_cast<int>(volume * 128));
     }
 }
 
-void SDL2Music::stop() {
+void
+SDL2Music::stop() {
     MusicWorker::stop();
     if (currentMusic) {
         Mix_HaltMusic();
@@ -111,31 +112,36 @@ void SDL2Music::stop() {
     currentMusic = Rc<SDL2Song>();
 }
 
-bool SDL2Music::playing() {
+bool
+SDL2Music::playing() {
     return currentMusic && Mix_PlayingMusic() != 0;
 }
 
-void SDL2Music::pause() {
+void
+SDL2Music::pause() {
     if (paused == 0 && currentMusic) {
         Mix_PauseMusic();
     }
     MusicWorker::pause();
 }
 
-void SDL2Music::resume() {
+void
+SDL2Music::resume() {
     MusicWorker::resume();
     if (paused == 0 && currentMusic) {
         Mix_PlayMusic(currentMusic->mix, -1);
     }
 }
 
-void SDL2Music::setVolume(double volume) {
+void
+SDL2Music::setVolume(double volume) {
     MusicWorker::setVolume(volume);
     if (currentMusic) {
         Mix_VolumeMusic(static_cast<int>(volume * 128));
     }
 }
 
-void SDL2Music::garbageCollect() {
+void
+SDL2Music::garbageCollect() {
     songs.garbageCollect();
 }

@@ -27,12 +27,11 @@
 #ifndef SRC_AV_SDL2_SOUNDS_H_
 #define SRC_AV_SDL2_SOUNDS_H_
 
-#include <SDL2/SDL_mixer.h>
-
+#include "av/sdl2/sdl2.h"
 #include "cache/cache-template.h"
 #include "cache/readercache.h"
-#include "core/sounds.h"
 #include "core/resources.h"
+#include "core/sounds.h"
 
 void SDL2OpenAudio();
 
@@ -40,7 +39,7 @@ struct SDL2Sample {
     ~SDL2Sample();
 
     // The Mix_Chunk needs the music data to be kept around for its lifetime.
-    Unique<Resource> resource;
+    Optional<StringView> resource;
 
     Mix_Chunk* chunk;
 };
@@ -64,15 +63,11 @@ class SDL2SoundInstance : public SoundInstance {
 
  private:
     int channel;
-    enum {
-        S_PLAYING,
-        S_PAUSED,
-        S_DONE
-    } state;
+    enum { S_PLAYING, S_PAUSED, S_DONE } state;
 };
 
 
-Rc<SDL2Sample> genSample(const std::string& name);
+Rc<SDL2Sample> genSample(StringView name);
 
 class SDL2Sounds : public Sounds {
  public:
@@ -80,7 +75,7 @@ class SDL2Sounds : public Sounds {
 
     SDL2Sounds();
 
-    Rc<SoundInstance> play(const std::string& path);
+    Rc<SoundInstance> play(StringView path);
 
     void garbageCollect();
 
@@ -91,7 +86,7 @@ class SDL2Sounds : public Sounds {
     SDL2Sounds& operator=(const SDL2Sounds&) = delete;
 
     ReaderCache<Rc<SDL2Sample>, genSample> samples;
-    vector<Rc<SoundInstance>> channels;
+    Vector<Rc<SoundInstance>> channels;
 };
 
 #endif  // SRC_AV_SDL2_SOUNDS_H_

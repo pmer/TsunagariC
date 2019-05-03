@@ -26,14 +26,13 @@
 
 #include "av/sdl2/sounds.h"
 
-#include <limits.h>
-
-#include <SDL2/SDL.h>
-
+#include "av/sdl2/sdl2.h"
 #include "core/measure.h"
 #include "core/resources.h"
+#include "util/int.h"
 
-void SDL2OpenAudio() {
+void
+SDL2OpenAudio() {
     // Calling these functions more than once is okay.
     int err = SDL_Init(SDL_INIT_AUDIO);
     (void)err;
@@ -42,7 +41,7 @@ void SDL2OpenAudio() {
     err = SDL_Init(SDL_INIT_AUDIO);
     (void)err;
     assert_(err == 0);
-    
+
     err = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
     (void)err;
     assert_(err == 0);
@@ -50,14 +49,16 @@ void SDL2OpenAudio() {
 
 static SDL2Sounds* globalSounds = nullptr;
 
-Sounds& Sounds::instance() {
+Sounds&
+Sounds::instance() {
     if (globalSounds == nullptr) {
         globalSounds = new SDL2Sounds;
     }
     return *globalSounds;
 }
 
-SDL2Sounds& SDL2Sounds::instance() {
+SDL2Sounds&
+SDL2Sounds::instance() {
     if (globalSounds == nullptr) {
         globalSounds = new SDL2Sounds;
     }
@@ -73,67 +74,77 @@ SDL2Sample::~SDL2Sample() {
 SDL2SoundInstance::SDL2SoundInstance(int channel)
         : channel(channel), state(S_PLAYING) {}
 
-bool SDL2SoundInstance::playing() {
+bool
+SDL2SoundInstance::playing() {
     return state == S_PLAYING;
 }
 
-void SDL2SoundInstance::stop() {
+void
+SDL2SoundInstance::stop() {
     assert_(state == S_PLAYING || state == S_PAUSED);
     Mix_HaltChannel(channel);
     state = S_DONE;
 }
 
-bool SDL2SoundInstance::paused() {
+bool
+SDL2SoundInstance::paused() {
     return state == S_PAUSED;
 }
 
-void SDL2SoundInstance::pause() {
+void
+SDL2SoundInstance::pause() {
     assert_(state == S_PLAYING);
     Mix_Pause(channel);
     state = S_PAUSED;
 }
 
-void SDL2SoundInstance::resume() {
+void
+SDL2SoundInstance::resume() {
     assert_(state == S_PAUSED);
     Mix_Resume(channel);
     state = S_PLAYING;
 }
 
-void SDL2SoundInstance::volume(double volume) {
-    Mix_Volume(channel,
-               static_cast<int>(volume * 128));
+void
+SDL2SoundInstance::volume(double volume) {
+    Mix_Volume(channel, static_cast<int>(volume * 128));
 }
 
-void SDL2SoundInstance::pan(double pan) {
-    auto angle = static_cast<Sint16>(pan * 90);
-    
+void
+SDL2SoundInstance::pan(double pan) {
+    auto angle = static_cast<int16_t>(pan * 90);
+
     int err = Mix_SetPosition(channel, angle, 0);
     (void)err;
     assert_(err == 0);
 }
 
-void SDL2SoundInstance::speed(double) {
+void
+SDL2SoundInstance::speed(double) {
     // No-op. SDL2 doesn't support changing playback rate.
 }
 
-void SDL2SoundInstance::setDone() {
+void
+SDL2SoundInstance::setDone() {
     state = S_DONE;
 }
 
 
-Rc<SDL2Sample> genSample(const std::string& name) {
-    Unique<Resource> r = Resources::instance().load(name);
+Rc<SDL2Sample>
+genSample(StringView name) {
+    Optional<StringView> r = resourceLoad(name);
     if (!r) {
         // Error logged.
         return Rc<SDL2Sample>();
     }
 
-    assert_(r->size() < INT_MAX);
+    assert_(r->size < INT_MAX);
 
-    SDL_RWops* ops = SDL_RWFromMem(const_cast<void*>(r->data()),
-                                   static_cast<int>(r->size()));
+    SDL_RWops* ops =
+            SDL_RWFromMem(static_cast<void*>(const_cast<char*>(r->data)),
+                          static_cast<int>(r->size));
 
-    TimeMeasure m("Constructed " + name + " as sample");
+    TimeMeasure m(String() << "Constructed " << name << " as sample");
     Mix_Chunk* chunk = Mix_LoadWAV_RW(ops, 1);
 
     // We need to keep the memory (the resource) around, so put it in a struct.
@@ -144,7 +155,8 @@ Rc<SDL2Sample> genSample(const std::string& name) {
     return Rc<SDL2Sample>(sample);
 }
 
-static void channelFinished(int channel) {
+static void
+channelFinished(int channel) {
     globalSounds->setDone(channel);
 }
 
@@ -153,7 +165,8 @@ SDL2Sounds::SDL2Sounds() {
     Mix_ChannelFinished(channelFinished);
 }
 
-Rc<SoundInstance> SDL2Sounds::play(const std::string& path) {
+Rc<SoundInstance>
+SDL2Sounds::play(StringView path) {
     auto sample = samples.lifetimeRequest(path);
     if (!sample) {
         // Error logged.
@@ -169,22 +182,21 @@ Rc<SoundInstance> SDL2Sounds::play(const std::string& path) {
 
     Rc<SoundInstance> sound(new SDL2SoundInstance(channel));
 
-    channels.reserve(static_cast<size_t>(channel + 1));
-    for (size_t i = channels.size();
-         i <= static_cast<size_t>(channel) + 1;
-         i++) {
-        channels.push_back();
+    if (channels.size() <= static_cast<size_t>(channel) + 1) {
+        channels.resize(static_cast<size_t>(channel + 1));
     }
     channels[static_cast<size_t>(channel)] = sound;
 
     return sound;
 }
 
-void SDL2Sounds::garbageCollect() {
+void
+SDL2Sounds::garbageCollect() {
     samples.garbageCollect();
 }
 
-void SDL2Sounds::setDone(int channel) {
+void
+SDL2Sounds::setDone(int channel) {
     assert_(channel >= 0);
     assert_(channels.size() > static_cast<size_t>(channel));
 

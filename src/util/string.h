@@ -46,12 +46,12 @@ class NullTerminatedString {
 
 class String : public Vector<char> {
  public:
-    String() = default;
+    String() noexcept;
     String(const char* value) noexcept;
     String(StringView value) noexcept;
-    String(const String& other) = default;
+    String(const String& other) noexcept;
     String(String&& other) noexcept;
-    ~String() = default;
+    ~String() noexcept;
 
     String& operator=(const String& other) = default;
     String& operator=(String&& other) noexcept;

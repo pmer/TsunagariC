@@ -46,36 +46,20 @@ NullTerminatedString::operator const char*() noexcept {
     return s.data();
 }
 
-String::String() noexcept {
-    printf("%p->String()\n", this);
-}
-
 String::String(const char* value) noexcept {
-    printf("%p->String(const char*)\n", this);
     *this << value;
 }
 
 String::String(StringView value) noexcept {
-    printf("%p->String(StringView)\n", this);
     *this << value;
 }
 
-String::String(const String& other) noexcept : Vector(other) {
-    printf("%p->String(const String&)\n", this);
-}
-
 String::String(String&& other) noexcept {
-    printf("%p->String(String&&)\n", this);
     swap(other);
-}
-
-String::~String() noexcept {
-    printf("%p->~String()\n", this);
 }
 
 String&
 String::operator=(String&& other) noexcept {
-    printf("%p->operator=(String&&)\n", this);
     swap(other);
     return *this;
 }

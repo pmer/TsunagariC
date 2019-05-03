@@ -99,7 +99,12 @@ template<typename T> class List {
         head.prev = &head;
         n = 0;
     }
-    inline List(const List& other) noexcept { List(); *this = move_(other); }
+    inline List(const List& other) noexcept {
+        head.next = &head;
+        head.prev = &head;
+        n = 0;
+        *this = other;
+    }
     inline List(List&& other) noexcept {
         head = other.head;
         n = other.n;

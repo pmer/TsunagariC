@@ -32,6 +32,7 @@
 
 #include "os/c.h"
 #include "os/os.h"
+#include "util/move.h"
 #include "util/optional.h"
 #include "util/string-view.h"
 #include "util/string.h"
@@ -45,9 +46,11 @@ CreateFileA(LPCSTR, DWORD, DWORD, void*, DWORD, DWORD, HANDLE) noexcept;
 _ACRTIMP FILE* __cdecl freopen(const char*, const char*, FILE*) noexcept;
 WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE, LARGE_INTEGER*) noexcept;
 WINUSERAPI int WINAPI MessageBoxA(HWND, LPCSTR, LPCSTR, UINT) noexcept;
+WINBASEAPI BOOL WINAPI ReadFile(HANDLE, VOID*, DWORD, DWORD*, void*) noexcept;
 
 #define CreateFile CreateFileA
 #define FILE_READ_ATTRIBUTES 0x0080
+#define FILE_READ_DATA 0x0001
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 #define MessageBox MessageBoxA
 #define OPEN_EXISTING 3
@@ -112,7 +115,43 @@ listDir(StringView path) noexcept {
 
 Optional<String>
 readFile(StringView path) noexcept {
-    return Optional<String>();
+    Optional<uint64_t> size__ = getFileSize(path);
+    if (!size__) {
+        return Optional<String>();
+    }
+
+	uint64_t size_ = *size__;
+
+	if (size_ > UINT32_MAX) {
+        return Optional<String>();
+    }
+
+	DWORD size = static_cast<DWORD>(size_);
+
+    HANDLE file = CreateFile(String(path).null(),
+                             FILE_READ_DATA,
+                             0,
+                             nullptr,
+                             OPEN_EXISTING,
+                             0,
+                             nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return Optional<String>();
+    }
+
+	String data;
+    data.resize(size);
+
+	DWORD read;
+    BOOL ok = ReadFile(file, data.data(), size, &read, nullptr);
+    if (!ok) {
+        return Optional<String>();
+    }
+    if (read != size) {
+        return Optional<String>();
+    }
+
+    return Optional<String>(move_(data));
 }
 
 void

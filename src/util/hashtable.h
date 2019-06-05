@@ -269,7 +269,15 @@ namespace hopscotch {
         void setValueOfEmptyBucket(Args&&... valueArgs) noexcept {
             assert_(empty());
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 6011)
+#endif
             ::new (mValue) V{forward_<Args>(valueArgs)...};
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
             setEmpty(false);
         }
 

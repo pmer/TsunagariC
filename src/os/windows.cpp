@@ -29,24 +29,28 @@
 #include "os/windows.h"
 
 //#include "core/world.h"
+
 #include "os/c.h"
 #include "os/os.h"
+#include "util/optional.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/vector.h"
 
 extern "C" {
-WINBASEAPI BOOL WINAPI AttachConsole(DWORD processId);
-_ACRTIMP FILE* __cdecl freopen(const char* filename,
-                               const char* mode,
-                               FILE* stream) noexcept;
-WINUSERAPI int WINAPI MessageBoxA(HWND hwnd,
-                                  LPCSTR text,
-                                  LPCSTR caption,
-                                  UINT type) noexcept;
+WINBASEAPI BOOL WINAPI AttachConsole(DWORD);
+WINBASEAPI BOOL WINAPI CloseHandle(HANDLE) noexcept;
+WINBASEAPI HANDLE WINAPI
+CreateFileA(LPCSTR, DWORD, DWORD, void*, DWORD, DWORD, HANDLE) noexcept;
+_ACRTIMP FILE* __cdecl freopen(const char*, const char*, FILE*) noexcept;
+WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE, LARGE_INTEGER*) noexcept;
+WINUSERAPI int WINAPI MessageBoxA(HWND, LPCSTR, LPCSTR, UINT) noexcept;
 
+#define CreateFile CreateFileA
+#define FILE_READ_ATTRIBUTES 0x0080
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 #define MessageBox MessageBoxA
+#define OPEN_EXISTING 3
 
 constexpr DWORD ATTACH_PARENT_PROCESS = -1;
 constexpr UINT MB_OK = 0x00000000L;
@@ -56,7 +60,28 @@ char dirSeparator = '\\';
 
 Optional<uint64_t>
 getFileSize(StringView path) noexcept {
-    return Optional<uint64_t>();
+    HANDLE file = CreateFile(String(path).null(),
+                             FILE_READ_ATTRIBUTES,
+                             0,
+                             nullptr,
+                             OPEN_EXISTING,
+                             0,
+                             nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return Optional<uint64_t>();
+    }
+
+    LARGE_INTEGER size;
+    BOOL ok = GetFileSizeEx(file, &size);
+    if (!ok) {
+        return Optional<uint64_t>();
+    }
+
+    ok = CloseHandle(file);
+    (void)ok;
+    assert_(ok);
+
+    return Optional<uint64_t>(static_cast<uint64_t>(size.QuadPart));
 }
 
 bool

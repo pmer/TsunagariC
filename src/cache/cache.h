@@ -47,7 +47,7 @@ template<class T> class Cache {
  private:
     struct CacheEntry {
         T resource;
-        time_t lastUsed;  // time in milliseconds
+        time_t lastUsed = 0;  // time in milliseconds
     };
 
     Hashmap<String, CacheEntry> map;

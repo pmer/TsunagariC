@@ -59,11 +59,13 @@ World::instance() noexcept {
 }
 
 World::World() noexcept
-        : player(new Player),
+        : area(nullptr),
+          player(new Player),
           lastTime(0),
           total(0),
           alive(false),
           redraw(false),
+          userPaused(false),
           paused(0) {}
 
 bool

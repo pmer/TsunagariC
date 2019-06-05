@@ -169,7 +169,14 @@ namespace hopscotch {
      public:
         using NeighborhoodBitmap = uint64_t;
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 26495)
+#endif
         Bucket() noexcept : mNeighborhoodInfos(0) {}
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
         Bucket(const Bucket& b) noexcept : mNeighborhoodInfos(0) {
             if (!b.empty()) {
@@ -450,10 +457,17 @@ class Hashmap : private hopscotch::GrowthPolicy {
               mOverflowElements(),
               mBuckets(staticEmptyBucketPtr()),
               mNumElements(0),
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 26451)
+#endif
               mMaxLoadThresholdRehash(
                       size_t(float(bucketCount) * MAX_LOAD_FACTOR)),
               mMinLoadThresholdRehash(
                       size_t(float(bucketCount) * MIN_LOAD_FACTOR_FOR_REHASH)) {
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         if (bucketCount > 0) {
             mBuckets = mBucketsData.data();
         }

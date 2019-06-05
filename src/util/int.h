@@ -36,11 +36,7 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
 
-#ifdef _WIN32
-typedef uint64_t time_t;
-#else
 typedef int64_t time_t;
-#endif
 
 #ifdef _WIN32
 typedef signed long long ssize_t;

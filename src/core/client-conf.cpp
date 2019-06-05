@@ -44,7 +44,7 @@ parseConfig(StringView filename) noexcept {
     Optional<String> file = readFile(filename);
 
     if (!file) {
-        Log::err(filename, String() << "Could not find " << filename);
+        Log::fatal(filename, String() << "Could not find " << filename);
         return false;
     }
 

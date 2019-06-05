@@ -1,9 +1,8 @@
-/***************************************
-** Tsunagari Tile Engine              **
-** client-conf.h                      **
-** Copyright 2011-2013 Michael Reiley **
-** Copyright 2011-2019 Paul Merrill   **
-***************************************/
+/********************************
+** Tsunagari Tile Engine       **
+** windows-chrono.cpp          **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,31 +24,47 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_CLIENT_CONF_H_
-#define SRC_CORE_CLIENT_CONF_H_
-
-#include "core/log.h"
-#include "core/vec.h"
+#include "os/c.h"
+#include "os/chrono.h"
+#include "util/assert.h"
 #include "util/int.h"
-#include "util/string-view.h"
+#include "util/optional.h"
 
-//! Game Movement Mode
-enum movement_mode_t { TURN, TILE, NOTILE };
+extern "C" {
+WINBASEAPI
+BOOL WINAPI QueryPerformanceFrequency(LARGE_INTEGER*);
+WINBASEAPI
+BOOL WINAPI QueryPerformanceCounter(LARGE_INTEGER*);
+WINBASEAPI
+VOID WINAPI Sleep(DWORD);
+}
 
-//! Engine-wide user-confurable values.
-struct Conf {
-    verbosity_t verbosity = V_VERBOSE;
-    movement_mode_t moveMode;
-    ivec2 windowSize = {640, 480};
-    bool fullscreen = false;
-    int musicVolume = 100;
-    int soundVolume = 100;
-    time_t cacheTTL = 300;
-    int persistInit = 0;
-    int persistCons = 0;
-};
-extern Conf conf;
+TimePoint
+SteadyClock::now() noexcept {
+    static Optional<LARGE_INTEGER> freq;
 
-bool parseConfig(StringView filename) noexcept;
+    if (!freq) {
+        LARGE_INTEGER _freq;
 
-#endif  // SRC_CORE_CLIENT_CONF_H_
+        BOOL ok = QueryPerformanceFrequency(&_freq);
+        (void)ok;
+        assert_(ok);
+
+        freq = _freq;
+    }
+
+    LARGE_INTEGER counter;
+    QueryPerformanceCounter(&counter);
+
+    return TimePoint(s_to_ns(counter.QuadPart) / freq->QuadPart);
+}
+
+void
+SleepFor(Duration d) noexcept {
+    if (d <= 0) {
+        return;
+    }
+
+    DWORD ms = static_cast<DWORD>((d + 999999) / 1000000);
+    Sleep(ms);
+}

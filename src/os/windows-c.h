@@ -48,6 +48,10 @@ typedef unsigned int UINT;
 typedef unsigned long ULONG;
 typedef unsigned short WORD;
 
+typedef struct {
+    long long QuadPart;
+} LARGE_INTEGER;
+
 #if defined(_WIN64)
 typedef long long INT_PTR, *PINT_PTR;
 typedef unsigned long long UINT_PTR, *PUINT_PTR;

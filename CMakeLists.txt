@@ -202,6 +202,7 @@ if (WIN32)
         PRIVATE src/os/memmove.cpp
         PRIVATE src/os/windows-c.cpp
         PUBLIC  src/os/windows-c.h
+        PRIVATE src/os/windows-chrono.cpp
         PRIVATE src/os/windows-mapped-file.cpp
         PUBLIC  src/os/windows-mapped-file.h
         PRIVATE src/os/windows.cpp

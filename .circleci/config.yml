@@ -1,9 +1,9 @@
 version: 2.1
 
 jobs:
-  debian_9:
+  debian_9_9:
     docker:
-      - image: debian:9-slim
+      - image: debian:9.9-slim
     steps:
       - run: |
           echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list &&
@@ -96,7 +96,7 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - debian_9
+      - debian_9_9
       - ubuntu_19_04
       - fedora_29
       - arch_latest

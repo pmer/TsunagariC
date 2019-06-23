@@ -78,9 +78,9 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  alpine_3_9:
+  alpine_3_10:
     docker:
-      - image: alpine:3.9
+      - image: alpine:3.10
     steps:
       - run: |
           apk add git cmake make g++
@@ -101,4 +101,4 @@ workflows:
       - fedora_29
       - arch_latest
       - void
-      - alpine_3_9
+      - alpine_3_10

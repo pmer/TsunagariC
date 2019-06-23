@@ -28,6 +28,7 @@
 #define SRC_UTIL_OPTIONAL_H_
 
 #include "util/assert.h"
+#include "util/constexpr.h"
 #include "util/move.h"
 #include "util/new.h"
 
@@ -39,11 +40,11 @@ template<typename T> class Optional {
     bool exists;
 
  public:
-    explicit constexpr Optional() noexcept : null(), exists(false) {}
-    explicit constexpr Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
-    explicit constexpr Optional(const T& x) noexcept : x(x), exists(true) {}
+    explicit CONSTEXPR Optional() noexcept : null(), exists(false) {}
+    explicit CONSTEXPR Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
+    explicit CONSTEXPR Optional(const T& x) noexcept : x(x), exists(true) {}
 
-    constexpr Optional(Optional<T>&& other) noexcept
+	CONSTEXPR Optional(Optional<T>&& other) noexcept
             : null(), exists(other.exists) {
         if (other.exists) {
             x = move_(other.x);
@@ -51,7 +52,7 @@ template<typename T> class Optional {
             other.exists = false;
         }
     }
-    constexpr Optional(const Optional<T>& other) noexcept
+	CONSTEXPR Optional(const Optional<T>& other) noexcept
             : exists(other.exists) {
         if (other.exists) {
             x = other.x;
@@ -121,35 +122,35 @@ template<typename T> class Optional {
         return *this;
     }
 
-    inline constexpr operator bool() const noexcept { return exists; }
+    inline CONSTEXPR operator bool() const noexcept { return exists; }
 
-    inline constexpr const T* operator->() const noexcept {
+    inline CONSTEXPR const T* operator->() const noexcept {
         static_assert(exists, "");
         assert_(exists);
         return &x;
     }
-    inline constexpr const T& operator*() const noexcept {
+    inline CONSTEXPR const T& operator*() const noexcept {
         static_assert(exists, "");
         assert_(exists);
         return x;
     }
 
-    inline constexpr T* operator->() noexcept {
+    inline CONSTEXPR T* operator->() noexcept {
         assert_(exists);
         return &x;
     }
-    inline constexpr T& operator*() noexcept {
+    inline CONSTEXPR T& operator*() noexcept {
         assert_(exists);
         return x;
     }
 
     template<typename S>
-    friend constexpr bool operator==(const Optional<S>& a,
+    friend CONSTEXPR bool operator==(const Optional<S>& a,
                                      const Optional<S>& b) noexcept;
 };
 
 template<typename T>
-inline constexpr bool
+inline CONSTEXPR bool
 operator==(const Optional<T>& a, const Optional<T>& b) noexcept {
     if (a.exists != b.exists) {
         return false;

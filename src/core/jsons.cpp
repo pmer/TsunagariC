@@ -147,7 +147,7 @@ class JSONDocImpl : public JSONObjectImpl {
     void* objectAddr;
 };
 
-static Rc<JSONObject> genJSON(StringView path) noexcept;
+Rc<JSONObject> genJSON(StringView path) noexcept;
 
 class JSONsImpl : public JSONs {
  public:
@@ -381,7 +381,7 @@ JSONDocImpl::get() noexcept {
 }
 
 
-static Rc<JSONObject>
+Rc<JSONObject>
 genJSON(StringView path) noexcept {
     Optional<StringView> r = resourceLoad(path);
     if (!r) {

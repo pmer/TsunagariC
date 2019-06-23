@@ -36,7 +36,18 @@ if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     set(MSVC 1)
 endif()
 
-# Config
+# OS
+if(CMAKE_SYSTEM_NAME MATCHES Linux)
+    set(LINUX 1)
+endif()
+if(CMAKE_SYSTEM_NAME MATCHES FreeBSD)
+    set(FREEBSD 1)
+endif()
+if(CMAKE_SYSTEM_NAME MATCHES NetBSD)
+    set(NETBSD 1)
+endif()
+
+# Build type
 set(IS_RELEASE "$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>")
 
 
@@ -461,6 +472,20 @@ if(APPLE)
         /System/Library/Frameworks/Cocoa.framework
         /System/Library/Frameworks/Foundation.framework
     )
+endif()
+
+if(LINUX)
+    # Check if we are compiling against glibc, which needs libpthread, or
+	# against musl, which doesn't.
+    find_package(Threads)
+    if(Threads_FOUND)
+        target_link_libraries(tsunagari PUBLIC  Threads::Threads)
+        target_link_libraries(pack-tool PRIVATE Threads::Threads)
+    endif()
+endif()
+if(FREEBSD OR NETBSD)
+    target_link_libraries(tsunagari PUBLIC pthread)
+    target_link_libraries(pack-tool PRIVATE pthread)
 endif()
 
 if(AV_SDL2)

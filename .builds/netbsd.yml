@@ -6,6 +6,10 @@ packages:
 sources:
 - https://github.com/pmer/TsunagariC.git
 tasks:
+- clone_submodules: |
+    cd TsunagariC
+    git submodule init
+    git submodule update
 - cmake: |
     cd TsunagariC
     mkdir build

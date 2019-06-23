@@ -8,7 +8,7 @@
 | FreeBSD | [![builds.sr.ht](https://builds.sr.ht/~pdm/tsunagaric/freebsd.yml.svg)](https://builds.sr.ht/~pdm/tsunagaric/freebsd.yml)                   |
 | NetBSD  | [![builds.sr.ht](https://builds.sr.ht/~pdm/tsunagaric/netbsd.yml.svg)](https://builds.sr.ht/~pdm/tsunagaric/netbsd.yml)                     |
 
-[![LoC](https://tokei.rs/b1/github/pmer/TsunagariC)](https://github.com/Aaronepower/tokei)
+[![LoC](https://tokei.rs/b1/github/pmer/TsunagariC)](https://github.com/XAMPPRocky/tokei)
 
 TsunagariC is a tiling game engine inspired by the cult classic game Yume
 Nikki. It is intended as an open source alternative to the popular proprietary

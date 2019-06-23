@@ -78,6 +78,23 @@ jobs:
           cmake .. &&
           cmake --build .
 
+  void_musl:
+    docker:
+      - image: pmerrill/voidlinux-musl-bash:latest
+    steps:
+      - run: |
+          xbps-install -S &&
+          xbps-install -uy &&
+          xbps-install -uy &&
+          xbps-install -y git cmake make gcc
+      - checkout
+      - run: |
+          git submodule update --init --recursive &&
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
   alpine_3_10:
     docker:
       - image: alpine:3.10
@@ -101,4 +118,5 @@ workflows:
       - fedora_30
       - arch_latest
       - void
+      - void_musl
       - alpine_3_10

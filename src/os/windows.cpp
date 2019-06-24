@@ -44,6 +44,7 @@ WINBASEAPI BOOL WINAPI CloseHandle(HANDLE) noexcept;
 WINBASEAPI HANDLE WINAPI
 CreateFileA(LPCSTR, DWORD, DWORD, void*, DWORD, DWORD, HANDLE) noexcept;
 _ACRTIMP FILE* __cdecl freopen(const char*, const char*, FILE*) noexcept;
+WINBASEAPI DWORD WINAPI GetFileAttributesA(LPCSTR) noexcept;
 WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE, LARGE_INTEGER*) noexcept;
 WINBASEAPI HANDLE WINAPI GetStdHandle(DWORD) noexcept;
 WINUSERAPI int WINAPI MessageBoxA(HWND, LPCSTR, LPCSTR, UINT) noexcept;
@@ -51,11 +52,14 @@ WINBASEAPI BOOL WINAPI ReadFile(HANDLE, VOID*, DWORD, DWORD*, void*) noexcept;
 WINBASEAPI BOOL WINAPI SetConsoleTextAttribute(HANDLE, WORD) noexcept;
 
 #define CreateFile CreateFileA
+#define FILE_ATTRIBUTE_DIRECTORY 0x00000010
 #define FILE_READ_ATTRIBUTES 0x0080
 #define FILE_READ_DATA 0x0001
 #define FOREGROUND_GREEN 0x0002
 #define FOREGROUND_INTENSITY 0x0008
 #define FOREGROUND_RED 0x0004
+#define GetFileAttributes GetFileAttributesA
+#define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 #define MessageBox MessageBoxA
 #define OPEN_EXISTING 3
@@ -108,7 +112,10 @@ writeFileVec(StringView path,
 
 bool
 isDir(StringView path) noexcept {
-    return false;
+    DWORD attributes = GetFileAttributes(String(path).null());
+
+    return (attributes != INVALID_FILE_ATTRIBUTES &&
+            (attributes & FILE_ATTRIBUTE_DIRECTORY));
 }
 
 void

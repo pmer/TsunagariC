@@ -27,6 +27,7 @@
 #ifndef SRC_UTIL_LIST_H_
 #define SRC_UTIL_LIST_H_
 
+#include "util/constexpr.h"
 #include "util/int.h"
 #include "util/move.h"
 
@@ -38,8 +39,10 @@ template<typename T> class List {
         Links* next;
         Links* prev;
 
-        inline Node* toNode() noexcept { return reinterpret_cast<Node*>(this); }
-        inline const Node* toNode() const noexcept {
+        inline CONSTEXPR Node* toNode() noexcept {
+            return reinterpret_cast<Node*>(this);
+        }
+        inline CONSTEXPR const Node* toNode() const noexcept {
             return reinterpret_cast<const Node*>(this);
         }
     };
@@ -56,8 +59,12 @@ template<typename T> class List {
         friend List;
 
      public:
-        inline T& operator*() const noexcept { return links->toNode()->x; }
-        inline T* operator->() const noexcept { return &links->toNode()->x; }
+        inline CONSTEXPR T& operator*() const noexcept {
+            return links->toNode()->x;
+        }
+        inline CONSTEXPR T* operator->() const noexcept {
+            return &links->toNode()->x;
+        }
         inline void operator++() { links = links->next; }
         inline bool operator==(const Iterator& other) const noexcept {
             return links == other.links;
@@ -67,7 +74,7 @@ template<typename T> class List {
         }
 
      private:
-        Iterator(Links* links) noexcept : links(links) {}
+        CONSTEXPR Iterator(Links* links) noexcept : links(links) {}
         Links* links;
     };
 
@@ -94,18 +101,25 @@ template<typename T> class List {
         const Links* links;
     };
 
-    inline List() noexcept {
+    inline CONSTEXPR List() noexcept {
         head = {&head, &head};
         n = 0;
     }
     inline List(const List& other) noexcept {
         head = {&head, &head};
         n = 0;
+
         for (ConstIterator it = other.begin(); it != other.end(); ++it) {
             emplace_back(*it);
         }
     }
     inline List(List&& other) noexcept {
+        if (other.empty()) {
+            head = {&head, &head};
+            n = 0;
+            return;
+        }
+
         head = other.head;
         head.next->prev = &head;
         head.prev->next = &head;
@@ -116,18 +130,22 @@ template<typename T> class List {
     }
 
     ~List() noexcept {
-        for (Iterator it = begin(); it != end(); it = erase(it)) {
-        }
-        n = 0;
+        clear();
     }
 
     List& operator=(const List& other) noexcept {
+        clear();
+
         for (ConstIterator it = other.begin(); it != other.end(); ++it) {
             emplace_back(*it);
         }
     }
     List& operator=(List&& other) noexcept {
-        this->~List();
+        clear();
+
+        if (other.empty()) {
+            return *this;
+        }
 
         head = other.head;
         head.next->prev = &head;
@@ -140,12 +158,14 @@ template<typename T> class List {
         return *this;
     }
 
-    inline Iterator begin() noexcept { return Iterator(head.next); }
-    inline ConstIterator begin() const noexcept {
+    inline CONSTEXPR Iterator begin() noexcept { return Iterator(head.next); }
+    inline CONSTEXPR ConstIterator begin() const noexcept {
         return ConstIterator(head.next);
     }
-    inline Iterator end() noexcept { return Iterator(&head); }
-    inline ConstIterator end() const noexcept { return ConstIterator(&head); }
+    inline CONSTEXPR Iterator end() noexcept { return Iterator(&head); }
+    inline CONSTEXPR ConstIterator end() const noexcept {
+        return ConstIterator(&head);
+    }
 
     template<typename... Args>
     inline Iterator emplace_back(Args&&... args) noexcept {
@@ -166,9 +186,13 @@ template<typename T> class List {
         n--;
         return Iterator(next);
     }
+    inline void clear() noexcept {
+        for (Iterator it = begin(); it != end(); it = erase(it)) {
+        }
+    }
 
-    inline size_t size() noexcept { return n; }
-    inline bool empty() noexcept { return n == 0; }
+    inline CONSTEXPR size_t size() noexcept { return n; }
+    inline CONSTEXPR bool empty() noexcept { return n == 0; }
 
  private:
     Links head;

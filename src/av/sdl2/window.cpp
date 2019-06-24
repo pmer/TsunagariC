@@ -65,7 +65,8 @@ GameWindow::time() noexcept {
 }
 
 SDL2GameWindow::SDL2GameWindow() noexcept
-        : renderer(nullptr),
+        : start(0),
+          renderer(nullptr),
           translation{0.0, 0.0},
           scaling{0.0, 0.0},
           window(nullptr),

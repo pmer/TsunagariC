@@ -39,10 +39,34 @@
 #include "util/vector.h"
 
 extern "C" {
+#define MAX_PATH 260
+
+typedef struct {
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+} FILETIME;
+
+typedef struct {
+    DWORD dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+    DWORD dwReserved0;
+    DWORD dwReserved1;
+    CHAR cFileName[MAX_PATH];
+    CHAR cAlternateFileName[14];
+} WIN32_FIND_DATAA, *LPWIN32_FIND_DATAA;
+
 WINBASEAPI BOOL WINAPI AttachConsole(DWORD);
 WINBASEAPI BOOL WINAPI CloseHandle(HANDLE) noexcept;
+WINBASEAPI BOOL WINAPI CreateDirectoryA(LPCSTR, void*) noexcept;
 WINBASEAPI HANDLE WINAPI
 CreateFileA(LPCSTR, DWORD, DWORD, void*, DWORD, DWORD, HANDLE) noexcept;
+WINBASEAPI HANDLE WINAPI FindFirstFileA(LPCSTR, LPWIN32_FIND_DATAA) noexcept;
+WINBASEAPI BOOL WINAPI FindNextFileA(HANDLE, LPWIN32_FIND_DATAA) noexcept;
+WINBASEAPI BOOL WINAPI FindClose(HANDLE) noexcept;
 _ACRTIMP FILE* __cdecl freopen(const char*, const char*, FILE*) noexcept;
 WINBASEAPI DWORD WINAPI GetFileAttributesA(LPCSTR) noexcept;
 WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE, LARGE_INTEGER*) noexcept;
@@ -51,10 +75,15 @@ WINUSERAPI int WINAPI MessageBoxA(HWND, LPCSTR, LPCSTR, UINT) noexcept;
 WINBASEAPI BOOL WINAPI ReadFile(HANDLE, VOID*, DWORD, DWORD*, void*) noexcept;
 WINBASEAPI BOOL WINAPI SetConsoleTextAttribute(HANDLE, WORD) noexcept;
 
+typedef WIN32_FIND_DATAA WIN32_FIND_DATA;
+
+#define CreateDirectory CreateDirectoryA
 #define CreateFile CreateFileA
 #define FILE_ATTRIBUTE_DIRECTORY 0x00000010
 #define FILE_READ_ATTRIBUTES 0x0080
 #define FILE_READ_DATA 0x0001
+#define FindFirstFile FindFirstFileA
+#define FindNextFile FindNextFileA
 #define FOREGROUND_GREEN 0x0002
 #define FOREGROUND_INTENSITY 0x0008
 #define FOREGROUND_RED 0x0004
@@ -119,11 +148,37 @@ isDir(StringView path) noexcept {
 }
 
 void
-makeDirectory(StringView path) noexcept {}
+makeDirectory(StringView path) noexcept {
+    BOOL ok = CreateDirectory(String(path).null(), nullptr);
+    (void)ok;
+}
 
 Vector<String>
 listDir(StringView path) noexcept {
-    return Vector<String>();
+    Vector<String> files;
+
+    String query = path;
+    query << "\\*";
+
+	WIN32_FIND_DATA data;
+    HANDLE find = FindFirstFile(query.null(), &data);
+
+    if (find == INVALID_HANDLE_VALUE) {
+        return Vector<String>();
+    }
+
+    do {
+        if (data.cFileName[0] == '.' && data.cFileName[1] == '\0' ||
+            data.cFileName[1] == '.') {
+            continue;
+        }
+
+		files.push_back(String(data.cFileName));
+    } while (FindNextFile(find, &data));
+
+    FindClose(find);
+
+    return files;
 }
 
 Optional<String>

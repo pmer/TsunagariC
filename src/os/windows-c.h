@@ -35,6 +35,7 @@
 typedef int BOOL;
 typedef unsigned char BOOLEAN;
 typedef unsigned char BYTE;
+typedef char CHAR;
 typedef unsigned long* DWORD_PTR;
 typedef unsigned long DWORD;
 typedef void* HANDLE;

@@ -69,6 +69,21 @@ addFile(CreateArchiveContext& ctx, StringView path) noexcept {
 
     uiShowAddedFile(path, data_.size());
 
+    // Write the file path to the pack file with '/' instead of '\\' on Windows.
+    String standardizedPath;
+
+    if (dirSeparator != '/') {
+        standardizedPath = path;
+
+        for (size_t i = 0; i < path.size; i++) {
+            if (standardizedPath[i] == dirSeparator) {
+                standardizedPath[i] = '/';
+            }
+        }
+
+        path = standardizedPath;
+    }
+
     LockGuard guard(ctx.packMutex);
     ctx.pack->addBlob(move_(path), static_cast<uint32_t>(data_.size()), data_.data());
 
@@ -102,6 +117,21 @@ listArchive(StringView archivePath) noexcept {
             StringView blobPath = pack->getBlobPath(i);
             uint64_t blobSize = pack->getBlobSize(i);
 
+            // Print file paths with '\\' Windows.
+            String standardizedPath;
+
+            if (dirSeparator != '/') {
+                standardizedPath = blobPath;
+
+                for (size_t i = 0; i < blobPath.size; i++) {
+                    if (standardizedPath[i] == '/') {
+                        standardizedPath[i] = dirSeparator;
+                    }
+                }
+
+                blobPath = standardizedPath;
+            }
+
             output.append(blobPath.data, blobPath.size);
             output << ": " << blobSize << " bytes\n";
         }
@@ -121,7 +151,7 @@ listArchive(StringView archivePath) noexcept {
 
 static Optional<StringView>
 getParentPath(StringView path) noexcept {
-    Optional<size_t> sep = path.rfind('/');
+    Optional<size_t> sep = path.rfind(dirSeparator);
     if (!sep) {
         return Optional<StringView>();
     }
@@ -167,6 +197,21 @@ extractArchive(StringView archivePath) noexcept {
             StringView blobPath = pack->getBlobPath(i);
             uint32_t blobSize = pack->getBlobSize(i);
             void* blobData = blobDatas[i];
+
+            // Change file paths to use '\\' on Windows.
+            String standardizedPath;
+
+            if (dirSeparator != '/') {
+                standardizedPath = blobPath;
+
+                for (size_t i = 0; i < blobPath.size; i++) {
+                    if (standardizedPath[i] == '/') {
+                        standardizedPath[i] = dirSeparator;
+                    }
+                }
+
+                blobPath = standardizedPath;
+            }
 
             uiShowExtractingFile(blobPath, blobSize);
 

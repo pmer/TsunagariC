@@ -1,10 +1,25 @@
 image:
+  - Visual Studio 2015
   - Visual Studio 2017
 
-build_script:
-  - git submodule update --init --recursive
-  - mkdir build
-  - cd build
-  - sh: cmake ..
-  - cmd: cmake .. -G "Visual Studio 15 2017"
-  - cmake --build .
+for:
+-
+  matrix:
+    only:
+      - image: Visual Studio 2015
+  build_script:
+    - git submodule update --init
+    - mkdir build
+    - cd build
+    - cmake .. -G "Visual Studio 14 2015"
+    - cmake --build .
+-
+  matrix:
+    only:
+      - image: Visual Studio 2017
+  build_script:
+    - git submodule update --init
+    - mkdir build
+    - cd build
+    - cmake .. -G "Visual Studio 15 2017"
+    - cmake --build .

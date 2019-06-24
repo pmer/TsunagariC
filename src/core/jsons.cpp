@@ -24,7 +24,20 @@
 // IN THE SOFTWARE.
 // **********
 
-#define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
+#define RAPIDJSON_NOMEMBERITERATORCLASS
+#define RAPIDJSON_NO_INT64DEFINE
+
+#ifdef _MSC_VER
+#define RAPIDJSON_SSE42
+#endif
+
+// clang-format off
+#include "util/assert.h"
+#include "util/int.h"
+// clang-format on
+
+#define RAPIDJSON_ASSERT assert_
+#define RAPIDJSON_HAS_CXX11_NOEXCEPT 1
 
 #include "rapidjson/document.h"
 #include "rapidjson/reader.h"
@@ -32,7 +45,6 @@
 // Skip later headers that conflict with ones that rapidjson includes.
 // clang-format off
 #define SRC_OS_C_H_
-#define SRC_UTIL_INT_H_
 #define SRC_UTIL_NEW_H_
 #include <math.h>
 #include <time.h>
@@ -87,7 +99,7 @@ class JSONObjectImpl : public JSONObject {
 
  protected:
     RJValue str(StringView name) noexcept;
-    virtual RJObject& get() noexcept = 0;
+    virtual RJObject get() noexcept = 0;
 };
 
 class JSONObjectReal : public JSONObjectImpl {
@@ -95,7 +107,7 @@ class JSONObjectReal : public JSONObjectImpl {
     explicit JSONObjectReal(RJObject object) noexcept;
 
  protected:
-    RJObject& get() noexcept final;
+    RJObject get() noexcept final;
 
  private:
     RJObject object;
@@ -138,13 +150,11 @@ class JSONDocImpl : public JSONObjectImpl {
     bool isValid() noexcept;
 
  protected:
-    RJObject& get() noexcept final;
+    RJObject get() noexcept final;
 
  private:
     String json;
     RJDocument document;
-    void* object;
-    void* objectAddr;
 };
 
 Rc<JSONObject> genJSON(StringView path) noexcept;
@@ -284,7 +294,7 @@ JSONObjectImpl::str(StringView name) noexcept {
 JSONObjectReal::JSONObjectReal(RJObject object) noexcept
         : object(move_(object)) {}
 
-RJObject&
+RJObject
 JSONObjectReal::get() noexcept {
     return object;
 }
@@ -366,8 +376,6 @@ JSONDocImpl::JSONDocImpl(String json) noexcept : json(move_(json)) {
                          rapidjson::kParseCommentsFlag |
                          rapidjson::kParseTrailingCommasFlag>(
             const_cast<char*>(this->json.null().get()));
-    object = &document;
-    objectAddr = &object;
 }
 
 bool
@@ -375,9 +383,9 @@ JSONDocImpl::isValid() noexcept {
     return !document.HasParseError() && document.IsObject();
 }
 
-RJObject&
+RJObject
 JSONDocImpl::get() noexcept {
-    return (RJObject&)object;
+    return document.GetObject();
 }
 
 

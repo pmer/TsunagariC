@@ -75,7 +75,7 @@ target_include_directories(tsunagari
 
 target_include_directories(tsunagari PUBLIC src)
 target_include_directories(null-world PUBLIC src)
-target_include_directories(pack-tool PUBLIC src)
+target_include_directories(pack-tool PRIVATE src)
 
 target_sources(tsunagari
     PUBLIC  src/config.h
@@ -204,7 +204,7 @@ target_sources(pack-tool
     PRIVATE src/os/condition-variable.h
     PRIVATE src/os/mapped-file.h
     PRIVATE src/os/mutex.h
-    PUBLIC  src/os/os.h
+    PRIVATE src/os/os.h
     PRIVATE src/os/thread.h
 )
 
@@ -229,7 +229,7 @@ if (WIN32)
         PRIVATE src/os/windows-mutex.h
         PRIVATE src/os/windows-thread.h
         PRIVATE src/os/windows.cpp
-        PUBLIC  src/os/windows.h
+        PRIVATE src/os/windows.h
     )
 elseif(APPLE)
     target_sources(tsunagari
@@ -281,18 +281,18 @@ target_sources(tsunagari
 
 target_sources(pack-tool
     PRIVATE src/pack/file-type.cpp
-    PUBLIC  src/pack/file-type.h
+    PRIVATE src/pack/file-type.h
     PRIVATE src/pack/main.cpp
     PRIVATE src/pack/pack-reader.cpp
-    PUBLIC  src/pack/pack-reader.h
+    PRIVATE src/pack/pack-reader.h
     PRIVATE src/pack/pack-writer.cpp
-    PUBLIC  src/pack/pack-writer.h
+    PRIVATE src/pack/pack-writer.h
     PRIVATE src/pack/pool.cpp
-    PUBLIC  src/pack/pool.h
+    PRIVATE src/pack/pool.h
     PRIVATE src/pack/ui-log.cpp
-    PUBLIC  src/pack/ui.h
+    PRIVATE src/pack/ui.h
     PRIVATE src/pack/walker.cpp
-    PUBLIC  src/pack/walker.h
+    PRIVATE src/pack/walker.h
 )
 
 target_sources(tsunagari
@@ -306,6 +306,7 @@ target_sources(tsunagari
     PUBLIC  src/util/assert.h
     PRIVATE src/util/bitrecord.cpp
     PUBLIC  src/util/bitrecord.h
+    PUBLIC  src/util/constexpr.h
     PRIVATE src/util/dispatch-queue-impl.cpp
     PUBLIC  src/util/dispatch-queue-impl.h
     PRIVATE src/util/dispatch-queue.cpp
@@ -343,11 +344,12 @@ target_sources(pack-tool
     PRIVATE src/util/algorithm.h
     PRIVATE src/util/assert.cpp
     PRIVATE src/util/assert.h
+    PRIVATE src/util/constexpr.h
     PRIVATE src/util/fnv.cpp
     PRIVATE src/util/fnv.h
     PRIVATE src/util/function.h
     PRIVATE src/util/hashtable.h
-    PUBLIC  src/util/int.h
+    PRIVATE src/util/int.h
     PRIVATE src/util/list.h
     PRIVATE src/util/meta.h
     PRIVATE src/util/move.h
@@ -355,9 +357,9 @@ target_sources(pack-tool
     PRIVATE src/util/optional.h
     PRIVATE src/util/sort.h
     PRIVATE src/util/string-view.cpp
-    PUBLIC  src/util/string-view.h
+    PRIVATE src/util/string-view.h
     PRIVATE src/util/string.cpp
-    PUBLIC  src/util/string.h
+    PRIVATE src/util/string.h
     PRIVATE src/util/vector.h
 )
 

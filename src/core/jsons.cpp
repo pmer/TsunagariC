@@ -179,13 +179,17 @@ JSONs::instance() noexcept {
 
 Vector<StringView>
 JSONObjectImpl::names() noexcept {
-    Vector<StringView> names(get().MemberCount());
+    Vector<StringView> names;
+
+    names.reserve(get().MemberCount());
+
     for (auto& property : get()) {
         auto& name = property.name;
         if (name.IsString()) {
             names.push_back(name.GetString());
         }
     }
+
     return names;
 }
 

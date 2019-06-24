@@ -146,11 +146,15 @@ writeFile(StringView path, uint32_t length, void* data) noexcept {
     DWORD written;
     BOOL ok = WriteFile(file, data, length, &written, nullptr);
     if (!ok) {
+        CloseHandle(file);
         return false;
     }
     if (length != written) {
+        CloseHandle(file);
         return false;
     }
+
+    CloseHandle(file);
 
     return true;
 }
@@ -160,7 +164,33 @@ writeFileVec(StringView path,
              uint32_t count,
              uint32_t* lengths,
              void** datas) noexcept {
-    return false;
+    HANDLE file = CreateFile(String(path).null(),
+                             FILE_WRITE_DATA,
+                             0,
+                             nullptr,
+                             CREATE_ALWAYS,
+                             0,
+                             nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
+        DWORD written;
+        BOOL ok = WriteFile(file, datas[i], lengths[i], &written, nullptr);
+        if (!ok) {
+            CloseHandle(file);
+            return false;
+        }
+        if (lengths[i] != written) {
+            CloseHandle(file);
+            return false;
+        }
+    }
+
+    CloseHandle(file);
+
+    return true;
 }
 
 bool

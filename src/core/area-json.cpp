@@ -239,7 +239,7 @@ AreaJSON::processMapProperties(Unique<JSONObject> obj) noexcept {
 static StringView
 dirname(StringView path) noexcept {
     Optional<size_t> slash = path.rfind('/');
-    return !slash ? "" : path.substr(0, static_cast<size_t>(slash) + 1);
+    return !slash ? "" : path.substr(0, static_cast<size_t>(*slash) + 1);
 }
 
 bool

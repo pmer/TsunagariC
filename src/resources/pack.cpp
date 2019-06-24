@@ -38,6 +38,10 @@ static Unique<PackReader> pack;
 
 static bool
 openPackFile() noexcept {
+    if (pack) {
+        return true;
+    }
+
     StringView path = DataWorld::instance().datafile;
 
     // TimeMeasure m("Opened " + path);

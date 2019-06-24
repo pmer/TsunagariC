@@ -43,28 +43,28 @@
 static SDL2GameWindow globalWindow;
 
 GameWindow*
-GameWindow::create() {
+GameWindow::create() noexcept {
     return globalWindow.init() ? &globalWindow : nullptr;
 }
 
 GameWindow&
-GameWindow::instance() {
+GameWindow::instance() noexcept {
     return globalWindow;
 }
 
 SDL2GameWindow&
-SDL2GameWindow::instance() {
+SDL2GameWindow::instance() noexcept {
     return globalWindow;
 }
 
 time_t
-GameWindow::time() {
+GameWindow::time() noexcept {
     TimePoint start = globalWindow.start;
     TimePoint end = SteadyClock::now();
     return ns_to_ms(end - start);
 }
 
-SDL2GameWindow::SDL2GameWindow()
+SDL2GameWindow::SDL2GameWindow() noexcept
         : renderer(nullptr),
           translation{0.0, 0.0},
           scaling{0.0, 0.0},
@@ -72,7 +72,7 @@ SDL2GameWindow::SDL2GameWindow()
           transform(Transform::identity()) {}
 
 bool
-SDL2GameWindow::init() {
+SDL2GameWindow::init() noexcept {
     {
         // TimeMeasure m("Initializing SDL2");
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -124,26 +124,26 @@ SDL2GameWindow::init() {
 }
 
 unsigned
-SDL2GameWindow::width() const {
+SDL2GameWindow::width() const noexcept {
     int w, h;
     SDL_GetWindowSize(window, &w, &h);
     return static_cast<unsigned>(w);
 }
 
 unsigned
-SDL2GameWindow::height() const {
+SDL2GameWindow::height() const noexcept {
     int w, h;
     SDL_GetWindowSize(window, &w, &h);
     return static_cast<unsigned>(h);
 }
 
 void
-SDL2GameWindow::setCaption(StringView caption) {
+SDL2GameWindow::setCaption(StringView caption) noexcept {
     SDL_SetWindowTitle(window, String(caption).null());
 }
 
 static int
-getRefreshRate(SDL_Window* window) {
+getRefreshRate(SDL_Window* window) noexcept {
     // SDL_GetWindowDisplayIndex computes which display the window is on each
     // time.
     int display = SDL_GetWindowDisplayIndex(window);
@@ -153,7 +153,7 @@ getRefreshRate(SDL_Window* window) {
 }
 
 void
-SDL2GameWindow::mainLoop() {
+SDL2GameWindow::mainLoop() noexcept {
     DisplayList display;
 
     SDL_ShowWindow(window);
@@ -184,7 +184,7 @@ SDL2GameWindow::mainLoop() {
 }
 
 void
-SDL2GameWindow::handleEvents() {
+SDL2GameWindow::handleEvents() noexcept {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
@@ -193,7 +193,7 @@ SDL2GameWindow::handleEvents() {
 }
 
 void
-SDL2GameWindow::handleEvent(const SDL_Event& event) {
+SDL2GameWindow::handleEvent(const SDL_Event& event) noexcept {
     KeyboardKey key;
 
     switch (event.type) {
@@ -256,7 +256,7 @@ SDL2GameWindow::drawRect(double x1,
                          double x2,
                          double y1,
                          double y2,
-                         uint32_t argb) {
+                         uint32_t argb) noexcept {
     auto a = static_cast<uint8_t>((argb >> 24) & 0xFF);
     auto r = static_cast<uint8_t>((argb >> 16) & 0xFF);
     auto g = static_cast<uint8_t>((argb >> 8) & 0xFF);
@@ -273,7 +273,7 @@ SDL2GameWindow::drawRect(double x1,
 }
 
 void
-SDL2GameWindow::scale(double x, double y, Function<void()> op) {
+SDL2GameWindow::scale(double x, double y, Function<void()> op) noexcept {
     assert_(x == y);
 
     Transform prev = transform;
@@ -290,7 +290,7 @@ SDL2GameWindow::scale(double x, double y, Function<void()> op) {
 }
 
 void
-SDL2GameWindow::translate(double x, double y, Function<void()> op) {
+SDL2GameWindow::translate(double x, double y, Function<void()> op) noexcept {
     Transform prev = transform;
 
     transform =
@@ -309,18 +309,18 @@ SDL2GameWindow::clip(double x,
                      double y,
                      double width,
                      double height,
-                     Function<void()> op) {
+                     Function<void()> op) noexcept {
     op();
 }
 
 void
-SDL2GameWindow::close() {
+SDL2GameWindow::close() noexcept {
     SDL_DestroyWindow(window);
     window = nullptr;
 }
 
 void
-SDL2GameWindow::updateTransform() {
+SDL2GameWindow::updateTransform() noexcept {
     int w, h;
 
     SDL_GetWindowSize(window, &w, &h);

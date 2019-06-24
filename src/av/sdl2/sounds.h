@@ -33,10 +33,10 @@
 #include "core/resources.h"
 #include "core/sounds.h"
 
-void SDL2OpenAudio();
+void SDL2OpenAudio() noexcept;
 
 struct SDL2Sample {
-    ~SDL2Sample();
+    ~SDL2Sample() noexcept;
 
     // The Mix_Chunk needs the music data to be kept around for its lifetime.
     Optional<StringView> resource;
@@ -46,20 +46,20 @@ struct SDL2Sample {
 
 class SDL2SoundInstance : public SoundInstance {
  public:
-    SDL2SoundInstance(int channel);
+    SDL2SoundInstance(int channel) noexcept;
 
-    bool playing();
-    void stop();
+    bool playing() noexcept;
+    void stop() noexcept;
 
-    bool paused();
-    void pause();
-    void resume();
+    bool paused() noexcept;
+    void pause() noexcept;
+    void resume() noexcept;
 
-    void volume(double volume);
-    void pan(double pan);
-    void speed(double speed);
+    void volume(double volume) noexcept;
+    void pan(double pan) noexcept;
+    void speed(double speed) noexcept;
 
-    void setDone();
+    void setDone() noexcept;
 
  private:
     int channel;
@@ -67,19 +67,19 @@ class SDL2SoundInstance : public SoundInstance {
 };
 
 
-Rc<SDL2Sample> genSample(StringView name);
+Rc<SDL2Sample> genSample(StringView name) noexcept;
 
 class SDL2Sounds : public Sounds {
  public:
-    static SDL2Sounds& instance();
+    static SDL2Sounds& instance() noexcept;
 
-    SDL2Sounds();
+    SDL2Sounds() noexcept;
 
-    Rc<SoundInstance> play(StringView path);
+    Rc<SoundInstance> play(StringView path) noexcept;
 
-    void garbageCollect();
+    void garbageCollect() noexcept;
 
-    void setDone(int channel);
+    void setDone(int channel) noexcept;
 
  private:
     SDL2Sounds(const SDL2Sounds&) = delete;

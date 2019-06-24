@@ -32,7 +32,7 @@
 #include "util/int.h"
 
 void
-SDL2OpenAudio() {
+SDL2OpenAudio() noexcept {
     // Calling these functions more than once is okay.
     int err = SDL_Init(SDL_INIT_AUDIO);
     (void)err;
@@ -50,7 +50,7 @@ SDL2OpenAudio() {
 static SDL2Sounds* globalSounds = nullptr;
 
 Sounds&
-Sounds::instance() {
+Sounds::instance() noexcept {
     if (globalSounds == nullptr) {
         globalSounds = new SDL2Sounds;
     }
@@ -58,7 +58,7 @@ Sounds::instance() {
 }
 
 SDL2Sounds&
-SDL2Sounds::instance() {
+SDL2Sounds::instance() noexcept {
     if (globalSounds == nullptr) {
         globalSounds = new SDL2Sounds;
     }
@@ -66,52 +66,52 @@ SDL2Sounds::instance() {
 }
 
 
-SDL2Sample::~SDL2Sample() {
+SDL2Sample::~SDL2Sample() noexcept {
     Mix_FreeChunk(chunk);
 }
 
 
-SDL2SoundInstance::SDL2SoundInstance(int channel)
+SDL2SoundInstance::SDL2SoundInstance(int channel) noexcept
         : channel(channel), state(S_PLAYING) {}
 
 bool
-SDL2SoundInstance::playing() {
+SDL2SoundInstance::playing() noexcept {
     return state == S_PLAYING;
 }
 
 void
-SDL2SoundInstance::stop() {
+SDL2SoundInstance::stop() noexcept {
     assert_(state == S_PLAYING || state == S_PAUSED);
     Mix_HaltChannel(channel);
     state = S_DONE;
 }
 
 bool
-SDL2SoundInstance::paused() {
+SDL2SoundInstance::paused() noexcept {
     return state == S_PAUSED;
 }
 
 void
-SDL2SoundInstance::pause() {
+SDL2SoundInstance::pause() noexcept {
     assert_(state == S_PLAYING);
     Mix_Pause(channel);
     state = S_PAUSED;
 }
 
 void
-SDL2SoundInstance::resume() {
+SDL2SoundInstance::resume() noexcept {
     assert_(state == S_PAUSED);
     Mix_Resume(channel);
     state = S_PLAYING;
 }
 
 void
-SDL2SoundInstance::volume(double volume) {
+SDL2SoundInstance::volume(double volume) noexcept {
     Mix_Volume(channel, static_cast<int>(volume * 128));
 }
 
 void
-SDL2SoundInstance::pan(double pan) {
+SDL2SoundInstance::pan(double pan) noexcept {
     auto angle = static_cast<int16_t>(pan * 90);
 
     int err = Mix_SetPosition(channel, angle, 0);
@@ -120,18 +120,18 @@ SDL2SoundInstance::pan(double pan) {
 }
 
 void
-SDL2SoundInstance::speed(double) {
+SDL2SoundInstance::speed(double) noexcept {
     // No-op. SDL2 doesn't support changing playback rate.
 }
 
 void
-SDL2SoundInstance::setDone() {
+SDL2SoundInstance::setDone() noexcept {
     state = S_DONE;
 }
 
 
 Rc<SDL2Sample>
-genSample(StringView name) {
+genSample(StringView name) noexcept {
     Optional<StringView> r = resourceLoad(name);
     if (!r) {
         // Error logged.
@@ -156,17 +156,17 @@ genSample(StringView name) {
 }
 
 static void
-channelFinished(int channel) {
+channelFinished(int channel) noexcept {
     globalSounds->setDone(channel);
 }
 
-SDL2Sounds::SDL2Sounds() {
+SDL2Sounds::SDL2Sounds() noexcept {
     SDL2OpenAudio();
     Mix_ChannelFinished(channelFinished);
 }
 
 Rc<SoundInstance>
-SDL2Sounds::play(StringView path) {
+SDL2Sounds::play(StringView path) noexcept {
     auto sample = samples.lifetimeRequest(path);
     if (!sample) {
         // Error logged.
@@ -191,12 +191,12 @@ SDL2Sounds::play(StringView path) {
 }
 
 void
-SDL2Sounds::garbageCollect() {
+SDL2Sounds::garbageCollect() noexcept {
     samples.garbageCollect();
 }
 
 void
-SDL2Sounds::setDone(int channel) {
+SDL2Sounds::setDone(int channel) noexcept {
     assert_(channel >= 0);
     assert_(channels.size() > static_cast<size_t>(channel));
 

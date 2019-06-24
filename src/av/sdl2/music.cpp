@@ -35,7 +35,7 @@
 static SDL2Music* globalMusicWorker = nullptr;
 
 MusicWorker&
-MusicWorker::instance() {
+MusicWorker::instance() noexcept {
     if (globalMusicWorker == nullptr) {
         globalMusicWorker = new SDL2Music;
     }
@@ -43,7 +43,7 @@ MusicWorker::instance() {
 }
 
 Rc<SDL2Song>
-genSong(StringView name) {
+genSong(StringView name) noexcept {
     Optional<StringView> r = resourceLoad(name);
     if (!r) {
         // Error logged.
@@ -68,21 +68,21 @@ genSong(StringView name) {
 }
 
 
-SDL2Song::~SDL2Song() {
+SDL2Song::~SDL2Song() noexcept {
     Mix_FreeMusic(mix);
 }
 
 
-SDL2Music::SDL2Music() {
+SDL2Music::SDL2Music() noexcept {
     SDL2OpenAudio();
 }
 
-SDL2Music::~SDL2Music() {
+SDL2Music::~SDL2Music() noexcept {
     stop();
 }
 
 void
-SDL2Music::play(StringView filepath) {
+SDL2Music::play(StringView filepath) noexcept {
     if (path == filepath) {
         if (Mix_PausedMusic()) {
             paused = 0;
@@ -104,7 +104,7 @@ SDL2Music::play(StringView filepath) {
 }
 
 void
-SDL2Music::stop() {
+SDL2Music::stop() noexcept {
     MusicWorker::stop();
     if (currentMusic) {
         Mix_HaltMusic();
@@ -113,12 +113,12 @@ SDL2Music::stop() {
 }
 
 bool
-SDL2Music::playing() {
+SDL2Music::playing() noexcept {
     return currentMusic && Mix_PlayingMusic() != 0;
 }
 
 void
-SDL2Music::pause() {
+SDL2Music::pause() noexcept {
     if (paused == 0 && currentMusic) {
         Mix_PauseMusic();
     }
@@ -126,7 +126,7 @@ SDL2Music::pause() {
 }
 
 void
-SDL2Music::resume() {
+SDL2Music::resume() noexcept {
     MusicWorker::resume();
     if (paused == 0 && currentMusic) {
         Mix_PlayMusic(currentMusic->mix, -1);
@@ -134,7 +134,7 @@ SDL2Music::resume() {
 }
 
 void
-SDL2Music::setVolume(double volume) {
+SDL2Music::setVolume(double volume) noexcept {
     MusicWorker::setVolume(volume);
     if (currentMusic) {
         Mix_VolumeMusic(static_cast<int>(volume * 128));
@@ -142,6 +142,6 @@ SDL2Music::setVolume(double volume) {
 }
 
 void
-SDL2Music::garbageCollect() {
+SDL2Music::garbageCollect() noexcept {
     songs.garbageCollect();
 }

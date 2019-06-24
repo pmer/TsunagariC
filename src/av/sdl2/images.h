@@ -33,10 +33,10 @@
 #include "core/images.h"
 
 struct SDL2Texture {
-    explicit SDL2Texture(SDL_Texture* texture);
+    explicit SDL2Texture(SDL_Texture* texture) noexcept;
     SDL2Texture(SDL2Texture&&) = delete;
     SDL2Texture(const SDL2Texture&) = delete;
-    ~SDL2Texture();
+    ~SDL2Texture() noexcept;
 
     void operator=(SDL2Texture&&) = delete;
     void operator=(const SDL2Texture&) = delete;
@@ -46,16 +46,16 @@ struct SDL2Texture {
 
 class SDL2Image : public Image {
  public:
-    SDL2Image(SDL_Texture* texture, int width, int height);
+    SDL2Image(SDL_Texture* texture, int width, int height) noexcept;
 
-    void draw(double dstX, double dstY, double z) final;
+    void draw(double dstX, double dstY, double z) noexcept final;
     void drawSubrect(double dstX,
                      double dstY,
                      double z,
                      double srcX,
                      double srcY,
                      double srcW,
-                     double srcH) final;
+                     double srcH) noexcept final;
 
     SDL2Texture texture;
 };
@@ -66,16 +66,16 @@ class SDL2TiledSubImage : public Image {
                       int xOff,
                       int yOff,
                       int width,
-                      int height);
+                      int height) noexcept;
 
-    void draw(double dstX, double dstY, double z) final;
+    void draw(double dstX, double dstY, double z) noexcept final;
     void drawSubrect(double dstX,
                      double dstY,
                      double z,
                      double srcX,
                      double srcY,
                      double srcW,
-                     double srcH) final;
+                     double srcH) noexcept final;
 
     int xOff, yOff;
     Rc<SDL2Texture> texture;
@@ -87,11 +87,11 @@ class SDL2TiledImage : public TiledImage {
                    int width,
                    int height,
                    int tileW,
-                   int tileH);
+                   int tileH) noexcept;
 
-    size_t size() const final;
+    size_t size() const noexcept final;
 
-    Rc<Image> operator[](size_t n) const final;
+    Rc<Image> operator[](size_t n) const noexcept final;
 
  private:
     int width;
@@ -103,17 +103,17 @@ class SDL2TiledImage : public TiledImage {
 };
 
 
-Rc<Image> genImage(StringView path);
+Rc<Image> genImage(StringView path) noexcept;
 
 class SDL2Images : public Images {
  public:
-    Rc<Image> load(StringView path) final;
+    Rc<Image> load(StringView path) noexcept final;
 
     Rc<TiledImage> loadTiles(StringView path,
                              unsigned tileW,
-                             unsigned tileH) final;
+                             unsigned tileH) noexcept final;
 
-    void garbageCollect() final;
+    void garbageCollect() noexcept final;
 
  private:
     ReaderCache<Rc<Image>, genImage> images;

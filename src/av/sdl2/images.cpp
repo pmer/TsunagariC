@@ -32,14 +32,14 @@
 
 
 Images&
-Images::instance() {
+Images::instance() noexcept {
     static auto globalImages = new SDL2Images;
     return *globalImages;
 }
 
 
 Rc<Image>
-genImage(StringView path) {
+genImage(StringView path) noexcept {
     Optional<StringView> r = resourceLoad(path);
     if (!r) {
         // Error logged.
@@ -69,7 +69,7 @@ genImage(StringView path) {
 }
 
 static Rc<TiledImage>
-genTiledImage(StringView path, unsigned tileW, unsigned tileH) {
+genTiledImage(StringView path, unsigned tileW, unsigned tileH) noexcept {
     assert_(tileW <= 4096);
     assert_(tileH <= 4096);
 
@@ -105,20 +105,20 @@ genTiledImage(StringView path, unsigned tileW, unsigned tileH) {
 }
 
 
-SDL2Texture::SDL2Texture(SDL_Texture* texture) : texture(texture) {}
+SDL2Texture::SDL2Texture(SDL_Texture* texture) noexcept : texture(texture) {}
 
-SDL2Texture::~SDL2Texture() {
+SDL2Texture::~SDL2Texture() noexcept {
     SDL_DestroyTexture(texture);
 }
 
 
-SDL2Image::SDL2Image(SDL_Texture* texture, int width, int height)
+SDL2Image::SDL2Image(SDL_Texture* texture, int width, int height) noexcept
         : Image(static_cast<unsigned int>(width),
                 static_cast<unsigned int>(height)),
           texture(texture) {}
 
 void
-SDL2Image::draw(double dstX, double dstY, double /*z*/) {
+SDL2Image::draw(double dstX, double dstY, double /*z*/) noexcept {
     SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
     rvec2 translation = SDL2GameWindow::instance().translation;
     rvec2 scaling = SDL2GameWindow::instance().scaling;
@@ -138,7 +138,7 @@ SDL2Image::drawSubrect(double /*dstX*/,
                        double /*srcX*/,
                        double /*srcY*/,
                        double /*srcW*/,
-                       double /*srcH*/) {
+                       double /*srcH*/) noexcept {
     assert_(false);
 }
 
@@ -147,7 +147,7 @@ SDL2TiledSubImage::SDL2TiledSubImage(Rc<SDL2Texture> texture,
                                      int width,
                                      int height,
                                      int xOff,
-                                     int yOff)
+                                     int yOff) noexcept
         : Image(static_cast<unsigned int>(width),
                 static_cast<unsigned int>(height)),
           xOff(xOff),
@@ -155,7 +155,7 @@ SDL2TiledSubImage::SDL2TiledSubImage(Rc<SDL2Texture> texture,
           texture(move_(texture)) {}
 
 void
-SDL2TiledSubImage::draw(double dstX, double dstY, double /*z*/) {
+SDL2TiledSubImage::draw(double dstX, double dstY, double /*z*/) noexcept {
     SDL_Renderer* renderer = SDL2GameWindow::instance().renderer;
     rvec2 translation = SDL2GameWindow::instance().translation;
     rvec2 scaling = SDL2GameWindow::instance().scaling;
@@ -176,7 +176,7 @@ SDL2TiledSubImage::drawSubrect(double /*dstX*/,
                                double /*srcX*/,
                                double /*srcY*/,
                                double /*srcW*/,
-                               double /*srcH*/) {
+                               double /*srcH*/) noexcept {
     assert_(false);
 }
 
@@ -185,7 +185,7 @@ SDL2TiledImage::SDL2TiledImage(SDL_Texture* texture,
                                int width,
                                int height,
                                int tileW,
-                               int tileH)
+                               int tileH) noexcept
         : width(width),
           /*height(height),*/
           tileW(tileW),
@@ -194,11 +194,11 @@ SDL2TiledImage::SDL2TiledImage(SDL_Texture* texture,
           texture(new SDL2Texture(texture)) {}
 
 size_t
-SDL2TiledImage::size() const {
+SDL2TiledImage::size() const noexcept {
     return static_cast<size_t>(numTiles);
 }
 
-Rc<Image> SDL2TiledImage::operator[](size_t n) const {
+Rc<Image> SDL2TiledImage::operator[](size_t n) const noexcept {
     int xOff = tileW * static_cast<int>(n) % width;
     int yOff = tileW * static_cast<int>(n) / width * tileH;
 
@@ -209,12 +209,14 @@ Rc<Image> SDL2TiledImage::operator[](size_t n) const {
 
 
 Rc<Image>
-SDL2Images::load(StringView path) {
+SDL2Images::load(StringView path) noexcept {
     return images.lifetimeRequest(path);
 }
 
 Rc<TiledImage>
-SDL2Images::loadTiles(StringView path, unsigned tileW, unsigned tileH) {
+SDL2Images::loadTiles(StringView path,
+                      unsigned tileW,
+                      unsigned tileH) noexcept {
     auto tiledImage = tiledImages.lifetimeRequest(path);
     if (!tiledImage) {
         tiledImage = genTiledImage(path, tileW, tileH);
@@ -224,7 +226,7 @@ SDL2Images::loadTiles(StringView path, unsigned tileW, unsigned tileH) {
 }
 
 void
-SDL2Images::garbageCollect() {
+SDL2Images::garbageCollect() noexcept {
     images.garbageCollect();
     tiledImages.garbageCollect();
 }

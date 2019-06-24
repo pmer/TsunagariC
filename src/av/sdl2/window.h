@@ -36,33 +36,37 @@
 
 class SDL2GameWindow : public GameWindow {
  public:
-    static SDL2GameWindow& instance();
+    static SDL2GameWindow& instance() noexcept ;
 
-    SDL2GameWindow();
+    SDL2GameWindow() noexcept;
     ~SDL2GameWindow() = default;
 
-    bool init();
+    bool init() noexcept;
 
-    unsigned width() const;
-    unsigned height() const;
+    unsigned width() const noexcept;
+    unsigned height() const noexcept;
 
-    void setCaption(StringView caption);
+    void setCaption(StringView caption) noexcept;
 
-    void mainLoop();
-    void handleEvents();
-    void handleEvent(const SDL_Event& event);
+    void mainLoop() noexcept;
+    void handleEvents() noexcept;
+    void handleEvent(const SDL_Event& event) noexcept;
 
-    void drawRect(double x1, double x2, double y1, double y2, uint32_t argb);
+    void drawRect(double x1,
+                  double x2,
+                  double y1,
+                  double y2,
+                  uint32_t argb) noexcept;
 
-    void scale(double x, double y, Function<void()> op);
-    void translate(double x, double y, Function<void()> op);
+    void scale(double x, double y, Function<void()> op) noexcept;
+    void translate(double x, double y, Function<void()> op) noexcept;
     void clip(double x,
               double y,
               double width,
               double height,
-              Function<void()> op);
+              Function<void()> op) noexcept;
 
-    void close();
+    void close() noexcept;
 
     TimePoint start;
 
@@ -71,7 +75,7 @@ class SDL2GameWindow : public GameWindow {
     rvec2 scaling;
 
  private:
-    void updateTransform();
+    void updateTransform() noexcept;
 
  private:
     SDL_Window* window;

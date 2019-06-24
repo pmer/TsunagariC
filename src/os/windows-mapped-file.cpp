@@ -65,7 +65,7 @@ WINBASEAPI BOOL WINAPI UnmapViewOfFile(LPCVOID lpBaseAddress) noexcept;
 #define FILE_MAP_READ SECTION_MAP_READ
 #define GENERIC_READ 0x80000000L
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
-#define OPEN_ALWAYS 4
+#define OPEN_EXISTING 3
 #define PAGE_READONLY 0x02
 #define SECTION_MAP_READ 0x0004
 }
@@ -76,7 +76,7 @@ MappedFile::fromPath(StringView path) noexcept {
                              GENERIC_READ,
                              0,
                              nullptr,
-                             OPEN_ALWAYS,
+                             OPEN_EXISTING,
                              FILE_ATTRIBUTE_NORMAL,
                              nullptr);
     if (file == INVALID_HANDLE_VALUE) {

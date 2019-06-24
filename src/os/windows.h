@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** os/windows.h                       **
+** windows.h                          **
 ** Copyright 2011-2013 Michael Reiley **
 ** Copyright 2011-2019 Paul Merrill   **
 ***************************************/

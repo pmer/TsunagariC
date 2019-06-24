@@ -45,15 +45,21 @@ WINBASEAPI HANDLE WINAPI
 CreateFileA(LPCSTR, DWORD, DWORD, void*, DWORD, DWORD, HANDLE) noexcept;
 _ACRTIMP FILE* __cdecl freopen(const char*, const char*, FILE*) noexcept;
 WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE, LARGE_INTEGER*) noexcept;
+WINBASEAPI HANDLE WINAPI GetStdHandle(DWORD) noexcept;
 WINUSERAPI int WINAPI MessageBoxA(HWND, LPCSTR, LPCSTR, UINT) noexcept;
 WINBASEAPI BOOL WINAPI ReadFile(HANDLE, VOID*, DWORD, DWORD*, void*) noexcept;
+WINBASEAPI BOOL WINAPI SetConsoleTextAttribute(HANDLE, WORD) noexcept;
 
 #define CreateFile CreateFileA
 #define FILE_READ_ATTRIBUTES 0x0080
 #define FILE_READ_DATA 0x0001
+#define FOREGROUND_GREEN 0x0002
+#define FOREGROUND_INTENSITY 0x0008
+#define FOREGROUND_RED 0x0004
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 #define MessageBox MessageBoxA
 #define OPEN_EXISTING 3
+#define STD_OUTPUT_HANDLE ((DWORD)-11)
 
 constexpr DWORD ATTACH_PARENT_PROCESS = -1;
 constexpr UINT MB_OK = 0x00000000L;
@@ -156,7 +162,31 @@ readFile(StringView path) noexcept {
 
 void
 setTermColor(TermColor color) noexcept {
-    // TODO
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (out == INVALID_HANDLE_VALUE) {
+        return;
+    }
+
+    WORD attribute;
+
+	switch (color) {
+    default:
+    case TC_RESET:
+        attribute = 0;
+        break;
+    case TC_GREEN:
+        attribute = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+        break;
+    case TC_YELLOW:
+        attribute = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+        break;
+    case TC_RED:
+        attribute = FOREGROUND_RED | FOREGROUND_INTENSITY;
+        break;
+    }
+
+    BOOL ok = SetConsoleTextAttribute(out, attribute);
+    (void)ok;
 }
 
 void

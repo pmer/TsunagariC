@@ -160,7 +160,7 @@ listDir(StringView path) noexcept {
     String query = path;
     query << "\\*";
 
-	WIN32_FIND_DATA data;
+    WIN32_FIND_DATA data;
     HANDLE find = FindFirstFile(query.null(), &data);
 
     if (find == INVALID_HANDLE_VALUE) {
@@ -173,7 +173,7 @@ listDir(StringView path) noexcept {
             continue;
         }
 
-		files.push_back(String(data.cFileName));
+        files.push_back(String(data.cFileName));
     } while (FindNextFile(find, &data));
 
     FindClose(find);

@@ -40,6 +40,7 @@ typedef unsigned long* DWORD_PTR;
 typedef unsigned long DWORD;
 typedef void* HANDLE;
 typedef void* HWND;
+typedef DWORD* LPDWORD;
 typedef const char* LPCSTR;
 typedef const void* LPCVOID;
 typedef void* LPVOID;

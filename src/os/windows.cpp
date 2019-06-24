@@ -74,14 +74,18 @@ WINBASEAPI HANDLE WINAPI GetStdHandle(DWORD) noexcept;
 WINUSERAPI int WINAPI MessageBoxA(HWND, LPCSTR, LPCSTR, UINT) noexcept;
 WINBASEAPI BOOL WINAPI ReadFile(HANDLE, VOID*, DWORD, DWORD*, void*) noexcept;
 WINBASEAPI BOOL WINAPI SetConsoleTextAttribute(HANDLE, WORD) noexcept;
+WINBASEAPI BOOL WINAPI
+WriteFile(HANDLE, LPCVOID, DWORD, LPDWORD, void*) noexcept;
 
 typedef WIN32_FIND_DATAA WIN32_FIND_DATA;
 
+#define CREATE_ALWAYS 2
 #define CreateDirectory CreateDirectoryA
 #define CreateFile CreateFileA
 #define FILE_ATTRIBUTE_DIRECTORY 0x00000010
 #define FILE_READ_ATTRIBUTES 0x0080
 #define FILE_READ_DATA 0x0001
+#define FILE_WRITE_DATA (0x0002)
 #define FindFirstFile FindFirstFileA
 #define FindNextFile FindNextFileA
 #define FOREGROUND_GREEN 0x0002
@@ -128,7 +132,27 @@ getFileSize(StringView path) noexcept {
 
 bool
 writeFile(StringView path, uint32_t length, void* data) noexcept {
-    return false;
+    HANDLE file = CreateFile(String(path).null(),
+                             FILE_WRITE_DATA,
+                             0,
+                             nullptr,
+                             CREATE_ALWAYS,
+                             0,
+                             nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    DWORD written;
+    BOOL ok = WriteFile(file, data, length, &written, nullptr);
+    if (!ok) {
+        return false;
+    }
+    if (length != written) {
+        return false;
+    }
+
+    return true;
 }
 
 bool

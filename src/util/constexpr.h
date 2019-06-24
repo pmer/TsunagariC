@@ -27,7 +27,7 @@
 #ifndef SRC_UTIL_CONSTEXPR_H_
 #define SRC_UTIL_CONSTEXPR_H_
 
-#if __cplusplus >= 201402
+#if __cplusplus >= 201402 || _MSVC_LANG >= 201402
 #define CONSTEXPR constexpr
 #else
 #define CONSTEXPR

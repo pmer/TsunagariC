@@ -88,6 +88,7 @@ typedef WIN32_FIND_DATAA WIN32_FIND_DATA;
 #define FILE_WRITE_DATA (0x0002)
 #define FindFirstFile FindFirstFileA
 #define FindNextFile FindNextFileA
+#define FOREGROUND_BLUE 0x0001
 #define FOREGROUND_GREEN 0x0002
 #define FOREGROUND_INTENSITY 0x0008
 #define FOREGROUND_RED 0x0004
@@ -288,16 +289,16 @@ setTermColor(TermColor color) noexcept {
 	switch (color) {
     default:
     case TC_RESET:
-        attribute = 0;
+        attribute = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
         break;
     case TC_GREEN:
-        attribute = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+        attribute = FOREGROUND_GREEN;
         break;
     case TC_YELLOW:
-        attribute = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+        attribute = FOREGROUND_RED | FOREGROUND_GREEN;
         break;
     case TC_RED:
-        attribute = FOREGROUND_RED | FOREGROUND_INTENSITY;
+        attribute = FOREGROUND_RED;
         break;
     }
 

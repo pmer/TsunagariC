@@ -98,6 +98,7 @@ World::init() noexcept {
 
 time_t
 World::time() const noexcept {
+    assert_(total >= 0);
     return total;
 }
 
@@ -168,10 +169,19 @@ World::update(time_t now) noexcept {
     }
     else {
         time_t dt = calculateDt(now);
-        if (!paused) {
-            total += dt;
-            tick(dt);
+
+		if (dt == 0) {
+            return;
         }
+
+		if (paused) {
+            return;
+        }
+
+		total += dt;
+        assert_(total >= 0);
+
+		tick(dt);
     }
 }
 
@@ -224,8 +234,7 @@ World::focusArea(StringView filename, vicoord playerPos) noexcept {
 void
 World::focusArea(Area* area, vicoord playerPos) noexcept {
     this->area = area;
-    player->setArea(area);
-    player->setTileCoords(playerPos);
+    player->setArea(area, playerPos);
     Viewport::instance().setArea(area);
     area->focus();
 }
@@ -296,6 +305,10 @@ World::garbageCollect() noexcept {
 time_t
 World::calculateDt(time_t now) noexcept {
     time_t dt = now - lastTime;
+    if (dt == 0) {
+        Log::info("World", "Warning: Delta time is 0");
+    }
+    assert_(dt >= 0);
     lastTime = now;
     return dt;
 }

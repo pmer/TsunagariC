@@ -26,6 +26,7 @@
 
 #include "av/sdl2/music.h"
 
+#include "av/sdl2/error.h"
 #include "av/sdl2/sounds.h"
 #include "core/measure.h"
 #include "core/resources.h"
@@ -74,7 +75,13 @@ SDL2Song::~SDL2Song() noexcept {
 
 
 SDL2Music::SDL2Music() noexcept {
-    SDL2OpenAudio();
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        sdlDie("SDL2Music", "SDL_Init");
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+        sdlDie("SDL2Music", "Mix_OpenAudio");
+    }
 }
 
 SDL2Music::~SDL2Music() noexcept {
@@ -129,7 +136,7 @@ void
 SDL2Music::resume() noexcept {
     MusicWorker::resume();
     if (paused == 0 && currentMusic) {
-        Mix_PlayMusic(currentMusic->mix, -1);
+        Mix_ResumeMusic();
     }
 }
 

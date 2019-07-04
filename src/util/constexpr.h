@@ -27,7 +27,7 @@
 #ifndef SRC_UTIL_CONSTEXPR_H_
 #define SRC_UTIL_CONSTEXPR_H_
 
-#if __cplusplus >= 201402 || _MSV_VER >= 1910  // Visual Studio 2017 or higher
+#if __cplusplus >= 201402 || _MSC_VER >= 1910  // Visual Studio 2017 or higher
 #define CONSTEXPR constexpr
 #else
 #define CONSTEXPR

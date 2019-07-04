@@ -35,7 +35,7 @@
 template<typename T> class Optional {
     union {
         T x;
-        char null;
+        char null[sizeof(T)];
     };
     bool exists;
 
@@ -44,7 +44,7 @@ template<typename T> class Optional {
     explicit CONSTEXPR Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
     explicit CONSTEXPR Optional(const T& x) noexcept : x(x), exists(true) {}
 
-	CONSTEXPR Optional(Optional<T>&& other) noexcept
+    CONSTEXPR Optional(Optional<T>&& other) noexcept
             : null(), exists(other.exists) {
         if (other.exists) {
             x = move_(other.x);
@@ -52,7 +52,7 @@ template<typename T> class Optional {
             other.exists = false;
         }
     }
-	CONSTEXPR Optional(const Optional<T>& other) noexcept
+    CONSTEXPR Optional(const Optional<T>& other) noexcept
             : exists(other.exists) {
         if (other.exists) {
             x = other.x;
@@ -125,12 +125,10 @@ template<typename T> class Optional {
     inline CONSTEXPR operator bool() const noexcept { return exists; }
 
     inline CONSTEXPR const T* operator->() const noexcept {
-        static_assert(exists, "");
         assert_(exists);
         return &x;
     }
     inline CONSTEXPR const T& operator*() const noexcept {
-        static_assert(exists, "");
         assert_(exists);
         return x;
     }

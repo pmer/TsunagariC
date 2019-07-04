@@ -26,25 +26,18 @@
 
 #include "os/c.h"
 #include "os/mutex.h"
-#include "pack/pool.h"
 #include "pack/ui.h"
+#include "util/jobs.h"
 #include "util/string.h"
 #include "util/unique.h"
 
-static Pool* pool = nullptr;
 static Mutex mutex;
 static bool scheduled = false;
 static String buf;
 bool verbose = false;
 
-UI::UI() noexcept {
-    assert_(pool == nullptr);
-    pool = Pool::makePool("ui", 1);
-}
-
 UI::~UI() noexcept {
-    delete pool;
-    pool = nullptr;
+    JobsFlush();
 }
 
 static void
@@ -64,7 +57,7 @@ scheduleMessage(StringView message) noexcept {
     LockGuard lock(mutex);
     buf << message;
     if (!scheduled) {
-        pool->schedule(flush);
+        JobsEnqueue(flush);
         scheduled = true;
     }
 }

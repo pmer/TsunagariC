@@ -35,7 +35,6 @@ extern bool verbose;
 // RAII object whose destructor waits for our UI to exit.
 class UI {
  public:
-    UI() noexcept;
     ~UI() noexcept;
 };
 

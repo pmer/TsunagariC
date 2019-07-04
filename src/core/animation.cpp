@@ -66,6 +66,8 @@ Animation::needsRedraw(time_t now) const noexcept {
 
 Image*
 Animation::frame(time_t now) noexcept {
+    assert_(now >= 0);
+
     if (frames.empty()) {
         return nullptr;
     }

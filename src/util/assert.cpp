@@ -30,6 +30,13 @@
 
 #include "os/c.h"
 
+#ifdef _WIN32
+extern "C" {
+__declspec(dllimport) int __stdcall IsDebuggerPresent();
+}
+void __cdecl __debugbreak();
+#endif
+
 void
 assert__(const char* func,
          const char* file,
@@ -40,6 +47,12 @@ assert__(const char* func,
            func,
            file,
            line);
+
+#ifdef _WIN32
+    if (IsDebuggerPresent()) {
+        __debugbreak();
+    }
+#endif
 }
 
 #endif

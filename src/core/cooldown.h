@@ -66,7 +66,9 @@ class Cooldown {
      * the cooldown has expired multiple times.  In that case, hasExpired()
      * will still return true and you may wrap again.
      */
-    void wrap() noexcept;
+    void wrapOnce() noexcept;
+
+	void wrapAll() noexcept;
 
  private:
     time_t duration, passed;

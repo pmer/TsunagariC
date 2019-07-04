@@ -171,10 +171,11 @@ Tile::moveDest(icoord here, ivec2 facing) const noexcept {
     return dest;
 }
 
-Optional<Exit>
+const Optional<Exit>&
 Tile::exitAt(ivec2 dir) const noexcept {
+    static Optional<Exit> empty;
     int idx = ivec2_to_dir(dir);
-    return idx == -1 ? Optional<Exit>() : exits[idx];
+    return idx == -1 ? empty : exits[idx];
 }
 
 Optional<double>

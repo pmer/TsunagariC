@@ -61,7 +61,7 @@ class Character : public Entity {
     const Tile* getTile() const noexcept;
     Tile* getTile() noexcept;
 
-    void setArea(Area* area) noexcept;
+    void setArea(Area* area, vicoord position) noexcept;
 
     //! Initiate a movement within the Area.
     void moveByTile(ivec2 delta) noexcept;
@@ -93,7 +93,7 @@ class Character : public Entity {
     rcoord fromCoord;
     Tile* fromTile;
     Tile* destTile;
-    Optional<Exit> destExit;
+    const Optional<Exit>* destExit;
 };
 
 #endif  // SRC_CORE_CHARACTER_H_

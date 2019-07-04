@@ -131,9 +131,18 @@ void SDL_ShowWindow(SDL_Window*) noexcept;
 // SDL_render.h
 typedef struct SDL_Renderer SDL_Renderer;
 typedef struct SDL_Texture SDL_Texture;
+typedef struct SDL_RendererInfo {
+    const char* name;
+    uint32_t flags;
+    uint32_t num_texture_formats;
+    uint32_t texture_formats[16];
+    int max_texture_width;
+    int max_texture_height;
+} SDL_RendererInfo;
 SDL_Renderer* SDL_CreateRenderer(SDL_Window*, int, uint32_t) noexcept;
 SDL_Texture* SDL_CreateTextureFromSurface(SDL_Renderer*, SDL_Surface*) noexcept;
 void SDL_DestroyTexture(SDL_Texture*) noexcept;
+int SDL_GetRendererInfo(SDL_Renderer*, SDL_RendererInfo*) noexcept;
 int SDL_QueryTexture(SDL_Texture*, uint32_t*, int*, int*, int*) noexcept;
 int SDL_RenderClear(SDL_Renderer*) noexcept;
 int SDL_RenderCopy(SDL_Renderer*,
@@ -174,6 +183,7 @@ int Mix_PlayingMusic() noexcept;
 int Mix_PlayChannelTimed(int, Mix_Chunk*, int, int) noexcept;
 int Mix_PlayMusic(Mix_Music*, int) noexcept;
 void Mix_Resume(int) noexcept;
+void Mix_ResumeMusic() noexcept;
 int Mix_SetPosition(int, int16_t, uint8_t) noexcept;
 int Mix_Volume(int, int) noexcept;
 int Mix_VolumeMusic(int) noexcept;

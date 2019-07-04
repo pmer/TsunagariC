@@ -287,8 +287,6 @@ target_sources(pack-tool
     PRIVATE src/pack/pack-reader.h
     PRIVATE src/pack/pack-writer.cpp
     PRIVATE src/pack/pack-writer.h
-    PRIVATE src/pack/pool.cpp
-    PRIVATE src/pack/pool.h
     PRIVATE src/pack/ui-log.cpp
     PRIVATE src/pack/ui.h
     PRIVATE src/pack/walker.cpp
@@ -307,16 +305,14 @@ target_sources(tsunagari
     PRIVATE src/util/bitrecord.cpp
     PUBLIC  src/util/bitrecord.h
     PUBLIC  src/util/constexpr.h
-    PRIVATE src/util/dispatch-queue-impl.cpp
-    PUBLIC  src/util/dispatch-queue-impl.h
-    PRIVATE src/util/dispatch-queue.cpp
-    PUBLIC  src/util/dispatch-queue.h
     PRIVATE src/util/fnv.cpp
     PUBLIC  src/util/fnv.h
     PRIVATE src/util/hash.cpp
     PUBLIC  src/util/hash.h
     PUBLIC  src/util/hashtable.h
     PUBLIC  src/util/int.h
+    PRIVATE src/util/jobs.cpp
+    PUBLIC  src/util/jobs.h
     PUBLIC  src/util/likely.h
     PUBLIC  src/util/list.h
     PUBLIC  src/util/math2.h
@@ -327,7 +323,6 @@ target_sources(tsunagari
     PRIVATE src/util/random.cpp
     PUBLIC  src/util/random.h
     PUBLIC  src/util/rc.h
-    PUBLIC  src/util/safe-heap.h
     PRIVATE src/util/string-view.cpp
     PUBLIC  src/util/string-view.h
     PRIVATE src/util/string.cpp
@@ -350,6 +345,8 @@ target_sources(pack-tool
     PRIVATE src/util/function.h
     PRIVATE src/util/hashtable.h
     PRIVATE src/util/int.h
+    PRIVATE src/util/jobs.cpp
+    PRIVATE src/util/jobs.h
     PRIVATE src/util/list.h
     PRIVATE src/util/meta.h
     PRIVATE src/util/move.h
@@ -490,35 +487,51 @@ if(FREEBSD OR NETBSD)
     target_link_libraries(pack-tool PRIVATE pthread)
 endif()
 
-if(AV_SDL2)
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(SDL2 REQUIRED SDL2 sdl2)
-    pkg_search_module(SDL2_image REQUIRED SDL2_image)
-    pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
+#if(AV_SDL2)
+#    find_package(PkgConfig REQUIRED)
+#    pkg_search_module(SDL2 REQUIRED SDL2 sdl2)
+#    pkg_search_module(SDL2_image REQUIRED SDL2_image)
+#    pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
+#
+#    target_include_directories(tsunagari
+#        PRIVATE ${SDL2_INCLUDE_DIRS}
+#                ${SDL2_image_INCLUDE_DIRS}
+#                ${SDL2_mixer_INCLUDE_DIRS}
+#    )
+#
+#    target_link_directories(tsunagari
+#        PRIVATE ${SDL2_LIBRARY_DIRS}
+#                ${SDL2_image_LIBRARY_DIRS}
+#                ${SDL2_mixer_LIBRARY_DIRS}
+#    )
+#
+#    target_link_libraries(tsunagari
+#        PUBLIC ${SDL2_LIBRARIES}
+#               ${SDL2_image_LIBRARIES}
+#               ${SDL2_mixer_LIBRARIES}
+#    )
+#
+#    # FIXME
+#    #if(APPLE)
+#    #    set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES} /System/Library/Frameworks/Cocoa.framework)
+#    #endif()
+#endif()
 
-    target_include_directories(tsunagari
-        PRIVATE ${SDL2_INCLUDE_DIRS}
-                ${SDL2_image_INCLUDE_DIRS}
-                ${SDL2_mixer_INCLUDE_DIRS}
-    )
-
-    target_link_directories(tsunagari
-        PRIVATE ${SDL2_LIBRARY_DIRS}
-                ${SDL2_image_LIBRARY_DIRS}
-                ${SDL2_mixer_LIBRARY_DIRS}
-    )
-
-    target_link_libraries(tsunagari
-        PUBLIC ${SDL2_LIBRARIES}
-               ${SDL2_image_LIBRARIES}
-               ${SDL2_mixer_LIBRARIES}
-    )
-
-    # FIXME
-    #if(APPLE)
-    #    set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES} /System/Library/Frameworks/Cocoa.framework)
-    #endif()
-endif()
+target_include_directories(tsunagari
+    PRIVATE "C:/Users/pdm/Downloads/SDL2-2.0.9/include"
+            "C:/Users/pdm/Downloads/SDL2_image-2.0.4/include"
+            "C:/Users/pdm/Downloads/SDL2_mixer-2.0.4/include"
+)
+target_link_directories(tsunagari
+    PUBLIC "C:/Users/pdm/Downloads/SDL2-2.0.9/lib/x64"
+           "C:/Users/pdm/Downloads/SDL2_image-2.0.4/lib/x64"
+           "C:/Users/pdm/Downloads/SDL2_mixer-2.0.4/lib/x64"
+)
+target_link_libraries(tsunagari
+    PUBLIC "SDL2"
+           "SDL2_image"
+           "SDL2_mixer"
+)
 
 if(AV_GOSU)
     find_package(Gosu REQUIRED)

@@ -205,13 +205,7 @@ Area::tick(time_t dt) {
     for (auto& overlay : overlays) {
         overlay->tick(dt);
     }
-    erase_if(overlays, [](const Rc<Overlay>& o) {
-        bool dead = o->isDead();
-        if (dead) {
-            o->setArea(nullptr);
-        }
-        return dead;
-    });
+    erase_if(overlays, [](const Rc<Overlay>& o) { return o->isDead(); });
 
     if (conf.moveMode != TURN) {
         player->tick(dt);
@@ -222,7 +216,7 @@ Area::tick(time_t dt) {
         erase_if(characters, [](const Rc<Character>& c) {
             bool dead = c->isDead();
             if (dead) {
-                c->setArea(nullptr);
+                c->setArea(nullptr, {0, 0, 0.0});
             }
             return dead;
         });
@@ -245,7 +239,7 @@ Area::turn() {
     erase_if(characters, [](const Rc<Character>& c) {
         bool dead = c->isDead();
         if (dead) {
-            c->setArea(nullptr);
+            c->setArea(nullptr, {0, 0, 0.0});
         }
         return dead;
     });
@@ -299,7 +293,7 @@ Area::getTile(rcoord virt) {
 
 TileSet*
 Area::getTileSet(StringView imagePath) {
-    if (tileSets.contains(imagePath)) {
+    if (!tileSets.contains(imagePath)) {
         String msg;
         msg << "tileset " << imagePath << " not found";
         Log::err("Area", msg);
@@ -381,8 +375,7 @@ Area::spawnNPC(StringView descriptor, vicoord coord, StringView phase) {
         // Error logged.
         return Rc<Character>();
     }
-    c->setArea(this);
-    c->setTileCoords(coord);
+    c->setArea(this, coord);
     characters.push_back(c);
     return c;
 }
@@ -441,11 +434,13 @@ static void
 drawTile(DisplayList* display,
          const TileType* type,
          int x,
-         int y /*, double depth, int tileDimY */) {
+         int y /*, double depth, int tileDimY */,
+         int tileWidth,
+	     int tileHeight) {
     Image* img = type->anim.frame();
     if (img) {
-        rvec2 drawPos{double(x * (int)img->width()),
-                      double(y * (int)img->height())};
+        rvec2 drawPos{double(x * tileWidth),
+                      double(y * tileHeight)};
         // drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
         display->items.push_back(DisplayItem{img, drawPos});
     }
@@ -454,21 +449,28 @@ drawTile(DisplayList* display,
 void
 Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     time_t now = World::instance().time();
-    BitRecord tilesAnimated(static_cast<size_t>(maxTileTypeId));
+    tilesAnimated.resize(static_cast<size_t>(maxTileTypeId));
+    for (auto& beenAnimated : tilesAnimated) {
+        beenAnimated = false;
+    }
     // double depth = grid.idx2depth[(size_t)z];
+
+	int width = 16;
+    int height = 16;
 
     for (int y = tiles.y1; y < tiles.y2; y++) {
         for (int x = tiles.x1; x < tiles.x2; x++) {
-            Tile* tile = getTile(icoord{x, y, z});
+            Tile* tile = grid.getTile(icoord{x, y, z});
             // We are certain the Tile exists.
             TileType* type = tile->getType();
             if (!type) {
                 continue;
             }
             if (!tilesAnimated[type->id]) {
+                tilesAnimated[type->id] = true;
                 type->anim.frame(now);
             }
-            drawTile(display, type, x, y /*, depth, grid.tileDim.y */);
+            drawTile(display, type, x, y /*, depth, grid.tileDim.y */, width, height);
         }
     }
 }

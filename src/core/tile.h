@@ -206,7 +206,7 @@ class Tile : public TileBase {
      */
     icoord moveDest(icoord here, ivec2 facing) const noexcept;
 
-    Optional<Exit> exitAt(ivec2 dir) const noexcept;
+    const Optional<Exit>& exitAt(ivec2 dir) const noexcept;
     Optional<double> layermodAt(ivec2 dir) const noexcept;
 
     void runEnterScript(Entity* triggeredBy) noexcept;

@@ -27,10 +27,7 @@
 
 #include "core/music-worker.h"
 #include "core/music.h"
-#include "util/dispatch-queue.h"
-
-static const DispatchQueue::QualityOfService WORKER_QOS =
-        DispatchQueue::UTILITY;
+#include "util/jobs.h"
 
 class MusicImpl : public Music {
  public:
@@ -40,9 +37,6 @@ class MusicImpl : public Music {
     void resume() noexcept;
     void setVolume(double volume) noexcept;
     void garbageCollect() noexcept;
-
- private:
-    DispatchQueue queue;
 };
 
 static MusicImpl* globalMusic = nullptr;
@@ -57,35 +51,38 @@ Music::instance() noexcept {
 
 void
 MusicImpl::play(String filename) noexcept {
-    queue.async([filename]() { MusicWorker::instance().play(filename); },
-                WORKER_QOS);
+    // JobsEnqueue([filename]() { MusicWorker::instance().play(filename); });
+    MusicWorker::instance().play(filename);
 }
 
 void
 MusicImpl::stop() noexcept {
-    queue.async([]() { MusicWorker::instance().stop(); }, WORKER_QOS);
+    // JobsEnqueue([]() { MusicWorker::instance().stop(); });
+    MusicWorker::instance().stop();
 }
 
 void
 MusicImpl::pause() noexcept {
-    queue.async([]() { MusicWorker::instance().pause(); }, WORKER_QOS);
+    // JobsEnqueue([]() { MusicWorker::instance().pause(); });
+    MusicWorker::instance().pause();
 }
 
 void
 MusicImpl::resume() noexcept {
-    queue.async([]() { MusicWorker::instance().resume(); }, WORKER_QOS);
+    // JobsEnqueue([]() { MusicWorker::instance().resume(); });
+    MusicWorker::instance().resume();
 }
 
 void
 MusicImpl::setVolume(double attemptedVolume) noexcept {
-    queue.async(
-            [attemptedVolume]() {
-                MusicWorker::instance().setVolume(attemptedVolume);
-            },
-            WORKER_QOS);
+    // JobsEnqueue([attemptedVolume]() {
+    //     MusicWorker::instance().setVolume(attemptedVolume);
+    // });
+    MusicWorker::instance().setVolume(attemptedVolume);
 }
 
 void
 MusicImpl::garbageCollect() noexcept {
-    queue.async([]() { MusicWorker::instance().garbageCollect(); }, WORKER_QOS);
+    // JobsEnqueue([]() { MusicWorker::instance().garbageCollect(); });
+    MusicWorker::instance().garbageCollect();
 }

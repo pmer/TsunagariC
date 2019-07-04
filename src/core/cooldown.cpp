@@ -50,9 +50,19 @@ Cooldown::hasExpired() noexcept {
 }
 
 void
-Cooldown::wrap() noexcept {
+Cooldown::wrapOnce() noexcept {
     if (hasExpired()) {
         passed -= duration;
+    }
+    else {
+        Log::err("Cooldown", "wrapping when not expired");
+    }
+}
+
+void
+Cooldown::wrapAll() noexcept {
+    if (hasExpired()) {
+        passed %= duration;
     }
     else {
         Log::err("Cooldown", "wrapping when not expired");

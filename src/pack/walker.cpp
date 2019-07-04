@@ -27,12 +27,11 @@
 #include "pack/walker.h"
 
 #include "os/os.h"
-#include "pack/pool.h"
+#include "util/jobs.h"
 #include "util/string-view.h"
 #include "util/unique.h"
 
 struct WalkContext {
-    Unique<Pool> pool;
     Function<void(StringView)> op;
 };
 
@@ -45,7 +44,7 @@ walkPath(WalkContext& ctx, StringView path) noexcept {
         for (auto& name : names) {
             String child;
             child << path << dirSeparator << name;
-            ctx.pool->schedule([&ctx, child = move_(child)] {
+            JobsEnqueue([&ctx, child = move_(child)] {
                 walkPath(ctx, child);
             });
         }
@@ -58,10 +57,11 @@ walkPath(WalkContext& ctx, StringView path) noexcept {
 void
 walk(Vector<StringView> paths, Function<void(StringView)> op) noexcept {
     WalkContext ctx;
-    ctx.pool = Pool::makePool("walk");
     ctx.op = move_(op);
 
     for (auto& path : paths) {
-        ctx.pool->schedule([&] { walkPath(ctx, path); });
+        JobsEnqueue([&] { walkPath(ctx, path); });
     }
+
+	JobsFlush();
 }

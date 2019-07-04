@@ -29,17 +29,38 @@
 
 #include "util/assert.h"
 
-typedef long long Duration;  // Nanoseconds.
+typedef long long Duration;   // Nanoseconds.
 typedef long long TimePoint;  // Nanoseconds.
 
-constexpr Duration ns_to_ms(Duration d) { return d / 1000000; }
-constexpr Duration ns_to_s(Duration d) { return d / 1000000000; }
-constexpr Duration s_to_ns(Duration d) { return d * 1000000000; }
-constexpr double ns_to_s_d(Duration d) { return d / 1000000000.0; }
+constexpr Duration
+ns_to_ms(Duration d) {
+    return d / 1000000;
+}
+constexpr Duration
+ns_to_s(Duration d) {
+    return d / 1000000000;
+}
+constexpr Duration
+s_to_ms(Duration d) {
+    return d * 1000;
+}
+constexpr Duration
+s_to_ns(Duration d) {
+    return d * 1000000000;
+}
+constexpr double
+ms_to_s_d(Duration d) {
+    return d / 1000.0;
+}
+constexpr double
+ns_to_s_d(Duration d) {
+    return d / 1000000000.0;
+}
 
 class SteadyClock {
-public:
+ public:
     static TimePoint now() noexcept;
+    static TimePoint nowMS() noexcept;  // In milliseconds, not nanoseconds.
 };
 
 void SleepFor(Duration d) noexcept;

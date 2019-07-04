@@ -60,12 +60,12 @@ SDL2GameWindow::instance() noexcept {
 time_t
 GameWindow::time() noexcept {
     TimePoint start = globalWindow.start;
-    TimePoint end = SteadyClock::now();
-    return ns_to_ms(end - start);
+    TimePoint end = SteadyClock::nowMS();
+    return end - start;
 }
 
 SDL2GameWindow::SDL2GameWindow() noexcept
-        : start(0),
+        : start(SteadyClock::nowMS()),
           renderer(nullptr),
           translation{0.0, 0.0},
           scaling{0.0, 0.0},
@@ -83,7 +83,7 @@ SDL2GameWindow::init() noexcept {
     }
 
     {
-        // TimeMeasure m("Created SDL2 window");
+        TimeMeasure m("Created SDL2 window");
 
         int width = conf.windowSize.x;
         int height = conf.windowSize.y;
@@ -107,16 +107,32 @@ SDL2GameWindow::init() noexcept {
     }
 
     {
-        // TimeMeasure m("Created SDL2 renderer");
+        TimeMeasure m("Created SDL2 renderer");
 
-        uint32_t flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-
-        renderer = SDL_CreateRenderer(window, -1, flags);
+        renderer = SDL_CreateRenderer(
+                window,
+                -1,
+                SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
         if (renderer == nullptr) {
             sdlDie("SDL2GameWindow", "SDL_CreateRenderer");
             return false;
         }
+
+        SDL_RendererInfo info;
+
+        if (SDL_GetRendererInfo(renderer, &info) < 0) {
+            sdlDie("SDL2GameWindow", "SDL_GetRendererInfo");
+            return false;
+        }
+
+        StringView name = info.name;
+        bool vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
+
+        Log::info("SDL2GameWindow",
+                  String("Rendering will be done with ")
+                          << name
+                          << (vsync ? " with vsync" : " without vsync"));
     }
 
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
@@ -159,12 +175,29 @@ SDL2GameWindow::mainLoop() noexcept {
 
     SDL_ShowWindow(window);
 
+    bool redrew = false;
+    time_t lastTime = 0;
+    bool presented = false;
+    bool slept = false;
+
+	time_t lastTen[10] = {};
+
     while (window != nullptr) {
         handleEvents();
+
+        time_t now = time();
+        if (now == lastTime) {
+            Log::info("SDL2GameWindow",
+                      String("dt will be 0")
+                              << " redrew " << redrew << " presented " << redrew
+                              << " slept " << slept);
+        }
+        lastTime = now;
 
         World::instance().update(time());
 
         if (World::instance().needsRedraw()) {
+            redrew = true;
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
             SDL_RenderClear(renderer);
 
@@ -174,12 +207,19 @@ SDL2GameWindow::mainLoop() noexcept {
 
             SDL_RenderPresent(renderer);
 
+            presented = true;
+            slept = false;
+
             // TODO: Detect dropped frames.
         }
         else {
+            redrew = false;
             // TODO: Question: How do we handle variable refresh rate screens?
             Duration frameLength{s_to_ns(1) / getRefreshRate(window)};
             SleepFor(frameLength);
+
+            presented = false;
+            slept = true;
         }
     }
 }

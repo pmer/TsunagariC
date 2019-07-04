@@ -874,11 +874,20 @@ AreaJSON::parseExit(StringView dest,
         return false;
     }
 
-    Optional<int> _x = parseInt(x);
-    Optional<int> _y = parseInt(y);
-    Optional<double> _z = parseDouble(z);
+    StringView x_ = x.view();
+    StringView y_ = y.view();
+    if (x_.find('+')) {
+        x_ = x_.substr(0, x_.size - 1);
+    }
+    if (y_.find('+')) {
+        y_ = y_.substr(0, y_.size - 1);
+    }
 
-    exit = Exit(area, *_x, *_y, *_z);
+	Optional<int> x__ = parseInt(x_);
+    Optional<int> y__ = parseInt(y_);
+    Optional<double> z_ = parseDouble(z);
+
+    exit = Exit(area, *x__, *y__, *z_);
 
     *wwide = x.view().find('+');
     *hwide = y.view().find('+');

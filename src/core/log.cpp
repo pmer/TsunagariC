@@ -52,8 +52,8 @@ static StringView
 chomp(StringView str) noexcept {
     size_t size = str.size;
     while (size > 0 &&
-           (str.data[str.size - 1] == ' ' || str.data[str.size - 1] == '\t' ||
-            str.data[str.size - 1] == '\n' || str.data[str.size - 1] == '\r')) {
+           (str.data[size - 1] == ' ' || str.data[size - 1] == '\t' ||
+            str.data[size - 1] == '\n' || str.data[size - 1] == '\r')) {
         size -= 1;
     }
     return str.substr(0, size);
@@ -144,6 +144,13 @@ Log::err(StringView domain, StringView msg) noexcept {
     }
 }
 
+#ifdef _WIN32
+extern "C" {
+__declspec(dllimport) int __stdcall IsDebuggerPresent();
+}
+void __cdecl __debugbreak();
+#endif
+
 void
 Log::fatal(StringView domain, StringView msg) noexcept {
     {
@@ -168,6 +175,10 @@ Log::fatal(StringView domain, StringView msg) noexcept {
 
 #ifdef _WIN32
     wMessageBox("Tsunagari - Fatal", s);
+
+	if (IsDebuggerPresent()) {
+        __debugbreak();
+    }
 #endif
 #ifdef __APPLE__
     macMessageBox(StringView("Tsunagari - Fatal"), s);

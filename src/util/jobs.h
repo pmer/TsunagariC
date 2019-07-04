@@ -1,6 +1,6 @@
 /*************************************
 ** Tsunagari Tile Engine            **
-** dispatch-queue.cpp               **
+** scheduler.h                      **
 ** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
@@ -24,18 +24,14 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "util/dispatch-queue.h"
+#ifndef SRC_UTIL_SCHEDULER_H_
+#define SRC_UTIL_SCHEDULER_H_
 
-#include "util/dispatch-queue-impl.h"
-#include "util/move.h"
+#include "util/function.h"
 
-DispatchQueue::DispatchQueue() noexcept : impl(new DispatchQueueImpl) {}
+typedef Function<void()> Job;
 
-DispatchQueue::~DispatchQueue() noexcept {
-    delete impl;
-}
+void JobsEnqueue(Job job) noexcept;
+void JobsFlush() noexcept;
 
-void
-DispatchQueue::async(Task task, QualityOfService qos) noexcept {
-    impl->async(move_(task), qos);
-}
+#endif  // SRC_UTIL_SCHEDULER_H_

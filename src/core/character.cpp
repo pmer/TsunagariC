@@ -37,7 +37,8 @@ Character::Character() noexcept
           nowalkExempt(0),
           fromCoord({0.0, 0.0, 0.0}),
           fromTile(nullptr),
-          destTile(nullptr) {
+          destTile(nullptr),
+          destExit(nullptr) {
     enterTile();
 }
 
@@ -128,10 +129,12 @@ Character::getTile() noexcept {
 }
 
 void
-Character::setArea(Area* area) noexcept {
+Character::setArea(Area* area, vicoord position) noexcept {
     leaveTile();
     Entity::setArea(area);
+    r = area->virt2virt(position);
     enterTile();
+    redraw = true;
 }
 
 void
@@ -148,12 +151,12 @@ Character::moveByTile(ivec2 delta) noexcept {
     destTile = area->getTile(dest);
     setDestinationCoordinate(area->phys2virt_r(dest));
 
-    destExit = Optional<Exit>();
-    if (fromTile && fromTile->exitAt(delta)) {
-        destExit = fromTile->exitAt(delta);
+    destExit = nullptr;
+    if (fromTile) {
+        destExit = &fromTile->exitAt(delta);
     }
-    else if (destTile && destTile->exits[EXIT_NORMAL]) {
-        destExit = destTile->exits[EXIT_NORMAL];
+    else if (destTile) {
+        destExit = &destTile->exits[EXIT_NORMAL];
     }
 
     if (!canMove(dest)) {
@@ -209,7 +212,7 @@ Character::moveDest(ivec2 facing) noexcept {
 
 bool
 Character::canMove(icoord dest) noexcept {
-    if (destExit) {
+    if (destExit && *destExit) {
         // We can always take exits as long as we can take exits.
         // (Even if they would cause us to be out of bounds.)
         if (nowalkExempt & TILE_NOWALK_EXIT) {

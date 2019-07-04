@@ -1,7 +1,7 @@
 /*************************************
 ** Tsunagari Tile Engine            **
-** pool.cpp                         **
-** Copyright 2017-2019 Paul Merrill **
+** scheduler.cpp                    **
+** Copyright 2016-2019 Paul Merrill **
 *************************************/
 
 // **********
@@ -24,75 +24,52 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "pack/pool.h"
+#include "util/jobs.h"
 
 #include "os/condition-variable.h"
 #include "os/mutex.h"
 #include "os/thread.h"
+#include "util/assert.h"
 #include "util/function.h"
+#include "util/int.h"
 #include "util/move.h"
-#include "util/string.h"
 #include "util/vector.h"
 
-class PoolImpl : public Pool {
- public:
-    ~PoolImpl() noexcept final;
+static size_t workerLimit = 0;
+static Vector<Thread> workers;
+static int jobsRunning = 0;
 
-    void schedule(Function<void()> job) noexcept final;
+// Empty jobs are the signal to quit.
+static Vector<Function<void()>> jobs;
 
-    String name;
+// Whether the destructor has been called,
+static bool tearingDown = false;
 
-    size_t workerLimit;
+// Access to workers vector, jobs deque, jobsRunning, and tearingDown.
+static Mutex jobsMutex;
 
-    size_t numWorkers;
-    Vector<Thread> workers;
+// Events for when a job is added.
+static ConditionVariable jobAvailable;
 
-    // Empty jobs are the signal to quit.
-    Vector<Function<void()>> jobs;
-
-    int jobsRunning;
-
-    // Whether the destructor has been called,
-    bool tearingDown;
-
-    // Access to workers vector, jobs deque, jobsRunning, and tearingDown.
-    Mutex jobsMutex;
-
-    // Events for when a job is added.
-    ConditionVariable jobAvailable;
-
-    // Events for when a job is finished.
-    ConditionVariable jobsDone;
-};
-
-Pool*
-Pool::makePool(StringView name, size_t workerLimit) noexcept {
-    auto pool = new PoolImpl;
-    pool->name = name;
-    pool->workerLimit =
-            workerLimit > 0 ? workerLimit : Thread::hardware_concurrency();
-    pool->numWorkers = 0;
-    pool->jobsRunning = 0;
-    pool->tearingDown = false;
-    return pool;
-}
+// Events for when a job is finished.
+static ConditionVariable jobsDone;
 
 static void
-jobWorker(PoolImpl* pool) noexcept {
+work() noexcept {
     Function<void()> job;
 
     do {
         {
-            LockGuard lock(pool->jobsMutex);
+            LockGuard lock(jobsMutex);
 
-            while (pool->jobs.empty()) {
-                pool->jobAvailable.wait(lock);
+            while (jobs.empty()) {
+                jobAvailable.wait(lock);
             }
 
-            job = move_(pool->jobs.front());
-            pool->jobs.erase(pool->jobs.begin());
+            job = move_(jobs.front());
+            jobs.erase(jobs.begin());
 
-            pool->jobsRunning += 1;
+            jobsRunning += 1;
         }
 
         if (job) {
@@ -100,38 +77,40 @@ jobWorker(PoolImpl* pool) noexcept {
         }
 
         {
-            LockGuard lock(pool->jobsMutex);
+            LockGuard lock(jobsMutex);
 
-            pool->jobsRunning -= 1;
+            jobsRunning -= 1;
 
-            if (pool->jobsRunning == 0 && pool->jobs.empty()) {
-                pool->jobsDone.notifyOne();
+            if (jobsRunning == 0 && jobs.empty()) {
+                jobsDone.notifyOne();
             }
         }
     } while (job);
 }
 
 void
-PoolImpl::schedule(Function<void()> job) noexcept {
-    {
-        LockGuard lock(jobsMutex);
+JobsEnqueue(Job job) noexcept {
+    LockGuard lock(jobsMutex);
 
-        assert_(!tearingDown);
+    assert_(!tearingDown);
 
-        jobs.push_back(job);
+    jobs.push_back(job);
 
-        if (numWorkers < workerLimit) {
-            if (numWorkers < workerLimit) {
-                workers.push_back(Thread(
-                        Function<void()>([this]() { jobWorker(this); })));
-            }
-        }
-
-        jobAvailable.notifyOne();
+    if (workerLimit == 0) {
+        workerLimit = Thread::hardware_concurrency();
     }
+
+    if (workers.size() < workerLimit) {
+        workers.push_back(Thread(Function<void()>(work)));
+    }
+
+    jobAvailable.notifyOne();
 }
 
-PoolImpl::~PoolImpl() noexcept {
+void
+JobsFlush() noexcept {
+	// TODO: Don't quit the threads.
+
     // Wait for all jobs to finish.
     {
         Mutex m;
@@ -160,4 +139,8 @@ PoolImpl::~PoolImpl() noexcept {
     for (auto& worker : workers) {
         worker.join();
     }
+
+	// Reset.
+    workers.clear();
+	tearingDown = false;
 }

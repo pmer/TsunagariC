@@ -150,10 +150,11 @@ Player::setFrozen(bool b) noexcept {
 
 void
 Player::arrived() noexcept {
+    Log::info("Player::arrived", String("r.z ") << r.z);
     Entity::arrived();
 
-    if (destExit) {
-        takeExit(*destExit);
+    if (destExit && *destExit) {
+        takeExit(*(*destExit));
     }
 
     // If we have a velocity, keep moving.

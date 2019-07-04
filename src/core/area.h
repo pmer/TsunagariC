@@ -164,6 +164,7 @@ class Area {
     Vector<Rc<Overlay>> overlays;
 
     TileGrid grid;
+    Vector<bool> tilesAnimated;
 
     Hashmap<String, TileSet> tileSets;
 

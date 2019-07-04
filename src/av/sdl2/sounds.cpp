@@ -37,14 +37,6 @@ SDL2OpenAudio() noexcept {
     int err = SDL_Init(SDL_INIT_AUDIO);
     (void)err;
     assert_(err == 0);
-
-    err = SDL_Init(SDL_INIT_AUDIO);
-    (void)err;
-    assert_(err == 0);
-
-    err = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
-    (void)err;
-    assert_(err == 0);
 }
 
 static SDL2Sounds* globalSounds = nullptr;

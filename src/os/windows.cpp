@@ -308,10 +308,10 @@ setTermColor(TermColor color) noexcept {
 
 void
 wFixConsole() noexcept {
-    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-        freopen("CONOUT$", "wb", stdout);  // Attach STDOUT.
-        freopen("CONOUT$", "wb", stderr);  // Attach STDERR.
-    }
+    //if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+    //    freopen("CONOUT$", "wb", stdout);  // Attach STDOUT.
+    //    freopen("CONOUT$", "wb", stderr);  // Attach STDERR.
+    //}
 }
 
 /* From gosu/src/Utility.cpp by Julian Raschke in 2007 */

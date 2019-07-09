@@ -294,9 +294,9 @@ parseInt100(const char* s) noexcept {
     return bound(i, 0, 100);
 }
 
-Vector<String>
+Vector<StringView>
 splitStr(StringView input, StringView delimiter) noexcept {
-    Vector<String> strlist;
+    Vector<StringView> strlist;
     size_t i = 0;
 
     for (Optional<size_t> pos = input.find(delimiter); pos;

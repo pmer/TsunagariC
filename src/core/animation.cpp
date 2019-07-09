@@ -30,17 +30,17 @@
 #include "util/assert.h"
 #include "util/move.h"
 
-Animation::Animation() noexcept : frameTime(1), cycleTime(1), frameShowing(0) {}
+Animation::Animation() noexcept
+        : frameTime(1), cycleTime(1), frameShowing(0), offset(0) {}
 
 Animation::Animation(Rc<Image> frame) noexcept
-        : frameTime(1), cycleTime(1), frameShowing(0) {
+        : frameTime(1), cycleTime(1), frameShowing(0), offset(0) {
     frames.push_back(move_(frame));
 }
 
 Animation::Animation(Vector<Rc<Image>> frames, time_t frameTime) noexcept
         : frames(move_(frames)),
           frameTime(frameTime),
-          cycleTime(1),
           frameShowing(0),
           offset(0) {
     assert_(frameTime > 0);

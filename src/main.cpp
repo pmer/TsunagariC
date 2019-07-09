@@ -51,8 +51,8 @@
  * we're going to load. The GameWindow class then loads and plays the game.
  */
 int
-main(int argc, char** argv) noexcept {
-#ifdef _WIN32
+main() noexcept {
+#if defined(_WIN32) && !defined(NDEBUG)
     wFixConsole();
 #endif
 
@@ -101,3 +101,10 @@ main(int argc, char** argv) noexcept {
 
     return 0;
 }
+
+#ifdef _WIN32
+int
+WinMain(void*, void*, void*, int) {
+    return main();
+}
+#endif

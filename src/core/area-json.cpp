@@ -42,6 +42,7 @@
 #include "os/c.h"
 #include "util/assert.h"
 #include "util/int.h"
+#include "util/math2.h"
 #include "util/move.h"
 #include "util/optional.h"
 #include "util/string2.h"
@@ -116,6 +117,7 @@ AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept
         : Area(player, descriptor) {
     // Add TileType #0. Not used, but Tiled's gids start from 1.
     gids.push_back(nullptr);
+    maxTileTypeGid += 1;
 }
 
 bool
@@ -340,10 +342,13 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
         return false;
     }
 
+    maxTileTypeGid =
+            max(maxTileTypeGid, firstGid + static_cast<int>(img->size()));
+
     // Initialize "vanilla" tile type array.
     for (size_t i = 0; i < img->size(); i++) {
-        auto tileImg = (*img.get())[i];
-        TileType* type = new TileType(move_(tileImg));
+        auto tileImg = (*img)[i];
+        TileType* type = new TileType(firstGid + i, move_(tileImg));
         set->add(type);
         gids.push_back(type);
     }
@@ -357,6 +362,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
         for (auto& id : tileIds) {
             // Must be an object... can't be an int... :)
             CHECK(tilesProperties->hasObject(id));
+
             Unique<JSONObject> tileProperties = tilesProperties->objectAt(id);
 
             // "id" is 0-based index of a tile in the current
@@ -372,17 +378,16 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
                 return false;
             }
 
-            // Initialize a default TileType, we'll build on that.
-            TileType* type = new TileType((*img.get())[id__]);
-            if (!processTileType(move_(tileProperties), *type, img, static_cast<int>(id__))) {
-                delete type;
-                return false;
-            }
             // "gid" is the global area-wide id of the tile.
             size_t gid = id__ + (size_t)firstGid;
-            delete gids[gid];  // "vanilla" type
-            gids[gid] = type;
-            set->set(id__, type);
+
+            TileType* type = gids[gid];
+            if (!processTileType(move_(tileProperties),
+                                 *type,
+                                 img,
+                                 static_cast<int>(id__))) {
+                return false;
+            }
         }
     }
 
@@ -396,7 +401,6 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
                           int id) noexcept {
     /*
       {
-        "flags": "nowalk",
         "onEnter": "skid"
         "onLeave": "no_skid"
         "onUse": "no_skid"
@@ -415,10 +419,6 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
     Vector<Rc<Image>> framesvec;
     Optional<int> frameLen;
 
-    if (obj->hasString("flags")) {
-        StringView flags = obj->stringAt("flags");
-        CHECK(splitTileFlags(flags, &type.flags));
-    }
     if (obj->hasString("on_enter")) {
         StringView scriptName = obj->stringAt("on_enter");
         type.enterScript = dataArea->script(scriptName);
@@ -433,7 +433,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
     }
     if (obj->hasString("frames")) {
         String memtemp;
-        Vector<String> frames;
+        Vector<StringView> frames;
 
         memtemp = obj->stringAt("frames");
         frames = splitStr(memtemp, ",");
@@ -449,14 +449,23 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
 
         // Add frames to our animation.
         // We already have one from TileType's constructor.
-        for (String& frame : frames) {
-            unsigned idx = parseUInt(frame);
-            if (img->size() <= idx) {
+        for (StringView& frame : frames) {
+            Optional<unsigned> idx = parseUInt(frame);
+            if (!idx) {
+                Log::err(descriptor,
+                         "couldn't parse frame index for animated tile");
+                return false;
+            }
+
+            unsigned idx_ = *idx;
+
+            if (img->size() <= idx_) {
                 Log::err(descriptor,
                          "frame index out of range for animated tile");
                 return false;
             }
-            framesvec.push_back((*img.get())[idx]);
+
+            framesvec.push_back((*img)[idx_]);
         }
     }
     if (obj->hasString("speed")) {
@@ -475,7 +484,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
         }
         // Add 'now' to Animation constructor??
         time_t now = World::instance().time();
-        type.anim = Animation(move_(framesvec), frameLen);
+        type.anim = Animation(move_(framesvec), *frameLen);
         type.anim.startOver(now);
     }
 
@@ -571,7 +580,7 @@ AreaJSON::processLayerData(Unique<JSONArray> arr) noexcept {
         if (gid > 0) {
             TileType* type = gids[(size_t)gid];
             Tile& tile = grid.grid[(z * grid.dim.y + y) * grid.dim.x + x];
-            tile.parent = type;
+            tile.type = type;
         }
 
         if (++x == (size_t)grid.dim.x) {
@@ -857,40 +866,38 @@ AreaJSON::parseExit(StringView dest,
       E.g.:   "babysfirst.area,1,3,0"
     */
 
-    Vector<String> strs = splitStr(dest, ",");
+    Vector<StringView> strs = splitStr(dest, ",");
 
     if (strs.size() != 4) {
         Log::err(descriptor, "exit: Invalid format");
         return false;
     }
 
-    String area = move_(strs[0]);
-    String x = move_(strs[1]);
-    String y = move_(strs[2]);
-    String z = move_(strs[3]);
+    StringView area = strs[0];
+    StringView x = strs[1];
+    StringView y = strs[2];
+    StringView z = strs[3];
 
     if (!isIntegerOrPlus(x) || !isIntegerOrPlus(y) || !isIntegerOrPlus(z)) {
         Log::err(descriptor, "exit: Invalid format");
         return false;
     }
 
-    StringView x_ = x.view();
-    StringView y_ = y.view();
-    if (x_.find('+')) {
-        x_ = x_.substr(0, x_.size - 1);
+    if (x.find('+')) {
+        x = x.substr(0, x.size - 1);
     }
-    if (y_.find('+')) {
-        y_ = y_.substr(0, y_.size - 1);
+    if (y.find('+')) {
+        y = y.substr(0, y.size - 1);
     }
 
-	Optional<int> x__ = parseInt(x_);
-    Optional<int> y__ = parseInt(y_);
+    Optional<int> x_ = parseInt(x);
+    Optional<int> y_ = parseInt(y);
     Optional<double> z_ = parseDouble(z);
 
-    exit = Exit(area, *x__, *y__, *z_);
+    exit = Exit(area, *x_, *y_, *z_);
 
-    *wwide = x.view().find('+');
-    *hwide = y.view().find('+');
+    *wwide = x.find('+');
+    *hwide = y.find('+');
 
     return true;
 }
@@ -903,7 +910,7 @@ AreaJSON::parseARGB(StringView str,
                     unsigned char& b) noexcept {
     unsigned char* channels[] = {&a, &r, &g, &b};
 
-    Vector<String> strs = splitStr(str, ",");
+    Vector<StringView> strs = splitStr(str, ",");
 
     if (strs.size() != 4) {
         Log::err(descriptor, "invalid ARGB format");
@@ -911,8 +918,7 @@ AreaJSON::parseARGB(StringView str,
     }
 
     for (size_t i = 0; i < 4; i++) {
-        String s = move_(strs[i]);
-        Optional<int> v = parseInt(s);
+        Optional<int> v = parseInt(strs[i]);
         if (!v) {
             Log::err(descriptor, "invalid ARGB format");
             return false;

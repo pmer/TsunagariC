@@ -163,22 +163,26 @@ class Exit {
     vicoord coords;
 };
 
-class TileBase {
+//! Contains the properties shared by all tiles of a certain type.
+/*!
+    This struct contains global tile properties for a tile of a
+    certain type. As opposed to local properties for a single tile,
+    all tiles of this type will share the defined characteristics.
+*/
+class TileType {
  public:
-    TileBase() noexcept;
+    TileType() = default;
+    TileType(int gid, const Rc<Image>& img) noexcept;
 
-    FlagManip flagManip() noexcept;
-
-    //! Determines whether this tile or one of its parent types embodies a
-    //! flag.
-    bool hasFlag(unsigned flag) const noexcept;
-
-    TileType* getType() const noexcept;
-    void setType(TileType* type) noexcept;
+    //! Returns true if onscreen and we need to update our animation.
+    bool needsRedraw() const noexcept;
 
  public:
-    TileBase* parent;
-    unsigned flags;
+    // Graphical details.
+    int gid;
+    Animation anim;  //! Graphics for tiles of this type.
+
+    // Object details.
     DataArea::TileScript enterScript, leaveScript, useScript;
 };
 
@@ -189,10 +193,16 @@ class TileBase {
     tiles of the same type, these properties will only apply to one
     tile.
 */
-class Tile : public TileBase {
+class Tile {
  public:
     Tile() noexcept;  // Should not be used. Wanted by std::containers.
     Tile(Area* area) noexcept;
+
+    FlagManip flagManip() noexcept;
+
+    //! Determines whether this tile or one of its parent types embodies a
+    //! flag.
+    bool hasFlag(unsigned flag) const noexcept;
 
     /**
      * Gets the correct destination for an Entity wanting to
@@ -216,36 +226,14 @@ class Tile : public TileBase {
  public:
     Area* area;
 
+    TileType* type;
+    unsigned flags;
+    DataArea::TileScript enterScript, leaveScript, useScript;
+
     Optional<Exit> exits[EXITS_LENGTH];
     Optional<double> layermods[EXITS_LENGTH];
     int entCnt;  //!< Number of entities on this Tile.
 };
-
-//! Contains the properties shared by all tiles of a certain type.
-/*!
-    This struct contains global tile properties for a tile of a
-    certain type. As opposed to local properties for a single tile,
-    all tiles of this type will share the defined characteristics.
-*/
-class TileType : public TileBase {
- public:
-    TileType() = default;
-    TileType(const Rc<Image>& img) noexcept;
-
-    //! Returns true if onscreen and we need to update our animation.
-    bool needsRedraw() const noexcept;
-
- public:
-    // Graphical details.
-    int id;
-    Animation anim;  //! Graphics for tiles of this type.
-
-    // Object details.
-    // unsigned flags;
-    // DataArea::TileScript enterScript, leaveScript, useScript;
-};
-
-extern int maxTileTypeId;
 
 class TileSet {
  public:

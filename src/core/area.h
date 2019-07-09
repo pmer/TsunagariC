@@ -78,7 +78,7 @@ class Area {
     void draw(DisplayList* display);
 
     //! If false, drawing might be skipped. Saves CPU cycles when idle.
-    bool needsRedraw() const;
+    bool needsRedraw();
 
     //! Inform the Area that a redraw is needed.
     void requestRedraw();
@@ -164,10 +164,11 @@ class Area {
     Vector<Rc<Overlay>> overlays;
 
     TileGrid grid;
-    Vector<bool> tilesAnimated;
-
     Hashmap<String, TileSet> tileSets;
 
+    int maxTileTypeGid;
+    Vector<bool> checkedForAnimation;
+    Vector<bool> tilesAnimated;
 
     String name, author;
     bool beenFocused;

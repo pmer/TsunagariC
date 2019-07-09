@@ -123,42 +123,58 @@ Exit::Exit(String area, int x, int y, double z) noexcept
 
 
 /*
- * TILEBASE
+ * TILETYPE
  */
-TileBase::TileBase() noexcept
-        : parent(nullptr),
-          flags(0x0),
+TileType::TileType(int gid, const Rc<Image>& img) noexcept
+        : gid(gid),
           enterScript(nullptr),
           leaveScript(nullptr),
-          useScript(nullptr) {}
-
-FlagManip
-TileBase::flagManip() noexcept {
-    return FlagManip(&flags);
+          useScript(nullptr) {
+    anim = Animation(img);
 }
 
 bool
-TileBase::hasFlag(unsigned flag) const noexcept {
-    return flags & flag || (parent && parent->hasFlag(flag));
-}
-
-TileType*
-TileBase::getType() const noexcept {
-    return (TileType*)parent;
-}
-
-void
-TileBase::setType(TileType* type) noexcept {
-    parent = type;
+TileType::needsRedraw() const noexcept {
+    time_t now = World::instance().time();
+    if (anim.needsRedraw(now)) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 
 /*
  * TILE
  */
-Tile::Tile() noexcept : entCnt(0) {}
+Tile::Tile() noexcept
+        : area(nullptr),
+          type(nullptr),
+          flags(0),
+          enterScript(nullptr),
+          leaveScript(nullptr),
+          useScript(nullptr),
+          entCnt(0) {}
 
-Tile::Tile(Area* area) noexcept : area(area), entCnt(0) {}
+Tile::Tile(Area* area) noexcept
+        : area(area),
+          type(nullptr),
+          flags(0),
+          enterScript(nullptr),
+          leaveScript(nullptr),
+          useScript(nullptr),
+          entCnt(0) {}
+
+FlagManip
+Tile::flagManip() noexcept {
+    return FlagManip(&flags);
+}
+
+bool
+Tile::hasFlag(unsigned flag) const noexcept {
+    return flags & flag;
+}
 
 icoord
 Tile::moveDest(icoord here, ivec2 facing) const noexcept {
@@ -187,49 +203,60 @@ Tile::layermodAt(ivec2 dir) const noexcept {
 void
 Tile::runEnterScript(Entity* triggeredBy) noexcept {
     DataArea* dataArea = area->getDataArea();
-    for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
-        DataArea::TileScript script = scripted->enterScript;
-        if (script)
-            (dataArea->*script)(*triggeredBy, *this);
+
+    DataArea::TileScript script;
+
+    script = enterScript;
+    if (script)
+        (dataArea->*script)(*triggeredBy, *this);
+
+    if (!type) {
+        return;
     }
+
+    script = type->enterScript;
+    if (script)
+        (dataArea->*script)(*triggeredBy, *this);
 }
 
 void
 Tile::runLeaveScript(Entity* triggeredBy) noexcept {
     DataArea* dataArea = area->getDataArea();
-    for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
-        DataArea::TileScript script = scripted->leaveScript;
-        if (script)
-            (dataArea->*script)(*triggeredBy, *this);
+
+    DataArea::TileScript script;
+
+    script = leaveScript;
+    if (script)
+        (dataArea->*script)(*triggeredBy, *this);
+
+    if (!type) {
+        return;
     }
+
+    script = type->leaveScript;
+    if (script)
+        (dataArea->*script)(*triggeredBy, *this);
 }
 
 void
 Tile::runUseScript(Entity* triggeredBy) noexcept {
     DataArea* dataArea = area->getDataArea();
-    for (TileBase* scripted = this; scripted; scripted = scripted->parent) {
-        DataArea::TileScript script = scripted->useScript;
-        if (script)
-            (dataArea->*script)(*triggeredBy, *this);
+
+    DataArea::TileScript script;
+
+    script = useScript;
+    if (script)
+        (dataArea->*script)(*triggeredBy, *this);
+
+    if (!type) {
+        return;
     }
+
+    script = type->useScript;
+    if (script)
+        (dataArea->*script)(*triggeredBy, *this);
 }
 
-
-/*
- * TILETYPE
- */
-int maxTileTypeId = 0;
-
-TileType::TileType(const Rc<Image>& img) noexcept {
-    id = maxTileTypeId++;
-    anim = Animation(img);
-}
-
-bool
-TileType::needsRedraw() const noexcept {
-    time_t now = World::instance().time();
-    return anim.needsRedraw(now);
-}
 
 /*
  * TILESET

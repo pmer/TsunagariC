@@ -59,7 +59,7 @@ Optional<double> parseDouble(StringView s) noexcept;
 int parseInt100(const char* s) noexcept;
 
 //! Split a string by a delimiter.
-Vector<String> splitStr(StringView str, StringView delimiter) noexcept;
+Vector<StringView> splitStr(StringView str, StringView delimiter) noexcept;
 
 /**
  * Parse ranges of integers separated by commas.

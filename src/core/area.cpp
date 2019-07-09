@@ -50,6 +50,7 @@
 Area::Area(Player* player, StringView descriptor)
         : dataArea(DataWorld::instance().area(descriptor)),
           player(player),
+          maxTileTypeGid(0),
           colorOverlayARGB(0),
           beenFocused(false),
           redraw(true),
@@ -138,7 +139,7 @@ Area::draw(DisplayList* display) {
 }
 
 bool
-Area::needsRedraw() const {
+Area::needsRedraw() {
     if (redraw) {
         return true;
     }
@@ -168,20 +169,23 @@ Area::needsRedraw() const {
     }
 
     // Do any on-screen tile types need to update their animations?
-    BitRecord tileTypes(static_cast<size_t>(maxTileTypeId));
+    checkedForAnimation.resize(static_cast<size_t>(maxTileTypeGid + 1));
+    for (bool& checked : checkedForAnimation) {
+        checked = false;
+    }
 
     for (int z = tiles.z1; z < tiles.z2; z++) {
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {
-                const Tile* tile = getTile(icoord{x, y, z});
-                const TileType* type = tile->getType();
+                const Tile* tile = grid.getTile(icoord{x, y, z});
+                const TileType* type = tile->type;
                 if (!type) {
                     continue;
                 }
-                if (tileTypes[type->id]) {
+                if (checkedForAnimation[type->gid]) {
                     continue;
                 }
-                tileTypes[type->id] = true;
+                checkedForAnimation[type->gid] = true;
                 if (type->needsRedraw()) {
                     return true;
                 }
@@ -436,11 +440,10 @@ drawTile(DisplayList* display,
          int x,
          int y /*, double depth, int tileDimY */,
          int tileWidth,
-	     int tileHeight) {
+         int tileHeight) {
     Image* img = type->anim.frame();
     if (img) {
-        rvec2 drawPos{double(x * tileWidth),
-                      double(y * tileHeight)};
+        rvec2 drawPos{double(x * tileWidth), double(y * tileHeight)};
         // drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
         display->items.push_back(DisplayItem{img, drawPos});
     }
@@ -449,28 +452,35 @@ drawTile(DisplayList* display,
 void
 Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     time_t now = World::instance().time();
-    tilesAnimated.resize(static_cast<size_t>(maxTileTypeId));
-    for (auto& beenAnimated : tilesAnimated) {
-        beenAnimated = false;
+
+    tilesAnimated.resize(static_cast<size_t>(maxTileTypeGid + 1));
+    for (bool& animated : tilesAnimated) {
+        animated = false;
     }
+
     // double depth = grid.idx2depth[(size_t)z];
 
-	int width = 16;
+    int width = 16;
     int height = 16;
 
     for (int y = tiles.y1; y < tiles.y2; y++) {
         for (int x = tiles.x1; x < tiles.x2; x++) {
             Tile* tile = grid.getTile(icoord{x, y, z});
             // We are certain the Tile exists.
-            TileType* type = tile->getType();
+            TileType* type = tile->type;
             if (!type) {
                 continue;
             }
-            if (!tilesAnimated[type->id]) {
-                tilesAnimated[type->id] = true;
+            if (!tilesAnimated[type->gid]) {
+                tilesAnimated[type->gid] = true;
                 type->anim.frame(now);
             }
-            drawTile(display, type, x, y /*, depth, grid.tileDim.y */, width, height);
+            drawTile(display,
+                     type,
+                     x,
+                     y /*, depth, grid.tileDim.y */,
+                     width,
+                     height);
         }
     }
 }

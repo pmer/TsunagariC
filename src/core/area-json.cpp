@@ -73,7 +73,7 @@ class AreaJSON : public Area {
 
  private:
     //! Allocate Tile objects for one layer of map.
-    void allocateMapLayer() noexcept;
+    void allocateMapLayer(TileGrid::LayerType type) noexcept;
 
     //! Parse an Area file.
     bool processDescriptor() noexcept;
@@ -128,7 +128,7 @@ AreaJSON::init() noexcept {
 
 
 void
-AreaJSON::allocateMapLayer() noexcept {
+AreaJSON::allocateMapLayer(TileGrid::LayerType type) noexcept {
     ivec3 dim = grid.dim;
 
     // FIXME: Better int overflow check that multiplies x,y,z together.
@@ -136,12 +136,10 @@ AreaJSON::allocateMapLayer() noexcept {
     assert_(0 <= dim.x);
     assert_(0 <= dim.z);
 
-    for (int y = 0; y < dim.y; y++) {
-        for (int x = 0; x < dim.x; x++) {
-            grid.grid.emplace_back(this);
-        }
-    }
+    grid.layerTypes.push_back(type);  // FIXME: Store different layer types in different kinds of structs.
 
+    grid.grid.resize(grid.grid.size() + dim.x * dim.y);
+    grid.types.resize(grid.types.size() + dim.x * dim.y);
     grid.dim.z++;
 }
 
@@ -516,7 +514,7 @@ AreaJSON::processLayer(Unique<JSONObject> obj) noexcept {
         return false;
     }
 
-    allocateMapLayer();
+    allocateMapLayer(TileGrid::LayerType::TILE_LAYER);
 
     CHECK(obj->hasObject("properties"));
     CHECK(processLayerProperties(obj->objectAt("properties")));
@@ -576,13 +574,11 @@ AreaJSON::processLayerData(Unique<JSONArray> arr) noexcept {
             return false;
         }
 
+        size_t idx = (z * grid.dim.y + y) * grid.dim.x + x;
+
         // A gid of zero means there is no tile at this
         // position on this layer.
-        if (gid > 0) {
-            TileType* type = gids[(size_t)gid];
-            Tile& tile = grid.grid[(z * grid.dim.y + y) * grid.dim.x + x];
-            tile.type = type;
-        }
+        grid.types[idx] = gid > 0 ? gids[(size_t)gid] : nullptr;
 
         if (++x == (size_t)grid.dim.x) {
             x = 0;
@@ -637,7 +633,7 @@ AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) noexcept {
         return false;
     }
 
-    allocateMapLayer();
+    allocateMapLayer(TileGrid::LayerType::OBJECT_LAYER);
     grid.depth2idx[depth] = grid.dim.z - 1;
     grid.idx2depth.push_back(
             depth);  // Effectively idx2depth[dim.z - 1] = depth;

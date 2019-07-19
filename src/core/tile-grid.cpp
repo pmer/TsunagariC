@@ -32,6 +32,23 @@
 #include "util/math2.h"
 #include "util/string.h"
 
+TileType*
+TileGrid::getTileType(icoord phys) noexcept {
+    int x = dim.x;
+    int y = dim.y;
+
+    if (loopX) {
+        phys.x = wrap(0, phys.x, dim.x);
+    }
+
+    if (loopY) {
+        phys.y = wrap(0, phys.y, dim.y);
+    }
+
+    int idx = (phys.z * y + phys.y) * x + phys.x;
+    return types[idx];
+}
+
 Tile*
 TileGrid::getTile(icoord phys) noexcept {
     int x = dim.x;

@@ -149,18 +149,7 @@ TileType::needsRedraw() const noexcept {
  * TILE
  */
 Tile::Tile() noexcept
-        : area(nullptr),
-          type(nullptr),
-          flags(0),
-          enterScript(nullptr),
-          leaveScript(nullptr),
-          useScript(nullptr),
-          entCnt(0) {}
-
-Tile::Tile(Area* area) noexcept
-        : area(area),
-          type(nullptr),
-          flags(0),
+        : flags(0),
           enterScript(nullptr),
           leaveScript(nullptr),
           useScript(nullptr),
@@ -171,13 +160,8 @@ Tile::flagManip() noexcept {
     return FlagManip(&flags);
 }
 
-bool
-Tile::hasFlag(unsigned flag) const noexcept {
-    return flags & flag;
-}
-
 icoord
-Tile::moveDest(icoord here, ivec2 facing) const noexcept {
+Tile::moveDest(Area* area, icoord here, ivec2 facing) const noexcept {
     icoord dest = here + icoord{facing.x, facing.y, 0};
 
     Optional<double> layermod = layermodAt(facing);
@@ -198,63 +182,6 @@ Optional<double>
 Tile::layermodAt(ivec2 dir) const noexcept {
     int idx = ivec2_to_dir(dir);
     return idx == -1 ? Optional<double>() : layermods[idx];
-}
-
-void
-Tile::runEnterScript(Entity* triggeredBy) noexcept {
-    DataArea* dataArea = area->getDataArea();
-
-    DataArea::TileScript script;
-
-    script = enterScript;
-    if (script)
-        (dataArea->*script)(*triggeredBy, *this);
-
-    if (!type) {
-        return;
-    }
-
-    script = type->enterScript;
-    if (script)
-        (dataArea->*script)(*triggeredBy, *this);
-}
-
-void
-Tile::runLeaveScript(Entity* triggeredBy) noexcept {
-    DataArea* dataArea = area->getDataArea();
-
-    DataArea::TileScript script;
-
-    script = leaveScript;
-    if (script)
-        (dataArea->*script)(*triggeredBy, *this);
-
-    if (!type) {
-        return;
-    }
-
-    script = type->leaveScript;
-    if (script)
-        (dataArea->*script)(*triggeredBy, *this);
-}
-
-void
-Tile::runUseScript(Entity* triggeredBy) noexcept {
-    DataArea* dataArea = area->getDataArea();
-
-    DataArea::TileScript script;
-
-    script = useScript;
-    if (script)
-        (dataArea->*script)(*triggeredBy, *this);
-
-    if (!type) {
-        return;
-    }
-
-    script = type->useScript;
-    if (script)
-        (dataArea->*script)(*triggeredBy, *this);
 }
 
 

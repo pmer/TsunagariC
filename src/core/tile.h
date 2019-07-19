@@ -195,14 +195,9 @@ class TileType {
 */
 class Tile {
  public:
-    Tile() noexcept;  // Should not be used. Wanted by std::containers.
-    Tile(Area* area) noexcept;
+    Tile() noexcept;
 
     FlagManip flagManip() noexcept;
-
-    //! Determines whether this tile or one of its parent types embodies a
-    //! flag.
-    bool hasFlag(unsigned flag) const noexcept;
 
     /**
      * Gets the correct destination for an Entity wanting to
@@ -211,22 +206,16 @@ class Tile {
      *
      * This call is necessary to handle layermod.
      *
+	 * @param area    the area containing this Tile
      * @param here    area-space coordinate for this Tile
      * @param facing  facing vector
      */
-    icoord moveDest(icoord here, ivec2 facing) const noexcept;
+    icoord moveDest(Area* area, icoord here, ivec2 facing) const noexcept;
 
     const Optional<Exit>& exitAt(ivec2 dir) const noexcept;
     Optional<double> layermodAt(ivec2 dir) const noexcept;
 
-    void runEnterScript(Entity* triggeredBy) noexcept;
-    void runLeaveScript(Entity* triggeredBy) noexcept;
-    void runUseScript(Entity* triggeredBy) noexcept;
-
  public:
-    Area* area;
-
-    TileType* type;
     unsigned flags;
     DataArea::TileScript enterScript, leaveScript, useScript;
 

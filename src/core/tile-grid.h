@@ -35,6 +35,8 @@
 
 class TileGrid {
  public:
+    TileType* getTileType(icoord phys) noexcept;
+
     Tile* getTile(icoord phys) noexcept;
     Tile* getTile(vicoord virt) noexcept;
     Tile* getTile(rcoord virt) noexcept;
@@ -75,7 +77,14 @@ class TileGrid {
 
  public:
     //! 3-dimensional array of the tiles that make up the grid.
+    Vector<TileType*> types;
     Vector<Tile> grid;
+
+    enum LayerType {
+        TILE_LAYER,
+        OBJECT_LAYER,
+    };
+    Vector<LayerType> layerTypes;
 
     //! 3-dimensional length of map.
     ivec3 dim;

@@ -131,8 +131,14 @@ Area::draw(DisplayList* display) {
     assert_(tiles.z2 == maxZ);
 
     for (int z = 0; z < maxZ; z++) {
-        drawTiles(display, tiles, z);
-        drawEntities(display, tiles, z);
+        switch (grid.layerTypes[z]) {
+        case TileGrid::LayerType::TILE_LAYER:
+            drawTiles(display, tiles, z);
+            break;
+        case TileGrid::LayerType::OBJECT_LAYER:
+            drawEntities(display, tiles, z);
+            break;
+        }
     }
 
     redraw = false;
@@ -175,10 +181,12 @@ Area::needsRedraw() {
     }
 
     for (int z = tiles.z1; z < tiles.z2; z++) {
+        if (grid.layerTypes[z] != TileGrid::LayerType::TILE_LAYER) {
+            continue;
+        }
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {
-                const Tile* tile = grid.getTile(icoord{x, y, z});
-                const TileType* type = tile->type;
+                const TileType* type = grid.getTileType(icoord{x, y, z});
                 if (!type) {
                     continue;
                 }
@@ -433,21 +441,75 @@ Area::getDataArea() {
     return dataArea;
 }
 
+void
+Area::runEnterScript(icoord tile, Entity* triggeredBy) noexcept {
+    Tile* t = grid.getTile(tile);
 
-static void
-drawTile(DisplayList* display,
-         const TileType* type,
-         int x,
-         int y /*, double depth, int tileDimY */,
-         int tileWidth,
-         int tileHeight) {
-    Image* img = type->anim.frame();
-    if (img) {
-        rvec2 drawPos{double(x * tileWidth), double(y * tileHeight)};
-        // drawPos.z = depth + drawPos.y / tileDimY * ISOMETRIC_ZOFF_PER_TILE;
-        display->items.push_back(DisplayItem{img, drawPos});
+    assert_(t);
+
+    DataArea::TileScript script = t->enterScript;
+    if (script) {
+        (dataArea->*script)(*triggeredBy, *t);
     }
+
+    // TileType* type = grid.getTileType(tile);
+    //
+    // if (!type) {
+    //     return;
+    // }
+    //
+    // script = type->enterScript;
+    // if (script) {
+    //     (dataArea->*script)(*triggeredBy, *t);
+    // }
 }
+
+void
+Area::runLeaveScript(icoord tile, Entity* triggeredBy) noexcept {
+    Tile* t = grid.getTile(tile);
+
+    assert_(t);
+
+    DataArea::TileScript script = t->leaveScript;
+    if (script) {
+        (dataArea->*script)(*triggeredBy, *t);
+    }
+
+    // TileType* type = grid.getTileType(tile);
+    //
+    // if (!type) {
+    //     return;
+    // }
+    //
+    // script = type->leaveScript;
+    // if (script) {
+    //     (dataArea->*script)(*triggeredBy, *t);
+    // }
+}
+
+void
+Area::runUseScript(icoord tile, Entity* triggeredBy) noexcept {
+    Tile* t = grid.getTile(tile);
+
+    assert_(t);
+
+    DataArea::TileScript script = t->useScript;
+    if (script) {
+        (dataArea->*script)(*triggeredBy, *t);
+    }
+
+    // TileType* type = grid.getTileType(tile);
+    //
+    // if (!type) {
+    //     return;
+    // }
+    //
+    // script = type->useScript;
+    // if (script) {
+    //     (dataArea->*script)(*triggeredBy, *t);
+    // }
+}
+
 
 void
 Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
@@ -458,6 +520,8 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
         animated = false;
     }
 
+    display->items.reserve(display->items.size() + (tiles.y2 - tiles.y1) * (tiles.x2 - tiles.x1));
+
     // double depth = grid.idx2depth[(size_t)z];
 
     int width = 16;
@@ -465,9 +529,8 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
 
     for (int y = tiles.y1; y < tiles.y2; y++) {
         for (int x = tiles.x1; x < tiles.x2; x++) {
-            Tile* tile = grid.getTile(icoord{x, y, z});
             // We are certain the Tile exists.
-            TileType* type = tile->type;
+            TileType* type = grid.getTileType(icoord{x, y, z});
             if (!type) {
                 continue;
             }
@@ -475,12 +538,13 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
                 tilesAnimated[type->gid] = true;
                 type->anim.frame(now);
             }
-            drawTile(display,
-                     type,
-                     x,
-                     y /*, depth, grid.tileDim.y */,
-                     width,
-                     height);
+            Image* img = type->anim.frame();
+            if (img) {
+                rvec2 drawPos{double(x * width), double(y * height)};
+                // drawPos.z = depth + drawPos.y / tileDimY *
+                // ISOMETRIC_ZOFF_PER_TILE;
+                display->items.push_back_nogrow(DisplayItem{img, drawPos});
+            }
         }
     }
 }

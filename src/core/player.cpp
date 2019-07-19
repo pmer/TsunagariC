@@ -125,9 +125,10 @@ Player::moveByTile(ivec2 delta) noexcept {
 
 void
 Player::useTile() noexcept {
-    Tile* t = area->getTile(moveDest(facing));
+    icoord destCoord = moveDest(facing);
+    Tile* t = area->getTile(destCoord);
     if (t) {
-        t->runUseScript(this);
+        area->runUseScript(destCoord, this);
     }
 }
 

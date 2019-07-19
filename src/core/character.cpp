@@ -170,7 +170,7 @@ Character::moveByTile(ivec2 delta) noexcept {
     // Process triggers.
     runTileExitScript();
     if (fromTile) {
-        fromTile->runLeaveScript(this);
+        area->runLeaveScript(area->virt2phys(fromCoord), this);
     }
 
     // Modify tile's entity count.
@@ -203,7 +203,7 @@ Character::moveDest(ivec2 facing) noexcept {
 
     if (tile) {
         // Handle layermod.
-        return tile->moveDest(here, facing);
+        return tile->moveDest(area, here, facing);
     }
     else {
         return here + icoord{facing.x, facing.y, 0};
@@ -241,7 +241,7 @@ Character::canMove(icoord dest) noexcept {
 bool
 Character::nowalked(Tile& t) noexcept {
     unsigned flags = nowalkFlags & ~nowalkExempt;
-    return t.hasFlag(flags);
+    return t.flags & flags;
 }
 
 void
@@ -257,7 +257,7 @@ Character::arrived() noexcept {
 
     // Process triggers.
     if (destTile) {
-        destTile->runEnterScript(this);
+        area->runEnterScript(area->virt2phys(destCoord), this);
     }
 
     runTileEntryScript();

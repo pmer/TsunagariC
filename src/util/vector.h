@@ -73,6 +73,8 @@ template<typename T> class Vector {
 
     void push_back(const T& value) noexcept;
     void push_back(T&& value) noexcept;
+    void push_back_nogrow(const T& value) noexcept;
+    void push_back_nogrow(T&& value) noexcept;
     void pop_back() noexcept;
 
     template<class... Args>
@@ -455,6 +457,24 @@ Vector<T>::push_back(T&& value) noexcept {
     else {
         DoInsertValueEnd(move_(value));
     }
+}
+
+
+template<typename T>
+inline void
+Vector<T>::push_back_nogrow(const T& value) noexcept {
+    assert_(mpEnd < mCapacity);
+
+    new (static_cast<void*>(mpEnd++)) T(value);
+}
+
+
+template<typename T>
+inline void
+Vector<T>::push_back_nogrow(T&& value) noexcept {
+    assert_(mpEnd < mCapacity);
+
+    new (static_cast<void*>(mpEnd++)) T(move_(value));
 }
 
 

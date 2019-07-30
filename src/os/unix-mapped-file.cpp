@@ -43,15 +43,6 @@ MappedFile::fromPath(String& path) noexcept {
         return Optional<MappedFile>();
     }
 
-    // Cannot open files >4 GB on 32-bit operating systems since they will fail
-    // the mmap.
-    if (sizeof(long long) > sizeof(size_t)) {
-        if (st.st_size > static_cast<long long>(SIZE_MAX)) {
-            close(fd);
-            return Optional<MappedFile>();
-        }
-    }
-
     char* map = reinterpret_cast<char*>(mmap(nullptr,
                                              static_cast<size_t>(st.st_size),
                                              PROT_READ,

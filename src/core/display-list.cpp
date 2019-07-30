@@ -99,7 +99,7 @@ displayListPresent(DisplayList* display) noexcept {
         if (pauseInfo) {
             unsigned iw = pauseInfo->width();
             unsigned ih = pauseInfo->height();
-            double top = DBL_MAX;
+            double top = 1e10;
             pauseInfo->draw(ww / 2 - iw / 2, wh / 2 - ih / 2, top);
         }
     }

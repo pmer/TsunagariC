@@ -46,7 +46,7 @@ genImage(StringView path) noexcept {
         return Rc<Image>();
     }
 
-    assert_(r->size < INT_MAX);
+    assert_(r->size < UINT32_MAX);
 
     SDL_RWops* ops =
             SDL_RWFromMem(static_cast<void*>(const_cast<char*>(r->data)),
@@ -79,7 +79,7 @@ genTiledImage(StringView path, unsigned tileW, unsigned tileH) noexcept {
         return Rc<TiledImage>();
     }
 
-    assert_(r->size < INT_MAX);
+    assert_(r->size < UINT32_MAX);
 
     SDL_RWops* ops =
             SDL_RWFromMem(static_cast<void*>(const_cast<char*>(r->data)),

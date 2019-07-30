@@ -314,7 +314,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
     tiley = obj->unsignedAt("tileheight");
 
     CHECK(tilex > 0 && tiley > 0);
-    CHECK(tilex <= INT_MAX && tiley <= INT_MAX);
+    CHECK(tilex <= UINT32_MAX && tiley <= UINT32_MAX);
 
     if (grid.tileDim && grid.tileDim.x != tilex && grid.tileDim.y != tiley) {
         Log::err(descriptor,

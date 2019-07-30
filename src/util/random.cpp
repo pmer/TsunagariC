@@ -38,6 +38,6 @@ randInt(int min, int max) noexcept {
 double
 randFloat(double min, double max) noexcept {
     int i = rand();
-    double d = (double)i / INT_MAX;
+    double d = (double)i / INT32_MAX;
     return d * (max - min) + min;
 }

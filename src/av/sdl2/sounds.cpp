@@ -130,7 +130,7 @@ genSample(StringView name) noexcept {
         return Rc<SDL2Sample>();
     }
 
-    assert_(r->size < INT_MAX);
+    assert_(r->size < UINT32_MAX);
 
     SDL_RWops* ops =
             SDL_RWFromMem(static_cast<void*>(const_cast<char*>(r->data)),

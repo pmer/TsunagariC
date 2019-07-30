@@ -30,31 +30,28 @@
 typedef signed char int8_t;
 typedef signed short int16_t;
 typedef signed int int32_t;
-typedef signed long long int64_t;
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
-typedef unsigned long long uint64_t;
 
-typedef int64_t time_t;
-
-#ifdef _WIN32
-typedef signed long long ssize_t;
+#if defined(_MSC_VER)
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+// size_t already defined.
+#elif defined(__clang__) || defined(__GNUC__)
+typedef __INT64_TYPE__ int64_t;
+typedef __UINT64_TYPE__ uint64_t;
+typedef __SIZE_TYPE__ size_t;
+typedef __INTPTR_TYPE__ ssize_t;
 #else
-typedef unsigned long size_t;
-typedef signed long ssize_t;
+#error Not implemented yet
 #endif
 
 typedef size_t uintptr_t;
+typedef int64_t time_t;
 
-static constexpr int INT_MAX = 0x7fffffff;
-static constexpr int UINT_MAX = 0xffffffff;
+static constexpr int32_t INT32_MAX = 0x7fffffff;
 static constexpr uint32_t UINT32_MAX = 0xffffffff;
-static constexpr double DBL_MAX = 1.7976931348623158e+308;
-
-#ifndef _WIN32
-static constexpr size_t SIZE_MAX = __SIZE_MAX__;
-#endif
 
 static constexpr double M_PI = 3.14159265358979323846;
 

@@ -220,7 +220,7 @@ parseUInt(String& s) noexcept {
         // Overflow.
         return Optional<unsigned>();
     }
-    if (ul > UINT_MAX) {
+    if (ul > UINT32_MAX) {
         // Overflow.
         return Optional<unsigned>();
     }
@@ -249,7 +249,7 @@ parseInt(String& s) noexcept {
         // Overflow.
         return Optional<int>();
     }
-    if (l > INT_MAX) {
+    if (l > UINT32_MAX) {
         // Overflow.
         return Optional<int>();
     }

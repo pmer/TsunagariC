@@ -48,7 +48,12 @@ typedef __INTPTR_TYPE__ ssize_t;
 #endif
 
 typedef size_t uintptr_t;
+
+#if defined(__APPLE__)
+typedef long time_t;
+#else
 typedef int64_t time_t;
+#endif
 
 static constexpr int32_t INT32_MAX = 0x7fffffff;
 static constexpr uint32_t UINT32_MAX = 0xffffffff;

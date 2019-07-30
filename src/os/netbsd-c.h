@@ -286,9 +286,9 @@ size_t strlen(char const*) noexcept;
 // sys/time.h
 // time.h
 extern "C" {
-int clock_gettime(clockid_t, struct timespec*) noexcept;
-int nanosleep(const struct timespec*, struct timespec*) noexcept;
-time_t time(time_t*) noexcept;
+int clock_gettime(clockid_t, struct timespec*) noexcept __asm("__clock_gettime50");
+int nanosleep(const struct timespec*, struct timespec*) noexcept __asm("__nanosleep50");
+time_t time(time_t*) noexcept __asm("__time50");
 #define CLOCK_MONOTONIC 3
 }
 

@@ -521,9 +521,9 @@ if(AV_SDL2)
     )
 
     target_link_directories(tsunagari
-        PRIVATE ${SDL2_LIBRARY_DIRS}
-                ${SDL2_image_LIBRARY_DIRS}
-                ${SDL2_mixer_LIBRARY_DIRS}
+        PUBLIC ${SDL2_LIBRARY_DIRS}
+               ${SDL2_image_LIBRARY_DIRS}
+               ${SDL2_mixer_LIBRARY_DIRS}
     )
 
     target_link_libraries(tsunagari

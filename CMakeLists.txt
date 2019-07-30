@@ -487,51 +487,35 @@ if(FREEBSD OR NETBSD)
     target_link_libraries(pack-tool PRIVATE pthread)
 endif()
 
-#if(AV_SDL2)
-#    find_package(PkgConfig REQUIRED)
-#    pkg_search_module(SDL2 REQUIRED SDL2 sdl2)
-#    pkg_search_module(SDL2_image REQUIRED SDL2_image)
-#    pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
-#
-#    target_include_directories(tsunagari
-#        PRIVATE ${SDL2_INCLUDE_DIRS}
-#                ${SDL2_image_INCLUDE_DIRS}
-#                ${SDL2_mixer_INCLUDE_DIRS}
-#    )
-#
-#    target_link_directories(tsunagari
-#        PRIVATE ${SDL2_LIBRARY_DIRS}
-#                ${SDL2_image_LIBRARY_DIRS}
-#                ${SDL2_mixer_LIBRARY_DIRS}
-#    )
-#
-#    target_link_libraries(tsunagari
-#        PUBLIC ${SDL2_LIBRARIES}
-#               ${SDL2_image_LIBRARIES}
-#               ${SDL2_mixer_LIBRARIES}
-#    )
-#
-#    # FIXME
-#    #if(APPLE)
-#    #    set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES} /System/Library/Frameworks/Cocoa.framework)
-#    #endif()
-#endif()
+if(AV_SDL2)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(SDL2 REQUIRED SDL2 sdl2)
+    pkg_search_module(SDL2_image REQUIRED SDL2_image)
+    pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
 
-target_include_directories(tsunagari
-    PRIVATE "C:/Users/pdm/Downloads/SDL2-2.0.9/include"
-            "C:/Users/pdm/Downloads/SDL2_image-2.0.4/include"
-            "C:/Users/pdm/Downloads/SDL2_mixer-2.0.4/include"
-)
-target_link_directories(tsunagari
-    PUBLIC "C:/Users/pdm/Downloads/SDL2-2.0.9/lib/x64"
-           "C:/Users/pdm/Downloads/SDL2_image-2.0.4/lib/x64"
-           "C:/Users/pdm/Downloads/SDL2_mixer-2.0.4/lib/x64"
-)
-target_link_libraries(tsunagari
-    PUBLIC "SDL2"
-           "SDL2_image"
-           "SDL2_mixer"
-)
+    target_include_directories(tsunagari
+        PRIVATE ${SDL2_INCLUDE_DIRS}
+                ${SDL2_image_INCLUDE_DIRS}
+                ${SDL2_mixer_INCLUDE_DIRS}
+    )
+
+    target_link_directories(tsunagari
+        PRIVATE ${SDL2_LIBRARY_DIRS}
+                ${SDL2_image_LIBRARY_DIRS}
+                ${SDL2_mixer_LIBRARY_DIRS}
+    )
+
+    target_link_libraries(tsunagari
+        PUBLIC ${SDL2_LIBRARIES}
+               ${SDL2_image_LIBRARIES}
+               ${SDL2_mixer_LIBRARIES}
+    )
+
+    # FIXME
+    #if(APPLE)
+    #    set(TSUNAGARIC_LIBRARIES ${TSUNAGARIC_LIBRARIES} /System/Library/Frameworks/Cocoa.framework)
+    #endif()
+endif()
 
 if(AV_GOSU)
     find_package(Gosu REQUIRED)

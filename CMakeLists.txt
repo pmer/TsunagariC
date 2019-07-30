@@ -10,6 +10,8 @@ project(TsunagariEngine
 # Options
 #
 
+option(USE_PKGCONFIG "Use pkg-config to find dependencies" ON)
+
 option(AV_NULL "Disable audio and video output")
 option(AV_SDL2 "Use SDL2 for audio and video output")
 option(AV_GOSU "Use Gosu for audio and video output")
@@ -488,10 +490,29 @@ if(FREEBSD OR NETBSD)
 endif()
 
 if(AV_SDL2)
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(SDL2 REQUIRED SDL2 sdl2)
-    pkg_search_module(SDL2_image REQUIRED SDL2_image)
-    pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
+    if(USE_PKGCONFIG)
+        find_package(PkgConfig REQUIRED)
+        pkg_search_module(SDL2 REQUIRED SDL2 sdl2)
+        pkg_search_module(SDL2_image REQUIRED SDL2_image)
+        pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
+    else()
+        set(SDL2_INCLUDE_DIRS "" CACHE PATH "Directory with SDL2 headers")
+        set(SDL2_image_INCLUDE_DIRS "" CACHE PATH "Directory with SDL2_image headers")
+        set(SDL2_mixer_INCLUDE_DIRS "" CACHE PATH "Directory with SDL2_mixer headers")
+
+        set(SDL2_LIBRARY_DIRS "" CACHE PATH "Directory with SDL2 library")
+        set(SDL2_image_LIBRARY_DIRS "" CACHE PATH "Directory with SDL2_image library")
+        set(SDL2_mixer_LIBRARY_DIRS "" CACHE PATH "Directory with SDL2_mixer library")
+
+        set(SDL2_LIBRARIES "" CACHE STRING "Name of SDL2 library")
+        set(SDL2_image_LIBRARIES "" CACHE STRING "Name with SDL2_image library")
+        set(SDL2_mixer_LIBRARIES "" CACHE STRING "Name with SDL2_mixer library")
+    endif()
+
+    if("${SDL2_LIBRARIES}" STREQUAL "")
+        message(SEND_ERROR "When not using pkg-config, please manually set"
+            " SDL2, SDL2_image, and SDL2_mixer include dirs and libraries")
+    endif()
 
     target_include_directories(tsunagari
         PRIVATE ${SDL2_INCLUDE_DIRS}

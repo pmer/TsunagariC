@@ -436,11 +436,17 @@ if(CLANG OR GCC)
 endif()
 
 target_compile_definitions(tsunagari
-    PRIVATE $<$<BOOL:${IS_RELEASE}>:NDEBUG>
+    PUBLIC $<$<BOOL:${IS_RELEASE}>:NDEBUG>
 )
 target_compile_definitions(pack-tool
     PRIVATE $<$<BOOL:${IS_RELEASE}>:NDEBUG>
 )
+
+# Share variables with parent.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" PARENT_SCOPE)
+set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL}" PARENT_SCOPE)
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" PARENT_SCOPE)
 
 
 #
@@ -465,13 +471,19 @@ if(APPLE AND CLANG)
     string(APPEND CMAKE_EXE_LINKER_FLAGS_MINSIZEREL " -Wl,-x -Wl,-dead_strip")
 endif()
 
+# Share variables with parent.
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" PARENT_SCOPE)
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}" PARENT_SCOPE)
+set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL}" PARENT_SCOPE)
+set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}" PARENT_SCOPE)
+
 if(APPLE)
     # FIXME: Change to be target-specific.
     set(GUI_TYPE MACOSX_BUNDLE)
 
     target_link_libraries(tsunagari
-        /System/Library/Frameworks/Cocoa.framework
-        /System/Library/Frameworks/Foundation.framework
+        PUBLIC /System/Library/Frameworks/Cocoa.framework
+               /System/Library/Frameworks/Foundation.framework
     )
 endif()
 

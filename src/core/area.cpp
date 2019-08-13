@@ -50,7 +50,6 @@
 Area::Area(Player* player, StringView descriptor)
         : dataArea(DataWorld::instance().area(descriptor)),
           player(player),
-          maxTileTypeGid(0),
           colorOverlayARGB(0),
           beenFocused(false),
           redraw(true),
@@ -175,10 +174,12 @@ Area::needsRedraw() {
     }
 
     // Do any on-screen tile types need to update their animations?
-    checkedForAnimation.resize(static_cast<size_t>(maxTileTypeGid + 1));
+    checkedForAnimation.resize(static_cast<size_t>(tileGraphics.size()));
     for (bool& checked : checkedForAnimation) {
         checked = false;
     }
+
+    time_t now = World::instance().time();
 
     for (int z = tiles.z1; z < tiles.z2; z++) {
         if (grid.layerTypes[z] != TileGrid::LayerType::TILE_LAYER) {
@@ -186,15 +187,18 @@ Area::needsRedraw() {
         }
         for (int y = tiles.y1; y < tiles.y2; y++) {
             for (int x = tiles.x1; x < tiles.x2; x++) {
-                const TileType* type = grid.getTileType(icoord{x, y, z});
-                if (!type) {
+                int type = grid.getTileType(icoord{x, y, z});
+
+                if (type == 0) {
                     continue;
                 }
-                if (checkedForAnimation[type->gid]) {
+
+                if (checkedForAnimation[type]) {
                     continue;
                 }
-                checkedForAnimation[type->gid] = true;
-                if (type->needsRedraw()) {
+                checkedForAnimation[type] = true;
+
+                if (tileGraphics[type].needsRedraw(now)) {
                     return true;
                 }
             }
@@ -515,12 +519,13 @@ void
 Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     time_t now = World::instance().time();
 
-    tilesAnimated.resize(static_cast<size_t>(maxTileTypeGid + 1));
+    tilesAnimated.resize(static_cast<size_t>(tileGraphics.size()));
     for (bool& animated : tilesAnimated) {
         animated = false;
     }
 
-    display->items.reserve(display->items.size() + (tiles.y2 - tiles.y1) * (tiles.x2 - tiles.x1));
+    display->items.reserve(display->items.size() +
+                           (tiles.y2 - tiles.y1) * (tiles.x2 - tiles.x1));
 
     // double depth = grid.idx2depth[(size_t)z];
 
@@ -530,15 +535,18 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     for (int y = tiles.y1; y < tiles.y2; y++) {
         for (int x = tiles.x1; x < tiles.x2; x++) {
             // We are certain the Tile exists.
-            TileType* type = grid.getTileType(icoord{x, y, z});
-            if (!type) {
+            int type = grid.getTileType(icoord{x, y, z});
+
+            if (type == 0) {
                 continue;
             }
-            if (!tilesAnimated[type->gid]) {
-                tilesAnimated[type->gid] = true;
-                type->anim.frame(now);
+
+            if (!tilesAnimated[type]) {
+                tilesAnimated[type] = true;
+                tileGraphics[type].frame(now);
             }
-            Image* img = type->anim.frame();
+
+            Image* img = tileGraphics[type].frame();
             if (img) {
                 rvec2 drawPos{double(x * width), double(y * height)};
                 // drawPos.z = depth + drawPos.y / tileDimY *

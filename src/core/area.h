@@ -158,27 +158,30 @@ class Area {
     void drawEntities(DisplayList* display, const icube& tiles, int z);
 
  protected:
-    DataArea* dataArea;
+    Hashmap<String, TileSet> tileSets;
 
-    Player* player;
-    uint32_t colorOverlayARGB;
+    Vector<Animation> tileGraphics;
+    Vector<bool> checkedForAnimation;
+    Vector<bool> tilesAnimated;
 
     Vector<Rc<Character>> characters;
     Vector<Rc<Overlay>> overlays;
 
     TileGrid grid;
-    Hashmap<String, TileSet> tileSets;
 
-    int maxTileTypeGid;
-    Vector<bool> checkedForAnimation;
-    Vector<bool> tilesAnimated;
-
-    String name, author;
     bool beenFocused;
     bool redraw;
+    uint32_t colorOverlayARGB;
+
+    DataArea* dataArea;
+
+    Player* player;
 
     // The following contain filenames such that they may be loaded lazily.
     const String descriptor;
+
+    String name;
+    String author;
     Optional<String> musicPath;
 };
 

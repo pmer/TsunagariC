@@ -58,21 +58,6 @@ ivec2_to_dir(ivec2 v) noexcept {
 
 
 /*
- * TILETYPE
- */
-bool
-TileType::needsRedraw() const noexcept {
-    time_t now = World::instance().time();
-    if (anim.needsRedraw(now)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-
-/*
  * TILE
  */
 icoord
@@ -103,41 +88,9 @@ Tile::layermodAt(ivec2 dir) const noexcept {
 /*
  * TILESET
  */
-TileSet::TileSet(size_t width, size_t height) noexcept
-        : width(width), height(height) {}
-
-void
-TileSet::add(TileType* type) noexcept {
-    types.push_back(type);
-}
-
-void
-TileSet::set(size_t idx, TileType* type) noexcept {
-    types[idx] = type;
-}
-
-TileType*
+int
 TileSet::at(size_t x, size_t y) noexcept {
-    size_t i = idx(x, y);
-    if (i > types.size()) {
-        Log::err("TileSet",
-                 String() << "get(" << x << ", " << y << "): out of bounds");
-        return nullptr;
-    }
-    return types[i];
-}
-
-size_t
-TileSet::getWidth() const noexcept {
-    return height;
-}
-
-size_t
-TileSet::getHeight() const noexcept {
-    return width;
-}
-
-size_t
-TileSet::idx(size_t x, size_t y) const noexcept {
-    return y * width + x;
+    size_t i = y * width + x;
+    assert_(firstGid <= i && i < firstGid + width * height);
+    return i;
 }

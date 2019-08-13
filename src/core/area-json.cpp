@@ -48,10 +48,6 @@
 #include "util/string2.h"
 #include "util/vector.h"
 
-#ifdef _WIN32
-#include "os/windows.h"
-#endif
-
 #define CHECK(x)      \
     if (!(x)) {       \
         return false; \
@@ -83,7 +79,7 @@ class AreaJSON : public Area {
                             StringView source,
                             int firstGid) noexcept;
     bool processTileType(Unique<JSONObject> obj,
-                         TileType& type,
+                         Animation& graphic,
                          Rc<TiledImage>& img,
                          int id) noexcept;
     bool processLayer(Unique<JSONObject> obj) noexcept;
@@ -102,8 +98,6 @@ class AreaJSON : public Area {
                    unsigned char& r,
                    unsigned char& g,
                    unsigned char& b) noexcept;
-
-    Vector<TileType*> gids;
 };
 
 
@@ -116,8 +110,7 @@ makeAreaFromJSON(Player* player, StringView filename) noexcept {
 AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept
         : Area(player, descriptor) {
     // Add TileType #0. Not used, but Tiled's gids start from 1.
-    gids.push_back(nullptr);
-    maxTileTypeGid += 1;
+    tileGraphics.resize(1);
 }
 
 bool
@@ -296,7 +289,8 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
      }
     */
 
-    TileSet* set = nullptr;
+    assert_(firstGid == tileGraphics.size());
+
     Rc<TiledImage> img;
 
     unsigned tilex, tiley;
@@ -330,8 +324,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
     height = pixelh / grid.tileDim.y;
 
     String imgSource = String() << dirname(source) << obj->stringAt("image");
-    tileSets[imgSource] = TileSet((size_t)width, (size_t)height);
-    set = &tileSets[imgSource];
+    tileSets[imgSource] = TileSet{firstGid, (size_t)width, (size_t)height};
 
     // Load tileset image.
     img = Images::instance().loadTiles(imgSource, tilex, tiley);
@@ -340,17 +333,10 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
         return false;
     }
 
-    maxTileTypeGid =
-            max(maxTileTypeGid, firstGid + static_cast<int>(img->size()));
-
     // Initialize "vanilla" tile type array.
     for (size_t i = 0; i < img->size(); i++) {
-        auto tileImg = (*img)[i];
-        TileType* type =
-                new TileType{firstGid + static_cast<int>(i),
-                             Animation(move_(tileImg))};
-        set->add(type);
-        gids.push_back(type);
+        auto image = (*img)[i];
+        tileGraphics.push_back(Animation(move_(image)));
     }
 
     if (obj->hasObject("tileproperties")) {
@@ -381,9 +367,9 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
             // "gid" is the global area-wide id of the tile.
             size_t gid = id__ + (size_t)firstGid;
 
-            TileType* type = gids[gid];
+            Animation& graphic = tileGraphics[gid];
             if (!processTileType(move_(tileProperties),
-                                 *type,
+                                 graphic,
                                  img,
                                  static_cast<int>(id__))) {
                 return false;
@@ -396,7 +382,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
 
 bool
 AreaJSON::processTileType(Unique<JSONObject> obj,
-                          TileType& type,
+                          Animation& graphic,
                           Rc<TiledImage>& img,
                           int id) noexcept {
     /*
@@ -466,8 +452,8 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
         }
         // Add 'now' to Animation constructor??
         time_t now = World::instance().time();
-        type.anim = Animation(move_(framesvec), *frameLen);
-        type.anim.startOver(now);
+        graphic = Animation(move_(framesvec), *frameLen);
+        graphic.startOver(now);
     }
 
     return true;
@@ -552,7 +538,7 @@ AreaJSON::processLayerData(Unique<JSONArray> arr) noexcept {
         CHECK(arr->isUnsigned(i));
         unsigned gid = arr->unsignedAt(i);
 
-        if (gids.size() <= gid) {
+        if (gid >= tileGraphics.size()) {
             Log::err(descriptor, "Invalid tile gid");
             return false;
         }
@@ -561,7 +547,7 @@ AreaJSON::processLayerData(Unique<JSONArray> arr) noexcept {
 
         // A gid of zero means there is no tile at this
         // position on this layer.
-        grid.types[idx] = gid > 0 ? gids[(size_t)gid] : nullptr;
+        grid.types[idx] = gid;
 
         if (++x == (size_t)grid.dim.x) {
             x = 0;

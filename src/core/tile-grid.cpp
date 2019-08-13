@@ -32,7 +32,7 @@
 #include "util/math2.h"
 #include "util/string.h"
 
-TileType*
+int
 TileGrid::getTileType(icoord phys) noexcept {
     int x = dim.x;
     int y = dim.y;

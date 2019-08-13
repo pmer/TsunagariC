@@ -29,7 +29,6 @@
 #define SRC_CORE_TILE_H_
 
 class Tile;
-class TileType;
 class TileSet;
 
 #include "core/animation.h"
@@ -42,7 +41,6 @@ class TileSet;
 
 class Area;
 class Entity;
-class TileType;
 
 //! List of possible flags that can be attached to a tile.
 /*!
@@ -136,21 +134,6 @@ struct Exit {
     vicoord coords;
 };
 
-//! Contains the properties shared by all tiles of a certain type.
-/*!
-    This struct contains global tile properties for a tile of a
-    certain type. As opposed to local properties for a single tile,
-    all tiles of this type will share the defined characteristics.
-*/
-struct TileType {
-    // Graphical details.
-    int gid;
-    Animation anim;  //! Graphics for tiles of this type.
-
-    //! Returns true if onscreen and we need to update our animation.
-    bool needsRedraw() const noexcept;
-};
-
 //! Contains properties unique to this tile.
 /*!
     This struct contains local tile properties for a single tile in
@@ -188,23 +171,12 @@ class Tile {
     Optional<double> layermods[EXITS_LENGTH];
 };
 
-class TileSet {
- public:
-    TileSet() = default;
-    TileSet(size_t width, size_t height) noexcept;
+struct TileSet {
+    int firstGid;
+    size_t width;
+    size_t height;
 
-    void add(TileType* type) noexcept;
-    void set(size_t idx, TileType* type) noexcept;
-    TileType* at(size_t x, size_t y) noexcept;
-    size_t getWidth() const noexcept;
-    size_t getHeight() const noexcept;
-
- private:
-    size_t idx(size_t x, size_t y) const noexcept;
-
-    Vector<TileType*> types;
-    size_t width = 0;
-    size_t height = 0;
+    int at(size_t x, size_t y) noexcept;
 };
 
 #endif  // SRC_CORE_TILE_H_

@@ -131,8 +131,8 @@ AreaJSON::allocateMapLayer(TileGrid::LayerType type) noexcept {
 
     grid.layerTypes.push_back(type);  // FIXME: Store different layer types in different kinds of structs.
 
-    grid.grid.resize(grid.grid.size() + dim.x * dim.y);
-    grid.types.resize(grid.types.size() + dim.x * dim.y);
+    grid.graphics.resize(grid.graphics.size() + dim.x * dim.y);
+    grid.objects.resize(grid.objects.size() + dim.x * dim.y);
     grid.dim.z++;
 }
 
@@ -547,7 +547,7 @@ AreaJSON::processLayerData(Unique<JSONArray> arr) noexcept {
 
         // A gid of zero means there is no tile at this
         // position on this layer.
-        grid.types[idx] = gid;
+        grid.graphics[idx] = gid;
 
         if (++x == (size_t)grid.dim.x) {
             x = 0;
@@ -738,7 +738,7 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
     // We know which Tiles are being talked about now... yay
     for (int Y = y; Y < y + h; Y++) {
         for (int X = x; X < x + w; X++) {
-            Tile& tile = grid.grid[(z * grid.dim.y + Y) * grid.dim.x + X];
+            Tile& tile = grid.objects[(z * grid.dim.y + Y) * grid.dim.x + X];
 
             tile.flags |= flags;
             for (size_t i = 0; i < 5; i++) {

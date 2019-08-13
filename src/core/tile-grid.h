@@ -78,8 +78,8 @@ class TileGrid {
 
  public:
     //! 3-dimensional array of the tiles that make up the grid.
-    Vector<int> types;
-    Vector<Tile> grid;
+    Vector<int> graphics;
+    Vector<Tile> objects;
 
     enum LayerType {
         TILE_LAYER,

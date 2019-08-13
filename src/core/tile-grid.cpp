@@ -46,7 +46,7 @@ TileGrid::getTileType(icoord phys) noexcept {
     }
 
     int idx = (phys.z * y + phys.y) * x + phys.x;
-    return types[idx];
+    return graphics[idx];
 }
 
 void
@@ -63,7 +63,7 @@ TileGrid::setTileType(icoord phys, int type) noexcept {
     }
 
     int idx = (phys.z * y + phys.y) * x + phys.x;
-    types[idx] = type;
+    graphics[idx] = type;
 }
 
 Tile*
@@ -80,7 +80,7 @@ TileGrid::getTile(icoord phys) noexcept {
     }
 
     int idx = (phys.z * y + phys.y) * x + phys.x;
-    return &grid[idx];
+    return &objects[idx];
 }
 
 Tile*
@@ -109,7 +109,7 @@ TileGrid::getTile(icoord phys) const noexcept {
     assert_(inBounds(phys));
 
     int idx = (phys.z * y + phys.y) * x + phys.x;
-    return &grid[idx];
+    return &objects[idx];
 }
 
 const Tile*

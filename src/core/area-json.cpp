@@ -65,7 +65,7 @@ class AreaJSON : public Area {
 
     //! Parse the file specified in the constructor, generating a full Area
     //! object. Must be called before use.
-    virtual bool init() noexcept;
+    bool init() noexcept;
 
  private:
     //! Allocate Tile objects for one layer of map.

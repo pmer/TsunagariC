@@ -38,11 +38,11 @@ TileGrid::getTileType(icoord phys) noexcept {
     int y = dim.y;
 
     if (loopX) {
-        phys.x = wrap(0, phys.x, dim.x);
+        phys.x = wrap(0, phys.x, x);
     }
 
     if (loopY) {
-        phys.y = wrap(0, phys.y, dim.y);
+        phys.y = wrap(0, phys.y, y);
     }
 
     int idx = (phys.z * y + phys.y) * x + phys.x;

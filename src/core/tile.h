@@ -178,13 +178,14 @@ class Tile {
 
  public:
     unsigned flags = 0;
+    int entCnt = 0;  //!< Number of entities on this Tile.
+
     DataArea::TileScript enterScript = nullptr,
                          leaveScript = nullptr,
                          useScript = nullptr;
 
     Optional<Exit> exits[EXITS_LENGTH];
     Optional<double> layermods[EXITS_LENGTH];
-    int entCnt = 0;  //!< Number of entities on this Tile.
 };
 
 class TileSet {

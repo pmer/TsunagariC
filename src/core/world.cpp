@@ -109,8 +109,8 @@ World::init() noexcept {
         return false;
     }
 
-    Viewport::instance().setSize(parameters.viewportResolution);
-    Viewport::instance().trackEntity(player.get());
+    Viewport::setSize(parameters.viewportResolution);
+    Viewport::trackEntity(player.get());
 
     return true;
 }
@@ -157,17 +157,15 @@ void
 World::draw(DisplayList* display) noexcept {
     // TimeMeasure m("Drew world");
 
-    Viewport& view = Viewport::instance();
-
     redraw = false;
 
     display->loopX = area->grid.loopX;
     display->loopY = area->grid.loopY;
 
-    display->padding = view.getLetterboxOffset();
-    display->scale = view.getScale();
-    display->scroll = view.getMapOffset();
-    display->size = view.getPhysRes();
+    display->padding = Viewport::getLetterboxOffset();
+    display->scale = Viewport::getScale();
+    display->scroll = Viewport::getMapOffset();
+    display->size = Viewport::getPhysRes();
 
     display->colorOverlayARGB = area->getColorOverlay();
     display->paused = paused > 0;
@@ -254,7 +252,7 @@ void
 World::focusArea(Area* area_, vicoord playerPos) noexcept {
     area = area_;
     player->setArea(area, playerPos);
-    Viewport::instance().setArea(area);
+    Viewport::setArea(area);
     area->focus();
 }
 

@@ -33,18 +33,103 @@
 #include "core/window.h"
 #include "util/math2.h"
 
-static Viewport globalViewport;
+enum TrackingMode { TM_MANUAL, TM_FOLLOW_ENTITY };
 
-Viewport&
-Viewport::instance() noexcept {
-    return globalViewport;
+static double aspectRatio;
+static rvec2 off = {0, 0};
+static rvec2 virtRes;
+
+static TrackingMode mode = TM_MANUAL;
+static const Area* area = nullptr;
+static const Entity* targete;
+
+static rvec2
+centerOn(rvec2 pt) noexcept {
+    return pt - virtRes / 2;
 }
 
-Viewport::Viewport() noexcept : off{0, 0}, mode(TM_MANUAL), area(nullptr) {}
+static double
+boundDimension(double screen, double area, double pt, bool loop) noexcept {
+    // Since looping areas continue without bound, this is a no-op.
+    if (loop) {
+        return pt;
+    }
+
+    // If the Area is smaller than the screen, center the Area. Otherwise,
+    // allow the screen to move to the edge of the Area, but not past.
+    double wiggleRoom = area - screen;
+    return wiggleRoom <= 0 ? wiggleRoom / 2 : bound(pt, 0.0, wiggleRoom);
+}
+
+static rvec2
+boundToArea(rvec2 pt) noexcept {
+    icoord ad = area->grid.dim;
+    ivec2 td = area->grid.tileDim;
+    double areaWidth = ad.x * td.x;
+    double areaHeight = ad.y * td.y;
+    bool loopX = area->grid.loopX;
+    bool loopY = area->grid.loopY;
+
+    return rvec2{boundDimension(virtRes.x, areaWidth, pt.x, loopX),
+                 boundDimension(virtRes.y, areaHeight, pt.y, loopY)};
+}
+
+static rvec2
+offsetForPt(rvec2 pt) noexcept {
+    return boundToArea(centerOn(pt));
+}
+
+static void
+_jumpToEntity(const Entity* e) noexcept {
+    rcoord pos = e->getPixelCoord();
+    ivec2 td = area->grid.getTileDimensions();
+    rvec2 center = rvec2{pos.x + td.x / 2, pos.y + td.y / 2};
+    off = offsetForPt(center);
+}
+
+//! Returns as a normalized vector the percentage of screen that should
+//! be blanked to preserve the aspect ratio. It can also be thought of
+//! as the correcting aspect ratio.
+static rvec2
+getLetterbox() noexcept {
+    rvec2 physRes = Viewport::getPhysRes();
+    double physAspect = physRes.x / physRes.y;
+    double virtAspect = virtRes.x / virtRes.y;
+
+    if (physAspect > virtAspect) {
+        // Letterbox cuts off left-right.
+        double cut = 1 - virtAspect / physAspect;
+        return rvec2{cut, 0};
+    }
+    else {
+        // Letterbox cuts off top-bottom.
+        double cut = 1 - physAspect / virtAspect;
+        return rvec2{0, cut};
+    }
+}
+
+static rvec2
+addLetterboxOffset(rvec2 pt) noexcept {
+    rvec2 physRes = Viewport::getPhysRes();
+    rvec2 letterbox = getLetterbox();
+    return pt - letterbox * physRes / 2;
+}
+
+static void
+update() noexcept {
+    switch (mode) {
+    case TM_MANUAL:
+        // Do nothing.
+        break;
+    case TM_FOLLOW_ENTITY:
+        _jumpToEntity(targete);
+        break;
+    };
+}
 
 void
-Viewport::setSize(rvec2 virtRes) noexcept {
-    this->virtRes = virtRes;
+Viewport::setSize(rvec2 virtRes_) noexcept {
+    virtRes = virtRes_;
 
     // Calculate or recalculate the aspect ratio.
     double width = (double)GameWindow::width();
@@ -63,17 +148,17 @@ Viewport::turn() noexcept {
 }
 
 rvec2
-Viewport::getMapOffset() const noexcept {
+Viewport::getMapOffset() noexcept {
     return off;
 }
 
 rvec2
-Viewport::getLetterboxOffset() const noexcept {
+Viewport::getLetterboxOffset() noexcept {
     return addLetterboxOffset(rvec2{0.0, 0.0});
 }
 
 rvec2
-Viewport::getScale() const noexcept {
+Viewport::getScale() noexcept {
     rvec2 letterbox = getLetterbox();
     rvec2 physRes =
             rvec2{(double)GameWindow::width(), (double)GameWindow::height()};
@@ -83,12 +168,12 @@ Viewport::getScale() const noexcept {
 }
 
 rvec2
-Viewport::getPhysRes() const noexcept {
+Viewport::getPhysRes() noexcept {
     return rvec2{(double)GameWindow::width(), (double)GameWindow::height()};
 }
 
 rvec2
-Viewport::getVirtRes() const noexcept {
+Viewport::getVirtRes() noexcept {
     return virtRes;
 }
 
@@ -123,88 +208,4 @@ Viewport::trackEntity(const Entity* e) noexcept {
 void
 Viewport::setArea(const Area* a) noexcept {
     area = a;
-}
-
-
-void
-Viewport::update() noexcept {
-    switch (mode) {
-    case TM_MANUAL:
-        // Do nothing.
-        break;
-    case TM_FOLLOW_ENTITY:
-        _jumpToEntity(targete);
-        break;
-    };
-}
-
-void
-Viewport::_jumpToEntity(const Entity* e) noexcept {
-    rcoord pos = e->getPixelCoord();
-    ivec2 td = area->grid.getTileDimensions();
-    rvec2 center = rvec2{pos.x + td.x / 2, pos.y + td.y / 2};
-    off = offsetForPt(center);
-}
-
-
-rvec2
-Viewport::getLetterbox() const noexcept {
-    rvec2 physRes = getPhysRes();
-    double physAspect = physRes.x / physRes.y;
-    double virtAspect = virtRes.x / virtRes.y;
-
-    if (physAspect > virtAspect) {
-        // Letterbox cuts off left-right.
-        double cut = 1 - virtAspect / physAspect;
-        return rvec2{cut, 0};
-    }
-    else {
-        // Letterbox cuts off top-bottom.
-        double cut = 1 - physAspect / virtAspect;
-        return rvec2{0, cut};
-    }
-}
-
-rvec2
-Viewport::offsetForPt(rvec2 pt) const noexcept {
-    return boundToArea(centerOn(pt));
-}
-
-rvec2
-Viewport::centerOn(rvec2 pt) const noexcept {
-    return pt - virtRes / 2;
-}
-
-rvec2
-Viewport::boundToArea(rvec2 pt) const noexcept {
-    icoord ad = area->grid.dim;
-    ivec2 td = area->grid.tileDim;
-    double areaWidth = ad.x * td.x;
-    double areaHeight = ad.y * td.y;
-    bool loopX = area->grid.loopX;
-    bool loopY = area->grid.loopY;
-
-    return rvec2{boundDimension(virtRes.x, areaWidth, pt.x, loopX),
-                 boundDimension(virtRes.y, areaHeight, pt.y, loopY)};
-}
-
-double
-Viewport::boundDimension(double screen, double area, double pt, bool loop) const
-        noexcept {
-    // Since looping areas continue without bound, this is a no-op.
-    if (loop) {
-        return pt;
-    }
-
-    // If the Area is smaller than the screen, center the Area. Otherwise,
-    // allow the screen to move to the edge of the Area, but not past.
-    double wiggleRoom = area - screen;
-    return wiggleRoom <= 0 ? wiggleRoom / 2 : bound(pt, 0.0, wiggleRoom);
-}
-
-rvec2
-Viewport::addLetterboxOffset(rvec2 pt) const noexcept {
-    rvec2 physRes = getPhysRes();
-    rvec2 letterbox = getLetterbox();
-    return pt - letterbox * physRes / 2;
 }

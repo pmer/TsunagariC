@@ -42,7 +42,7 @@ InProgress::isOver() noexcept {
 
 
 InProgressSound::InProgressSound(StringView sound, ThenFn then) noexcept
-        : sound(Sounds::instance().play(sound)), then(then) {
+        : sound(Sounds::play(sound)), then(then) {
     if (!then) {
         Log::err("InProgressSound", "invalid 'then'");
     }

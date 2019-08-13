@@ -318,5 +318,5 @@ World::garbageCollect() noexcept {
     Images::garbageCollect();
     JSONs::garbageCollect();
     Music::garbageCollect();
-    Sounds::instance().garbageCollect();
+    Sounds::garbageCollect();
 }

@@ -68,25 +68,11 @@ class SoundInstance {
 
 class Sounds {
  public:
-    //! Acquire the global Sounds object.
-    static Sounds& instance() noexcept;
-
-    virtual ~Sounds() = default;
-
     //! Play a sound from the file at the given path.
-    virtual Rc<SoundInstance> play(StringView path) noexcept = 0;
+    static Rc<SoundInstance> play(StringView path) noexcept;
 
     //! Free sounds not recently played.
-    virtual void garbageCollect() noexcept = 0;
-
- protected:
-    Sounds() = default;
-
- private:
-    Sounds(const Sounds&) = delete;
-    Sounds(Sounds&&) = delete;
-    Sounds& operator=(const Sounds&) = delete;
-    Sounds& operator=(Sounds&&) = delete;
+    static void garbageCollect() noexcept;
 };
 
 #endif  // SRC_CORE_SOUNDS_H_

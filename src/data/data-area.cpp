@@ -65,7 +65,7 @@ DataArea::turn() noexcept {
 
 void
 DataArea::playSoundEffect(StringView sound) noexcept {
-    Sounds::instance().play(sound)->speed(1.0 + randFloat(-0.03, 0.03));
+    Sounds::play(sound)->speed(1.0 + randFloat(-0.03, 0.03));
 }
 
 void

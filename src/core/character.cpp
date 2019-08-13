@@ -177,7 +177,7 @@ Character::moveByTile(ivec2 delta) noexcept {
     leaveTile(fromTile);
     enterTile(destTile);
 
-    Sounds::instance().play(soundPaths[StringView("step")]);
+    Sounds::play(soundPaths[StringView("step")]);
 
     switch (Conf::moveMode) {
     case Conf::TURN:

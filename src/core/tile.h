@@ -131,11 +131,7 @@ enum ExitDirection {
     new area in the World. The Exit struct contains the destination
     area and coordinates.
 */
-class Exit {
- public:
-    Exit(String area, int x, int y, double z) noexcept;
-
- public:
+struct Exit {
     String area;
     vicoord coords;
 };

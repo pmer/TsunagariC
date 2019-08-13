@@ -891,7 +891,7 @@ AreaJSON::parseExit(StringView dest,
     Optional<int> y_ = parseInt(y);
     Optional<double> z_ = parseDouble(z);
 
-    exit = Exit(area, *x_, *y_, *z_);
+    exit = Exit{area, *x_, *y_, *z_};
 
     *wwide = x.find('+');
     *hwide = y.find('+');

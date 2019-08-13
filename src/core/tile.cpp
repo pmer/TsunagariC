@@ -57,10 +57,6 @@ ivec2_to_dir(ivec2 v) noexcept {
 }
 
 
-Exit::Exit(String area, int x, int y, double z) noexcept
-        : area(move_(area)), coords{x, y, z} {}
-
-
 /*
  * TILETYPE
  */

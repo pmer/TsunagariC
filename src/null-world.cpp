@@ -37,7 +37,7 @@ NullDataWorld::NullDataWorld() noexcept {
     about.author = "Paul Merrill";
     about.version = "1";
 
-    parameters.moveMode = TILE;
+    parameters.moveMode = Conf::TILE;
 
     parameters.viewportResolution = {240, 160};
 

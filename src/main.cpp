@@ -66,9 +66,9 @@ main() noexcept {
     macSetWorkingDirectory();
 #endif
 
-    parseConfig(CLIENT_CONF_PATH);
+    Conf::parse(CLIENT_CONF_PATH);
 
-    Log::setVerbosity(conf.verbosity);
+    Log::setVerbosity(Conf::verbosity);
     Log::info("Main", String() << "Starting " << TSUNAGARI_RELEASE_VERSION);
     Log::reportVerbosityOnStartup();
 

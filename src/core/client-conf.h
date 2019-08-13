@@ -33,23 +33,22 @@
 #include "util/int.h"
 #include "util/string-view.h"
 
-//! Game Movement Mode
-enum movement_mode_t { TURN, TILE, NOTILE };
-
 //! Engine-wide user-confurable values.
 struct Conf {
-    verbosity_t verbosity = V_VERBOSE;
-    movement_mode_t moveMode;
-    ivec2 windowSize = {640, 480};
-    bool fullscreen = false;
-    int musicVolume = 100;
-    int soundVolume = 100;
-    time_t cacheTTL = 300;
-    int persistInit = 0;
-    int persistCons = 0;
-};
-extern Conf conf;
+    //! Game Movement Mode
+    enum MovementMode { TURN, TILE, NOTILE };
 
-bool parseConfig(StringView filename) noexcept;
+	static verbosity_t verbosity;
+    static MovementMode moveMode;
+    static ivec2 windowSize;
+    static bool fullscreen;
+    static int musicVolume;
+    static int soundVolume;
+    static time_t cacheTTL;
+    static int persistInit;
+    static int persistCons;
+
+	static bool parse(StringView filename) noexcept;
+};
 
 #endif  // SRC_CORE_CLIENT_CONF_H_

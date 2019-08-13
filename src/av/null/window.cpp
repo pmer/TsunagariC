@@ -38,11 +38,11 @@ class NullGameWindow : public GameWindow {
     bool init() noexcept { return true; }
 
     unsigned width() const noexcept final {
-        return static_cast<unsigned>(conf.windowSize.x);
+        return static_cast<unsigned>(Conf::windowSize.x);
     }
 
     unsigned height() const noexcept final {
-        return static_cast<unsigned>(conf.windowSize.y);
+        return static_cast<unsigned>(Conf::windowSize.y);
     }
 
     void setCaption(StringView) noexcept final {}

@@ -97,7 +97,7 @@ World::init() noexcept {
     auto& parameters = DataWorld::instance().parameters;
     auto& gameStart = parameters.gameStart;
 
-    conf.moveMode = parameters.moveMode;
+    Conf::moveMode = parameters.moveMode;
 
     if (!player->init(gameStart.player.file, gameStart.player.phase)) {
         Log::fatal("World", "failed to load player");
@@ -214,7 +214,7 @@ World::tick(time_t dt) noexcept {
 
 void
 World::turn() noexcept {
-    if (conf.moveMode == TURN) {
+    if (Conf::moveMode == Conf::TURN) {
         area->turn();
     }
 }

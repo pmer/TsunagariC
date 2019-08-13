@@ -50,7 +50,7 @@ class DataWorld {
         StringView name, author, version;
     } about;
     struct {
-        enum movement_mode_t moveMode = TURN;
+        enum Conf::MovementMode moveMode = Conf::TURN;
         rvec2 viewportResolution = {0.0, 0.0};
         struct {
             struct {

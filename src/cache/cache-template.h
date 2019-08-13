@@ -101,7 +101,7 @@ Cache<T>::garbageCollect() noexcept {
             cache.lastUsed = now;
             //          Log::info("Cache", String() << name << ": unused");
         }
-        else if (now > cache.lastUsed + conf.cacheTTL * 1000) {
+        else if (now > cache.lastUsed + Conf::cacheTTL * 1000) {
             dead.push_back(name);
             Log::info("Cache", String() << name << ": purged");
         }

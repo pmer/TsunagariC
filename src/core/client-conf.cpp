@@ -35,12 +35,20 @@
 #include "util/string2.h"
 #include "util/vector.h"
 
-Conf conf;  // Project-wide global configuration.
+verbosity_t Conf::verbosity = V_VERBOSE;
+Conf::MovementMode Conf::moveMode;
+ivec2 Conf::windowSize = {640, 480};
+bool Conf::fullscreen = false;
+int Conf::musicVolume = 100;
+int Conf::soundVolume = 100;
+time_t Conf::cacheTTL = 300;
+int Conf::persistInit = 0;
+int Conf::persistCons = 0;
 
 // Parse and process the client config file, and set configuration defaults for
 // missing options.
 bool
-parseConfig(StringView filename) noexcept {
+Conf::parse(StringView filename) noexcept {
     Optional<String> file = readFile(filename);
 
     if (!file) {
@@ -61,13 +69,13 @@ parseConfig(StringView filename) noexcept {
         if (engine->hasString("verbosity")) {
             StringView verbosity = engine->stringAt("verbosity");
             if (verbosity == "quiet") {
-                conf.verbosity = V_QUIET;
+                Conf::verbosity = V_QUIET;
             }
             else if (verbosity == "normal") {
-                conf.verbosity = V_NORMAL;
+                Conf::verbosity = V_NORMAL;
             }
             else if (verbosity == "verbose") {
-                conf.verbosity = V_VERBOSE;
+                Conf::verbosity = V_VERBOSE;
             }
             else {
                 Log::err(filename,
@@ -81,13 +89,13 @@ parseConfig(StringView filename) noexcept {
         Unique<JSONObject> window = doc->objectAt("window");
 
         if (window->hasUnsigned("width")) {
-            conf.windowSize.x = window->intAt("width", 1, 100000);
+            Conf::windowSize.x = window->intAt("width", 1, 100000);
         }
         if (window->hasUnsigned("height")) {
-            conf.windowSize.y = window->intAt("height", 1, 100000);
+            Conf::windowSize.y = window->intAt("height", 1, 100000);
         }
         if (window->hasBool("fullscreen")) {
-            conf.fullscreen = window->boolAt("fullscreen");
+            Conf::fullscreen = window->boolAt("fullscreen");
         }
     }
 
@@ -95,10 +103,10 @@ parseConfig(StringView filename) noexcept {
         Unique<JSONObject> audio = doc->objectAt("audio");
 
         if (audio->hasUnsigned("musicvolume")) {
-            conf.musicVolume = audio->intAt("musicvolume", 0, 100);
+            Conf::musicVolume = audio->intAt("musicvolume", 0, 100);
         }
         if (audio->hasUnsigned("soundvolume")) {
-            conf.soundVolume = audio->intAt("soundvolume", 0, 100);
+            Conf::soundVolume = audio->intAt("soundvolume", 0, 100);
         }
     }
 
@@ -106,7 +114,7 @@ parseConfig(StringView filename) noexcept {
         Unique<JSONObject> cache = doc->objectAt("cache");
 
         if (cache->hasUnsigned("ttl")) {
-            conf.cacheTTL = cache->unsignedAt("ttl") != 0;
+            Conf::cacheTTL = cache->unsignedAt("ttl") != 0;
         }
     }
 

@@ -32,7 +32,7 @@
 
 static void
 clientIniVolumeVerify() noexcept {
-    if (conf.musicVolume < 0 || 100 < conf.musicVolume) {
+    if (Conf::musicVolume < 0 || 100 < Conf::musicVolume) {
         Log::err("MusicWorker", "Music volume not within bounds [0,100]");
     }
 }
@@ -40,13 +40,13 @@ clientIniVolumeVerify() noexcept {
 static double
 clientIniVolumeApply(double volume) noexcept {
     clientIniVolumeVerify();
-    return volume * conf.musicVolume / 100.0;
+    return volume * Conf::musicVolume / 100.0;
 }
 
 static double
 clientIniVolumeUnapply(double volume) noexcept {
     clientIniVolumeVerify();
-    return volume / conf.musicVolume * 100.0;
+    return volume / Conf::musicVolume * 100.0;
 }
 
 

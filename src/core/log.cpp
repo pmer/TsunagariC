@@ -42,7 +42,7 @@
 #include "os/mac-gui.h"
 #endif
 
-static verbosity_t verb = V_NORMAL;
+static Log::Verbosity verb = Log::Verbosity::NORMAL;
 
 static time_t startTime;
 
@@ -88,13 +88,13 @@ Log::init() noexcept {
 }
 
 void
-Log::setVerbosity(verbosity_t v) noexcept {
+Log::setVerbosity(Log::Verbosity v) noexcept {
     verb = v;
 }
 
 void
 Log::info(StringView domain, StringView msg) noexcept {
-    if (verb > V_NORMAL) {
+    if (verb > Log::Verbosity::NORMAL) {
         LockGuard lock(stdoutMutex);
 
         setTermColor(TC_GREEN);
@@ -114,7 +114,7 @@ Log::info(StringView domain, StringView msg) noexcept {
 
 void
 Log::err(StringView domain, StringView msg) noexcept {
-    if (verb > V_QUIET) {
+    if (verb > Log::Verbosity::QUIET) {
         {
             LockGuard lock(stdoutMutex);
 
@@ -193,13 +193,13 @@ Log::reportVerbosityOnStartup() noexcept {
 
     StringView verbString;
     switch (Conf::verbosity) {
-    case V_QUIET:
+    case Log::Verbosity::QUIET:
         verbString = "QUIET";
         break;
-    case V_NORMAL:
+    case Log::Verbosity::NORMAL:
         verbString = "NORMAL";
         break;
-    case V_VERBOSE:
+    case Log::Verbosity::VERBOSE:
         verbString = "VERBOSE";
         break;
     }

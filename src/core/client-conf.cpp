@@ -35,7 +35,7 @@
 #include "util/string2.h"
 #include "util/vector.h"
 
-verbosity_t Conf::verbosity = V_VERBOSE;
+Log::Verbosity Conf::verbosity = Log::Verbosity::VERBOSE;
 Conf::MovementMode Conf::moveMode;
 ivec2 Conf::windowSize = {640, 480};
 bool Conf::fullscreen = false;
@@ -69,13 +69,13 @@ Conf::parse(StringView filename) noexcept {
         if (engine->hasString("verbosity")) {
             StringView verbosity = engine->stringAt("verbosity");
             if (verbosity == "quiet") {
-                Conf::verbosity = V_QUIET;
+                Conf::verbosity = Log::Verbosity::QUIET;
             }
             else if (verbosity == "normal") {
-                Conf::verbosity = V_NORMAL;
+                Conf::verbosity = Log::Verbosity::NORMAL;
             }
             else if (verbosity == "verbose") {
-                Conf::verbosity = V_VERBOSE;
+                Conf::verbosity = Log::Verbosity::VERBOSE;
             }
             else {
                 Log::err(filename,

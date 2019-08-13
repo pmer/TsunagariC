@@ -30,14 +30,14 @@
 
 #include "util/string-view.h"
 
-enum verbosity_t {
-    V_QUIET = 1,  //! Display fatals.
-    V_NORMAL,     //! Display fatals and errors.
-    V_VERBOSE     //! Display fatals, errors and info.
-};
-
 class Log {
  public:
+    enum Verbosity {
+        QUIET = 1,  //! Display fatals.
+        NORMAL,     //! Display fatals and errors.
+        VERBOSE     //! Display fatals, errors and info.
+    };
+
     /**
      * Initialize the clock for log timestamps.
      */
@@ -47,7 +47,7 @@ class Log {
      * Set the logging verbosity. Some log messages may be suppressed depending
      * on this setting.
      */
-    static void setVerbosity(verbosity_t mode) noexcept;
+    static void setVerbosity(Verbosity mode) noexcept;
 
     /**
      * Log an info message to the console if verbosity is "V_VERBOSE".
@@ -69,13 +69,6 @@ class Log {
      * Used by main() to report the verbosity setting on engine startup.
      */
     static void reportVerbosityOnStartup() noexcept;
-
- private:
-    Log() = delete;
-    Log(const Log&) = delete;
-    Log(Log&&) = delete;
-    Log& operator=(const Log&) = delete;
-    Log& operator=(Log&&) = delete;
 };
 
 #endif  // SRC_CORE_LOG_H_

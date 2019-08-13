@@ -33,71 +33,63 @@
 #include "os/thread.h"
 #include "util/string-view.h"
 
-class NullGameWindow : public GameWindow {
- public:
-    bool init() noexcept { return true; }
-
-    unsigned width() const noexcept final {
-        return static_cast<unsigned>(Conf::windowSize.x);
-    }
-
-    unsigned height() const noexcept final {
-        return static_cast<unsigned>(Conf::windowSize.y);
-    }
-
-    void setCaption(StringView) noexcept final {}
-
-    void mainLoop() noexcept final {
-        TimePoint last = 0;
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-#endif
-        while (true) {
-            TimePoint now = SteadyClock::now();
-            time_t time = ns_to_ms(now - last);
-
-            World::update(static_cast<time_t>(time));
-            DisplayList dl;
-            World::draw(&dl);
-
-            TimePoint nextFrame = last + s_to_ns(1) / 60;
-            SleepFor(nextFrame - SteadyClock::now());
-
-            last = now;
-        }
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-    }
-
-    void drawRect(double, double, double, double, uint32_t) noexcept final {}
-
-    void scale(double, double, Function<void()>) noexcept final {}
-    void translate(double, double, Function<void()>) noexcept final {}
-    void clip(double, double, double, double, Function<void()>) noexcept final {
-    }
-
-    void close() noexcept final {}
-};
-
-
-static NullGameWindow globalWindow;
-
-GameWindow*
-GameWindow::create() noexcept {
-    return &globalWindow;
-}
-
-GameWindow&
-GameWindow::instance() noexcept {
-    return globalWindow;
-}
-
+void
+GameWindow::create() noexcept {}
 
 time_t
 GameWindow::time() noexcept {
     TimePoint now = SteadyClock::now();
     return ns_to_ms(now);
 }
+
+unsigned
+GameWindow::width() noexcept {
+    return static_cast<unsigned>(Conf::windowSize.x);
+}
+
+unsigned
+GameWindow::height() noexcept {
+    return static_cast<unsigned>(Conf::windowSize.y);
+}
+
+void
+GameWindow::setCaption(StringView) noexcept {}
+
+void
+GameWindow::mainLoop() noexcept {
+    TimePoint last = 0;
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+#endif
+    while (true) {
+        TimePoint now = SteadyClock::now();
+        time_t time = ns_to_ms(now - last);
+
+        World::update(static_cast<time_t>(time));
+        DisplayList dl;
+        World::draw(&dl);
+
+        TimePoint nextFrame = last + s_to_ns(1) / 60;
+        SleepFor(nextFrame - SteadyClock::now());
+
+        last = now;
+    }
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+}
+
+void
+GameWindow::drawRect(double, double, double, double, uint32_t) noexcept {}
+
+void
+GameWindow::scale(double, double, Function<void()>) noexcept {}
+void
+GameWindow::translate(double, double, Function<void()>) noexcept {}
+void
+GameWindow::clip(double, double, double, double, Function<void()>) noexcept {}
+
+void
+GameWindow::close() noexcept {}

@@ -53,57 +53,48 @@ enum KeyboardKey {
 */
 class GameWindow {
  public:
-    static GameWindow* create() noexcept;
-    static GameWindow& instance() noexcept;
+    static void create() noexcept;
 
     //! Time since epoch.
     static time_t time() noexcept;
 
-    virtual ~GameWindow() = default;
-
     //! Width of the window in pixels.
-    virtual unsigned width() const noexcept = 0;
+    static unsigned width() noexcept;
 
     //! Height of the window in pixels.
-    virtual unsigned height() const noexcept = 0;
+    static unsigned height() noexcept;
 
     //! Set window manager caption.
-    virtual void setCaption(StringView caption) noexcept = 0;
+    static void setCaption(StringView caption) noexcept;
 
     //! Show the window and start the main loop.
-    virtual void mainLoop() noexcept = 0;
+    static void mainLoop() noexcept;
 
     /**
      * Draws a rectangle on the screen of the specified color. Coordinates
      * are in virtual pixels.
      */
-    virtual void drawRect(double x1,
+    static void drawRect(double x1,
                           double x2,
                           double y1,
                           double y2,
-                          uint32_t argb) noexcept = 0;
+                          uint32_t argb) noexcept;
 
-    virtual void scale(double x, double y, Function<void()> op) noexcept = 0;
-    virtual void translate(double x,
+    static void scale(double x, double y, Function<void()> op) noexcept;
+    static void translate(double x,
                            double y,
-                           Function<void()> op) noexcept = 0;
-    virtual void clip(double x,
+                           Function<void()> op) noexcept;
+    static void clip(double x,
                       double y,
                       double width,
                       double height,
-                      Function<void()> op) noexcept = 0;
+                      Function<void()> op) noexcept;
 
-    void emitKeyDown(KeyboardKey key) noexcept;
-    void emitKeyUp(KeyboardKey key) noexcept;
-    bool isKeyDown(KeyboardKey key) noexcept;
-    BitRecord getKeysDown() noexcept;
+    static void emitKeyDown(KeyboardKey key) noexcept;
+    static void emitKeyUp(KeyboardKey key) noexcept;
+    static void close() noexcept;
 
- protected:
-    GameWindow() noexcept;
-
-    virtual void close() noexcept = 0;
-
-    BitRecord keysDown;
+    static BitRecord keysDown;
 };
 
 #endif  // SRC_CORE_WINDOW_H_

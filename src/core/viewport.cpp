@@ -47,8 +47,8 @@ Viewport::setSize(rvec2 virtRes) noexcept {
     this->virtRes = virtRes;
 
     // Calculate or recalculate the aspect ratio.
-    double width = (double)GameWindow::instance().width();
-    double height = (double)GameWindow::instance().height();
+    double width = (double)GameWindow::width();
+    double height = (double)GameWindow::height();
     aspectRatio = width / height;
 }
 
@@ -74,9 +74,9 @@ Viewport::getLetterboxOffset() const noexcept {
 
 rvec2
 Viewport::getScale() const noexcept {
-    const GameWindow& window = GameWindow::instance();
     rvec2 letterbox = getLetterbox();
-    rvec2 physRes = rvec2{(double)window.width(), (double)window.height()};
+    rvec2 physRes =
+            rvec2{(double)GameWindow::width(), (double)GameWindow::height()};
 
     return rvec2{physRes.x / virtRes.x * (1 - letterbox.x),
                  physRes.y / virtRes.y * (1 - letterbox.y)};
@@ -84,8 +84,7 @@ Viewport::getScale() const noexcept {
 
 rvec2
 Viewport::getPhysRes() const noexcept {
-    const GameWindow& window = GameWindow::instance();
-    return rvec2{(double)window.width(), (double)window.height()};
+    return rvec2{(double)GameWindow::width(), (double)GameWindow::height()};
 }
 
 rvec2

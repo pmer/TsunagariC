@@ -291,12 +291,12 @@ World::setPaused(bool b) noexcept {
 
 void
 World::storeKeys() noexcept {
-    keyStates.push_back(GameWindow::instance().getKeysDown());
+    keyStates.push_back(GameWindow::keysDown);
 }
 
 void
 World::restoreKeys() noexcept {
-    BitRecord now = GameWindow::instance().getKeysDown();
+    const BitRecord& now = GameWindow::keysDown;
     BitRecord then = keyStates.back();
     Vector<size_t> diffs = now.diff(then);
 

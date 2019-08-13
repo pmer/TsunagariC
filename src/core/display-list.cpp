@@ -33,8 +33,6 @@
 
 static void
 pushLetterbox(DisplayList* display, Function<void()> op) noexcept {
-    GameWindow& window = GameWindow::instance();
-
     // Aspect ratio correction.
     rvec2 sz = display->size;
     rvec2 lb = -1 * display->padding;
@@ -64,18 +62,17 @@ pushLetterbox(DisplayList* display, Function<void()> op) noexcept {
         height = min(height, sz.y - 2 * physScroll.y);
     }
 
-    window.clip(x, y, width, height, op);
+    GameWindow::clip(x, y, width, height, op);
 }
 
 void
 displayListPresent(DisplayList* display) noexcept {
-    GameWindow& window = GameWindow::instance();
-
     pushLetterbox(display, [&] {
         // Zoom and pan the Area to fit on-screen.
-        window.translate(-display->padding.x, -display->padding.y, [&] {
-            window.scale(display->scale.x, display->scale.y, [&] {
-                window.translate(-display->scroll.x, -display->scroll.y, [&] {
+        GameWindow::translate(-display->padding.x, -display->padding.y, [&] {
+            GameWindow::scale(display->scale.x, display->scale.y, [&] {
+                GameWindow::translate(
+                        -display->scroll.x, -display->scroll.y, [&] {
                     for (auto& item : display->items) {
                         item.image->draw(
                                 item.destination.x, item.destination.y, 0.0);
@@ -85,16 +82,16 @@ displayListPresent(DisplayList* display) noexcept {
         });
 
         if ((display->colorOverlayARGB & 0xFF000000) != 0) {
-            unsigned ww = window.width();
-            unsigned wh = window.height();
-            window.drawRect(0, ww, 0, wh, display->colorOverlayARGB);
+            unsigned ww = GameWindow::width();
+            unsigned wh = GameWindow::height();
+            GameWindow::drawRect(0, ww, 0, wh, display->colorOverlayARGB);
         }
     });
 
     if (display->paused) {
-        unsigned ww = window.width();
-        unsigned wh = window.height();
-        window.drawRect(0, ww, 0, wh, 0x7F000000);
+        unsigned ww = GameWindow::width();
+        unsigned wh = GameWindow::height();
+        GameWindow::drawRect(0, ww, 0, wh, 0x7F000000);
         auto pauseInfo = Images::load("resource/pause_overlay.png");
         if (pauseInfo) {
             unsigned iw = pauseInfo->width();

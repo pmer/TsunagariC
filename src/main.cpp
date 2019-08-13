@@ -72,11 +72,9 @@ main() noexcept {
     Log::info("Main", String() << "Starting " << TSUNAGARI_RELEASE_VERSION);
     Log::reportVerbosityOnStartup();
 
-    GameWindow* window;
-
     {
         TimeMeasure m("Constructed window");
-        window = GameWindow::create();
+        GameWindow::create();
     }
 
     DataWorld& dataWorld = DataWorld::instance();
@@ -94,9 +92,9 @@ main() noexcept {
         return 1;
     }
 
-    window->setCaption(dataWorld.about.name);
+    GameWindow::setCaption(dataWorld.about.name);
 
-    window->mainLoop();
+    GameWindow::mainLoop();
 
     return 0;
 }

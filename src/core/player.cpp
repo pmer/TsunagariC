@@ -111,8 +111,8 @@ Player::moveByTile(ivec2 delta) noexcept {
     setFacing(delta);
 
     // Left SHIFT allows changing facing, but disallows movement.
-    if (GameWindow::instance().isKeyDown(KBLeftShift) ||
-        GameWindow::instance().isKeyDown(KBRightShift)) {
+    if (GameWindow::keysDown[KBLeftShift] ||
+        GameWindow::keysDown[KBRightShift]) {
         setAnimationStanding();
         redraw = true;
         return;

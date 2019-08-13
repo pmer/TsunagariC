@@ -451,7 +451,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
             return false;
         }
         // Add 'now' to Animation constructor??
-        time_t now = World::instance().time();
+        time_t now = World::time();
         graphic = Animation(move_(framesvec), *frameLen);
         graphic.startOver(now);
     }

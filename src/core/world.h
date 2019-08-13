@@ -30,18 +30,12 @@
 
 #include "core/vec.h"
 #include "core/window.h"  // for KeyboardKey
-#include "util/bitrecord.h"
-#include "util/function.h"
-#include "util/hashtable.h"
-#include "util/rc.h"
+#include "util/int.h"
 #include "util/string.h"
-#include "util/unique.h"
 #include "util/vector.h"
 
 class Area;
 struct DisplayList;
-class Image;
-class Player;
 
 /**
  * Top class holding all data necessary to create a game. Such a collection of
@@ -52,40 +46,32 @@ class Player;
 class World {
  public:
     /**
-     * Get the currently open World.
-     */
-    static World& instance() noexcept;
-
-    World() noexcept;
-    ~World() = default;
-
-    /**
      * Initialize the world for use.
      */
-    bool init() noexcept;
+    static bool init() noexcept;
 
     /**
      * Syncronized time value used throughout the engine.
      */
-    time_t time() const noexcept;
+    static time_t time() noexcept;
 
     /**
      * Process key presses.
      */
-    void buttonDown(KeyboardKey btn) noexcept;
-    void buttonUp(KeyboardKey btn) noexcept;
+    static void buttonDown(KeyboardKey btn) noexcept;
+    static void buttonUp(KeyboardKey btn) noexcept;
 
     /**
      * Draw game state to the screen.
      */
-    void draw(DisplayList* display) noexcept;
+    static void draw(DisplayList* display) noexcept;
 
     /**
      * Do we need to redraw the screen?
      */
-    bool needsRedraw() const noexcept;
+    static bool needsRedraw() noexcept;
 
-    void update(time_t now) noexcept;
+    static void update(time_t now) noexcept;
 
     /**
      * Updates the game state within this World as if dt milliseconds had
@@ -97,7 +83,7 @@ class World {
      * Character       no       yes      yes
      * Overlay         yes      yes      yes
      */
-    void tick(time_t dt) noexcept;
+    static void tick(time_t dt) noexcept;
 
     /**
      * Update the game world when the turn is over (Player moves).
@@ -108,64 +94,25 @@ class World {
      * Character       yes      no       no
      * Overlay         yes      no       no
      */
-    void turn() noexcept;
+    static void turn() noexcept;
 
     /**
      * Switch the game to a new Area, moving the player to the specified
      * position in the Area.
      */
-    bool focusArea(StringView filename, vicoord playerPos) noexcept;
-    void focusArea(Area* area, vicoord playerPos) noexcept;
+    static bool focusArea(StringView filename, vicoord playerPos) noexcept;
+    static void focusArea(Area* area, vicoord playerPos) noexcept;
 
-    void setPaused(bool b) noexcept;
+    static void setPaused(bool b) noexcept;
 
-    void storeKeys() noexcept;
-    void restoreKeys() noexcept;
+    static void storeKeys() noexcept;
+    static void restoreKeys() noexcept;
 
-    void runAreaLoadScript(Area* area) noexcept;
+    static void runAreaLoadScript(Area* area) noexcept;
 
     //! Expunge old resources cached in memory. Decisions on which are
     //! removed and which are kept are based on the global Conf struct.
-    void garbageCollect() noexcept;
-
-    // ScriptRef keydownScript, keyupScript;
-
- protected:
-    /**
-     * Calculate time passed since engine state was last updated.
-     */
-    time_t calculateDt(time_t now) noexcept;
-
-    /**
-     * Draws black borders around the screen. Used to correct the aspect
-     * ratio and optimize drawing if the Area doesn't fit into the
-     * Viewport.
-     */
-    void pushLetterbox(Function<void()> op) noexcept;
-
- protected:
-    Rc<Image> pauseInfo;
-
-    Hashmap<String, Unique<Area>> areas;
-    Area* area;
-    Unique<Player> player;
-
-    /**
-     * Last time engine state was updated. See World::update().
-     */
-    time_t lastTime;
-
-    /**
-     * Total unpaused game run time.
-     */
-    time_t total;
-
-    bool alive;
-    bool redraw;
-    bool userPaused;
-    int paused;
-
-    Vector<BitRecord> keyStates;
+    static void garbageCollect() noexcept;
 };
 
 #endif  // SRC_CORE_WORLD_H_

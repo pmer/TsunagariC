@@ -45,7 +45,7 @@ Cache<T>::momentaryRequest(StringView name) noexcept {
         CacheEntry& entry = it.value();
         // Set lastUsed to now because it won't be used
         // by the time garbageCollect() gets to it.
-        entry.lastUsed = World::instance().time();
+        entry.lastUsed = World::time();
         return entry.resource;
     }
     Log::info("Cache", String() << name << ": requested");
@@ -71,7 +71,7 @@ void
 Cache<T>::momentaryPut(StringView name, T data) noexcept {
     CacheEntry entry;
     entry.resource = data;
-    time_t now = World::instance().time();
+    time_t now = World::time();
     entry.lastUsed = now;
     map[name] = entry;
 }
@@ -88,7 +88,7 @@ Cache<T>::lifetimePut(StringView name, T data) noexcept {
 template<class T>
 void
 Cache<T>::garbageCollect() noexcept {
-    time_t now = World::instance().time();
+    time_t now = World::time();
     Vector<String> dead;
     for (auto it = map.begin(); it != map.end(); it++) {
         StringView name = it.key();

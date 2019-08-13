@@ -45,7 +45,7 @@ GameWindow::emitKeyDown(KeyboardKey key) noexcept {
     }
 
     if (!wasDown) {
-        World::instance().buttonDown(key);
+        World::buttonDown(key);
     }
 }
 
@@ -56,7 +56,7 @@ GameWindow::emitKeyUp(KeyboardKey key) noexcept {
     keysDown[key] = false;
 
     if (wasDown) {
-        World::instance().buttonUp(key);
+        World::buttonUp(key);
     }
 }
 

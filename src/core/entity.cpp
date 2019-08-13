@@ -87,7 +87,7 @@ Entity::draw(DisplayList* display) noexcept {
         return;
     }
 
-    time_t now = World::instance().time();
+    time_t now = World::time();
 
     // TODO: Don't add to DisplayList if not on-screen.
 
@@ -97,7 +97,7 @@ Entity::draw(DisplayList* display) noexcept {
 
 bool
 Entity::needsRedraw(const icube& visiblePixels) const noexcept {
-    time_t now = World::instance().time();
+    time_t now = World::time();
 
     // Don't need to redraw
     if (!redraw && (!phase || !phase->needsRedraw(now))) {
@@ -246,7 +246,7 @@ Entity::_setPhase(StringView name) noexcept {
     }
     Animation* newPhase = &it.value();
     if (phase != newPhase) {
-        time_t now = World::instance().time();
+        time_t now = World::time();
         phase = newPhase;
         phase->startOver(now);
         phaseName = name;

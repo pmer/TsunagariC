@@ -79,12 +79,11 @@ main() noexcept {
         window = GameWindow::create();
     }
 
-    World& world = World::instance();
     DataWorld& dataWorld = DataWorld::instance();
 
     {
         TimeMeasure m("Constructed world");
-        if (!world.init()) {
+        if (!World::init()) {
             Log::fatal("Main", "World::init");
             return 1;
         }

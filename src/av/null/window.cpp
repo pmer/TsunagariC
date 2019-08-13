@@ -58,9 +58,9 @@ class NullGameWindow : public GameWindow {
             TimePoint now = SteadyClock::now();
             time_t time = ns_to_ms(now - last);
 
-            World::instance().update(static_cast<time_t>(time));
+            World::update(static_cast<time_t>(time));
             DisplayList dl;
-            World::instance().draw(&dl);
+            World::draw(&dl);
 
             TimePoint nextFrame = last + s_to_ns(1) / 60;
             SleepFor(nextFrame - SteadyClock::now());

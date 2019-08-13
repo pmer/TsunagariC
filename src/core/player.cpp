@@ -120,7 +120,7 @@ Player::moveByTile(ivec2 delta) noexcept {
 
     Character::moveByTile(delta);
 
-    World::instance().turn();
+    World::turn();
 }
 
 void
@@ -134,13 +134,11 @@ Player::useTile() noexcept {
 
 void
 Player::setFrozen(bool b) noexcept {
-    World& world = World::instance();
-
     if (b) {
-        world.storeKeys();
+        World::storeKeys();
     }
     else {
-        world.restoreKeys();
+        World::restoreKeys();
     }
 
     Entity::setFrozen(b);
@@ -165,8 +163,7 @@ Player::arrived() noexcept {
 
 void
 Player::takeExit(const Exit& exit) noexcept {
-    World& world = World::instance();
-    if (!world.focusArea(exit.area, exit.coords)) {
+    if (!World::focusArea(exit.area, exit.coords)) {
         // Roll back movement if exit failed to open.
         setTileCoords(fromCoord);
         Log::err("Exit", String() << exit.area << ": failed to load properly");

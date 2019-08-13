@@ -194,15 +194,15 @@ SDL2GameWindow::mainLoop() noexcept {
         }
         lastTime = now;
 
-        World::instance().update(time());
+        World::update(time());
 
-        if (World::instance().needsRedraw()) {
+        if (World::needsRedraw()) {
             redrew = true;
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
             SDL_RenderClear(renderer);
 
             display.items.clear();
-            World::instance().draw(&display);
+            World::draw(&display);
             displayListPresent(&display);
 
             SDL_RenderPresent(renderer);

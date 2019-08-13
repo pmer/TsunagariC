@@ -44,29 +44,51 @@
 #include "core/viewport.h"
 #include "core/window.h"
 #include "data/data-world.h"
+#include "util/bitrecord.h"
+#include "util/function.h"
+#include "util/hashtable.h"
+#include "util/rc.h"
+#include "util/unique.h"
 #include "util/vector.h"
 
-#define CHECK(x)      \
-    if (!(x)) {       \
-        return false; \
+class Image;
+class Player;
+
+// ScriptRef keydownScript, keyupScript;
+
+static Rc<Image> pauseInfo;
+
+static Hashmap<String, Unique<Area>> areas;
+static Area* area = nullptr;
+static Unique<Player> player = new Player;
+
+/**
+ * Last time engine state was updated. See World::update().
+ */
+static time_t lastTime = 0;
+
+/**
+ * Total unpaused game run time.
+ */
+static time_t total = 0;
+
+static bool alive = false;
+static bool redraw = false;
+static bool userPaused = false;
+static int paused = 0;
+
+static Vector<BitRecord> keyStates;
+
+static time_t
+calculateDt(time_t now) noexcept {
+    time_t dt = now - lastTime;
+    if (dt == 0) {
+        Log::info("World", "Warning: Delta time is 0");
     }
-
-static World globalWorld;
-
-World&
-World::instance() noexcept {
-    return globalWorld;
+    assert_(dt >= 0);
+    lastTime = now;
+    return dt;
 }
-
-World::World() noexcept
-        : area(nullptr),
-          player(new Player),
-          lastTime(0),
-          total(0),
-          alive(false),
-          redraw(false),
-          userPaused(false),
-          paused(0) {}
 
 bool
 World::init() noexcept {
@@ -97,7 +119,7 @@ World::init() noexcept {
 }
 
 time_t
-World::time() const noexcept {
+World::time() noexcept {
     assert_(total >= 0);
     return total;
 }
@@ -157,7 +179,7 @@ World::draw(DisplayList* display) noexcept {
 }
 
 bool
-World::needsRedraw() const noexcept {
+World::needsRedraw() noexcept {
     return redraw || (!paused && area->needsRedraw());
 }
 
@@ -232,8 +254,8 @@ World::focusArea(StringView filename, vicoord playerPos) noexcept {
 }
 
 void
-World::focusArea(Area* area, vicoord playerPos) noexcept {
-    this->area = area;
+World::focusArea(Area* area_, vicoord playerPos) noexcept {
+    area = area_;
     player->setArea(area, playerPos);
     Viewport::instance().setArea(area);
     area->focus();
@@ -300,15 +322,4 @@ World::garbageCollect() noexcept {
     JSONs::instance().garbageCollect();
     Music::instance().garbageCollect();
     Sounds::instance().garbageCollect();
-}
-
-time_t
-World::calculateDt(time_t now) noexcept {
-    time_t dt = now - lastTime;
-    if (dt == 0) {
-        Log::info("World", "Warning: Delta time is 0");
-    }
-    assert_(dt >= 0);
-    lastTime = now;
-    return dt;
 }

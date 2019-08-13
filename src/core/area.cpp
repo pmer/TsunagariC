@@ -179,7 +179,7 @@ Area::needsRedraw() {
         checked = false;
     }
 
-    time_t now = World::instance().time();
+    time_t now = World::time();
 
     for (int z = tiles.z1; z < tiles.z2; z++) {
         if (grid.layerTypes[z] != TileGrid::LayerType::TILE_LAYER) {
@@ -422,7 +422,7 @@ Area::runUseScript(icoord tile, Entity* triggeredBy) noexcept {
 
 void
 Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
-    time_t now = World::instance().time();
+    time_t now = World::time();
 
     tilesAnimated.resize(static_cast<size_t>(tileGraphics.size()));
     for (bool& animated : tilesAnimated) {

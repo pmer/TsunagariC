@@ -159,24 +159,6 @@ class JSONDocImpl : public JSONObjectImpl {
 
 Rc<JSONObject> genJSON(StringView path) noexcept;
 
-class JSONsImpl : public JSONs {
- public:
-    Rc<JSONObject> load(StringView path) noexcept final;
-
-    void garbageCollect() noexcept final;
-
- private:
-    ReaderCache<Rc<JSONObject>, genJSON> documents;
-};
-
-
-static JSONsImpl globalJSONs;
-
-JSONs&
-JSONs::instance() noexcept {
-    return globalJSONs;
-}
-
 Vector<StringView>
 JSONObjectImpl::names() noexcept {
     Vector<StringView> names;
@@ -411,8 +393,10 @@ genJSON(StringView path) noexcept {
     return Rc<JSONObject>(new JSONDocImpl(move_(document)));
 }
 
+static ReaderCache<Rc<JSONObject>, genJSON> documents;
+
 Rc<JSONObject>
-JSONsImpl::load(StringView path) noexcept {
+JSONs::load(StringView path) noexcept {
     return documents.lifetimeRequest(path);
 }
 
@@ -422,6 +406,6 @@ JSONs::parse(String data) noexcept {
 }
 
 void
-JSONsImpl::garbageCollect() noexcept {
+JSONs::garbageCollect() noexcept {
     documents.garbageCollect();
 }

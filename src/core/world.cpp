@@ -319,7 +319,7 @@ World::restoreKeys() noexcept {
 void
 World::garbageCollect() noexcept {
     Images::garbageCollect();
-    JSONs::instance().garbageCollect();
+    JSONs::garbageCollect();
     Music::instance().garbageCollect();
     Sounds::instance().garbageCollect();
 }

@@ -138,7 +138,7 @@ AreaJSON::allocateMapLayer(TileGrid::LayerType type) noexcept {
 
 bool
 AreaJSON::processDescriptor() noexcept {
-    Rc<JSONObject> doc = JSONs::instance().load(descriptor);
+    Rc<JSONObject> doc = JSONs::load(descriptor);
 
     CHECK(doc);
 
@@ -251,7 +251,7 @@ AreaJSON::processTileSet(Unique<JSONObject> obj) noexcept {
 
     // We don't handle embeded tilesets, only references to an external JSON
     // files.
-    Rc<JSONObject> doc = JSONs::instance().load(source);
+    Rc<JSONObject> doc = JSONs::load(source);
     if (!doc) {
         Log::err(descriptor,
                  String() << source << ": failed to load JSON file");

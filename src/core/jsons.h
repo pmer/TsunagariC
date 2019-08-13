@@ -91,19 +91,14 @@ class JSONArray {
 
 class JSONs {
  public:
-    //! Acquire the global JSONs object.
-    static JSONs& instance() noexcept;
-
-    virtual ~JSONs() = default;
-
     //! Load a JSON document.
-    virtual Rc<JSONObject> load(StringView path) noexcept = 0;
+    static Rc<JSONObject> load(StringView path) noexcept;
 
     //! Parse a document from the outside world.
     static Unique<JSONObject> parse(String data) noexcept;
 
     //! Free JSON documents not recently used.
-    virtual void garbageCollect() noexcept = 0;
+    static void garbageCollect() noexcept;
 };
 
 #endif  // SRC_CORE_JSONS_H_

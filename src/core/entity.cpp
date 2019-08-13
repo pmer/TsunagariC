@@ -313,7 +313,7 @@ Entity::arrived() noexcept {
 
 bool
 Entity::processDescriptor() noexcept {
-    Rc<JSONObject> doc = JSONs::instance().load(descriptor);
+    Rc<JSONObject> doc = JSONs::load(descriptor);
     if (!doc) {
         return false;
     }

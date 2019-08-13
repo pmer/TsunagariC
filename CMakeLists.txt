@@ -160,7 +160,7 @@ target_sources(tsunagari
     PUBLIC  src/core/log.h
     PRIVATE src/core/measure.cpp
     PUBLIC  src/core/measure.h
-    PRIVATE src/core/music-impl.cpp
+    PRIVATE src/core/music.cpp
     PRIVATE src/core/music-worker.cpp
     PUBLIC  src/core/music-worker.h
     PUBLIC  src/core/music.h

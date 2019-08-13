@@ -70,7 +70,7 @@ Area::focus() {
     }
 
     if (musicPath) {
-        Music::instance().play(*musicPath);
+        Music::play(*musicPath);
     }
 
     if (dataArea) {

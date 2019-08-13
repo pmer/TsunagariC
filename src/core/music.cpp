@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** music-impl.cpp                     **
+** music.cpp                          **
 ** Copyright 2011-2014 Michael Reiley **
 ** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
@@ -29,52 +29,32 @@
 #include "core/music.h"
 #include "util/jobs.h"
 
-class MusicImpl : public Music {
- public:
-    void play(String filepath) noexcept;
-    void stop() noexcept;
-    void pause() noexcept;
-    void resume() noexcept;
-    void setVolume(double volume) noexcept;
-    void garbageCollect() noexcept;
-};
-
-static MusicImpl* globalMusic = nullptr;
-
-Music&
-Music::instance() noexcept {
-    if (globalMusic == nullptr) {
-        globalMusic = new MusicImpl;
-    }
-    return *globalMusic;
-}
-
 void
-MusicImpl::play(String filename) noexcept {
+Music::play(String filename) noexcept {
     // JobsEnqueue([filename]() { MusicWorker::instance().play(filename); });
     MusicWorker::instance().play(filename);
 }
 
 void
-MusicImpl::stop() noexcept {
+Music::stop() noexcept {
     // JobsEnqueue([]() { MusicWorker::instance().stop(); });
     MusicWorker::instance().stop();
 }
 
 void
-MusicImpl::pause() noexcept {
+Music::pause() noexcept {
     // JobsEnqueue([]() { MusicWorker::instance().pause(); });
     MusicWorker::instance().pause();
 }
 
 void
-MusicImpl::resume() noexcept {
+Music::resume() noexcept {
     // JobsEnqueue([]() { MusicWorker::instance().resume(); });
     MusicWorker::instance().resume();
 }
 
 void
-MusicImpl::setVolume(double attemptedVolume) noexcept {
+Music::setVolume(double attemptedVolume) noexcept {
     // JobsEnqueue([attemptedVolume]() {
     //     MusicWorker::instance().setVolume(attemptedVolume);
     // });
@@ -82,7 +62,7 @@ MusicImpl::setVolume(double attemptedVolume) noexcept {
 }
 
 void
-MusicImpl::garbageCollect() noexcept {
+Music::garbageCollect() noexcept {
     // JobsEnqueue([]() { MusicWorker::instance().garbageCollect(); });
     MusicWorker::instance().garbageCollect();
 }

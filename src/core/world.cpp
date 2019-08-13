@@ -113,7 +113,7 @@ World::init() noexcept {
     Viewport::instance().trackEntity(player.get());
 
     // Apply client.ini music volume now that client.ini is loaded.
-    Music::instance().setVolume(1.0);
+    Music::setVolume(1.0);
 
     return true;
 }
@@ -280,10 +280,10 @@ World::setPaused(bool b) noexcept {
     paused += b ? 1 : -1;
 
     if (paused) {
-        Music::instance().pause();
+        Music::pause();
     }
     else {
-        Music::instance().resume();
+        Music::resume();
     }
 
     // If finally unpausing.
@@ -320,6 +320,6 @@ void
 World::garbageCollect() noexcept {
     Images::garbageCollect();
     JSONs::garbageCollect();
-    Music::instance().garbageCollect();
+    Music::garbageCollect();
     Sounds::instance().garbageCollect();
 }

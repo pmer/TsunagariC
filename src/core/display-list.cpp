@@ -95,7 +95,7 @@ displayListPresent(DisplayList* display) noexcept {
         unsigned ww = window.width();
         unsigned wh = window.height();
         window.drawRect(0, ww, 0, wh, 0x7F000000);
-        auto pauseInfo = Images::instance().load("resource/pause_overlay.png");
+        auto pauseInfo = Images::load("resource/pause_overlay.png");
         if (pauseInfo) {
             unsigned iw = pauseInfo->width();
             unsigned ih = pauseInfo->height();

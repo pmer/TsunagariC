@@ -353,9 +353,9 @@ Entity::processSprite(Unique<JSONObject> sprite) noexcept {
     imgsz.x = sheet->intAt("tile_width");
     imgsz.y = sheet->intAt("tile_height");
     StringView path = sheet->stringAt("path");
-    tiles = Images::instance().loadTiles(path,
-                                         static_cast<unsigned>(imgsz.x),
-                                         static_cast<unsigned>(imgsz.y));
+    tiles = Images::loadTiles(path,
+                              static_cast<unsigned>(imgsz.x),
+                              static_cast<unsigned>(imgsz.y));
     CHECK(tiles);
 
     return processPhases(sprite->objectAt("phases"), *tiles);

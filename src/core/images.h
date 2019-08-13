@@ -78,29 +78,17 @@ class TiledImage {
 
 class Images {
  public:
-    //! Acquire the global Images object.
-    static Images& instance() noexcept;
-
-    virtual ~Images() = default;
-
     //! Load an image from the file at the given path.
-    virtual Rc<Image> load(StringView path) noexcept = 0;
+    static Rc<Image> load(StringView path) noexcept;
 
     //! Load an image of tiles from the file at the given path. Each tile
     //! with have width and heigh as specified.
-    virtual Rc<TiledImage> loadTiles(StringView path,
+    static Rc<TiledImage> loadTiles(StringView path,
                                      unsigned tileW,
-                                     unsigned tileH) noexcept = 0;
+                                     unsigned tileH) noexcept;
 
     //! Free images not recently used.
-    virtual void garbageCollect() noexcept = 0;
-
- protected:
-    Images() = default;
-
- private:
-    Images(const Images&) = delete;
-    Images& operator=(const Images&) = delete;
+    static void garbageCollect() noexcept;
 };
 
 #endif  // SRC_CORE_IMAGES_H_

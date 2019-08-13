@@ -327,7 +327,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
     tileSets[imgSource] = TileSet{firstGid, (size_t)width, (size_t)height};
 
     // Load tileset image.
-    img = Images::instance().loadTiles(imgSource, tilex, tiley);
+    img = Images::loadTiles(imgSource, tilex, tiley);
     if (!img) {
         Log::err(descriptor, "Tileset image not found");
         return false;

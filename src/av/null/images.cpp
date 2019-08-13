@@ -51,21 +51,15 @@ class NullTiledImage : public TiledImage {
 };
 
 
-class NullImages : public Images {
- public:
-    Rc<Image> load(StringView) noexcept final { return Rc<Image>(); }
-
-    Rc<TiledImage> loadTiles(StringView, unsigned, unsigned) noexcept final {
-        return Rc<TiledImage>(new NullTiledImage);
-    }
-
-    void garbageCollect() noexcept final {}
-};
-
-
-static NullImages globalImages;
-
-Images&
-Images::instance() noexcept {
-    return globalImages;
+Rc<Image>
+Images::load(StringView) noexcept {
+    return Rc<Image>();
 }
+
+Rc<TiledImage>
+Images::loadTiles(StringView, unsigned, unsigned) noexcept {
+    return Rc<TiledImage>(new NullTiledImage);
+}
+
+void
+Images::garbageCollect() noexcept {}

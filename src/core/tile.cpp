@@ -91,6 +91,6 @@ Tile::layermodAt(ivec2 dir) const noexcept {
 int
 TileSet::at(size_t x, size_t y) noexcept {
     size_t i = y * width + x;
-    assert_(firstGid <= i && i < firstGid + width * height);
-    return i;
+    assert_(i < width * height);
+    return firstGid + i;
 }

@@ -92,5 +92,6 @@ int
 TileSet::at(size_t x, size_t y) noexcept {
     size_t i = y * width + x;
     assert_(i < width * height);
-    return firstGid + i;
+    assert_(i < INT32_MAX);
+    return firstGid + static_cast<int>(i);
 }

@@ -29,7 +29,7 @@
 #define SRC_CORE_TILE_H_
 
 class Tile;
-class TileSet;
+struct TileSet;
 
 #include "core/animation.h"
 #include "core/vec.h"

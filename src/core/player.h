@@ -32,7 +32,7 @@
 #include "core/vec.h"
 #include "util/vector.h"
 
-class Exit;
+struct Exit;
 
 class Player : public Character {
  public:

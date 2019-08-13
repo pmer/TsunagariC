@@ -347,7 +347,8 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
     for (size_t i = 0; i < img->size(); i++) {
         auto tileImg = (*img)[i];
         TileType* type =
-                new TileType(firstGid + static_cast<int>(i), move_(tileImg));
+                new TileType{firstGid + static_cast<int>(i),
+                             Animation(move_(tileImg))};
         set->add(type);
         gids.push_back(type);
     }
@@ -400,12 +401,6 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
                           int id) noexcept {
     /*
       {
-        "onEnter": "skid"
-        "onLeave": "no_skid"
-        "onUse": "no_skid"
-      }
-
-      {
         "frames": "29,58",
         "speed": "0.75"
       }
@@ -418,18 +413,6 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
     Vector<Rc<Image>> framesvec;
     Optional<int> frameLen;
 
-    if (obj->hasString("on_enter")) {
-        StringView scriptName = obj->stringAt("on_enter");
-        type.enterScript = dataArea->script(scriptName);
-    }
-    if (obj->hasString("on_leave")) {
-        StringView scriptName = obj->stringAt("on_leave");
-        type.leaveScript = dataArea->script(scriptName);
-    }
-    if (obj->hasString("on_use")) {
-        StringView scriptName = obj->stringAt("on_use");
-        type.useScript = dataArea->script(scriptName);
-    }
     if (obj->hasString("frames")) {
         String memtemp;
         Vector<StringView> frames;

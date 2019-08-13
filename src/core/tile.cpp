@@ -60,14 +60,6 @@ ivec2_to_dir(ivec2 v) noexcept {
 /*
  * TILETYPE
  */
-TileType::TileType(int gid, const Rc<Image>& img) noexcept
-        : gid(gid),
-          enterScript(nullptr),
-          leaveScript(nullptr),
-          useScript(nullptr) {
-    anim = Animation(img);
-}
-
 bool
 TileType::needsRedraw() const noexcept {
     time_t now = World::instance().time();

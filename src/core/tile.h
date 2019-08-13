@@ -142,21 +142,13 @@ struct Exit {
     certain type. As opposed to local properties for a single tile,
     all tiles of this type will share the defined characteristics.
 */
-class TileType {
- public:
-    TileType() = default;
-    TileType(int gid, const Rc<Image>& img) noexcept;
-
-    //! Returns true if onscreen and we need to update our animation.
-    bool needsRedraw() const noexcept;
-
- public:
+struct TileType {
     // Graphical details.
     int gid;
     Animation anim;  //! Graphics for tiles of this type.
 
-    // Object details.
-    DataArea::TileScript enterScript, leaveScript, useScript;
+    //! Returns true if onscreen and we need to update our animation.
+    bool needsRedraw() const noexcept;
 };
 
 //! Contains properties unique to this tile.

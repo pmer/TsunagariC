@@ -112,9 +112,6 @@ World::init() noexcept {
     Viewport::instance().setSize(parameters.viewportResolution);
     Viewport::instance().trackEntity(player.get());
 
-    // Apply client.ini music volume now that client.ini is loaded.
-    Music::setVolume(1.0);
-
     return true;
 }
 

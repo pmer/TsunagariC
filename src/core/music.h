@@ -28,7 +28,7 @@
 #ifndef SRC_CORE_MUSIC_H_
 #define SRC_CORE_MUSIC_H_
 
-#include "util/string.h"
+#include "util/string-view.h"
 
 /**
  * State manager for currently playing music. Continuously controls which music
@@ -43,19 +43,16 @@
  */
 class Music {
  public:
-    //! If the music filepath has changed, start playing it.
-    static void play(String filepath) noexcept;
+    //! If the music path has changed, start playing it.
+    static void play(StringView path) noexcept;
 
-    //! Stop playing music.  To begin again, set a new intro or loop.
+    //! Stop playing music. To begin again, set a new intro or loop.
     static void stop() noexcept;
 
     //! Pause playback of music.
     static void pause() noexcept;
     //! Resume playback of music.
     static void resume() noexcept;
-
-    //! Between 0.0 (silence) and 1.0 (full).
-    static void setVolume(double volume) noexcept;
 
     //! Free music not recently played.
     static void garbageCollect() noexcept;

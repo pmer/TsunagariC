@@ -32,29 +32,14 @@
 
 class MusicWorker {
  public:
-    static MusicWorker& instance() noexcept;
+    static void play(StringView path) noexcept;
 
-    virtual ~MusicWorker() = default;
+    static void stop() noexcept;
 
-    virtual void play(StringView path) noexcept;
+    static void pause() noexcept;
+    static void resume() noexcept;
 
-    virtual void stop() noexcept;
-
-    virtual void pause() noexcept;
-    virtual void resume() noexcept;
-
-    double getVolume() noexcept;
-    virtual void setVolume(double volume) noexcept;
-
-    virtual void garbageCollect() noexcept = 0;
-
- protected:
-    MusicWorker() noexcept;
-
-    double volume;
-    int paused;
-
-    String path;
+    static void garbageCollect() noexcept;
 };
 
 #endif  // SRC_CORE_MUSIC_WORKER_H_

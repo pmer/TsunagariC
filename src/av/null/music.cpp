@@ -26,24 +26,16 @@
 
 #include "core/music-worker.h"
 
-class NullMusic : public MusicWorker {
- public:
-    void stop() noexcept final {}
+void
+MusicWorker::play(StringView path) noexcept {}
 
-    void pause() noexcept final {}
-    void resume() noexcept final {}
+void
+MusicWorker::stop() noexcept {}
 
-    void setVolume(double) noexcept final {}
+void
+MusicWorker::pause() noexcept {}
+void
+MusicWorker::resume() noexcept {}
 
-    void tick() noexcept {}
-
-    void garbageCollect() noexcept final {}
-};
-
-
-static NullMusic globalMusicWorker;
-
-MusicWorker&
-MusicWorker::instance() noexcept {
-    return globalMusicWorker;
-}
+void
+MusicWorker::garbageCollect() noexcept {}

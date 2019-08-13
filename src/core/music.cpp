@@ -25,44 +25,38 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "core/music-worker.h"
 #include "core/music.h"
-#include "util/jobs.h"
+
+#include "core/music-worker.h"
+//#include "util/jobs.h"
 
 void
-Music::play(String filename) noexcept {
-    // JobsEnqueue([filename]() { MusicWorker::instance().play(filename); });
-    MusicWorker::instance().play(filename);
+Music::play(StringView name) noexcept {
+    // String name_ = name;
+    // JobsEnqueue([name_]() { MusicWorker::play(name_); });
+    MusicWorker::play(name);
 }
 
 void
 Music::stop() noexcept {
-    // JobsEnqueue([]() { MusicWorker::instance().stop(); });
-    MusicWorker::instance().stop();
+    // JobsEnqueue([]() { MusicWorker::stop(); });
+    MusicWorker::stop();
 }
 
 void
 Music::pause() noexcept {
-    // JobsEnqueue([]() { MusicWorker::instance().pause(); });
-    MusicWorker::instance().pause();
+    // JobsEnqueue([]() { MusicWorker::pause(); });
+    MusicWorker::pause();
 }
 
 void
 Music::resume() noexcept {
-    // JobsEnqueue([]() { MusicWorker::instance().resume(); });
-    MusicWorker::instance().resume();
-}
-
-void
-Music::setVolume(double attemptedVolume) noexcept {
-    // JobsEnqueue([attemptedVolume]() {
-    //     MusicWorker::instance().setVolume(attemptedVolume);
-    // });
-    MusicWorker::instance().setVolume(attemptedVolume);
+    // JobsEnqueue([]() { MusicWorker::resume(); });
+    MusicWorker::resume();
 }
 
 void
 Music::garbageCollect() noexcept {
-    // JobsEnqueue([]() { MusicWorker::instance().garbageCollect(); });
-    MusicWorker::instance().garbageCollect();
+    // JobsEnqueue([]() { MusicWorker::garbageCollect(); });
+    MusicWorker::garbageCollect();
 }

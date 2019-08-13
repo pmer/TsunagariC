@@ -49,6 +49,23 @@ TileGrid::getTileType(icoord phys) noexcept {
     return types[idx];
 }
 
+void
+TileGrid::setTileType(icoord phys, int type) noexcept {
+    int x = dim.x;
+    int y = dim.y;
+
+    if (loopX) {
+        phys.x = wrap(0, phys.x, x);
+    }
+
+    if (loopY) {
+        phys.y = wrap(0, phys.y, y);
+    }
+
+    int idx = (phys.z * y + phys.y) * x + phys.x;
+    types[idx] = type;
+}
+
 Tile*
 TileGrid::getTile(icoord phys) noexcept {
     int x = dim.x;

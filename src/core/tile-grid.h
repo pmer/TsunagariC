@@ -36,6 +36,7 @@
 class TileGrid {
  public:
     int getTileType(icoord phys) noexcept;
+    void setTileType(icoord phys, int type) noexcept;
 
     Tile* getTile(icoord phys) noexcept;
     Tile* getTile(vicoord virt) noexcept;

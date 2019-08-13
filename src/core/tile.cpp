@@ -66,7 +66,7 @@ Tile::moveDest(Area* area, icoord here, ivec2 facing) const noexcept {
 
     Optional<double> layermod = layermodAt(facing);
     if (layermod) {
-        dest = area->virt2phys(vicoord{dest.x, dest.y, *layermod});
+        dest = area->grid.virt2phys(vicoord{dest.x, dest.y, *layermod});
     }
     return dest;
 }

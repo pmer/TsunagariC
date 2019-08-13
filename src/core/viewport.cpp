@@ -142,7 +142,7 @@ Viewport::update() noexcept {
 void
 Viewport::_jumpToEntity(const Entity* e) noexcept {
     rcoord pos = e->getPixelCoord();
-    ivec2 td = area->getTileDimensions();
+    ivec2 td = area->grid.getTileDimensions();
     rvec2 center = rvec2{pos.x + td.x / 2, pos.y + td.y / 2};
     off = offsetForPt(center);
 }
@@ -178,12 +178,12 @@ Viewport::centerOn(rvec2 pt) const noexcept {
 
 rvec2
 Viewport::boundToArea(rvec2 pt) const noexcept {
-    icoord ad = area->getDimensions();
-    ivec2 td = area->getTileDimensions();
+    icoord ad = area->grid.dim;
+    ivec2 td = area->grid.tileDim;
     double areaWidth = ad.x * td.x;
     double areaHeight = ad.y * td.y;
-    bool loopX = area->loopsInX();
-    bool loopY = area->loopsInY();
+    bool loopX = area->grid.loopX;
+    bool loopY = area->grid.loopY;
 
     return rvec2{boundDimension(virtRes.x, areaWidth, pt.x, loopX),
                  boundDimension(virtRes.y, areaHeight, pt.y, loopY)};

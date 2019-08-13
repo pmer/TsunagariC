@@ -99,31 +99,14 @@ class Area {
     uint32_t getColorOverlay();
     void setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 
-    const Tile* getTile(icoord phys) const;
-    const Tile* getTile(vicoord virt) const;
-    const Tile* getTile(rcoord virt) const;
-    Tile* getTile(icoord phys);
-    Tile* getTile(vicoord virt);
-    Tile* getTile(rcoord virt);
-
     TileSet* getTileSet(StringView imagePath);
 
-    //! Return the dimensions of the Tile matrix.
-    ivec3 getDimensions() const;
-    //! Return the pixel dimensions of a Tile graphic.
-    ivec2 getTileDimensions() const;
     //! Returns a physical cubic range of Tiles that are visible on-screen.
     //! Takes actual map size into account.
     icube visibleTiles() const;
 
     //! Returns true if a Tile exists at the specified coordinate.
-    bool inBounds(icoord phys) const;
-    bool inBounds(vicoord virt) const;
-    bool inBounds(rcoord virt) const;
     bool inBounds(Entity* ent) const;
-
-    bool loopsInX() const;
-    bool loopsInY() const;
 
     // Create an NPC and insert it into the Area.
     Rc<Character> spawnNPC(StringView descriptor,
@@ -134,23 +117,14 @@ class Area {
                              vicoord coord,
                              StringView phase);
 
-    // Convert between virtual and physical map coordinates. Physical
-    // coordinates are the physical indexes into the Tile matrix. Layer
-    // depth is represented by an arbirarily chosen integer in the physical
-    // system. Virtual coordinates include the correct floating-point
-    // depth.
-    vicoord phys2virt_vi(icoord phys) const;
-    rcoord phys2virt_r(icoord phys) const;
-    icoord virt2phys(vicoord virt) const;
-    icoord virt2phys(rcoord virt) const;
-    rcoord virt2virt(vicoord virt) const;
-    vicoord virt2virt(rcoord virt) const;
-
     DataArea* getDataArea();
 
     void runEnterScript(icoord tile, Entity* triggeredBy) noexcept;
     void runLeaveScript(icoord tile, Entity* triggeredBy) noexcept;
     void runUseScript(icoord tile, Entity* triggeredBy) noexcept;
+
+ public:
+    TileGrid grid;
 
  protected:
     //! Calculate frame to show for each type of tile
@@ -167,7 +141,6 @@ class Area {
     Vector<Rc<Character>> characters;
     Vector<Rc<Overlay>> overlays;
 
-    TileGrid grid;
 
     bool beenFocused;
     bool redraw;

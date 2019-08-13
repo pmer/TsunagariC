@@ -277,36 +277,6 @@ Area::setColorOverlay(uint8_t a, uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
-const Tile*
-Area::getTile(icoord phys) const {
-    return grid.getTile(phys);
-}
-
-const Tile*
-Area::getTile(vicoord virt) const {
-    return grid.getTile(virt);
-}
-
-const Tile*
-Area::getTile(rcoord virt) const {
-    return grid.getTile(virt);
-}
-
-Tile*
-Area::getTile(icoord phys) {
-    return grid.getTile(phys);
-}
-
-Tile*
-Area::getTile(vicoord virt) {
-    return grid.getTile(virt);
-}
-
-Tile*
-Area::getTile(rcoord virt) {
-    return grid.getTile(virt);
-}
-
 TileSet*
 Area::getTileSet(StringView imagePath) {
     if (!tileSets.contains(imagePath)) {
@@ -318,16 +288,6 @@ Area::getTileSet(StringView imagePath) {
     return &tileSets[imagePath];
 }
 
-
-ivec3
-Area::getDimensions() const {
-    return grid.dim;
-}
-
-ivec2
-Area::getTileDimensions() const {
-    return grid.tileDim;
-}
 
 icube
 Area::visibleTiles() const {
@@ -354,35 +314,10 @@ Area::visibleTiles() const {
 }
 
 bool
-Area::inBounds(icoord phys) const {
-    return grid.inBounds(phys);
-}
-
-bool
-Area::inBounds(vicoord virt) const {
-    return grid.inBounds(virt);
-}
-
-bool
-Area::inBounds(rcoord virt) const {
-    return grid.inBounds(virt);
-}
-
-bool
 Area::inBounds(Entity* ent) const {
-    return inBounds(ent->getPixelCoord());
+    return grid.inBounds(ent->getPixelCoord());
 }
 
-
-bool
-Area::loopsInX() const {
-    return grid.loopX;
-}
-
-bool
-Area::loopsInY() const {
-    return grid.loopY;
-}
 
 Rc<Character>
 Area::spawnNPC(StringView descriptor, vicoord coord, StringView phase) {
@@ -409,36 +344,6 @@ Area::spawnOverlay(StringView descriptor, vicoord coord, StringView phase) {
     return o;
 }
 
-
-vicoord
-Area::phys2virt_vi(icoord phys) const {
-    return grid.phys2virt_vi(phys);
-}
-
-rcoord
-Area::phys2virt_r(icoord phys) const {
-    return grid.phys2virt_r(phys);
-}
-
-icoord
-Area::virt2phys(vicoord virt) const {
-    return grid.virt2phys(virt);
-}
-
-icoord
-Area::virt2phys(rcoord virt) const {
-    return grid.virt2phys(virt);
-}
-
-rcoord
-Area::virt2virt(vicoord virt) const {
-    return grid.virt2virt(virt);
-}
-
-vicoord
-Area::virt2virt(rcoord virt) const {
-    return grid.virt2virt(virt);
-}
 
 DataArea*
 Area::getDataArea() {

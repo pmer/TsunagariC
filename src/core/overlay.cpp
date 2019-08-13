@@ -38,7 +38,7 @@ Overlay::tick(time_t dt) noexcept {
 
 void
 Overlay::teleport(vicoord coord) noexcept {
-    r = area->virt2virt(coord);
+    r = area->grid.virt2virt(coord);
     redraw = true;
 }
 

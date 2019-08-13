@@ -70,19 +70,19 @@ Character::destroy() noexcept {
 
 icoord
 Character::getTileCoords_i() const noexcept {
-    return area->virt2phys(r);
+    return area->grid.virt2phys(r);
 }
 
 vicoord
 Character::getTileCoords_vi() const noexcept {
-    return area->virt2virt(r);
+    return area->grid.virt2virt(r);
 }
 
 void
 Character::setTileCoords(int x, int y) noexcept {
     leaveTile();
     redraw = true;
-    r = area->virt2virt(vicoord{x, y, r.z});
+    r = area->grid.virt2virt(vicoord{x, y, r.z});
     enterTile();
 }
 
@@ -90,7 +90,7 @@ void
 Character::setTileCoords(int x, int y, double z) noexcept {
     leaveTile();
     redraw = true;
-    r = area->virt2virt(vicoord{x, y, z});
+    r = area->grid.virt2virt(vicoord{x, y, z});
     enterTile();
 }
 
@@ -98,7 +98,7 @@ void
 Character::setTileCoords(icoord phys) noexcept {
     leaveTile();
     redraw = true;
-    r = area->phys2virt_r(phys);
+    r = area->grid.phys2virt_r(phys);
     enterTile();
 }
 
@@ -106,7 +106,7 @@ void
 Character::setTileCoords(vicoord virt) noexcept {
     leaveTile();
     redraw = true;
-    r = area->virt2virt(virt);
+    r = area->grid.virt2virt(virt);
     enterTile();
 }
 
@@ -120,19 +120,19 @@ Character::setTileCoords(rcoord virt) noexcept {
 
 const Tile*
 Character::getTile() const noexcept {
-    return area ? area->getTile(r) : nullptr;
+    return area ? area->grid.getTile(r) : nullptr;
 }
 
 Tile*
 Character::getTile() noexcept {
-    return area ? area->getTile(r) : nullptr;
+    return area ? area->grid.getTile(r) : nullptr;
 }
 
 void
 Character::setArea(Area* area, vicoord position) noexcept {
     leaveTile();
     Entity::setArea(area);
-    r = area->virt2virt(position);
+    r = area->grid.virt2virt(position);
     enterTile();
     redraw = true;
 }
@@ -148,8 +148,8 @@ Character::moveByTile(ivec2 delta) noexcept {
     icoord dest = moveDest(facing);
 
     fromTile = getTile();
-    destTile = area->getTile(dest);
-    setDestinationCoordinate(area->phys2virt_r(dest));
+    destTile = area->grid.getTile(dest);
+    setDestinationCoordinate(area->grid.phys2virt_r(dest));
 
     destExit = nullptr;
     if (fromTile) {
@@ -170,7 +170,7 @@ Character::moveByTile(ivec2 delta) noexcept {
     // Process triggers.
     runTileExitScript();
     if (fromTile) {
-        area->runLeaveScript(area->virt2phys(fromCoord), this);
+        area->runLeaveScript(area->grid.virt2phys(fromCoord), this);
     }
 
     // Modify tile's entity count.
@@ -220,7 +220,7 @@ Character::canMove(icoord dest) noexcept {
         }
     }
 
-    bool inBounds = area->inBounds(dest);
+    bool inBounds = area->grid.inBounds(dest);
     if (destTile && inBounds) {
         // Tile is inside map. Can we move?
         if (nowalked(*destTile)) {
@@ -257,7 +257,7 @@ Character::arrived() noexcept {
 
     // Process triggers.
     if (destTile) {
-        area->runEnterScript(area->virt2phys(destCoord), this);
+        area->runEnterScript(area->grid.virt2phys(destCoord), this);
     }
 
     runTileEntryScript();

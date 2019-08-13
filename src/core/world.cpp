@@ -142,8 +142,8 @@ World::draw(DisplayList* display) noexcept {
 
     redraw = false;
 
-    display->loopX = area->loopsInX();
-    display->loopY = area->loopsInY();
+    display->loopX = area->grid.loopX;
+    display->loopY = area->grid.loopY;
 
     display->padding = view.getLetterboxOffset();
     display->scale = view.getScale();

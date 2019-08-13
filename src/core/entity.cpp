@@ -185,13 +185,13 @@ Entity::setArea(Area* area) noexcept {
     this->area = area;
     calcDraw();
 
-    assert_(area->getTileDimensions().x == area->getTileDimensions().y);
-    pixelsPerSecond = tilesPerSecond * area->getTileDimensions().x;
+    assert_(area->grid.tileDim.x == area->grid.tileDim.y);
+    pixelsPerSecond = tilesPerSecond * area->grid.tileDim.x;
 }
 
 double
 Entity::getSpeedInPixels() const noexcept {
-    double tileWidth = area->getTileDimensions().x;
+    double tileWidth = area->grid.tileDim.x;
     return getSpeedInTiles() * tileWidth;
 }
 
@@ -218,7 +218,7 @@ Entity::attach(OnTurnFn fn) noexcept {
 void
 Entity::calcDraw() noexcept {
     if (area) {
-        ivec2 tile = area->getTileDimensions();
+        ivec2 tile = area->grid.tileDim;
 
         // X-axis is centered on tile.
         doff.x = (tile.x - imgsz.x) / 2;
@@ -322,8 +322,8 @@ Entity::processDescriptor() noexcept {
         tilesPerSecond = doc->doubleAt("speed");
 
         if (area) {
-            assert_(area->getTileDimensions().x == area->getTileDimensions().y);
-            pixelsPerSecond = tilesPerSecond * area->getTileDimensions().x;
+            assert_(area->grid.tileDim.x == area->grid.tileDim.y);
+            pixelsPerSecond = tilesPerSecond * area->grid.tileDim.x;
         }
     }
     if (doc->hasObject("sprite")) {

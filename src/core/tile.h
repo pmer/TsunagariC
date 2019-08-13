@@ -125,29 +125,6 @@ enum ExitDirection {
     EXITS_LENGTH
 };
 
-/**
- * Independant object that can manipulate a Tile's flags.
- */
-class FlagManip {
- public:
-    FlagManip(unsigned* flags) noexcept;
-
-    bool isNowalk() const noexcept;
-    bool isNowalkPlayer() const noexcept;
-    bool isNowalkNPC() const noexcept;
-    bool isNowalkExit() const noexcept;
-    bool isNowalkAreaBound() const noexcept;
-
-    void setNowalk(bool nowalk) noexcept;
-    void setNowalkPlayer(bool nowalk) noexcept;
-    void setNowalkNPC(bool nowalk) noexcept;
-    void setNowalkExit(bool nowalk) noexcept;
-    void setNowalkAreaBound(bool nowalk) noexcept;
-
- private:
-    unsigned* flags;
-};
-
 //! Convenience trigger for inter-area teleportation.
 /*!
     Tiles with an exit trigger attached can teleport the player to a
@@ -195,10 +172,6 @@ class TileType {
 */
 class Tile {
  public:
-    Tile() noexcept;
-
-    FlagManip flagManip() noexcept;
-
     /**
      * Gets the correct destination for an Entity wanting to
      * move off of this tile in <code>facing</code>
@@ -216,12 +189,14 @@ class Tile {
     Optional<double> layermodAt(ivec2 dir) const noexcept;
 
  public:
-    unsigned flags;
-    DataArea::TileScript enterScript, leaveScript, useScript;
+    unsigned flags = 0;
+    DataArea::TileScript enterScript = nullptr,
+                         leaveScript = nullptr,
+                         useScript = nullptr;
 
     Optional<Exit> exits[EXITS_LENGTH];
     Optional<double> layermods[EXITS_LENGTH];
-    int entCnt;  //!< Number of entities on this Tile.
+    int entCnt = 0;  //!< Number of entities on this Tile.
 };
 
 class TileSet {

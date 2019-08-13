@@ -57,67 +57,6 @@ ivec2_to_dir(ivec2 v) noexcept {
 }
 
 
-/*
- * FLAGMANIP
- */
-FlagManip::FlagManip(unsigned* flags) noexcept : flags(flags) {}
-
-bool
-FlagManip::isNowalk() const noexcept {
-    return (*flags & TILE_NOWALK) != 0;
-}
-
-bool
-FlagManip::isNowalkPlayer() const noexcept {
-    return (*flags & TILE_NOWALK_PLAYER) != 0;
-}
-
-bool
-FlagManip::isNowalkNPC() const noexcept {
-    return (*flags & TILE_NOWALK_NPC) != 0;
-}
-
-bool
-FlagManip::isNowalkExit() const noexcept {
-    return (*flags & TILE_NOWALK_EXIT) != 0;
-}
-
-bool
-FlagManip::isNowalkAreaBound() const noexcept {
-    return (*flags & TILE_NOWALK_AREA_BOUND) != 0;
-}
-
-void
-FlagManip::setNowalk(bool nowalk) noexcept {
-    *flags &= ~TILE_NOWALK;
-    *flags |= TILE_NOWALK * nowalk;
-}
-
-void
-FlagManip::setNowalkPlayer(bool nowalk) noexcept {
-    *flags &= ~TILE_NOWALK_PLAYER;
-    *flags |= TILE_NOWALK_PLAYER * nowalk;
-}
-
-void
-FlagManip::setNowalkNPC(bool nowalk) noexcept {
-    *flags &= ~TILE_NOWALK_NPC;
-    *flags |= TILE_NOWALK_NPC * nowalk;
-}
-
-void
-FlagManip::setNowalkExit(bool nowalk) noexcept {
-    *flags &= ~TILE_NOWALK_EXIT;
-    *flags |= TILE_NOWALK_EXIT * nowalk;
-}
-
-void
-FlagManip::setNowalkAreaBound(bool nowalk) noexcept {
-    *flags &= ~TILE_NOWALK_AREA_BOUND;
-    *flags |= TILE_NOWALK_AREA_BOUND * nowalk;
-}
-
-
 Exit::Exit(String area, int x, int y, double z) noexcept
         : area(move_(area)), coords{x, y, z} {}
 
@@ -148,18 +87,6 @@ TileType::needsRedraw() const noexcept {
 /*
  * TILE
  */
-Tile::Tile() noexcept
-        : flags(0),
-          enterScript(nullptr),
-          leaveScript(nullptr),
-          useScript(nullptr),
-          entCnt(0) {}
-
-FlagManip
-Tile::flagManip() noexcept {
-    return FlagManip(&flags);
-}
-
 icoord
 Tile::moveDest(Area* area, icoord here, ivec2 facing) const noexcept {
     icoord dest = here + icoord{facing.x, facing.y, 0};

@@ -31,13 +31,13 @@
 #include "util/noexcept.h"
 
 template<typename T>
-inline CONSTEXPR T
+inline CONSTEXPR11 T
 min_(T a, T b) noexcept {
     return a < b ? a : b;
 }
 
 template<typename T>
-inline CONSTEXPR T
+inline CONSTEXPR11 T
 max_(T a, T b) noexcept {
     return a < b ? b : a;
 }

@@ -100,7 +100,7 @@ main() noexcept {
 }
 
 #ifdef _WIN32
-int
+int __stdcall
 WinMain(void*, void*, void*, int) {
     return main();
 }

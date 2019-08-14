@@ -52,6 +52,7 @@
 #include "os/c.h"
 #include "util/algorithm.h"
 #include "util/assert.h"
+#include "util/constexpr.h"
 #include "util/hash.h"
 #include "util/int.h"
 #include "util/list.h"
@@ -127,7 +128,7 @@ namespace hopscotch {
             return value + 1;
         }
 
-        static constexpr bool isPowerOfTwo(size_t value) noexcept {
+        static CONSTEXPR11 bool isPowerOfTwo(size_t value) noexcept {
             return value != 0 && (value & (value - 1)) == 0;
         }
 
@@ -157,7 +158,7 @@ namespace hopscotch {
      * Details regarding hopscotch hashing an its implementation can be found
      * here: https://tessil.github.io/2016/08/29/hopscotch-hashing.html
      */
-    static constexpr size_t NB_RESERVED_BITS_IN_NEIGHBORHOOD = 2;
+    static CONSTEXPR11 size_t NB_RESERVED_BITS_IN_NEIGHBORHOOD = 2;
 
 
     template<typename V, unsigned int NeighborhoodSize> class Bucket {
@@ -354,7 +355,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
         V v;
     };
 
-    static constexpr bool HasValue = !IsUnit<V>;
+    static CONSTEXPR11 bool HasValue = !IsUnit<V>;
 
     typedef List<KV> OverflowContainer;
 

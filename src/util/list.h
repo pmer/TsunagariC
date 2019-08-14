@@ -40,10 +40,10 @@ template<typename T> class List {
         Links* next;
         Links* prev;
 
-        inline CONSTEXPR Node* toNode() noexcept {
+        inline CONSTEXPR14 Node* toNode() noexcept {
             return reinterpret_cast<Node*>(this);
         }
-        inline CONSTEXPR const Node* toNode() const noexcept {
+        inline CONSTEXPR14 const Node* toNode() const noexcept {
             return reinterpret_cast<const Node*>(this);
         }
     };
@@ -60,10 +60,10 @@ template<typename T> class List {
         friend List;
 
      public:
-        inline CONSTEXPR T& operator*() const noexcept {
+        inline CONSTEXPR14 T& operator*() const noexcept {
             return links->toNode()->x;
         }
-        inline CONSTEXPR T* operator->() const noexcept {
+        inline CONSTEXPR14 T* operator->() const noexcept {
             return &links->toNode()->x;
         }
         inline void operator++() { links = links->next; }
@@ -75,7 +75,7 @@ template<typename T> class List {
         }
 
      private:
-        CONSTEXPR Iterator(Links* links) noexcept : links(links) {}
+        CONSTEXPR11 Iterator(Links* links) noexcept : links(links) {}
         Links* links;
     };
 
@@ -102,7 +102,7 @@ template<typename T> class List {
         const Links* links;
     };
 
-    inline CONSTEXPR List() noexcept {
+    inline CONSTEXPR14 List() noexcept {
         head = {&head, &head};
         n = 0;
     }
@@ -159,12 +159,12 @@ template<typename T> class List {
         return *this;
     }
 
-    inline CONSTEXPR Iterator begin() noexcept { return Iterator(head.next); }
-    inline CONSTEXPR ConstIterator begin() const noexcept {
+    inline CONSTEXPR14 Iterator begin() noexcept { return Iterator(head.next); }
+    inline CONSTEXPR14 ConstIterator begin() const noexcept {
         return ConstIterator(head.next);
     }
-    inline CONSTEXPR Iterator end() noexcept { return Iterator(&head); }
-    inline CONSTEXPR ConstIterator end() const noexcept {
+    inline CONSTEXPR14 Iterator end() noexcept { return Iterator(&head); }
+    inline CONSTEXPR14 ConstIterator end() const noexcept {
         return ConstIterator(&head);
     }
 
@@ -192,8 +192,8 @@ template<typename T> class List {
         }
     }
 
-    inline CONSTEXPR size_t size() noexcept { return n; }
-    inline CONSTEXPR bool empty() noexcept { return n == 0; }
+    inline CONSTEXPR11 size_t size() noexcept { return n; }
+    inline CONSTEXPR11 bool empty() noexcept { return n == 0; }
 
  private:
     Links head;

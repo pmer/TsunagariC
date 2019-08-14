@@ -308,6 +308,7 @@ target_sources(tsunagari
     PUBLIC  src/util/constexpr.h
     PRIVATE src/util/fnv.cpp
     PUBLIC  src/util/fnv.h
+    PUBLIC  src/util/function.h
     PRIVATE src/util/hash.cpp
     PUBLIC  src/util/hash.h
     PUBLIC  src/util/hashtable.h

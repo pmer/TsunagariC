@@ -27,11 +27,20 @@
 #ifndef SRC_UTIL_CONSTEXPR_H_
 #define SRC_UTIL_CONSTEXPR_H_
 
-#if __cplusplus >= 201402 || _MSC_VER >= 1910  // GCC and Clang on C++14, or
-                                               // Visual Studio 2017 or higher
-#define CONSTEXPR constexpr
+#if __cplusplus >= 201103L || \
+        _MSC_VER >= 1900  // GCC and Clang on C++11 or higher, or Visual Studio
+                          // 2015 or higher
+#define CONSTEXPR11 constexpr
 #else
-#define CONSTEXPR
+#define CONSTEXPR11
+#endif
+
+#if __cplusplus >= 201402L || \
+        _MSC_VER >= 1910  // GCC and Clang on C++14 or higher, or Visual Studio
+                          // 2017 or higher
+#define CONSTEXPR14 constexpr
+#else
+#define CONSTEXPR14
 #endif
 
 #endif  // SRC_UTIL_CONSTEXPR_H_

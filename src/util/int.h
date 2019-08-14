@@ -57,9 +57,9 @@ typedef long time_t;
 typedef int64_t time_t;
 #endif
 
-static CONSTEXPR int32_t INT32_MAX = 0x7fffffff;
-static CONSTEXPR uint32_t UINT32_MAX = 0xffffffff;
+static CONSTEXPR11 int32_t INT32_MAX = 0x7fffffff;
+static CONSTEXPR11 uint32_t UINT32_MAX = 0xffffffff;
 
-static CONSTEXPR double M_PI = 3.14159265358979323846;
+static CONSTEXPR11 double M_PI = 3.14159265358979323846;
 
 #endif  // SRC_UTIL_INT_H_

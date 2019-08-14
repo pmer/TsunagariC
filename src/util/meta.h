@@ -32,7 +32,8 @@
 //
 // template struct If
 //
-template<bool Cond, typename WhenTrue, typename WhenFalse> struct If_;
+template<bool Cond, typename WhenTrue, typename WhenFalse>
+struct If_;
 
 template<typename WhenTrue, typename WhenFalse>
 struct If_<true, WhenTrue, WhenFalse> {
@@ -52,17 +53,22 @@ using If = typename If_<Cond, WhenTrue, WhenFalse>::value;
 //
 struct Yes {};
 
-template<bool Cond> struct EnableIf_;
-template<> struct EnableIf_<true> { typedef Yes value; };
+template<bool Cond>
+struct EnableIf_;
+template<>
+struct EnableIf_<true> { typedef Yes value; };
 
-template<bool Cond> using EnableIf = typename EnableIf_<Cond>::value;
+template<bool Cond>
+using EnableIf = typename EnableIf_<Cond>::value;
 
 //
 // template bool IsUnit
 //
 struct Unit {};
 
-template<typename T> CONSTEXPR11 bool IsUnit = false;
-template<> CONSTEXPR11 bool IsUnit<Unit> = true;
+template<typename T>
+CONSTEXPR11 bool IsUnit = false;
+template<>
+CONSTEXPR11 bool IsUnit<Unit> = true;
 
 #endif  // SRC_UTIL_META_H_

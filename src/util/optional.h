@@ -149,9 +149,8 @@ class Optional {
         return x();
     }
 
-    template<typename S>
-    friend CONSTEXPR11 bool operator==(const Optional<S>& a,
-                                       const Optional<S>& b) noexcept;
+    friend CONSTEXPR11 bool operator==(const Optional<T>& a,
+                                       const Optional<T>& b) noexcept;
 
  private:
     T& x() noexcept { return *reinterpret_cast<T*>(&storage); }

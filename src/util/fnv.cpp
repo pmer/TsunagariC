@@ -64,11 +64,3 @@ fnvHash(const char* data, size_t size) noexcept {
 }
 
 #endif
-
-template<typename T> size_t hash_(const T&) noexcept;
-
-template<>
-size_t
-hash_<float>(const float& d) noexcept {
-    return fnvHash(reinterpret_cast<const char*>(&d), sizeof(float));
-}

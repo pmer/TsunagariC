@@ -540,17 +540,26 @@ if(AV_SDL2)
         pkg_search_module(SDL2_image REQUIRED SDL2_image)
         pkg_search_module(SDL2_mixer REQUIRED SDL2_mixer)
     else()
-        set(SDL2_INCLUDE_DIRS "" CACHE PATH "Directory with SDL2 headers")
-        set(SDL2_image_INCLUDE_DIRS "" CACHE PATH "Directory with SDL2_image headers")
-        set(SDL2_mixer_INCLUDE_DIRS "" CACHE PATH "Directory with SDL2_mixer headers")
+        set(SDL2_INCLUDE_DIRS "" CACHE PATH
+            "Directory with SDL2 headers")
+        set(SDL2_image_INCLUDE_DIRS "" CACHE PATH
+            "Directory with SDL2_image headers")
+        set(SDL2_mixer_INCLUDE_DIRS "" CACHE PATH
+            "Directory with SDL2_mixer headers")
 
-        set(SDL2_LIBRARY_DIRS "" CACHE PATH "Directory with SDL2 library")
-        set(SDL2_image_LIBRARY_DIRS "" CACHE PATH "Directory with SDL2_image library")
-        set(SDL2_mixer_LIBRARY_DIRS "" CACHE PATH "Directory with SDL2_mixer library")
+        set(SDL2_LIBRARY_DIRS "" CACHE PATH
+            "Directory with SDL2 library")
+        set(SDL2_image_LIBRARY_DIRS "" CACHE PATH
+            "Directory with SDL2_image library")
+        set(SDL2_mixer_LIBRARY_DIRS "" CACHE PATH
+            "Directory with SDL2_mixer library")
 
-        set(SDL2_LIBRARIES "" CACHE STRING "Name of SDL2 library")
-        set(SDL2_image_LIBRARIES "" CACHE STRING "Name with SDL2_image library")
-        set(SDL2_mixer_LIBRARIES "" CACHE STRING "Name with SDL2_mixer library")
+        set(SDL2_LIBRARIES "" CACHE STRING
+            "Name of SDL2 library")
+        set(SDL2_image_LIBRARIES "" CACHE STRING
+            "Name with SDL2_image library")
+        set(SDL2_mixer_LIBRARIES "" CACHE STRING
+            "Name with SDL2_mixer library")
     endif()
 
     if("${SDL2_LIBRARIES}" STREQUAL "")

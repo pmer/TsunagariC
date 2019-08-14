@@ -134,7 +134,7 @@ template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
 
     void swap(Function&) noexcept;
 
-    inline explicit operator bool() const noexcept { return f; }
+    inline explicit operator bool() const noexcept { return f != nullptr; }
 
     R operator()(ArgTypes...) const noexcept;
 };

@@ -51,12 +51,12 @@ using If = typename If_<Cond, WhenTrue, WhenFalse>::value;
 //
 // template struct EnableIf
 //
-struct Yes {};
+struct True {};
 
 template<bool Cond>
 struct EnableIf_;
 template<>
-struct EnableIf_<true> { typedef Yes value; };
+struct EnableIf_<true> { typedef True value; };
 
 template<bool Cond>
 using EnableIf = typename EnableIf_<Cond>::value;

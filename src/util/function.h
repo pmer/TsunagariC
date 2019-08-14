@@ -123,9 +123,9 @@ template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
     Function(Function&&) noexcept;
     template<class F> Function(F) noexcept;
     template<class F>
-    void set(F& something, EnableIf<sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf)> = Yes());
+    void set(F& something, EnableIf<sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf)> = True());
     template<class F>
-    void set(F& something, EnableIf<!(sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf))> = Yes());
+    void set(F& something, EnableIf<!(sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf))> = True());
     ~Function() noexcept;
 
     Function& operator=(const Function&) noexcept;

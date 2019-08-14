@@ -52,7 +52,7 @@ class Optional {
     }
     CONSTEXPR11 Optional(None) noexcept : storage(), exists(false) {}
 
-    CONSTEXPR11 Optional(Optional<T>&& other) noexcept
+    CONSTEXPR14 Optional(Optional<T>&& other) noexcept
             : storage(), exists(other.exists) {
         if (other.exists) {
             new (&storage) T(move_(other.x()));
@@ -154,9 +154,9 @@ class Optional {
                                        const Optional<T>& b) noexcept;
 
  private:
-    T& x() noexcept { return *reinterpret_cast<T*>(&storage.storage); }
+    T& x() noexcept { return *reinterpret_cast<T*>(&storage); }
     const T& x() const noexcept {
-        return *reinterpret_cast<const T*>(&storage.storage);
+        return *reinterpret_cast<const T*>(&storage);
     }
 };
 

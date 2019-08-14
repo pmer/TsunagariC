@@ -27,6 +27,7 @@
 #ifndef SRC_UTIL_FUNCTION_H_
 #define SRC_UTIL_FUNCTION_H_
 
+#include "util/align.h"
 #include "util/assert.h"
 #include "util/meta.h"
 #include "util/move.h"
@@ -105,7 +106,6 @@ namespace function {
     R func<F, R(ArgTypes...)>::operator()(ArgTypes&&... args) noexcept {
         return invoke(f, forward_<ArgTypes>(args)...);
     }
-
 }  // namespace function
 
 template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
@@ -114,7 +114,7 @@ template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
 
     static base* asBase(void* p) noexcept { return reinterpret_cast<base*>(p); }
 
-    alignas(alignof(void * [3])) char buf[3 * sizeof(void*)];
+    Align<void * [3]> buf;
     base* f;
 
  public:
@@ -148,8 +148,9 @@ Function<R(ArgTypes...)>::Function(const Function& other) noexcept {
         f = asBase(&buf);
         other.f->clone(f);
     }
-    else
+    else {
         f = other.f->clone();
+    }
 }
 
 template<class R, class... ArgTypes>

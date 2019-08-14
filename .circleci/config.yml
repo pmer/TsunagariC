@@ -8,7 +8,7 @@ jobs:
       - run: |
           echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list &&
           apt-get update &&
-          apt-get install -y git cmake/stretch-backports libuv1/stretch-backports make g++
+          apt-get install -y --no-install-recommends ca-certificates git cmake/stretch-backports libuv1/stretch-backports make g++
       - checkout
       - run: |
           git submodule update --init --recursive &&
@@ -23,7 +23,7 @@ jobs:
     steps:
       - run: |
           apt-get update &&
-          apt-get install -y git cmake make g++
+          apt-get install -y --no-install-recommends ca-certificates git cmake make g++
       - checkout
       - run: |
           git submodule update --init --recursive &&

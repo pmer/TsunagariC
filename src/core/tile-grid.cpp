@@ -49,8 +49,15 @@ TileGrid::getTileType(icoord phys) noexcept {
     return graphics[idx];
 }
 
+int
+TileGrid::getTileType(vicoord virt) noexcept {
+    return getTileType(virt2phys(virt));
+}
+
 void
-TileGrid::setTileType(icoord phys, int type) noexcept {
+TileGrid::setTileType(vicoord virt, int type) noexcept {
+    icoord phys = virt2phys(virt);
+
     int x = dim.x;
     int y = dim.y;
 

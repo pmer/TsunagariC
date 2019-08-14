@@ -27,7 +27,7 @@
 #ifndef SRC_UTIL_NOEXCEPT_H_
 #define SRC_UTIL_NOEXCEPT_H_
 
-#if _MSC_VER < 1900  // Visual Studio 2013 or lower
+#if defined(_MSC_VER) && _MSC_VER < 1900  // Visual Studio 2013 or lower
 #define noexcept throw()
 #endif
 

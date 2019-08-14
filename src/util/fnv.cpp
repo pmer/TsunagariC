@@ -69,6 +69,6 @@ template<typename T> size_t hash_(const T&) noexcept;
 
 template<>
 size_t
-hash_<double>(const double& d) noexcept {
-    return fnvHash(reinterpret_cast<const char*>(&d), sizeof(double));
+hash_<float>(const float& d) noexcept {
+    return fnvHash(reinterpret_cast<const char*>(&d), sizeof(float));
 }

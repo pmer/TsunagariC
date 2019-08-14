@@ -45,12 +45,12 @@ class JSONObject {
     virtual bool hasBool(StringView name) noexcept = 0;
     virtual bool hasInt(StringView name) noexcept = 0;
     virtual bool hasUnsigned(StringView name) noexcept = 0;
-    virtual bool hasDouble(StringView name) noexcept = 0;
+    virtual bool hasFloat(StringView name) noexcept = 0;
     virtual bool hasString(StringView name) noexcept = 0;
     virtual bool hasObject(StringView name) noexcept = 0;
     virtual bool hasArray(StringView name) noexcept = 0;
 
-    virtual bool hasStringDouble(StringView name) noexcept = 0;
+    virtual bool hasStringFloat(StringView name) noexcept = 0;
 
     virtual bool boolAt(StringView name) noexcept = 0;
     virtual int intAt(StringView name) noexcept = 0;
@@ -58,12 +58,12 @@ class JSONObject {
                       int lowerBound,
                       int upperBound) noexcept = 0;
     virtual unsigned unsignedAt(StringView name) noexcept = 0;
-    virtual double doubleAt(StringView name) noexcept = 0;
+    virtual float floatAt(StringView name) noexcept = 0;
     virtual StringView stringAt(StringView name) noexcept = 0;
     virtual Unique<JSONObject> objectAt(StringView name) noexcept = 0;
     virtual Unique<JSONArray> arrayAt(StringView name) noexcept = 0;
 
-    virtual double stringDoubleAt(StringView name) noexcept = 0;
+    virtual float stringFloatAt(StringView name) noexcept = 0;
 };
 
 class JSONArray {
@@ -75,7 +75,7 @@ class JSONArray {
     virtual bool isBool(size_t index) noexcept = 0;
     virtual bool isInt(size_t index) noexcept = 0;
     virtual bool isUnsigned(size_t index) noexcept = 0;
-    virtual bool isDouble(size_t index) noexcept = 0;
+    virtual bool isFloat(size_t index) noexcept = 0;
     virtual bool isString(size_t index) noexcept = 0;
     virtual bool isObject(size_t index) noexcept = 0;
     virtual bool isArray(size_t index) noexcept = 0;
@@ -83,7 +83,7 @@ class JSONArray {
     virtual bool boolAt(size_t index) noexcept = 0;
     virtual int intAt(size_t index) noexcept = 0;
     virtual unsigned unsignedAt(size_t index) noexcept = 0;
-    virtual double doubleAt(size_t index) noexcept = 0;
+    virtual float floatAt(size_t index) noexcept = 0;
     virtual StringView stringAt(size_t index) noexcept = 0;
     virtual Unique<JSONObject> objectAt(size_t index) noexcept = 0;
     virtual Unique<JSONArray> arrayAt(size_t index) noexcept = 0;

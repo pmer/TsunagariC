@@ -52,7 +52,6 @@ class Character : public Entity {
 
     //! Set location within Area.
     void setTileCoords(int x, int y) noexcept;
-    void setTileCoords(int x, int y, double z) noexcept;
     void setTileCoords(icoord phys) noexcept;
     void setTileCoords(vicoord virt) noexcept;
     void setTileCoords(rcoord virt) noexcept;

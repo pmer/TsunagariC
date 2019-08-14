@@ -170,8 +170,8 @@ TileGrid::phys2virt_vi(icoord phys) const noexcept {
 
 rcoord
 TileGrid::phys2virt_r(icoord phys) const noexcept {
-    return rcoord{static_cast<double>(phys.x * tileDim.x),
-                  static_cast<double>(phys.y * tileDim.y),
+    return rcoord{static_cast<float>(phys.x * tileDim.x),
+                  static_cast<float>(phys.y * tileDim.y),
                   indexDepth(phys.z)};
 }
 
@@ -191,8 +191,8 @@ TileGrid::virt2phys(rcoord virt) const noexcept {
 
 rcoord
 TileGrid::virt2virt(vicoord virt) const noexcept {
-    return rcoord{static_cast<double>(virt.x * tileDim.x),
-                  static_cast<double>(virt.y * tileDim.y),
+    return rcoord{static_cast<float>(virt.x * tileDim.x),
+                  static_cast<float>(virt.y * tileDim.y),
                   virt.z};
 }
 
@@ -205,7 +205,7 @@ TileGrid::virt2virt(rcoord virt) const noexcept {
 
 
 int
-TileGrid::depthIndex(double depth) const noexcept {
+TileGrid::depthIndex(float depth) const noexcept {
     auto it = depth2idx.find(depth);
     if (it == depth2idx.end()) {
         Log::fatal("TileGrid",
@@ -214,7 +214,7 @@ TileGrid::depthIndex(double depth) const noexcept {
     return it.value();
 }
 
-double
+float
 TileGrid::indexDepth(int idx) const noexcept {
     assert_(0 <= idx && idx <= dim.z);
     return idx2depth[(size_t)idx];

@@ -36,9 +36,9 @@ randInt(int min, int max) noexcept {
     return rand() % ((max + 1) - min) + min;
 }
 
-double
-randFloat(double min, double max) noexcept {
+float
+randFloat(float min, float max) noexcept {
     int i = rand();
-    double d = (double)i / INT32_MAX;
+    float d = (float)i / INT32_MAX;
     return d * (max - min) + min;
 }

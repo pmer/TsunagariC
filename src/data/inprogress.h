@@ -100,7 +100,7 @@ class InProgressSound : public InProgress {
  */
 class InProgressTimer : public InProgress {
  public:
-    typedef Function<void(double)> ProgressFn;
+    typedef Function<void(float)> ProgressFn;
     typedef Function<void()> ThenFn;
 
     InProgressTimer(time_t duration, ProgressFn progress) noexcept;

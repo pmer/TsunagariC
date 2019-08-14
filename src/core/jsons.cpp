@@ -79,23 +79,23 @@ class JSONObjectImpl : public JSONObject {
     bool hasBool(StringView name) noexcept final;
     bool hasInt(StringView name) noexcept final;
     bool hasUnsigned(StringView name) noexcept final;
-    bool hasDouble(StringView name) noexcept final;
+    bool hasFloat(StringView name) noexcept final;
     bool hasString(StringView name) noexcept final;
     bool hasObject(StringView name) noexcept final;
     bool hasArray(StringView name) noexcept final;
 
-    bool hasStringDouble(StringView name) noexcept final;
+    bool hasStringFloat(StringView name) noexcept final;
 
     bool boolAt(StringView name) noexcept final;
     int intAt(StringView name) noexcept final;
     int intAt(StringView name, int lowerBound, int upperBound) noexcept final;
     unsigned unsignedAt(StringView name) noexcept final;
-    double doubleAt(StringView name) noexcept final;
+    float floatAt(StringView name) noexcept final;
     StringView stringAt(StringView name) noexcept final;
     Unique<JSONObject> objectAt(StringView name) noexcept final;
     Unique<JSONArray> arrayAt(StringView name) noexcept final;
 
-    double stringDoubleAt(StringView name) noexcept final;
+    float stringFloatAt(StringView name) noexcept final;
 
  protected:
     RJValue str(StringView name) noexcept;
@@ -122,7 +122,7 @@ class JSONArrayImpl : public JSONArray {
     bool isBool(size_t index) noexcept final;
     bool isInt(size_t index) noexcept final;
     bool isUnsigned(size_t index) noexcept final;
-    bool isDouble(size_t index) noexcept final;
+    bool isFloat(size_t index) noexcept final;
     bool isString(size_t index) noexcept final;
     bool isObject(size_t index) noexcept final;
     bool isArray(size_t index) noexcept final;
@@ -130,7 +130,7 @@ class JSONArrayImpl : public JSONArray {
     bool boolAt(size_t index) noexcept final;
     int intAt(size_t index) noexcept final;
     unsigned unsignedAt(size_t index) noexcept final;
-    double doubleAt(size_t index) noexcept final;
+    float floatAt(size_t index) noexcept final;
     StringView stringAt(size_t index) noexcept final;
     Unique<JSONObject> objectAt(size_t index) noexcept final;
     Unique<JSONArray> arrayAt(size_t index) noexcept final;
@@ -177,17 +177,17 @@ JSONObjectImpl::names() noexcept {
 
 template<typename T>
 static bool
-isStringDouble(const T& val) noexcept {
+isStringFloat(const T& val) noexcept {
     CHECK(val.IsString());
     StringView str = val.GetString();
-    return parseDouble(str);
+    return parseFloat(str);
 }
 
 template<typename T>
-static double
-stringDoubleFrom(const T& val) noexcept {
+static float
+stringFloat(const T& val) noexcept {
     StringView str = val.GetString();
-    Optional<double> d = parseDouble(str);
+    Optional<float> d = parseFloat(str);
     return *d;
 }
 
@@ -205,7 +205,7 @@ JSONObjectImpl::hasUnsigned(StringView name) noexcept {
     return get().HasMember(str(name)) && get()[str(name)].IsUint();
 }
 bool
-JSONObjectImpl::hasDouble(StringView name) noexcept {
+JSONObjectImpl::hasFloat(StringView name) noexcept {
     return get().HasMember(str(name)) && get()[str(name)].IsDouble();
 }
 bool
@@ -221,8 +221,8 @@ JSONObjectImpl::hasArray(StringView name) noexcept {
     return get().HasMember(str(name)) && get()[str(name)].IsArray();
 }
 bool
-JSONObjectImpl::hasStringDouble(StringView name) noexcept {
-    return get().HasMember(str(name)) && isStringDouble(get()[str(name)]);
+JSONObjectImpl::hasStringFloat(StringView name) noexcept {
+    return get().HasMember(str(name)) && isStringFloat(get()[str(name)]);
 }
 
 bool
@@ -250,8 +250,8 @@ unsigned
 JSONObjectImpl::unsignedAt(StringView name) noexcept {
     return get()[str(name)].GetUint();
 }
-double
-JSONObjectImpl::doubleAt(StringView name) noexcept {
+float
+JSONObjectImpl::floatAt(StringView name) noexcept {
     return get()[str(name)].GetDouble();
 }
 StringView
@@ -266,9 +266,9 @@ Unique<JSONArray>
 JSONObjectImpl::arrayAt(StringView name) noexcept {
     return Unique<JSONArray>(new JSONArrayImpl(get()[str(name)].GetArray()));
 }
-double
-JSONObjectImpl::stringDoubleAt(StringView name) noexcept {
-    return stringDoubleFrom(get()[str(name)]);
+float
+JSONObjectImpl::stringFloatAt(StringView name) noexcept {
+    return stringFloat(get()[str(name)]);
 }
 
 RJValue
@@ -306,7 +306,7 @@ JSONArrayImpl::isUnsigned(size_t index) noexcept {
     return at(index).IsUint();
 }
 bool
-JSONArrayImpl::isDouble(size_t index) noexcept {
+JSONArrayImpl::isFloat(size_t index) noexcept {
     return at(index).IsDouble();
 }
 bool
@@ -334,8 +334,8 @@ unsigned
 JSONArrayImpl::unsignedAt(size_t index) noexcept {
     return at(index).GetUint();
 }
-double
-JSONArrayImpl::doubleAt(size_t index) noexcept {
+float
+JSONArrayImpl::floatAt(size_t index) noexcept {
     return at(index).GetDouble();
 }
 StringView

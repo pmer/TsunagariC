@@ -438,7 +438,7 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
     }
     if (obj->hasString("speed")) {
         StringView _hertz = obj->stringAt("speed");
-        Optional<double> hertz = parseDouble(_hertz);
+        Optional<float> hertz = parseFloat(_hertz);
         CHECK(hertz);
         frameLen = (int)(1000.0 / *hertz);
     }
@@ -502,12 +502,12 @@ AreaJSON::processLayerProperties(Unique<JSONObject> obj) noexcept {
      }
     */
 
-    if (!obj->hasStringDouble("depth")) {
+    if (!obj->hasStringFloat("depth")) {
         Log::err(descriptor, "A tilelayer must have the \"depth\" property");
         return false;
     }
 
-    const double depth = obj->stringDoubleAt("depth");
+    const float depth = obj->stringFloatAt("depth");
 
     if (grid.depth2idx.find(depth) != grid.depth2idx.end()) {
         Log::err(descriptor, "Layers cannot share a depth");
@@ -590,12 +590,12 @@ AreaJSON::processObjectGroupProperties(Unique<JSONObject> obj) noexcept {
      }
     */
 
-    if (!obj->hasStringDouble("depth")) {
+    if (!obj->hasStringFloat("depth")) {
         Log::err(descriptor, "An objectlayer must have the \"depth\" property");
         return false;
     }
 
-    const double depth = obj->stringDoubleAt("depth");
+    const float depth = obj->stringFloatAt("depth");
 
     if (grid.depth2idx.find(depth) != grid.depth2idx.end()) {
         Log::err(descriptor, "Layers cannot share a depth");
@@ -644,7 +644,7 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
     DataArea::TileScript enterScript = nullptr, leaveScript = nullptr,
                          useScript = nullptr;
     Optional<Exit> exit[5];
-    Optional<double> layermods[5];
+    Optional<float> layermods[5];
     unsigned flags = 0x0;
 
     Unique<JSONObject> props = obj->objectAt("properties");
@@ -697,25 +697,25 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
                         &hwide[EXIT_RIGHT]));
     }
 
-    if (props->hasStringDouble("layermod")) {
-        double mod = props->stringDoubleAt("layermod");
+    if (props->hasStringFloat("layermod")) {
+        float mod = props->stringFloatAt("layermod");
         layermods[EXIT_NORMAL] = mod;
         flags |= TILE_NOWALK_NPC;
     }
-    if (props->hasStringDouble("layermod:up")) {
-        double mod = props->stringDoubleAt("layermod:up");
+    if (props->hasStringFloat("layermod:up")) {
+        float mod = props->stringFloatAt("layermod:up");
         layermods[EXIT_UP] = mod;
     }
-    if (props->hasStringDouble("layermod:down")) {
-        double mod = props->stringDoubleAt("layermod:down");
+    if (props->hasStringFloat("layermod:down")) {
+        float mod = props->stringFloatAt("layermod:down");
         layermods[EXIT_DOWN] = mod;
     }
-    if (props->hasStringDouble("layermod:left")) {
-        double mod = props->stringDoubleAt("layermod:left");
+    if (props->hasStringFloat("layermod:left")) {
+        float mod = props->stringFloatAt("layermod:left");
         layermods[EXIT_LEFT] = mod;
     }
-    if (props->hasStringDouble("layermod:right")) {
-        double mod = props->stringDoubleAt("layermod:right");
+    if (props->hasStringFloat("layermod:right")) {
+        float mod = props->stringFloatAt("layermod:right");
         layermods[EXIT_RIGHT] = mod;
     }
 
@@ -858,7 +858,7 @@ AreaJSON::parseExit(StringView dest,
 
     Optional<int> x_ = parseInt(x);
     Optional<int> y_ = parseInt(y);
-    Optional<double> z_ = parseDouble(z);
+    Optional<float> z_ = parseFloat(z);
 
     exit = Exit{area, *x_, *y_, *z_};
 

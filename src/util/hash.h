@@ -32,6 +32,6 @@
 
 template<typename T> size_t hash_(const T&) noexcept;
 
-size_t hash_(double d) noexcept;
+size_t hash_(float d) noexcept;
 
 #endif  // SRC_UTIL_HASH_H_

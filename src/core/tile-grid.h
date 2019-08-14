@@ -73,8 +73,8 @@ class TileGrid {
 
  public:
     // Convert between virtual and physical map depths.
-    int depthIndex(double depth) const noexcept;
-    double indexDepth(int idx) const noexcept;
+    int depthIndex(float depth) const noexcept;
+    float indexDepth(int idx) const noexcept;
 
  public:
     //! 3-dimensional array of the tiles that make up the grid.
@@ -95,10 +95,10 @@ class TileGrid {
     ivec2 tileDim;
 
     //! Maps virtual float-point depths to an index in our map array.
-    Hashmap<double, int> depth2idx;
+    Hashmap<float, int> depth2idx;
 
     //! Maps an index in our map array to a virtual float-point depth.
-    Vector<double> idx2depth;
+    Vector<float> idx2depth;
 
     bool loopX, loopY;
 };

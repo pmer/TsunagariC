@@ -35,14 +35,14 @@ class Image {
  public:
     virtual ~Image() = default;
 
-    virtual void draw(double dstX, double dstY, double z) noexcept = 0;
-    virtual void drawSubrect(double dstX,
-                             double dstY,
-                             double z,
-                             double srcX,
-                             double srcY,
-                             double srcW,
-                             double srcH) noexcept = 0;
+    virtual void draw(float dstX, float dstY, float z) noexcept = 0;
+    virtual void drawSubrect(float dstX,
+                             float dstY,
+                             float z,
+                             float srcX,
+                             float srcY,
+                             float srcW,
+                             float srcH) noexcept = 0;
 
     unsigned width() const noexcept;
     unsigned height() const noexcept;

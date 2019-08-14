@@ -82,14 +82,14 @@ GameWindow::mainLoop() noexcept {
 }
 
 void
-GameWindow::drawRect(double, double, double, double, uint32_t) noexcept {}
+GameWindow::drawRect(float, float, float, float, uint32_t) noexcept {}
 
 void
-GameWindow::scale(double, double, Function<void()>) noexcept {}
+GameWindow::scale(float, float, Function<void()>) noexcept {}
 void
-GameWindow::translate(double, double, Function<void()>) noexcept {}
+GameWindow::translate(float, float, Function<void()>) noexcept {}
 void
-GameWindow::clip(double, double, double, double, Function<void()>) noexcept {}
+GameWindow::clip(float, float, float, float, Function<void()>) noexcept {}
 
 void
 GameWindow::close() noexcept {}

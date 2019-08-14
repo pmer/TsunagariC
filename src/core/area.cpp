@@ -430,7 +430,7 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
     display->items.reserve(display->items.size() +
                            (tiles.y2 - tiles.y1) * (tiles.x2 - tiles.x1));
 
-    // double depth = grid.idx2depth[(size_t)z];
+    // float depth = grid.idx2depth[(size_t)z];
 
     int width = 16;
     int height = 16;
@@ -451,7 +451,7 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
 
             Image* img = tileGraphics[type].frame();
             if (img) {
-                rvec2 drawPos{double(x * width), double(y * height)};
+                rvec2 drawPos{float(x * width), float(y * height)};
                 // drawPos.z = depth + drawPos.y / tileDimY *
                 // ISOMETRIC_ZOFF_PER_TILE;
                 display->items.push_back_nogrow(DisplayItem{img, drawPos});
@@ -462,7 +462,7 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
 
 void
 Area::drawEntities(DisplayList* display, const icube& tiles, int z) {
-    double depth = grid.idx2depth[(size_t)z];
+    float depth = grid.idx2depth[(size_t)z];
 
     for (auto& character : characters) {
         if (character->getTileCoords_i().z == z) {

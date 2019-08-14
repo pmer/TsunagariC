@@ -44,7 +44,7 @@ class Tile;
 class DataArea {
  public:
     typedef void (DataArea::*TileScript)(Entity& triggeredBy, Tile& tile);
-    typedef Function<void(double)> ProgressFn;
+    typedef Function<void(float)> ProgressFn;
     typedef Function<void()> ThenFn;
 
     virtual ~DataArea() = default;

@@ -38,7 +38,7 @@
  */
 struct vicoord {
     int x, y;
-    double z;
+    float z;
 };
 
 struct icube {
@@ -52,7 +52,7 @@ template<class T> class vec2 {
 
     operator bool() { return x || y; }
 
-    double distanceTo(vec2<T> other) {
+    float distanceTo(vec2<T> other) {
         T dx = x - other.x;
         T dy = y - other.y;
         return sqrt(dx * dx + dy * dy);
@@ -65,7 +65,7 @@ template<class T> struct vec3 {
 
     operator bool() { return x || y || z; }
 
-    double distanceTo(vec3<T> other) {
+    float distanceTo(vec3<T> other) {
         T dx = x - other.x;
         T dy = y - other.y;
         return sqrt(dx * dx + dy * dy);
@@ -207,8 +207,8 @@ typedef vec2<int> ivec2;
 typedef vec3<int> ivec3;
 
 //! Real vector.
-typedef vec2<double> rvec2;
-typedef vec3<double> rvec3;
+typedef vec2<float> rvec2;
+typedef vec3<float> rvec3;
 
 //! Coordinates.
 typedef ivec3 icoord;

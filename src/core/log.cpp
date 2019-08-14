@@ -63,7 +63,7 @@ static String
 makeTimestamp() noexcept {
     time_t now = GameWindow::time();
 
-    double secs = (now - startTime) / (long double)1000.0;
+    float secs = (now - startTime) / (float)1000.0;
 
     String s;
     s << secs;

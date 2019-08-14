@@ -157,7 +157,7 @@ class Tile {
     icoord moveDest(Area* area, icoord here, ivec2 facing) const noexcept;
 
     const Optional<Exit>& exitAt(ivec2 dir) const noexcept;
-    Optional<double> layermodAt(ivec2 dir) const noexcept;
+    Optional<float> layermodAt(ivec2 dir) const noexcept;
 
  public:
     unsigned flags = 0;
@@ -168,7 +168,7 @@ class Tile {
                          useScript = nullptr;
 
     Optional<Exit> exits[EXITS_LENGTH];
-    Optional<double> layermods[EXITS_LENGTH];
+    Optional<float> layermods[EXITS_LENGTH];
 };
 
 struct TileSet {

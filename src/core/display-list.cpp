@@ -44,10 +44,10 @@ pushLetterbox(DisplayList* display, Function<void()> op) noexcept {
 
     rvec2 physScroll = -1 * virtScroll * scale + padding;
 
-    double x = lb.x;
-    double y = lb.y;
-    double width = sz.x - 2 * lb.x;
-    double height = sz.y - 2 * lb.y;
+    float x = lb.x;
+    float y = lb.y;
+    float width = sz.x - 2 * lb.x;
+    float height = sz.y - 2 * lb.y;
 
     if (!display->loopX && physScroll.x > 0) {
         // Boxes on left-right.
@@ -96,7 +96,7 @@ displayListPresent(DisplayList* display) noexcept {
         if (pauseInfo) {
             unsigned iw = pauseInfo->width();
             unsigned ih = pauseInfo->height();
-            double top = 1e10;
+            float top = 1e10;
             pauseInfo->draw(ww / 2 - iw / 2, wh / 2 - ih / 2, top);
         }
     }

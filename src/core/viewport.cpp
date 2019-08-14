@@ -35,7 +35,7 @@
 
 enum TrackingMode { TM_MANUAL, TM_FOLLOW_ENTITY };
 
-static double aspectRatio;
+static float aspectRatio;
 static rvec2 off = {0, 0};
 static rvec2 virtRes;
 
@@ -48,8 +48,8 @@ centerOn(rvec2 pt) noexcept {
     return pt - virtRes / 2;
 }
 
-static double
-boundDimension(double screen, double area, double pt, bool loop) noexcept {
+static float
+boundDimension(float screen, float area, float pt, bool loop) noexcept {
     // Since looping areas continue without bound, this is a no-op.
     if (loop) {
         return pt;
@@ -57,16 +57,16 @@ boundDimension(double screen, double area, double pt, bool loop) noexcept {
 
     // If the Area is smaller than the screen, center the Area. Otherwise,
     // allow the screen to move to the edge of the Area, but not past.
-    double wiggleRoom = area - screen;
-    return wiggleRoom <= 0 ? wiggleRoom / 2 : bound(pt, 0.0, wiggleRoom);
+    float wiggleRoom = area - screen;
+    return wiggleRoom <= 0 ? wiggleRoom / 2 : bound(pt, 0.0f, wiggleRoom);
 }
 
 static rvec2
 boundToArea(rvec2 pt) noexcept {
     icoord ad = area->grid.dim;
     ivec2 td = area->grid.tileDim;
-    double areaWidth = ad.x * td.x;
-    double areaHeight = ad.y * td.y;
+    float areaWidth = ad.x * td.x;
+    float areaHeight = ad.y * td.y;
     bool loopX = area->grid.loopX;
     bool loopY = area->grid.loopY;
 
@@ -93,17 +93,17 @@ _jumpToEntity(const Entity* e) noexcept {
 static rvec2
 getLetterbox() noexcept {
     rvec2 physRes = Viewport::getPhysRes();
-    double physAspect = physRes.x / physRes.y;
-    double virtAspect = virtRes.x / virtRes.y;
+    float physAspect = physRes.x / physRes.y;
+    float virtAspect = virtRes.x / virtRes.y;
 
     if (physAspect > virtAspect) {
         // Letterbox cuts off left-right.
-        double cut = 1 - virtAspect / physAspect;
+        float cut = 1 - virtAspect / physAspect;
         return rvec2{cut, 0};
     }
     else {
         // Letterbox cuts off top-bottom.
-        double cut = 1 - physAspect / virtAspect;
+        float cut = 1 - physAspect / virtAspect;
         return rvec2{0, cut};
     }
 }
@@ -132,8 +132,8 @@ Viewport::setSize(rvec2 virtRes_) noexcept {
     virtRes = virtRes_;
 
     // Calculate or recalculate the aspect ratio.
-    double width = (double)GameWindow::width();
-    double height = (double)GameWindow::height();
+    float width = (float)GameWindow::width();
+    float height = (float)GameWindow::height();
     aspectRatio = width / height;
 }
 
@@ -161,7 +161,7 @@ rvec2
 Viewport::getScale() noexcept {
     rvec2 letterbox = getLetterbox();
     rvec2 physRes =
-            rvec2{(double)GameWindow::width(), (double)GameWindow::height()};
+            rvec2{(float)GameWindow::width(), (float)GameWindow::height()};
 
     return rvec2{physRes.x / virtRes.x * (1 - letterbox.x),
                  physRes.y / virtRes.y * (1 - letterbox.y)};
@@ -169,7 +169,7 @@ Viewport::getScale() noexcept {
 
 rvec2
 Viewport::getPhysRes() noexcept {
-    return rvec2{(double)GameWindow::width(), (double)GameWindow::height()};
+    return rvec2{(float)GameWindow::width(), (float)GameWindow::height()};
 }
 
 rvec2
@@ -180,7 +180,7 @@ Viewport::getVirtRes() noexcept {
 // Immediatly center render offset. Stop any tracking.
 void
 Viewport::jumpToPt(ivec2 pt) noexcept {
-    jumpToPt(rvec2{(double)pt.x, (double)pt.y});
+    jumpToPt(rvec2{(float)pt.x, (float)pt.y});
 }
 
 void

@@ -49,11 +49,11 @@ class SoundInstance {
     virtual void resume() noexcept = 0;
 
     //! Between 0.0 (silence) and 1.0 (full).
-    virtual void volume(double volume) noexcept = 0;
+    virtual void volume(float volume) noexcept = 0;
     //! Between -1.0 (left) and 1.0 (right).
-    virtual void pan(double pan) noexcept = 0;
+    virtual void pan(float pan) noexcept = 0;
     //! 1.0 is normal speed
-    virtual void speed(double speed) noexcept = 0;
+    virtual void speed(float speed) noexcept = 0;
 
  protected:
     SoundInstance() = default;

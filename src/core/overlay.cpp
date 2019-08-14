@@ -49,7 +49,7 @@ Overlay::drift(ivec2 xy) noexcept {
 
 void
 Overlay::driftTo(ivec2 xy) noexcept {
-    setDestinationCoordinate(rcoord{(double)xy.x, (double)xy.y, r.z});
+    setDestinationCoordinate(rcoord{(float)xy.x, (float)xy.y, r.z});
     pickFacingForAngle();
     moving = true;
     setAnimationMoving();

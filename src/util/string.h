@@ -71,7 +71,6 @@ class String : public Vector<char> {
     String& operator<<(long long value) noexcept;
     String& operator<<(unsigned long long value) noexcept;
     String& operator<<(float value) noexcept;
-    String& operator<<(double value) noexcept;
 
     operator StringView() const noexcept;
     StringView view() const noexcept;

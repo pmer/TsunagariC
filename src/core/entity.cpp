@@ -189,13 +189,13 @@ Entity::setArea(Area* area) noexcept {
     pixelsPerSecond = tilesPerSecond * area->grid.tileDim.x;
 }
 
-double
+float
 Entity::getSpeedInPixels() const noexcept {
-    double tileWidth = area->grid.tileDim.x;
+    float tileWidth = area->grid.tileDim.x;
     return getSpeedInTiles() * tileWidth;
 }
 
-double
+float
 Entity::getSpeedInTiles() const noexcept {
     return tilesPerSecond;
 }
@@ -274,8 +274,8 @@ Entity::moveTowardDestination(time_t dt) noexcept {
 
     redraw = true;
 
-    double traveledPixels = pixelsPerSecond * (double)dt / 1000.0;
-    double toDestPixels = r.distanceTo(destCoord);
+    float traveledPixels = pixelsPerSecond * (float)dt / 1000.0;
+    float toDestPixels = r.distanceTo(destCoord);
     if (toDestPixels > traveledPixels) {
         // The destination has not been reached yet.
         r.x += cos(angleToDest) * traveledPixels;
@@ -290,8 +290,8 @@ Entity::moveTowardDestination(time_t dt) noexcept {
         // If arrived() starts a new movement, rollover unused traveled
         // pixels and leave the the moving animation.
         if (moving) {
-            double percent = 1.0 - toDestPixels / traveledPixels;
-            time_t rem = (time_t)(percent * (double)dt);
+            float percent = 1.0 - toDestPixels / traveledPixels;
+            time_t rem = (time_t)(percent * (float)dt);
             moveTowardDestination(rem);
         }
         else {
@@ -318,8 +318,8 @@ Entity::processDescriptor() noexcept {
         return false;
     }
 
-    if (doc->hasDouble("speed")) {
-        tilesPerSecond = doc->doubleAt("speed");
+    if (doc->hasFloat("speed")) {
+        tilesPerSecond = doc->floatAt("speed");
 
         if (area) {
             assert_(area->grid.tileDim.x == area->grid.tileDim.y);
@@ -399,13 +399,13 @@ Entity::processPhase(StringView name,
         phases[name] = Animation(image);
     }
     else if (phase->hasArray("frames")) {
-        if (!phase->hasDouble("speed")) {
+        if (!phase->hasFloat("speed")) {
             Log::err(descriptor,
                      "<phase> speed attribute must be present and "
                      "must be decimal");
             return false;
         }
-        double fps = phase->doubleAt("speed");
+        float fps = phase->floatAt("speed");
 
         Vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
         Vector<Rc<Image>> images;

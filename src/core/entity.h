@@ -105,9 +105,9 @@ class Entity {
 
 
     //! Gets speed in pixels per second.
-    double getSpeedInPixels() const noexcept;
+    float getSpeedInPixels() const noexcept;
     //! Gets speed in tiles per second.
-    double getSpeedInTiles() const noexcept;
+    float getSpeedInTiles() const noexcept;
 
 
     virtual void setFrozen(bool b) noexcept;
@@ -172,14 +172,14 @@ class Entity {
 
     bool frozen;
 
-    double tilesPerSecond;
-    double pixelsPerSecond;
+    float tilesPerSecond;
+    float pixelsPerSecond;
 
     //! True if currently moving to a new coordinate in an Area.
     bool moving;
 
     rcoord destCoord;
-    double angleToDest;
+    float angleToDest;
 
     ivec2 imgsz;
     Hashmap<String, Animation> phases;

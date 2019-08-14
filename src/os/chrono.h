@@ -48,11 +48,11 @@ constexpr Duration
 s_to_ns(Duration d) {
     return d * 1000000000;
 }
-constexpr double
+constexpr float
 ms_to_s_d(Duration d) {
     return d / 1000.0;
 }
-constexpr double
+constexpr float
 ns_to_s_d(Duration d) {
     return d / 1000000000.0;
 }

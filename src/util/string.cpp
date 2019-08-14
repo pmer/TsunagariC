@@ -147,13 +147,6 @@ String::operator<<(float value) noexcept {
     return *this << buf;
 }
 
-String&
-String::operator<<(double value) noexcept {
-    char buf[64];
-    sprintf(buf, "%f", value);
-    return *this << buf;
-}
-
 String::operator StringView() const noexcept {
     return StringView(data(), size());
 }

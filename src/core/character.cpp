@@ -87,14 +87,6 @@ Character::setTileCoords(int x, int y) noexcept {
 }
 
 void
-Character::setTileCoords(int x, int y, double z) noexcept {
-    leaveTile();
-    redraw = true;
-    r = area->grid.virt2virt(vicoord{x, y, z});
-    enterTile();
-}
-
-void
 Character::setTileCoords(icoord phys) noexcept {
     leaveTile();
     redraw = true;
@@ -249,7 +241,7 @@ Character::arrived() noexcept {
     Entity::arrived();
 
     if (destTile) {
-        Optional<double> layermod = destTile->layermods[EXIT_NORMAL];
+        Optional<float> layermod = destTile->layermods[EXIT_NORMAL];
         if (layermod) {
             r.z = *layermod;
         }

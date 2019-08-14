@@ -38,12 +38,12 @@
 */
 int randInt(int min, int max) noexcept;
 
-//! Produce a random double floating point number.
+//! Produce a random float floating point number.
 /*!
     @param min Minimum value.
     @param max Maximum value.
     @return random floating point number between min and max.
 */
-double randFloat(double min, double max) noexcept;
+float randFloat(float min, float max) noexcept;
 
 #endif  // SRC_UTIL_RANDOM_H_

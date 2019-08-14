@@ -74,21 +74,21 @@ class GameWindow {
      * Draws a rectangle on the screen of the specified color. Coordinates
      * are in virtual pixels.
      */
-    static void drawRect(double x1,
-                          double x2,
-                          double y1,
-                          double y2,
-                          uint32_t argb) noexcept;
+    static void drawRect(float x1,
+                         float x2,
+                         float y1,
+                         float y2,
+                         uint32_t argb) noexcept;
 
-    static void scale(double x, double y, Function<void()> op) noexcept;
-    static void translate(double x,
-                           double y,
-                           Function<void()> op) noexcept;
-    static void clip(double x,
-                      double y,
-                      double width,
-                      double height,
-                      Function<void()> op) noexcept;
+    static void scale(float x, float y, Function<void()> op) noexcept;
+    static void translate(float x,
+                          float y,
+                          Function<void()> op) noexcept;
+    static void clip(float x,
+                     float y,
+                     float width,
+                     float height,
+                     Function<void()> op) noexcept;
 
     static void emitKeyDown(KeyboardKey key) noexcept;
     static void emitKeyUp(KeyboardKey key) noexcept;

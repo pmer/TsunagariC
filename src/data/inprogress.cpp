@@ -97,7 +97,7 @@ InProgressTimer::tick(time_t dt) noexcept {
     if (passed < duration) {
         if (progress) {
             // Range is [0.0, 1.0)
-            progress((double)passed / (double)duration);
+            progress((float)passed / (float)duration);
         }
     }
     else {

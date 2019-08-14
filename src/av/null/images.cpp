@@ -30,14 +30,14 @@ class NullImage : public Image {
  public:
     NullImage() noexcept : Image(0, 0) {}
 
-    void draw(double, double, double) noexcept final {}
-    void drawSubrect(double,
-                     double,
-                     double,
-                     double,
-                     double,
-                     double,
-                     double) noexcept final {}
+    void draw(float, float, float) noexcept final {}
+    void drawSubrect(float,
+                     float,
+                     float,
+                     float,
+                     float,
+                     float,
+                     float) noexcept final {}
 };
 
 

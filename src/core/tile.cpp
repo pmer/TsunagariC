@@ -64,7 +64,7 @@ icoord
 Tile::moveDest(Area* area, icoord here, ivec2 facing) const noexcept {
     icoord dest = here + icoord{facing.x, facing.y, 0};
 
-    Optional<double> layermod = layermodAt(facing);
+    Optional<float> layermod = layermodAt(facing);
     if (layermod) {
         dest = area->grid.virt2phys(vicoord{dest.x, dest.y, *layermod});
     }
@@ -78,7 +78,7 @@ Tile::exitAt(ivec2 dir) const noexcept {
     return idx == -1 ? empty : exits[idx];
 }
 
-Optional<double>
+Optional<float>
 Tile::layermodAt(ivec2 dir) const noexcept {
     int idx = ivec2_to_dir(dir);
     return idx == -1 ? none : layermods[idx];

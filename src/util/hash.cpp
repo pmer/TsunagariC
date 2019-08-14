@@ -29,7 +29,7 @@
 #include "util/noexcept.h"
 
 size_t
-hash_(double d) noexcept {
+hash_(float d) noexcept {
     char* bits = reinterpret_cast<char*>(&d);
     return *reinterpret_cast<size_t*>(bits);
 }

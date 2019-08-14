@@ -54,8 +54,8 @@ Optional<int> parseInt(String& s) noexcept;
 Optional<int> parseInt(StringView s) noexcept;
 Optional<unsigned> parseUInt(String& s) noexcept;
 Optional<unsigned> parseUInt(StringView s) noexcept;
-Optional<double> parseDouble(String& s) noexcept;
-Optional<double> parseDouble(StringView s) noexcept;
+Optional<float> parseFloat(String& s) noexcept;
+Optional<float> parseFloat(StringView s) noexcept;
 
 int parseInt100(const char* s) noexcept;
 

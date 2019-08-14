@@ -264,12 +264,12 @@ parseInt(StringView s) noexcept {
     return parseInt(s_);
 }
 
-Optional<double>
-parseDouble(String& s) noexcept {
+Optional<float>
+parseFloat(String& s) noexcept {
     errno = 0;
 
     char* end;
-    double d = strtod(s.null(), &end);
+    float d = strtod(s.null(), &end);
 
     if (end != s.data() + s.size()) {
         return none;
@@ -280,13 +280,13 @@ parseDouble(String& s) noexcept {
         return none;
     }
 
-    return Optional<double>(d);
+    return Optional<float>(d);
 }
 
-Optional<double>
-parseDouble(StringView s) noexcept {
+Optional<float>
+parseFloat(StringView s) noexcept {
     String s_(s);
-    return parseDouble(s_);
+    return parseFloat(s_);
 }
 
 int

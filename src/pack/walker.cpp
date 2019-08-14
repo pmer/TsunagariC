@@ -45,7 +45,7 @@ walkPath(WalkContext& ctx, StringView path) noexcept {
         for (auto& name : names) {
             String child;
             child << path << dirSeparator << name;
-            JobsEnqueue([&ctx, child = move_(child)] {
+            JobsEnqueue([&ctx, child /* = move_(child) */] {
                 walkPath(ctx, child);
             });
         }

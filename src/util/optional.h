@@ -150,8 +150,10 @@ class Optional {
         return x();
     }
 
-    friend CONSTEXPR11 bool operator==(const Optional<T>& a,
-                                       const Optional<T>& b) noexcept;
+    inline CONSTEXPR11 bool operator==(const Optional<T>& other) const
+			noexcept {
+        return exists == other.exists && (!exists || x() == other.x());
+    }
 
  private:
     T& x() noexcept { return *reinterpret_cast<T*>(&storage); }
@@ -159,11 +161,5 @@ class Optional {
         return *reinterpret_cast<const T*>(&storage);
     }
 };
-
-template<typename T>
-inline CONSTEXPR11 bool
-operator==(const Optional<T>& a, const Optional<T>& b) noexcept {
-    return a.exists == b.exists && (!a.exists || a.x() == b.x());
-}
 
 #endif  // SRC_UTIL_OPTIONAL_H_

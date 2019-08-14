@@ -28,43 +28,37 @@
 #define SRC_UTIL_UNIQUE_H_
 
 #include "util/assert.h"
+#include "util/noexcept.h"
 
 //
 // Pointers
 //   unique.h
 //     class Unique      Unique pointer
 //   rc.h
-//     class Rc          "Reference counter" shared pointer
-//     class CompactRc   Fast shared pointer (does not handle abstract classes
-//                                            or custom deleters)
-//   arc.h
-//     class Arc         "Atomic reference counter" thread-safe shared pointer
-//     class CompactArc  Fast thread-safe shared pointer
+//     class Rc          Reference counted pointer
+//     class CompactRc   Half the size and half the number of allocations
 //
 
 // Unique pointers delete their object when destroyed.
-template<typename T> class Unique {
+template<typename T>
+class Unique {
     T* x;
 
  public:
     Unique() noexcept : x(nullptr) {}
-
     Unique(Unique&& other) noexcept : x(other.x) { other.x = nullptr; }
-
     Unique(T* x) noexcept : x(x) {}
-
     ~Unique() noexcept { delete x; }
 
-    Unique& operator=(T* x) noexcept {
+    void operator=(T* x) noexcept {
         delete this->x;
         this->x = x;
-        return *this;
     }
 
-    Unique& operator=(Unique&& other) noexcept {
+    void operator=(Unique&& other) noexcept {
+        delete x;
         x = other.x;
         other.x = nullptr;
-        return *this;
     }
 
     operator bool() const noexcept { return x != nullptr; }
@@ -79,11 +73,7 @@ template<typename T> class Unique {
  private:
     // Unique pointers cannot be copied.
     Unique(const Unique&) noexcept {}
-    Unique& operator=(const Unique&) noexcept { return *this; }
-
-    // Meaningless...
-    bool operator==(Unique&&) noexcept { return false; }
-    bool operator==(const Unique&) const noexcept { return false; }
+    void operator=(const Unique&) noexcept {}
 };
 
 #endif  // SRC_UTIL_UNIQUE_H_

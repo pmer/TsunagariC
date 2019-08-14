@@ -28,6 +28,8 @@
 #ifndef SRC_UTIL_MATH2_H_
 #define SRC_UTIL_MATH2_H_
 
+#include "util/noexcept.h"
+
 template<typename T>
 static T
 max(T a, T b) noexcept {

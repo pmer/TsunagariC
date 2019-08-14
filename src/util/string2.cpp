@@ -31,6 +31,7 @@
 #include "os/os.h"
 #include "util/int.h"
 #include "util/math2.h"
+#include "util/noexcept.h"
 #include "util/string-view.h"
 #include "util/string.h"
 

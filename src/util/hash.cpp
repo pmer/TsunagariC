@@ -26,6 +26,8 @@
 
 #include "util/hash.h"
 
+#include "util/noexcept.h"
+
 size_t
 hash_(double d) noexcept {
     char* bits = reinterpret_cast<char*>(&d);

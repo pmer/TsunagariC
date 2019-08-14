@@ -27,6 +27,8 @@
 
 #include "bitrecord.h"
 
+#include "util/noexcept.h"
+
 BitRecord::BitRecord(size_t length) noexcept {
     states.resize(length);
     for (size_t i = 0; i < length; i++) {

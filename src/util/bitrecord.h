@@ -29,6 +29,7 @@
 #define SRC_UTIL_BITRECORD_H_
 
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/vector.h"
 
 class BitRecord {

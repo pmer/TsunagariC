@@ -28,6 +28,8 @@
 #ifndef SRC_UTIL_RANDOM_H_
 #define SRC_UTIL_RANDOM_H_
 
+#include "util/noexcept.h"
+
 //! Produce a random integer.
 /*!
     @param min Minimum value.

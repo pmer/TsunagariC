@@ -27,6 +27,8 @@
 #ifndef SRC_UTIL_TRANSFORM_H_
 #define SRC_UTIL_TRANSFORM_H_
 
+#include "util/noexcept.h"
+
 // An affine transformation.
 struct Transform {
     static Transform identity() noexcept;

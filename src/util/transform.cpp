@@ -26,6 +26,8 @@
 
 #include "transform.h"
 
+#include "util/noexcept.h"
+
 Transform
 Transform::identity() noexcept {
     return Transform{{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};

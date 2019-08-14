@@ -28,6 +28,7 @@
 #define SRC_UTIL_HASH_H_
 
 #include "util/int.h"
+#include "util/noexcept.h"
 
 template<typename T> size_t hash_(const T&) noexcept;
 

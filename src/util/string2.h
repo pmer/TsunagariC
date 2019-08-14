@@ -28,6 +28,7 @@
 #ifndef SRC_UTIL_STRING2_H_
 #define SRC_UTIL_STRING2_H_
 
+#include "util/noexcept.h"
 #include "util/optional.h"
 #include "util/string-view.h"
 #include "util/string.h"

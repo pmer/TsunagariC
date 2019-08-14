@@ -36,6 +36,11 @@
 #pragma warning(push)
 #pragma warning(disable: 26495)  // Always initialize a member variable.
 
+#ifdef _MSC_VER
+#define NO_VTABLE __declspec(novtable)
+#else
+#define NO_VTABLE
+#endif
 
 template<class Class, class Ret, class This, class... Args>
 auto invoke(Ret Class::*f, This&& t, Args&&... args) noexcept
@@ -49,7 +54,6 @@ auto invoke(F&& f, Args&&... args) noexcept
     return forward_<F>(f)(forward_<Args>(args)...);
 }
 
-
 template<class F>
 class Function;  // Undefined.
 
@@ -58,7 +62,7 @@ namespace function {
 	class base;
 
     template<class R, class... ArgTypes>
-	class __declspec(novtable) base<R(ArgTypes...)> {
+	class NO_VTABLE base<R(ArgTypes...)> {
         base(const base&) noexcept;
         base& operator=(const base&) noexcept;
 

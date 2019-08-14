@@ -192,8 +192,8 @@ template<typename T> class List {
         }
     }
 
-    inline CONSTEXPR11 size_t size() noexcept { return n; }
-    inline CONSTEXPR11 bool empty() noexcept { return n == 0; }
+    inline CONSTEXPR11 size_t size() const noexcept { return n; }
+    inline CONSTEXPR11 bool empty() const noexcept { return n == 0; }
 
  private:
     Links head;

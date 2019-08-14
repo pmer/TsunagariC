@@ -36,6 +36,20 @@
 #pragma warning(push)
 #pragma warning(disable: 26495)  // Always initialize a member variable.
 
+
+template<class Class, class Ret, class This, class... Args>
+auto invoke(Ret Class::*f, This&& t, Args&&... args) noexcept
+		-> decltype((forward_<This>(t).*f)(forward_<Args>(args)...)) {
+    return (forward_<This>(t).*f)(forward_<Args>(args)...);
+}
+
+template<class F, class... Args>
+auto invoke(F&& f, Args&&... args) noexcept
+		-> decltype(forward_<F>(f)(forward_<Args>(args)...)) {
+    return forward_<F>(f)(forward_<Args>(args)...);
+}
+
+
 template<class F>
 class Function;  // Undefined.
 
@@ -44,13 +58,13 @@ namespace function {
 	class base;
 
     template<class R, class... ArgTypes>
-	class base<R(ArgTypes...)> {
+	class __declspec(novtable) base<R(ArgTypes...)> {
         base(const base&) noexcept;
         base& operator=(const base&) noexcept;
 
      public:
-        inline base() noexcept {}
-        inline virtual ~base() noexcept {}
+        base() noexcept = default;
+        virtual ~base() noexcept = default;
         virtual base* clone() const noexcept = 0;
         virtual void clone(base*) const noexcept = 0;
         virtual void destroy() noexcept = 0;
@@ -62,18 +76,18 @@ namespace function {
 	class func;
 
     template<class F, class R, class... ArgTypes>
-    class func<F, R(ArgTypes...)> : public base<R(ArgTypes...)> {
+    class func<F, R(ArgTypes...)> final : public base<R(ArgTypes...)> {
         F f;
 
      public:
-        inline explicit func(F&& f) noexcept : f(move_(f)) {}
-        inline explicit func(const F& f) noexcept : f(f) {}
+        explicit func(F&& f) noexcept : f(move_(f)) {}
+        explicit func(const F& f) noexcept : f(f) {}
 
-        virtual base<R(ArgTypes...)>* clone() const noexcept;
-        virtual void clone(base<R(ArgTypes...)>*) const noexcept;
-        virtual void destroy() noexcept;
-        virtual void destroyDeallocate() noexcept;
-        virtual R operator()(ArgTypes&&... args) noexcept;
+        base<R(ArgTypes...)>* clone() const noexcept;
+        void clone(base<R(ArgTypes...)>*) const noexcept;
+        void destroy() noexcept;
+        void destroyDeallocate() noexcept;
+        R operator()(ArgTypes&&... args) noexcept;
     };
 
     template<class F, class R, class... ArgTypes>
@@ -94,16 +108,6 @@ namespace function {
     template<class F, class R, class... ArgTypes>
     void func<F, R(ArgTypes...)>::destroyDeallocate() noexcept {
         delete this;
-    }
-
-    template<class Class, class Ret, class This, class... Args>
-    decltype(auto) invoke(Ret Class::*f, This&& t, Args&&... args) noexcept {
-        return (forward_<This>(t).*f)(forward_<Args>(args)...);
-    }
-
-    template<class F, class... Args>
-    decltype(auto) invoke(F&& f, Args&&... args) noexcept {
-        return forward_<F>(f)(forward_<Args>(args)...);
     }
 
     template<class F, class R, class... ArgTypes>

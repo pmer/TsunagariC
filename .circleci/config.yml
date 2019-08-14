@@ -17,6 +17,21 @@ jobs:
           cmake .. &&
           cmake --build .
 
+  debian_10_0:
+    docker:
+      - image: debian:10.0-slim
+    steps:
+      - run: |
+          apt-get update &&
+          apt-get install -y --no-install-recommends ca-certificates git cmake make g++
+      - checkout
+      - run: |
+          git submodule update --init --recursive &&
+          mkdir build &&
+          cd build &&
+          cmake .. &&
+          cmake --build .
+
   ubuntu_19_04:
     docker:
       - image: ubuntu:19.04
@@ -114,6 +129,7 @@ workflows:
   build_all:
     jobs:
       - debian_9_9
+      - debian_10_0
       - ubuntu_19_04
       - fedora_30
       - arch_latest

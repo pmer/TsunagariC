@@ -102,7 +102,7 @@ namespace function {
     }
 
     template<class F, class... Args>
-    decltype(auto) invoke(F&& f, Args&&... args) {
+    decltype(auto) invoke(F&& f, Args&&... args) noexcept {
         return forward_<F>(f)(forward_<Args>(args)...);
     }
 

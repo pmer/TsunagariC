@@ -31,10 +31,10 @@
 #include "util/noexcept.h"
 
 #ifndef NDEBUG
-#if __cplusplus >= 201103L || _MSC_VER >= 1910  // GCC, Clang, and Visual Studio 2017 or higher
+#if __cplusplus >= 201103L || _MSC_VER >= 1900  // GCC, Clang, and Visual Studio 2015 or higher
 #define assert_(expr) \
     (likely(expr) ? (void)0 : assert__(__func__, __FILE__, __LINE__, #expr))
-#elif defined(_MSC_VER)  // Visual Studio 2015 or lower
+#elif defined(_MSC_VER)  // Visual Studio 2013 or lower
 #define assert_(expr) \
     (likely(expr) ? (void)0 : assert__(__FUNCTION__, __FILE__, __LINE__, #expr))
 #else

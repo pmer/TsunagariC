@@ -126,16 +126,21 @@ class Function<R(ArgTypes...)> {
     inline Function() noexcept : f(nullptr) {}
     Function(const Function&) noexcept;
     Function(Function&&) noexcept;
-    template<class F> Function(F) noexcept;
     template<class F>
-    void set(F& something, EnableIf<sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf)> = True());
-    template<class F>
-    void set(F& something, EnableIf<!(sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf))> = True());
+    Function(F) noexcept;
     ~Function() noexcept;
+
+    template<class F>
+    void set(F& something,
+             EnableIf<sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf)> = True());
+    template<class F>
+    void set(F& something,
+             EnableIf<!(sizeof(function::func<F, R(ArgTypes...)>) <= sizeof(buf))> = True());
 
     Function& operator=(const Function&) noexcept;
     Function& operator=(Function&&) noexcept;
-    template<class F> Function& operator=(F&&) noexcept;
+    template<class F>
+    Function& operator=(F&&) noexcept;
 
     void swap(Function&) noexcept;
 

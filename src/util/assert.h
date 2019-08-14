@@ -38,7 +38,7 @@
 #define assert_(expr) \
     (likely(expr) ? (void)0 : assert__(__FUNCTION__, __FILE__, __LINE__, #expr))
 #else
-#error How should I find a function's name?
+#error How should I find a function name?
 #endif
 
 

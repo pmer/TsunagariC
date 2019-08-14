@@ -27,6 +27,7 @@
 #ifndef SRC_UTIL_OPTIONAL_H_
 #define SRC_UTIL_OPTIONAL_H_
 
+#include "util/align.h"
 #include "util/assert.h"
 #include "util/constexpr.h"
 #include "util/move.h"
@@ -39,7 +40,7 @@ static None none;
 template<typename T>
 class Optional {
     bool exists;
-    alignas(alignof(T)) char storage[sizeof(T)];
+    Align<T> storage;
 
  public:
     explicit CONSTEXPR11 Optional() noexcept : storage(), exists(false) {}
@@ -153,9 +154,9 @@ class Optional {
                                        const Optional<T>& b) noexcept;
 
  private:
-    T& x() noexcept { return *reinterpret_cast<T*>(&storage); }
+    T& x() noexcept { return *reinterpret_cast<T*>(&storage.storage); }
     const T& x() const noexcept {
-        return *reinterpret_cast<const T*>(&storage);
+        return *reinterpret_cast<const T*>(&storage.storage);
     }
 };
 

@@ -300,6 +300,7 @@ target_sources(tsunagari
 
 target_sources(tsunagari
     PUBLIC  src/util/algorithm.h
+    PUBLIC  src/util/align.h
     PUBLIC  src/util/arc.h
     PRIVATE src/util/assert.cpp
     PUBLIC  src/util/assert.h
@@ -340,6 +341,7 @@ target_sources(tsunagari
 
 target_sources(pack-tool
     PRIVATE src/util/algorithm.h
+    PRIVATE src/util/align.h
     PRIVATE src/util/assert.cpp
     PRIVATE src/util/assert.h
     PRIVATE src/util/constexpr.h

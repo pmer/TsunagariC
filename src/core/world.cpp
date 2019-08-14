@@ -79,17 +79,6 @@ static int paused = 0;
 
 static Vector<BitRecord> keyStates;
 
-static time_t
-calculateDt(time_t now) noexcept {
-    time_t dt = now - lastTime;
-    if (dt == 0) {
-        Log::info("World", "Warning: Delta time is 0");
-    }
-    assert_(dt >= 0);
-    lastTime = now;
-    return dt;
-}
-
 bool
 World::init() noexcept {
     alive = true;
@@ -179,27 +168,12 @@ World::needsRedraw() noexcept {
 }
 
 void
-World::update(time_t now) noexcept {
-    if (lastTime == 0) {
-        // There is no dt on the first update().  Don't tick.
-        lastTime = now;
+World::update(time_t dt) noexcept {
+    if (paused) {
+        return;
     }
-    else {
-        time_t dt = calculateDt(now);
 
-		if (dt == 0) {
-            return;
-        }
-
-		if (paused) {
-            return;
-        }
-
-		total += dt;
-        assert_(total >= 0);
-
-		tick(dt);
-    }
+    tick(dt);
 }
 
 void

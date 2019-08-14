@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** chrono.h                      **
-** Copyright 2019 Paul Merrill   **
-**********************************/
+/********************************
+** Tsunagari Tile Engine       **
+** chrono.h                    **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -28,6 +28,7 @@
 
 #include "core/client-conf.h"
 #include "core/display-list.h"
+#include "core/log.h"
 #include "core/world.h"
 #include "os/chrono.h"
 #include "os/thread.h"
@@ -57,24 +58,55 @@ GameWindow::setCaption(StringView) noexcept {}
 
 void
 GameWindow::mainLoop() noexcept {
-    TimePoint last = 0;
+    const Duration idealFrameTime = s_to_ns(1) / 60;
+
+    TimePoint frameStart = SteadyClock::now();
+    TimePoint previousFrameStart = frameStart - idealFrameTime;  // Bogus
+                                                                 // initial
+                                                                 // value.
+
+    // FIXME: Should be set to right after a frame is uploaded and we can begin
+    //        drawing the next frame.
+    //
+    //        If we get stuck sleeping until right before the monitor refresh,
+    //        then our update() and draw() functions are slow, we are at risk
+    //        of dropping frames. In the pathological case, we only update the
+    //        screen at 1/2 the monitor refresh rate.
+    //
+    //        How can we detect when a frame is uploaded so we can wake up
+    //        after that point?
+    //
+    // NOTE:  Not too important for the null av port, but for other ports yes.
+    TimePoint nextFrameStart = frameStart + idealFrameTime;
 
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 #endif
     while (true) {
-        TimePoint now = SteadyClock::now();
-        time_t time = ns_to_ms(now - last);
+        time_t dt = ns_to_ms(frameStart - previousFrameStart);
 
-        World::update(static_cast<time_t>(time));
+        World::update(static_cast<time_t>(dt));
         DisplayList dl;
         World::draw(&dl);
 
-        TimePoint nextFrame = last + s_to_ns(1) / 60;
-        SleepFor(nextFrame - SteadyClock::now());
+        TimePoint frameEnd = SteadyClock::now();
+        Duration timeTaken = frameEnd - frameStart;
 
-        last = now;
+        Duration sleepDuration = nextFrameStart - frameEnd;
+        if (sleepDuration < 0) {
+            sleepDuration = 0;
+        }
+
+        if (sleepDuration) {
+            SleepFor(sleepDuration);
+        }
+
+        previousFrameStart = frameStart;
+        frameStart = SteadyClock::now();
+        while (frameStart > nextFrameStart) {
+            nextFrameStart += idealFrameTime;
+        }
     }
 #ifdef __clang__
 #pragma clang diagnostic pop

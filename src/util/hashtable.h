@@ -355,7 +355,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
         V v;
     };
 
-    static CONSTEXPR11 bool HasValue = !IsUnit<V>;
+    static CONSTEXPR11 bool HasValue = !IsUnit<V>::value;
 
     typedef List<KV> OverflowContainer;
 

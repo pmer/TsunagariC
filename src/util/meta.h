@@ -66,9 +66,7 @@ using EnableIf = typename EnableIf_<Cond>::value;
 //
 struct Unit {};
 
-template<typename T>
-CONSTEXPR11 bool IsUnit = false;
-template<>
-CONSTEXPR11 bool IsUnit<Unit> = true;
+template<typename T> struct IsUnit { static CONSTEXPR11 bool value = false; };
+template<> struct IsUnit<Unit> { static CONSTEXPR11 bool value = true; };
 
 #endif  // SRC_UTIL_META_H_

@@ -27,6 +27,11 @@
 #ifndef SRC_UTIL_NOEXCEPT_H_
 #define SRC_UTIL_NOEXCEPT_H_
 
+#if defined(_MSC_VER) && _MSC_VER == 1900  // Visual Studio 2015
+#pragma warning(disable : 4577)  // 'noexcept' used but no exception handling is
+                                 // enabled
+#endif
+
 #if defined(_MSC_VER) && _MSC_VER < 1900  // Visual Studio 2013 or lower
 #define noexcept throw()
 #endif

@@ -47,11 +47,9 @@ struct If_<false, WhenTrue, WhenFalse> {
 template<bool Cond, typename WhenTrue, typename WhenFalse>
 using If = typename If_<Cond, WhenTrue, WhenFalse>::value;
 
-
 //
 // template struct EnableIf
 //
-struct Unit {};
 struct Yes {};
 
 template<bool Cond> struct EnableIf_;
@@ -59,49 +57,12 @@ template<> struct EnableIf_<true> { typedef Yes value; };
 
 template<bool Cond> using EnableIf = typename EnableIf_<Cond>::value;
 
+//
+// template bool IsUnit
+//
+struct Unit {};
+
 template<typename T> CONSTEXPR bool IsUnit = false;
 template<> CONSTEXPR bool IsUnit<Unit> = true;
-
-
-//
-// template DeclVal()
-//
-template<typename T> T&& DeclVal();
-
-
-//
-// template struct IsConvertible
-//
-template<typename T> void ConvertibleTest(T);
-
-template<typename From, typename To, typename = void> struct IsConvertible {
-    static CONSTEXPR bool value = false;
-};
-
-template<typename From, typename To>
-struct IsConvertible<From, To, decltype(ConvertibleTest<To>(DeclVal<From>()))> {
-    static CONSTEXPR bool value = true;
-};
-
-
-//
-// template struct EnableIfSubclass
-//
-template<typename B, typename D>
-using EnableIfSubclass = typename EnableIf_<IsConvertible<D, B>::value>::value;
-
-
-//
-// template struct IsAbstract
-//
-template<typename T> struct IsAbstract {
-    typedef char yes[1];
-    typedef char no[2];
-
-    static no& test(T (*)[1]);
-    static yes& test(...);
-
-    static CONSTEXPR bool value = sizeof(test(nullptr)) == sizeof(yes);
-};
 
 #endif  // SRC_UTIL_META_H_

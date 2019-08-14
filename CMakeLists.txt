@@ -58,7 +58,8 @@ if(CMAKE_SYSTEM_NAME MATCHES NetBSD)
 endif()
 
 # Build type
-set(IS_RELEASE "$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>")
+set(IS_RELEASE
+    "$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:RelWithDebInfo>>")
 
 
 #

@@ -36,12 +36,15 @@
 #pragma warning(push)
 #pragma warning(disable: 26495)  // Always initialize a member variable.
 
-template<class F> class Function;  // Undefined.
+template<class F>
+class Function;  // Undefined.
 
 namespace function {
-    template<class R> class base;
+    template<class R>
+	class base;
 
-    template<class R, class... ArgTypes> class base<R(ArgTypes...)> {
+    template<class R, class... ArgTypes>
+	class base<R(ArgTypes...)> {
         base(const base&) noexcept;
         base& operator=(const base&) noexcept;
 
@@ -55,7 +58,8 @@ namespace function {
         virtual R operator()(ArgTypes&&...) noexcept = 0;
     };
 
-    template<class F, class R> class func;
+    template<class F, class R>
+	class func;
 
     template<class F, class R, class... ArgTypes>
     class func<F, R(ArgTypes...)> : public base<R(ArgTypes...)> {
@@ -108,7 +112,8 @@ namespace function {
     }
 }  // namespace function
 
-template<class R, class... ArgTypes> class Function<R(ArgTypes...)> {
+template<class R, class... ArgTypes>
+class Function<R(ArgTypes...)> {
  private:
     typedef function::base<R(ArgTypes...)> base;
 
@@ -219,7 +224,8 @@ Function<R(ArgTypes...)>::operator=(F&& other) noexcept {
     return *this;
 }
 
-template<class R, class... ArgTypes> Function<R(ArgTypes...)>::~Function() noexcept {
+template<class R, class... ArgTypes>
+Function<R(ArgTypes...)>::~Function() noexcept {
     if ((void*)f == &buf) {
         f->destroy();
     }

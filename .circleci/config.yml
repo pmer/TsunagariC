@@ -95,9 +95,9 @@ jobs:
           cmake .. &&
           cmake --build .
 
-  alpine_3_10:
+  alpine_3_10_1:
     docker:
-      - image: alpine:3.10
+      - image: alpine:3.10.1
     steps:
       - run: |
           apk add git cmake make g++
@@ -119,4 +119,4 @@ workflows:
       - arch_latest
       - void
       - void_musl
-      - alpine_3_10
+      - alpine_3_10_1

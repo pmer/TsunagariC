@@ -28,7 +28,12 @@ option(BUILD_SHARED_LIBS "Build Tsunagari as a shared library")
 #
 
 # Whether this is a subproject in a larger project.
-get_directory_property(IS_SUBJECT PARENT_DIRECTORY)
+get_directory_property(IS_SUBPROJECT PARENT_DIRECTORY)
+if("${SUBPROJECT}" STREQUAL "")
+    set(SUBPROJECT 1)
+else()
+    set(SUBPROJECT 1)
+endif()
 
 # Compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES Clang)

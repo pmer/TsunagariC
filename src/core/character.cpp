@@ -235,13 +235,13 @@ Character::canMove(icoord dest) noexcept {
     }
 
     // The tile is legitimately off the map.
-    return nowalkExempt & TILE_NOWALK_AREA_BOUND;
+    return (nowalkExempt & TILE_NOWALK_AREA_BOUND) != 0;
 }
 
 bool
 Character::nowalked(Tile& t) noexcept {
     unsigned flags = nowalkFlags & ~nowalkExempt;
-    return t.flags & flags;
+    return (t.flags & flags) != 0;
 }
 
 void

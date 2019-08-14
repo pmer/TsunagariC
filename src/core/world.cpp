@@ -168,16 +168,13 @@ World::needsRedraw() noexcept {
 }
 
 void
-World::update(time_t dt) noexcept {
+World::tick(time_t dt) noexcept {
     if (paused) {
         return;
     }
 
-    tick(dt);
-}
+    total += dt;
 
-void
-World::tick(time_t dt) noexcept {
     area->tick(dt);
 }
 

@@ -71,8 +71,6 @@ class World {
      */
     static bool needsRedraw() noexcept;
 
-    static void update(time_t now) noexcept;
-
     /**
      * Updates the game state within this World as if dt milliseconds had
      * passed since the last call.

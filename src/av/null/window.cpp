@@ -86,7 +86,7 @@ GameWindow::mainLoop() noexcept {
     while (true) {
         time_t dt = ns_to_ms(frameStart - previousFrameStart);
 
-        World::update(static_cast<time_t>(dt));
+        World::tick(static_cast<time_t>(dt));
         DisplayList dl;
         World::draw(&dl);
 

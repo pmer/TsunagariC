@@ -30,6 +30,7 @@
 #include "pack/file-type.h"
 #include "pack/pack-reader.h"
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/sort.h"
 #include "util/string.h"
 #include "util/vector.h"

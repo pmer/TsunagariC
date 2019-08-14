@@ -30,6 +30,7 @@
 #include "os/c.h"
 #include "os/mutex.h"
 #include "util/assert.h"
+#include "util/noexcept.h"
 
 extern "C" {
 typedef struct {
@@ -40,23 +41,23 @@ typedef struct {
     { 0 }
 
 WINBASEAPI VOID WINAPI
-WakeConditionVariable(PCONDITION_VARIABLE ConditionVariable);
+WakeConditionVariable(PCONDITION_VARIABLE ConditionVariable) noexcept;
 
 WINBASEAPI VOID WINAPI
-WakeAllConditionVariable(PCONDITION_VARIABLE ConditionVariable);
+WakeAllConditionVariable(PCONDITION_VARIABLE ConditionVariable) noexcept;
 
 WINBASEAPI BOOL WINAPI
 SleepConditionVariableSRW(PCONDITION_VARIABLE ConditionVariable,
                           PSRWLOCK SRWLock,
                           DWORD dwMilliseconds,
-                          ULONG Flags);
+                          ULONG Flags) noexcept;
 
 #define INFINITE 0xFFFFFFFF  // Infinite timeout.
 }
 
 class ConditionVariable {
  public:
-    inline ConditionVariable() = default;
+    inline ConditionVariable() noexcept = default;
 
     ConditionVariable(const ConditionVariable&) = delete;
     ConditionVariable& operator=(const ConditionVariable&) = delete;

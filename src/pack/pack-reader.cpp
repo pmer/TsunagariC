@@ -31,6 +31,7 @@
 #include "util/hashtable.h"
 #include "util/int.h"
 #include "util/move.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 
 //                                       "T   s    u    n    a   g    a   r"

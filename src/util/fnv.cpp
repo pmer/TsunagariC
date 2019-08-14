@@ -27,6 +27,7 @@
 #include "util/fnv.h"
 
 #include "util/int.h"
+#include "util/noexcept.h"
 
 #if __SIZEOF_SIZE_T__ == 4 || (defined(_WIN32) && !defined(_WIN64))
 

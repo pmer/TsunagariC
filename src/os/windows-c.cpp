@@ -27,6 +27,8 @@
 
 #include "os/windows-c.h"
 
+#include "util/noexcept.h"
+
 __pragma(pack(push, 8));
 extern "C" {
 typedef struct {

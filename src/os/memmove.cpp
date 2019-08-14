@@ -52,6 +52,7 @@
 #include "os/c.h"
 
 #include "util/int.h"
+#include "util/noexcept.h"
 
 extern "C" {
 

@@ -28,6 +28,7 @@
 #define SRC_UTIL_NEW_H_
 
 #include "util/int.h"
+#include "util/noexcept.h"
 
 inline void*
 operator new(size_t, void* p) noexcept {

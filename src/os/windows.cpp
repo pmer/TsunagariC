@@ -33,6 +33,7 @@
 #include "os/c.h"
 #include "os/os.h"
 #include "util/move.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 #include "util/string-view.h"
 #include "util/string.h"
@@ -115,13 +116,13 @@ getFileSize(StringView path) noexcept {
                              0,
                              nullptr);
     if (file == INVALID_HANDLE_VALUE) {
-        return Optional<uint64_t>();
+        return none;
     }
 
     LARGE_INTEGER size;
     BOOL ok = GetFileSizeEx(file, &size);
     if (!ok) {
-        return Optional<uint64_t>();
+        return none;
     }
 
     ok = CloseHandle(file);
@@ -240,13 +241,13 @@ Optional<String>
 readFile(StringView path) noexcept {
     Optional<uint64_t> size__ = getFileSize(path);
     if (!size__) {
-        return Optional<String>();
+        return none;
     }
 
 	uint64_t size_ = *size__;
 
 	if (size_ > UINT32_MAX) {
-        return Optional<String>();
+        return none;
     }
 
 	DWORD size = static_cast<DWORD>(size_);
@@ -259,7 +260,7 @@ readFile(StringView path) noexcept {
                              0,
                              nullptr);
     if (file == INVALID_HANDLE_VALUE) {
-        return Optional<String>();
+        return none;
     }
 
 	String data;
@@ -268,10 +269,10 @@ readFile(StringView path) noexcept {
 	DWORD read;
     BOOL ok = ReadFile(file, data.data(), size, &read, nullptr);
     if (!ok) {
-        return Optional<String>();
+        return none;
     }
     if (read != size) {
-        return Optional<String>();
+        return none;
     }
 
     return Optional<String>(move_(data));

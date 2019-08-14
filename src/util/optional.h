@@ -31,6 +31,10 @@
 #include "util/constexpr.h"
 #include "util/move.h"
 #include "util/new.h"
+#include "util/noexcept.h"
+
+struct None {};
+static None none;
 
 template<typename T> class Optional {
     union {
@@ -43,6 +47,7 @@ template<typename T> class Optional {
     explicit CONSTEXPR Optional() noexcept : null(), exists(false) {}
     explicit CONSTEXPR Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
     explicit CONSTEXPR Optional(const T& x) noexcept : x(x), exists(true) {}
+    CONSTEXPR Optional(None) noexcept : null(), exists(false) {}
 
     CONSTEXPR Optional(Optional<T>&& other) noexcept
             : null(), exists(other.exists) {

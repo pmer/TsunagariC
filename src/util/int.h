@@ -27,6 +27,8 @@
 #ifndef SRC_UTIL_INT_H_
 #define SRC_UTIL_INT_H_
 
+#include "util/constexpr.h"
+
 typedef signed char int8_t;
 typedef signed short int16_t;
 typedef signed int int32_t;
@@ -55,9 +57,9 @@ typedef long time_t;
 typedef int64_t time_t;
 #endif
 
-static constexpr int32_t INT32_MAX = 0x7fffffff;
-static constexpr uint32_t UINT32_MAX = 0xffffffff;
+static CONSTEXPR int32_t INT32_MAX = 0x7fffffff;
+static CONSTEXPR uint32_t UINT32_MAX = 0xffffffff;
 
-static constexpr double M_PI = 3.14159265358979323846;
+static CONSTEXPR double M_PI = 3.14159265358979323846;
 
 #endif  // SRC_UTIL_INT_H_

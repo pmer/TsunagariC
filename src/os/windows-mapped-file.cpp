@@ -27,6 +27,7 @@
 #include "os/windows-mapped-file.h"
 
 #include "os/c.h"
+#include "util/noexcept.h"
 #include "util/string.h"
 
 extern "C" {
@@ -80,21 +81,21 @@ MappedFile::fromPath(StringView path) noexcept {
                              FILE_ATTRIBUTE_NORMAL,
                              nullptr);
     if (file == INVALID_HANDLE_VALUE) {
-        return Optional<MappedFile>();
+        return none;
     }
 
     HANDLE mapping =
             CreateFileMapping(file, nullptr, PAGE_READONLY, 0, 0, nullptr);
     if (mapping == nullptr) {
         CloseHandle(file);
-        return Optional<MappedFile>();
+        return none;
     }
 
     void* data = MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
     if (data == nullptr) {
         CloseHandle(mapping);
         CloseHandle(file);
-        return Optional<MappedFile>();
+        return none;
     }
 
     MappedFile m;

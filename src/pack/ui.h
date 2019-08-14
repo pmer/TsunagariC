@@ -28,6 +28,7 @@
 #define SRC_PACK_UI_H_
 
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/string-view.h"
 
 extern bool verbose;

@@ -28,10 +28,19 @@
 #define SRC_UTIL_ASSERT_H_
 
 #include "util/likely.h"
+#include "util/noexcept.h"
 
 #ifndef NDEBUG
+#if __cplusplus >= 201103L || _MSC_VER >= 1910
 #define assert_(expr) \
     (likely(expr) ? (void)0 : assert__(__func__, __FILE__, __LINE__, #expr))
+#elif defined(_MSC_VER)
+#define assert_(expr) \
+    (likely(expr) ? (void)0 : assert__(__FUNCTION__, __FILE__, __LINE__, #expr))
+#else
+#error How should I find a function's name?
+#endif
+
 
 void assert__(const char* func,
               const char* file,

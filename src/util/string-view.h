@@ -30,6 +30,7 @@
 #include "os/c.h"
 #include "util/constexpr.h"
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 
 class StringView {

@@ -28,6 +28,7 @@
 #define SRC_OS_WINDOWS_MUTEX_H_
 
 #include "os/c.h"
+#include "util/noexcept.h"
 
 extern "C" {
 typedef struct {
@@ -37,18 +38,18 @@ typedef struct {
 #define SRWLOCK_INIT \
     { 0 }
 
-WINBASEAPI VOID WINAPI AcquireSRWLockExclusive(PSRWLOCK SRWLock);
-WINBASEAPI BOOLEAN WINAPI TryAcquireSRWLockExclusive(PSRWLOCK SRWLock);
-WINBASEAPI VOID WINAPI ReleaseSRWLockExclusive(PSRWLOCK SRWLock);
+WINBASEAPI VOID WINAPI AcquireSRWLockExclusive(PSRWLOCK SRWLock) noexcept;
+WINBASEAPI BOOLEAN WINAPI TryAcquireSRWLockExclusive(PSRWLOCK SRWLock) noexcept;
+WINBASEAPI VOID WINAPI ReleaseSRWLockExclusive(PSRWLOCK SRWLock) noexcept;
 }
 
 class Mutex {
  public:
     constexpr Mutex() noexcept = default;
 
-    inline void lock() { AcquireSRWLockExclusive(&m); }
-    inline bool tryLock() { return TryAcquireSRWLockExclusive(&m) != 0; }
-    inline void unlock() { ReleaseSRWLockExclusive(&m); }
+    inline void lock() noexcept { AcquireSRWLockExclusive(&m); }
+    inline bool tryLock() noexcept { return TryAcquireSRWLockExclusive(&m) != 0; }
+    inline void unlock() noexcept { ReleaseSRWLockExclusive(&m); }
 
     SRWLOCK m = SRWLOCK_INIT;
 

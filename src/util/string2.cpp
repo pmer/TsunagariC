@@ -202,7 +202,7 @@ parseBool(StringView s) noexcept {
         return Optional<bool>(false);
     }
 
-    return Optional<bool>();
+    return none;
 }
 
 Optional<unsigned>
@@ -213,16 +213,16 @@ parseUInt(String& s) noexcept {
     unsigned long ul = strtoul(s.null(), &end, 10);
 
     if (end != s.data() + s.size()) {
-        return Optional<unsigned>();
+        return none;
     }
 
     if (errno != 0) {
         // Overflow.
-        return Optional<unsigned>();
+        return none;
     }
     if (ul > UINT32_MAX) {
         // Overflow.
-        return Optional<unsigned>();
+        return none;
     }
 
     return Optional<unsigned>(static_cast<unsigned>(ul));
@@ -242,16 +242,16 @@ parseInt(String& s) noexcept {
     long l = strtol(s.null(), &end, 10);
 
     if (end != s.data() + s.size()) {
-        return Optional<int>();
+        return none;
     }
 
     if (errno != 0) {
         // Overflow.
-        return Optional<int>();
+        return none;
     }
     if (l > UINT32_MAX) {
         // Overflow.
-        return Optional<int>();
+        return none;
     }
 
     return Optional<int>(static_cast<int>(l));
@@ -271,12 +271,12 @@ parseDouble(String& s) noexcept {
     double d = strtod(s.null(), &end);
 
     if (end != s.data() + s.size()) {
-        return Optional<double>();
+        return none;
     }
 
     if (errno != 0) {
         // Overflow.
-        return Optional<double>();
+        return none;
     }
 
     return Optional<double>(d);
@@ -320,7 +320,7 @@ parseRanges(StringView format) noexcept {
         if (!dash) {
             Optional<int> i = parseInt(range);
             if (!i) {
-                return Optional<Vector<int>>();
+                return none;
             }
 
             ints.push_back(*i);
@@ -334,13 +334,13 @@ parseRanges(StringView format) noexcept {
             Optional<int> beg = parseInt(rngbeg);
             Optional<int> end = parseInt(rngend);
             if (!beg || !end) {
-                return Optional<Vector<int>>();
+                return none;
             }
 
             int beg_ = *beg;
             int end_ = *end;
             if (beg_ > end_) {
-                return Optional<Vector<int>>();
+                return none;
             }
 
             for (int i = beg_; i <= end_; i++) {

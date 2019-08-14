@@ -28,6 +28,7 @@
 #define SRC_PACK_PACK_READER_H_
 
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/string-view.h"
 #include "util/unique.h"
 #include "util/vector.h"

@@ -320,6 +320,7 @@ target_sources(tsunagari
     PUBLIC  src/util/meta.h
     PUBLIC  src/util/move.h
     PUBLIC  src/util/new.h
+    PUBLIC  src/util/noexcept.h
     PUBLIC  src/util/optional.h
     PRIVATE src/util/random.cpp
     PUBLIC  src/util/random.h
@@ -352,6 +353,7 @@ target_sources(pack-tool
     PRIVATE src/util/meta.h
     PRIVATE src/util/move.h
     PRIVATE src/util/new.h
+    PRIVATE src/util/noexcept.h
     PRIVATE src/util/optional.h
     PRIVATE src/util/sort.h
     PRIVATE src/util/string-view.cpp

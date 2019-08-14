@@ -28,6 +28,7 @@
 #define SRC_PACK_PACK_WRITER_H_
 
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/unique.h"

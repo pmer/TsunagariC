@@ -28,6 +28,7 @@
 #ifndef SRC_OS_WINDOWS_H_
 #define SRC_OS_WINDOWS_H_
 
+#include "util/noexcept.h"
 #include "util/string-view.h"
 
 /* Visual C++ ignorantly assumes that all programs will use either a console OR

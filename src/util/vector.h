@@ -13,6 +13,7 @@
 #include "util/likely.h"
 #include "util/move.h"
 #include "util/new.h"
+#include "util/noexcept.h"
 
 template<typename T> class Vector {
  protected:

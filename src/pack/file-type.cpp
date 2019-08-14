@@ -26,6 +26,8 @@
 
 #include "pack/file-type.h"
 
+#include "util/noexcept.h"
+
 static const StringView textExtensions[] = {
     ".json"
 };

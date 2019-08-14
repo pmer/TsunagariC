@@ -28,6 +28,7 @@
 #define SRC_UTIL_SCHEDULER_H_
 
 #include "util/function.h"
+#include "util/noexcept.h"
 
 typedef Function<void()> Job;
 

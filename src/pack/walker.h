@@ -28,6 +28,7 @@
 #define SRC_PACK_WALKER_H_
 
 #include "util/function.h"
+#include "util/noexcept.h"
 #include "util/string-view.h"
 #include "util/vector.h"
 

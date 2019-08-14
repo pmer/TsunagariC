@@ -28,6 +28,7 @@
 
 #include "os/os.h"
 #include "util/jobs.h"
+#include "util/noexcept.h"
 #include "util/string-view.h"
 #include "util/unique.h"
 

@@ -58,6 +58,7 @@
 #include "util/meta.h"
 #include "util/move.h"
 #include "util/new.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 #include "util/vector.h"
 
@@ -675,7 +676,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
         const V* value =
                 findValueImpl(key, hash, mBuckets + bucketForHash(hash));
         if (value == nullptr) {
-            return Optional<const V&>();
+            return none;
         }
         else {
             return Optional<const V&>(*value);

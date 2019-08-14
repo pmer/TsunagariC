@@ -27,6 +27,7 @@
 #ifndef SRC_UTIL_STRING_H_
 #define SRC_UTIL_STRING_H_
 
+#include "util/noexcept.h"
 #include "util/string-view.h"
 #include "util/vector.h"
 

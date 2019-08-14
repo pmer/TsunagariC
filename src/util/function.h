@@ -30,6 +30,7 @@
 #include "util/assert.h"
 #include "util/meta.h"
 #include "util/move.h"
+#include "util/noexcept.h"
 
 #pragma warning(push)
 #pragma warning(disable: 26495)  // Always initialize a member variable.

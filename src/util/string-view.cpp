@@ -28,12 +28,13 @@
 
 #include "os/c.h"
 #include "util/fnv.h"
+#include "util/noexcept.h"
 
 Optional<size_t>
 StringView::find(char needle) const noexcept {
     char* result = static_cast<char*>(memchr(data, needle, size));
     if (result == nullptr) {
-        return Optional<size_t>();
+        return none;
     }
     return Optional<size_t>(result - data);
 }
@@ -43,7 +44,7 @@ StringView::find(StringView needle) const noexcept {
     char* result =
             static_cast<char*>(memmem(data, size, needle.data, needle.size));
     if (result == nullptr) {
-        return Optional<size_t>();
+        return none;
     }
     return Optional<size_t>(result - data);
 }
@@ -55,7 +56,7 @@ StringView::find(StringView needle, size_t start) const noexcept {
     char* result = static_cast<char*>(
             memmem(data + start, size - start, needle.data, needle.size));
     if (result == nullptr) {
-        return Optional<size_t>();
+        return none;
     }
     return Optional<size_t>(result - data);
 }
@@ -63,7 +64,7 @@ StringView::find(StringView needle, size_t start) const noexcept {
 Optional<size_t>
 StringView::rfind(char needle) const noexcept {
     if (size == 0) {
-        return Optional<size_t>();
+        return none;
     }
     for (size_t i = size - 1; i > 0; i--) {
         if (data[i] == needle) {
@@ -73,7 +74,7 @@ StringView::rfind(char needle) const noexcept {
     if (data[0] == needle) {
         return Optional<size_t>(0);
     }
-    return Optional<size_t>();
+    return none;
 }
 
 size_t

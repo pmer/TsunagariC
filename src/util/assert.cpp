@@ -27,14 +27,15 @@
 #ifndef NDEBUG
 
 #include "util/assert.h"
+#include "util/noexcept.h"
 
 #include "os/c.h"
 
 #ifdef _WIN32
 extern "C" {
-__declspec(dllimport) int __stdcall IsDebuggerPresent();
+__declspec(dllimport) int __stdcall IsDebuggerPresent() noexcept;
 }
-void __cdecl __debugbreak();
+void __cdecl __debugbreak();  // Cannot be noexcept.
 #endif
 
 void

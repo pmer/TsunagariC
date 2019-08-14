@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** meta.h                        **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** meta.h                           **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +27,7 @@
 #ifndef SRC_UTIL_META_H_
 #define SRC_UTIL_META_H_
 
+#include "util/constexpr.h"
 
 //
 // template struct If
@@ -58,8 +59,8 @@ template<> struct EnableIf_<true> { typedef Yes value; };
 
 template<bool Cond> using EnableIf = typename EnableIf_<Cond>::value;
 
-template<typename T> constexpr bool IsUnit = false;
-template<> constexpr bool IsUnit<Unit> = true;
+template<typename T> CONSTEXPR bool IsUnit = false;
+template<> CONSTEXPR bool IsUnit<Unit> = true;
 
 
 //
@@ -74,12 +75,12 @@ template<typename T> T&& DeclVal();
 template<typename T> void ConvertibleTest(T);
 
 template<typename From, typename To, typename = void> struct IsConvertible {
-    static constexpr bool value = false;
+    static CONSTEXPR bool value = false;
 };
 
 template<typename From, typename To>
 struct IsConvertible<From, To, decltype(ConvertibleTest<To>(DeclVal<From>()))> {
-    static constexpr bool value = true;
+    static CONSTEXPR bool value = true;
 };
 
 
@@ -100,7 +101,7 @@ template<typename T> struct IsAbstract {
     static no& test(T (*)[1]);
     static yes& test(...);
 
-    static constexpr bool value = sizeof(test(nullptr)) == sizeof(yes);
+    static CONSTEXPR bool value = sizeof(test(nullptr)) == sizeof(yes);
 };
 
 #endif  // SRC_UTIL_META_H_

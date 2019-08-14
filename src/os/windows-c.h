@@ -28,7 +28,7 @@
 #define SRC_OS_WINDOWS_C_H_
 
 #include "util/int.h"
-
+#include "util/noexcept.h"
 
 #define VOID void
 

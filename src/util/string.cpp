@@ -28,6 +28,7 @@
 
 #include "os/c.h"
 #include "util/fnv.h"
+#include "util/noexcept.h"
 
 NullTerminatedString::NullTerminatedString(String& s) noexcept : s(s) {
     s.push_back('\0');

@@ -28,6 +28,7 @@
 #define SRC_OS_OS_H_
 
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/vector.h"

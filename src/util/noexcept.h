@@ -1,8 +1,8 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** algorithm.h                      **
-** Copyright 2017-2019 Paul Merrill **
-*************************************/
+/********************************
+** Tsunagari Tile Engine       **
+** noexcept.h                  **
+** Copyright 2019 Paul Merrill **
+********************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,22 +24,11 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_UTIL_ALGORITHM_H_
-#define SRC_UTIL_ALGORITHM_H_
+#ifndef SRC_UTIL_NOEXCEPT_H_
+#define SRC_UTIL_NOEXCEPT_H_
 
-#include "util/constexpr.h"
-#include "util/noexcept.h"
+#if defined(_MSC_VER) && _MSC_VER < 1910  // Visual Studio 2015 or lower
+#define noexcept throw()
+#endif
 
-template<typename T>
-inline CONSTEXPR T
-min_(T a, T b) noexcept {
-    return a < b ? a : b;
-}
-
-template<typename T>
-inline CONSTEXPR T
-max_(T a, T b) noexcept {
-    return a < b ? b : a;
-}
-
-#endif  // SRC_UTIL_ALGORITHM_H_
+#endif  // SRC_UTIL_NOEXCEPT_H_

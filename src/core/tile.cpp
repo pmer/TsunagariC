@@ -81,7 +81,7 @@ Tile::exitAt(ivec2 dir) const noexcept {
 Optional<double>
 Tile::layermodAt(ivec2 dir) const noexcept {
     int idx = ivec2_to_dir(dir);
-    return idx == -1 ? Optional<double>() : layermods[idx];
+    return idx == -1 ? none : layermods[idx];
 }
 
 

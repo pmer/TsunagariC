@@ -28,6 +28,7 @@
 #define SRC_OS_WINDOWS_MAPPED_FILE_H_
 
 #include "os/c.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 #include "util/string-view.h"
 

@@ -56,6 +56,7 @@
 #include "util/algorithm.h"
 #include "util/int.h"
 #include "util/move.h"
+#include "util/noexcept.h"
 
 namespace pdqsort_detail {
     template<typename T>

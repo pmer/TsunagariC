@@ -28,6 +28,7 @@
 #include "os/mutex.h"
 #include "pack/ui.h"
 #include "util/jobs.h"
+#include "util/noexcept.h"
 #include "util/string.h"
 #include "util/unique.h"
 

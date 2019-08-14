@@ -1,8 +1,8 @@
-/**********************************
-** Tsunagari Tile Engine         **
-** move.h                        **
-** Copyright 2017 Paul Merrill   **
-**********************************/
+/*************************************
+** Tsunagari Tile Engine            **
+** move.h                           **
+** Copyright 2017-2019 Paul Merrill **
+*************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +27,9 @@
 #ifndef SRC_UTIL_MOVE_H_
 #define SRC_UTIL_MOVE_H_
 
+#include "util/constexpr.h"
+#include "util/noexcept.h"
+
 template<typename T> struct Refless { typedef T value; };
 template<typename T> struct Refless<T&&> { typedef T value; };
 template<typename T> struct Refless<T&> { typedef T value; };
@@ -37,7 +40,7 @@ template<typename T> struct Refless<T&> { typedef T value; };
 //
 
 template<typename T>
-inline constexpr typename Refless<T>::value&&
+inline CONSTEXPR typename Refless<T>::value&&
 move_(T&& x) noexcept {
     return static_cast<typename Refless<T>::value&&>(x);
 }
@@ -48,13 +51,13 @@ move_(T&& x) noexcept {
 //
 
 template<typename T>
-inline constexpr T&&
+inline CONSTEXPR T&&
 forward_(typename Refless<T>::value& x) noexcept {
     return static_cast<T&&>(x);
 }
 
 template<typename T>
-inline constexpr T&&
+inline CONSTEXPR T&&
 forward_(typename Refless<T>::value&& x) noexcept {
     return static_cast<T&&>(x);
 }

@@ -66,7 +66,7 @@ resourceLoad(StringView path) noexcept {
     LockGuard lock(mutex);
 
     if (!openPackFile()) {
-        return Optional<StringView>();
+        return none;
     }
 
     PackReader::BlobIndex index = pack->findIndex(path);
@@ -74,7 +74,7 @@ resourceLoad(StringView path) noexcept {
     if (index == PackReader::BLOB_NOT_FOUND) {
         Log::err("PackResources",
                  String() << getFullPath(path) << ": file missing");
-        return Optional<StringView>();
+        return none;
     }
 
     uint32_t blobSize = pack->getBlobSize(index);
@@ -83,7 +83,7 @@ resourceLoad(StringView path) noexcept {
     if (blobSize > UINT32_MAX) {
         Log::err("PackResources",
                  String() << getFullPath(path) << ": file too large");
-        return Optional<StringView>();
+        return none;
     }
 
     void* data = pack->getBlobData(index);

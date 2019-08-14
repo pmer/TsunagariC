@@ -34,6 +34,7 @@
 #endif
 
 #include "util/assert.h"
+#include "util/noexcept.h"
 
 class LockGuard {
  public:

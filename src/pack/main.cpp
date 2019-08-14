@@ -33,6 +33,7 @@
 #include "pack/walker.h"
 #include "util/int.h"
 #include "util/move.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 #include "util/string-view.h"
 #include "util/string.h"
@@ -153,7 +154,7 @@ static Optional<StringView>
 getParentPath(StringView path) noexcept {
     Optional<size_t> sep = path.rfind(dirSeparator);
     if (!sep) {
-        return Optional<StringView>();
+        return none;
     }
     else {
         return Optional<StringView>(path.substr(0, *sep));

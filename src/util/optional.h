@@ -36,56 +36,58 @@
 struct None {};
 static None none;
 
-template<typename T> class Optional {
-    union {
-        T x;
-        char null[sizeof(T)];
-    };
+template<typename T>
+class Optional {
     bool exists;
+    alignas(alignof(T)) char storage[sizeof(T)];
 
  public:
-    explicit CONSTEXPR Optional() noexcept : null(), exists(false) {}
-    explicit CONSTEXPR Optional(T&& x) noexcept : x(move_(x)), exists(true) {}
-    explicit CONSTEXPR Optional(const T& x) noexcept : x(x), exists(true) {}
-    CONSTEXPR Optional(None) noexcept : null(), exists(false) {}
+    explicit CONSTEXPR Optional() noexcept : storage(), exists(false) {}
+    explicit CONSTEXPR Optional(T&& x_) noexcept : exists(true) {
+        new (&storage) T(move_(x_));
+    }
+    explicit CONSTEXPR Optional(const T& x_) noexcept : exists(true) {
+        new (&storage) T(x_);
+    }
+    CONSTEXPR Optional(None) noexcept : storage(), exists(false) {}
 
     CONSTEXPR Optional(Optional<T>&& other) noexcept
-            : null(), exists(other.exists) {
+            : storage(), exists(other.exists) {
         if (other.exists) {
-            x = move_(other.x);
-            other.x.~T();
+            new (&storage) T(move_(other.x()));
+            other.x().~T();
             other.exists = false;
         }
     }
     CONSTEXPR Optional(const Optional<T>& other) noexcept
             : exists(other.exists) {
         if (other.exists) {
-            x = other.x;
+            new (&storage) T(other.x());
         }
     }
 
     ~Optional() noexcept {
         if (exists) {
-            x.~T();
+            x().~T();
         }
     }
 
-    inline Optional& operator=(T&& x) noexcept {
+    inline Optional& operator=(T&& x_) noexcept {
         if (exists) {
-            this->x = move_(x);
+            x() = move_(x_);
         }
         else {
-            new (&this->x) T(move_(x));
+            new (&storage) T(move_(x_));
             exists = true;
         }
         return *this;
     }
-    inline Optional& operator=(const T& x) noexcept {
+    inline Optional& operator=(const T& x_) noexcept {
         if (exists) {
-            this->x = x;
+            x() = x_;
         }
         else {
-            new (&this->x) T(x);
+            new (&storage) T(x_);
             exists = true;
         }
         return *this;
@@ -94,15 +96,15 @@ template<typename T> class Optional {
     inline Optional& operator=(Optional<T>&& other) noexcept {
         if (exists) {
             if (other.exists) {
-                x = move_(other.x);
+                x() = move_(other.x());
             }
             else {
-                x.~T();
+                x().~T();
             }
         }
         else {
             if (other.exists) {
-                new (&x) T(move_(other.x));
+                new (&storage) T(move_(other.x()));
             }
         }
         exists = other.exists;
@@ -112,15 +114,15 @@ template<typename T> class Optional {
     inline Optional& operator=(const Optional<T>& other) noexcept {
         if (exists) {
             if (other.exists) {
-                x = other.x;
+                x() = other.x();
             }
             else {
-                x.~T();
+                x().~T();
             }
         }
         else {
             if (other.exists) {
-                new (&x) T(other.x);
+                new (&storage) T(other.x());
             }
         }
         exists = other.exists;
@@ -131,25 +133,31 @@ template<typename T> class Optional {
 
     inline CONSTEXPR const T* operator->() const noexcept {
         assert_(exists);
-        return &x;
+        return &x();
     }
     inline CONSTEXPR const T& operator*() const noexcept {
         assert_(exists);
-        return x;
+        return x();
     }
 
     inline CONSTEXPR T* operator->() noexcept {
         assert_(exists);
-        return &x;
+        return &x();
     }
     inline CONSTEXPR T& operator*() noexcept {
         assert_(exists);
-        return x;
+        return x();
     }
 
     template<typename S>
     friend CONSTEXPR bool operator==(const Optional<S>& a,
                                      const Optional<S>& b) noexcept;
+
+ private:
+    T& x() noexcept { return *reinterpret_cast<T*>(&storage); }
+    const T& x() const noexcept {
+        return *reinterpret_cast<const T*>(&storage);
+    }
 };
 
 template<typename T>
@@ -161,7 +169,7 @@ operator==(const Optional<T>& a, const Optional<T>& b) noexcept {
     if (!a.exists) {
         return true;
     }
-    return a.x == b.x;
+    return a.x() == b.x();
 }
 
 #endif  // SRC_UTIL_OPTIONAL_H_

@@ -641,7 +641,8 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
     // Gather object properties now. Assign them to tiles later.
     bool wwide[5] = {}, hwide[5] = {};  // Wide exit in width or height.
 
-    DataArea::TileScript enterScript = nullptr, leaveScript = nullptr,
+    DataArea::TileScript enterScript = nullptr,
+                         leaveScript = nullptr,
                          useScript = nullptr;
     Optional<Exit> exit[5];
     Optional<float> layermods[5];
@@ -655,15 +656,15 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
 
     if (props->hasString("on_enter")) {
         StringView scriptName = props->stringAt("on_enter");
-        enterScript = dataArea->script(scriptName);
+        enterScript = dataArea->scripts[scriptName];
     }
     if (props->hasString("on_leave")) {
         StringView scriptName = props->stringAt("on_leave");
-        leaveScript = dataArea->script(scriptName);
+        leaveScript = dataArea->scripts[scriptName];
     }
     if (props->hasString("on_use")) {
         StringView scriptName = props->stringAt("on_use");
-        useScript = dataArea->script(scriptName);
+        useScript = dataArea->scripts[scriptName];
     }
 
     if (props->hasString("exit")) {

@@ -26,14 +26,11 @@
 // **********
 
 #include "data/inprogress.h"
+#include "data/inprogress-sound.h"
+#include "data/inprogress-timer.h"
 
 #include "core/log.h"
 #include "core/sounds.h"
-
-InProgress::InProgress() noexcept : over(false) {}
-
-void
-InProgress::tick(time_t) noexcept {}
 
 bool
 InProgress::isOver() noexcept {

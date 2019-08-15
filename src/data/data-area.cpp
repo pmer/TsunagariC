@@ -29,7 +29,7 @@
 
 #include "core/algorithm.h"
 #include "core/sounds.h"
-#include "data/inprogress.h"
+#include "util/move.h"
 #include "util/random.h"
 
 void
@@ -69,28 +69,6 @@ DataArea::playSoundEffect(StringView sound) noexcept {
 }
 
 void
-DataArea::playSoundAndThen(StringView sound, ThenFn then) noexcept {
-    inProgresses.emplace_back(new InProgressSound(sound, then));
-}
-
-void
-DataArea::timerProgress(time_t duration, ProgressFn progress) noexcept {
-    inProgresses.emplace_back(new InProgressTimer(duration, progress));
-}
-
-void
-DataArea::timerThen(time_t duration, ThenFn then) noexcept {
-    inProgresses.emplace_back(new InProgressTimer(duration, then));
-}
-
-void
-DataArea::timerProgressAndThen(time_t duration,
-                               ProgressFn progress,
-                               ThenFn then) noexcept {
-    inProgresses.emplace_back(new InProgressTimer(duration, progress, then));
-}
-
-DataArea::TileScript
-DataArea::script(StringView scriptName) noexcept {
-    return scripts[scriptName];
+DataArea::add(Unique<InProgress> inProgress) noexcept {
+    inProgresses.push_back(move_(inProgress));
 }

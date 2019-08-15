@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** inprogress.h                       **
+** inprogress-sound.h                 **
 ** Copyright 2014      Michael Reiley **
 ** Copyright 2014-2019 Paul Merrill   **
 ***************************************/
@@ -25,46 +25,35 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_DATA_INPROGRESS_H_
-#define SRC_DATA_INPROGRESS_H_
+#ifndef SRC_DATA_INPROGRESS_SOUND_H_
+#define SRC_DATA_INPROGRESS_SOUND_H_
 
+#include "data/inprogress.h"
+
+#include "core/sounds.h"
+#include "util/function.h"
 #include "util/int.h"
 #include "util/noexcept.h"
+#include "util/rc.h"
+#include "util/string-view.h"
 
 /**
- * InProgress objects contain logic that is to be evaluated over time from
- * within a DataArea. They are run only when an Area is in focus.
+ * InProgressSound can call a function after a sound finishes playing.
  *
- * When a game script wants to run some logic during an event (e.g., during a
- * timer), or after an event happens (e.g., after a sound plays), an InProgress
- * object can handle the timing for it.
- *
- * InProgress objects are generally only indirectly used through DataArea's
- * public methods, such as:
- *   - playSoundAndThen(string sound, fn then);
- *   - timerProgressAndThen(int duration, fn progress, fn then);
- *
- * These functions are essentially wrappers around the constructors of
- * InProgress subclasses, but they tie the constructed InProgress to that
- * particular DataArea, meaning they will be run when that Area is in focus.
- *
- * InProgress objects are invoked right before a DataArea's onTick().
+ * The then function is called on the first tick where the sound is not
+ * playing.
  */
-class InProgress {
+class InProgressSound : public InProgress {
  public:
-    virtual ~InProgress() = default;
+    typedef Function<void()> ThenFn;
 
-    virtual void tick(time_t dt) noexcept = 0;
-    bool isOver() noexcept;
+    InProgressSound(StringView sound, ThenFn then) noexcept;
 
- protected:
-    InProgress() noexcept = default;
-
-    bool over = false;
+    void tick(time_t dt) noexcept;
 
  private:
-    InProgress(const InProgress&) = delete;
-    InProgress& operator=(const InProgress&) = delete;
+    Rc<SoundInstance> sound;
+    ThenFn then;
 };
 
-#endif  // SRC_DATA_INPROGRESS_H_
+#endif  // SRC_DATA_INPROGRESS_SOUND_H_

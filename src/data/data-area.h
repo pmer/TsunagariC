@@ -29,11 +29,9 @@
 #define SRC_DATA_DATA_AREA_H_
 
 #include "data/inprogress.h"
-#include "util/function.h"
 #include "util/hashtable.h"
 #include "util/int.h"
 #include "util/string-view.h"
-#include "util/string.h"
 #include "util/unique.h"
 #include "util/vector.h"
 
@@ -44,9 +42,8 @@ class Tile;
 class DataArea {
  public:
     typedef void (DataArea::*TileScript)(Entity& triggeredBy, Tile& tile);
-    typedef Function<void(float)> ProgressFn;
-    typedef Function<void()> ThenFn;
 
+ public:
     virtual ~DataArea() = default;
 
     Area* area = nullptr;  // borrowed reference
@@ -61,28 +58,20 @@ class DataArea {
     //! Play a sound with a 3% speed variation applied to it.
     void playSoundEffect(StringView sound) noexcept;
 
-    void playSoundAndThen(StringView sound, ThenFn then) noexcept;
-    void timerProgress(time_t duration, ProgressFn progress) noexcept;
-    void timerThen(time_t duration, ThenFn then) noexcept;
-    void timerProgressAndThen(time_t duration,
-                              ProgressFn progress,
-                              ThenFn then) noexcept;
+    void add(Unique<InProgress> inProgress) noexcept;
 
     // For engine
     void tick(time_t dt) noexcept;
     void turn() noexcept;
-    TileScript script(StringView scriptName) noexcept;
+
+    Hashmap<StringView, TileScript> scripts;
 
  protected:
     DataArea() = default;
 
-    Hashmap<StringView, TileScript> scripts;
-
  private:
     DataArea(const DataArea&) = delete;
-    DataArea(DataArea&&) = delete;
     DataArea& operator=(const DataArea&) = delete;
-    DataArea& operator=(DataArea&&) = delete;
 
     Vector<Unique<InProgress>> inProgresses;
 };

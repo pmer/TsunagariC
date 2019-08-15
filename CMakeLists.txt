@@ -199,6 +199,8 @@ target_sources(tsunagari
     PUBLIC  src/data/data-world.h
     PRIVATE src/data/inprogress.cpp
     PUBLIC  src/data/inprogress.h
+    PUBLIC  src/data/inprogress-sound.h
+    PUBLIC  src/data/inprogress-timer.h
 )
 
 target_sources(tsunagari

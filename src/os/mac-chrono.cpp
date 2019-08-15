@@ -64,6 +64,9 @@ mach_absolute_time() noexcept;
 
 kern_return_t
 mach_timebase_info_trap(mach_timebase_info*) noexcept;
+
+kern_return_t
+mach_wait_until(uint64_t deadline) noexcept;
 }
 
 #define KERN_SUCCESS 0
@@ -94,6 +97,7 @@ TimePoint SteadyClock::nowMS() noexcept {
     return TimePoint(ns_to_ms(ns));
 }
 
+/*
 void SleepFor(Duration d) noexcept {
     if (d <= 0) {
         return;
@@ -103,4 +107,19 @@ void SleepFor(Duration d) noexcept {
     ts.tv_sec = static_cast<time_t>(s);
     ts.tv_nsec = static_cast<long>(d - s_to_ns(s));
     while (nanosleep(&ts, &ts) == -1 && errno == EINTR);
+}
+*/
+
+void SleepFor(Duration d) noexcept {
+    if (d <= 0) {
+        return;
+    }
+
+    uint64_t deadline = SteadyClock::now() + d;
+
+    kern_return_t err;
+
+    do {
+        err = mach_wait_until(deadline);
+    } while (err != KERN_SUCCESS);
 }

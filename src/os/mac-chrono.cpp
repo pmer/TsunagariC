@@ -29,6 +29,7 @@
 #include "util/assert.h"
 #include "util/int.h"
 
+/*
 TimePoint SteadyClock::now() noexcept {
     struct timespec tp;
 
@@ -47,6 +48,50 @@ TimePoint SteadyClock::nowMS() noexcept {
     assert_(err == 0);
 
     return TimePoint(s_to_ms(tp.tv_sec) + ns_to_ms(tp.tv_nsec));
+}
+*/
+
+typedef int kern_return_t;
+
+struct mach_timebase_info {
+    uint32_t numer;
+    uint32_t denom;
+};
+
+extern "C" {
+uint64_t
+mach_absolute_time() noexcept;
+
+kern_return_t
+mach_timebase_info_trap(mach_timebase_info*) noexcept;
+}
+
+#define KERN_SUCCESS 0
+
+static mach_timebase_info timebase = {0, 0};
+
+TimePoint SteadyClock::now() noexcept {
+    if (timebase.numer == 0 && timebase.denom == 0) {
+        kern_return_t err = mach_timebase_info_trap(&timebase);
+        assert_(err == KERN_SUCCESS);
+    }
+
+    uint64_t machTime = mach_absolute_time();
+    uint64_t ns = machTime * timebase.numer / timebase.denom;
+
+    return TimePoint(ns);
+}
+
+TimePoint SteadyClock::nowMS() noexcept {
+    if (timebase.numer == 0 && timebase.denom == 0) {
+        kern_return_t err = mach_timebase_info_trap(&timebase);
+        assert_(err == KERN_SUCCESS);
+    }
+
+    uint64_t machTime = mach_absolute_time();
+    uint64_t ns = machTime * timebase.numer / timebase.denom;
+
+    return TimePoint(ns_to_ms(ns));
 }
 
 void SleepFor(Duration d) noexcept {

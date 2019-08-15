@@ -739,11 +739,11 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
     // We know which Tiles are being talked about now... yay
     for (int Y = y; Y < y + h; Y++) {
         for (int X = x; X < x + w; X++) {
-            Tile& tile = grid.objects[(z * grid.dim.y + Y) * grid.dim.x + X];
-            icoord phys = {X, Y, static_cast<int>(z)};
+            icoord tile = {X, Y, static_cast<int>(z)};
+            size_t hash = hash_(tile);
 
-            grid.flags[phys] |= flags;
-            for (size_t i = 0; i < 5; i++) {
+            grid.flags.at(tile, hash) |= flags;
+            for (size_t i = 0; i < EXITS_LENGTH; i++) {
                 if (exit[i]) {
                     int dx = X - x;
                     int dy = Y - y;
@@ -753,21 +753,26 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
                     if (hwide[i]) {
                         exit[i]->coords.y += dy;
                     }
-                    tile.exits[i] = exit[i];
+                    grid.exits[i].at(tile, hash) = move_(*exit[i]);
                 }
             }
-            for (size_t i = 0; i < 5; i++) {
-                tile.layermods[i] = layermods[i];
+            for (size_t i = 0; i < EXITS_LENGTH; i++) {
+                if (layermods[i]) {
+                    grid.layermods[i].at(tile, hash) = *layermods[i];
+                }
             }
 
             if (enterScript) {
-                grid.scripts[TileGrid::SCRIPT_TYPE_ENTER][phys] = enterScript;
+                grid.scripts[TileGrid::SCRIPT_TYPE_ENTER].at(tile, hash)
+                    = enterScript;
             }
             if (leaveScript) {
-                grid.scripts[TileGrid::SCRIPT_TYPE_LEAVE][phys] = leaveScript;
+                grid.scripts[TileGrid::SCRIPT_TYPE_LEAVE].at(tile, hash)
+                    = leaveScript;
             }
             if (useScript) {
-                grid.scripts[TileGrid::SCRIPT_TYPE_USE][phys] = useScript;
+                grid.scripts[TileGrid::SCRIPT_TYPE_USE].at(tile, hash)
+                    = useScript;
             }
         }
     }

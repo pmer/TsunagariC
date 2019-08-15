@@ -30,11 +30,10 @@
 
 #include "core/entity.h"
 #include "core/tile.h"
+#include "core/tile-grid.h"
 #include "core/vec.h"
 #include "util/int.h"
 #include "util/optional.h"
-
-class Tile;
 
 class Character : public Entity {
  public:
@@ -92,7 +91,7 @@ class Character : public Entity {
     rcoord fromCoord;
     Tile* fromTile;
     Tile* destTile;
-    const Optional<Exit>* destExit;
+    Optional<Exit*> destExit;
 };
 
 #endif  // SRC_CORE_CHARACTER_H_

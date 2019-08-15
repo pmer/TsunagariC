@@ -30,8 +30,71 @@
 
 #include "core/tile.h"
 #include "core/vec.h"
+#include "data/data-area.h"
 #include "util/hashtable.h"
+#include "util/string.h"
 #include "util/vector.h"
+
+class Entity;
+
+// List of possible flags that can be attached to a tile.
+//
+// Flags are attached to tiles and denote special behavior for
+// the tile they are bound to.
+//
+// see AreaTMX::splitTileFlags().
+
+// Neither the player nor NPCs can walk here.
+#define TILE_NOWALK (unsigned)(0x001)
+
+// The player cannot walk here. NPCs can, though.
+#define TILE_NOWALK_PLAYER ((unsigned)(0x002))
+
+// NPCs cannot walk here. The player can, though.
+#define TILE_NOWALK_NPC ((unsigned)(0x004))
+
+// This Tile is an Exit. Please take appropriate action when entering this
+// Tile, usually by transferring to another Area.
+//
+// This flag is not carried by actual Tiles, but can instead be flipped in an
+// Entity's "exempt" flag which will be read elsewhere in the engine.
+#define TILE_NOWALK_EXIT ((unsigned)(0x008))
+
+// This Tile is at the edge of an Area. If you step here, please handle it
+// appropriately.
+//
+// (Usually if one moves off a map bound, one will either transfer to another
+// Area, or will be destroyed.)
+//
+// This flag is not carried by actual Tiles, but can instead be flipped in an
+// Entity's "exempt" flag which will be read elsewhere in the engine.
+#define TILE_NOWALK_AREA_BOUND ((unsigned)(0x016))
+
+
+// Types of exits.
+enum ExitDirection {
+     // An Exit that is taken upon arriving at the Tile.
+    EXIT_NORMAL,
+    // An Exit that is taken when leaving in the upwards direction from a Tile.
+    EXIT_UP,
+    // An Exit that is taken when leaving in the downwards direction from a
+    // Tile.
+    EXIT_DOWN,
+    // An Exit that is taken when leaving to the left from a Tile.
+    EXIT_LEFT,
+    // An Exit that is taken when leaving to the right from a Tile.
+    EXIT_RIGHT,
+    EXITS_LENGTH
+};
+
+// Tiles with an exit trigger attached can teleport the player to a new area in
+// the World. The Exit struct contains the destination area and coordinates.
+struct Exit {
+    String area;
+    vicoord coords;
+};
+
+typedef void (*TileScript)(Entity& triggeredBy, icoord tile);
 
 class TileGrid {
  public:
@@ -55,10 +118,9 @@ class TileGrid {
 
  public:
     // Convert between virtual and physical map coordinates. Physical
-    // coordinates are the physical indexes into the Tile vector. Layer
-    // depth is represented by an arbirarily chosen integer in the physical
-    // system. Virtual coordinates include the correct floating-point
-    // depth.
+    // coordinates are the physical indexes into the Tile vector. Layer depth
+    // is represented by an arbirarily chosen integer in the physical system.
+    // Virtual coordinates include the correct floating-point depth.
     vicoord phys2virt_vi(icoord phys) const noexcept;
     rcoord phys2virt_r(icoord phys) const noexcept;
     icoord virt2phys(vicoord virt) const noexcept;
@@ -70,8 +132,21 @@ class TileGrid {
     int depthIndex(float depth) const noexcept;
     float indexDepth(int idx) const noexcept;
 
+    // Gets the correct destination for an Entity wanting to move off of this
+    // tile in <code>facing</code> direction.
+    //
+    // This call is necessary to handle layermod.
+    //
+    // @param area    the area containing this Tile
+    // @param here    area-space coordinate for this Tile
+    // @param facing  facing vector
+    icoord moveDest(icoord from, ivec2 facing) noexcept;
+
+    Optional<Exit*> exitAt(icoord from, ivec2 facing) noexcept;
+    Optional<float*> layermodAt(icoord from, ivec2 facing) noexcept;
+
  public:
-    //! 3-dimensional array of the tiles that make up the grid.
+    // 3-dimensional array of the tiles that make up the grid.
     Vector<int> graphics;
     Vector<Tile> objects;
 
@@ -81,17 +156,17 @@ class TileGrid {
     };
     Vector<LayerType> layerTypes;
 
-    //! 3-dimensional length of map.
+    // 3-dimensional length of map.
     ivec3 dim;
 
-    //! Pixel size for each tile in area. All tiles in a TileGrid must be the
-    //! same size.
+    // Pixel size for each tile in area. All tiles in a TileGrid must be the
+    // same size.
     ivec2 tileDim;
 
-    //! Maps virtual float-point depths to an index in our map array.
+    // Maps virtual float-point depths to an index in our map array.
     Hashmap<float, int> depth2idx;
 
-    //! Maps an index in our map array to a virtual float-point depth.
+    // Maps an index in our map array to a virtual float-point depth.
     Vector<float> idx2depth;
 
     bool loopX, loopY;
@@ -108,6 +183,9 @@ class TileGrid {
     Hashmap<icoord, DataArea::TileScript> scripts[SCRIPT_TYPE_LAST];
 
     Hashmap<icoord, unsigned> flags;
+
+    Hashmap<icoord, Exit> exits[EXITS_LENGTH];
+    Hashmap<icoord, float> layermods[EXITS_LENGTH];
 };
 
 #endif  // SRC_CORE_TILE_GRID_H_

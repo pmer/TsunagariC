@@ -145,10 +145,10 @@ Character::moveByTile(ivec2 delta) noexcept {
 
     destExit = nullptr;
     if (fromTile) {
-        destExit = &fromTile->exitAt(delta);
+        destExit = area->grid.exitAt(getTileCoords_i(), delta);
     }
     else if (destTile) {
-        destExit = &destTile->exits[EXIT_NORMAL];
+        destExit = area->grid.exits[EXIT_NORMAL].tryAt(getTileCoords_i());
     }
 
     if (!canMove(dest)) {
@@ -197,7 +197,7 @@ Character::moveDest(ivec2 facing) noexcept {
 
     if (tile) {
         // Handle layermod.
-        return tile->moveDest(area, here, facing);
+        return area->grid.moveDest(here, facing);
     }
     else {
         return here + icoord{facing.x, facing.y, 0};
@@ -244,9 +244,10 @@ Character::arrived() noexcept {
     Entity::arrived();
 
     if (destTile) {
-        Optional<float> layermod = destTile->layermods[EXIT_NORMAL];
+        Optional<float*> layermod =
+            area->grid.layermods[EXIT_NORMAL].tryAt(getTileCoords_i());
         if (layermod) {
-            r.z = *layermod;
+            r.z = **layermod;
         }
     }
 

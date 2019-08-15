@@ -32,6 +32,30 @@
 #include "util/math2.h"
 #include "util/string.h"
 
+static int
+ivec2_to_dir(ivec2 v) noexcept {
+    switch (v.x) {
+    case -1:
+        return v.y == 0 ? EXIT_LEFT : -1;
+    case 0:
+        switch (v.y) {
+        case -1:
+            return EXIT_UP;
+        case 0:
+            return EXIT_NORMAL;
+        case 1:
+            return EXIT_DOWN;
+        default:
+            return -1;
+        }
+        break;
+    case 1:
+        return v.y == 0 ? EXIT_RIGHT : -1;
+    default:
+        return -1;
+    }
+}
+
 int
 TileGrid::getTileType(icoord phys) noexcept {
     int x = dim.x;
@@ -203,4 +227,27 @@ float
 TileGrid::indexDepth(int idx) const noexcept {
     assert_(0 <= idx && idx <= dim.z);
     return idx2depth[(size_t)idx];
+}
+
+icoord
+TileGrid::moveDest(icoord from, ivec2 facing) noexcept {
+    icoord dest = from + icoord{facing.x, facing.y, 0};
+
+    Optional<float*> layermod = layermodAt(from, facing);
+    if (layermod) {
+        dest = virt2phys(vicoord{dest.x, dest.y, **layermod});
+    }
+    return dest;
+}
+
+Optional<Exit*>
+TileGrid::exitAt(icoord from, ivec2 facing) noexcept {
+    int idx = ivec2_to_dir(facing);
+    return idx == -1 ? none : exits[idx].tryAt(from);
+}
+
+Optional<float*>
+TileGrid::layermodAt(icoord from, ivec2 facing) noexcept {
+    int idx = ivec2_to_dir(facing);
+    return idx == -1 ? none : layermods[idx].tryAt(from);
 }

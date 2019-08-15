@@ -673,7 +673,7 @@ class Hashmap : private hopscotch::GrowthPolicy {
             return *value;
         }
         else {
-            return insertValue(ibucketForHash, hash, forward_(key), V())
+            return insertValue(ibucketForHash, hash, key, V())
                     .value();
         }
     }

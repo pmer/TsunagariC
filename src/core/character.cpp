@@ -267,7 +267,9 @@ Character::arrived() noexcept {
 
 void
 Character::leaveTile() noexcept {
-    leaveTile(getTileCoords_i());
+    if (area) {
+        leaveTile(getTileCoords_i());
+    }
 }
 
 void
@@ -277,7 +279,9 @@ Character::leaveTile(icoord phys) noexcept {
 
 void
 Character::enterTile() noexcept {
-    enterTile(getTileCoords_i());
+    if (area) {
+        enterTile(getTileCoords_i());
+    }
 }
 
 void

@@ -119,9 +119,9 @@ class Area {
 
     DataArea* getDataArea();
 
-    void runEnterScript(icoord tile, Entity* triggeredBy) noexcept;
-    void runLeaveScript(icoord tile, Entity* triggeredBy) noexcept;
-    void runUseScript(icoord tile, Entity* triggeredBy) noexcept;
+    void runScript(TileGrid::ScriptType type,
+                   icoord tile,
+                   Entity* triggeredBy) noexcept;
 
  public:
     TileGrid grid;

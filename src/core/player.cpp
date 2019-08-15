@@ -128,7 +128,7 @@ Player::useTile() noexcept {
     icoord destCoord = moveDest(facing);
     Tile* t = area->grid.getTile(destCoord);
     if (t) {
-        area->runUseScript(destCoord, this);
+        area->runScript(TileGrid::SCRIPT_TYPE_USE, destCoord, this);
     }
 }
 

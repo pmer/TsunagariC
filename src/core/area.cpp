@@ -349,72 +349,16 @@ Area::getDataArea() {
 }
 
 void
-Area::runEnterScript(icoord tile, Entity* triggeredBy) noexcept {
-    Tile* t = grid.getTile(tile);
+Area::runScript(TileGrid::ScriptType type,
+                icoord tile,
+                Entity* triggeredBy) noexcept {
+    auto script = grid.scripts[type].find(tile);
+    if (script != grid.scripts[type].end()) {
+        Tile* t = grid.getTile(tile);
+        assert_(t);
 
-    assert_(t);
-
-    DataArea::TileScript script = t->enterScript;
-    if (script) {
-        (dataArea->*script)(*triggeredBy, *t);
+        (dataArea->*(script.value()))(*triggeredBy, *t);
     }
-
-    // TileType* type = grid.getTileType(tile);
-    //
-    // if (!type) {
-    //     return;
-    // }
-    //
-    // script = type->enterScript;
-    // if (script) {
-    //     (dataArea->*script)(*triggeredBy, *t);
-    // }
-}
-
-void
-Area::runLeaveScript(icoord tile, Entity* triggeredBy) noexcept {
-    Tile* t = grid.getTile(tile);
-
-    assert_(t);
-
-    DataArea::TileScript script = t->leaveScript;
-    if (script) {
-        (dataArea->*script)(*triggeredBy, *t);
-    }
-
-    // TileType* type = grid.getTileType(tile);
-    //
-    // if (!type) {
-    //     return;
-    // }
-    //
-    // script = type->leaveScript;
-    // if (script) {
-    //     (dataArea->*script)(*triggeredBy, *t);
-    // }
-}
-
-void
-Area::runUseScript(icoord tile, Entity* triggeredBy) noexcept {
-    Tile* t = grid.getTile(tile);
-
-    assert_(t);
-
-    DataArea::TileScript script = t->useScript;
-    if (script) {
-        (dataArea->*script)(*triggeredBy, *t);
-    }
-
-    // TileType* type = grid.getTileType(tile);
-    //
-    // if (!type) {
-    //     return;
-    // }
-    //
-    // script = type->useScript;
-    // if (script) {
-    //     (dataArea->*script)(*triggeredBy, *t);
-    // }
 }
 
 

@@ -97,6 +97,15 @@ class TileGrid {
     bool loopX, loopY;
 
     Hashset<icoord> occupied;
+
+    enum ScriptType {
+        SCRIPT_TYPE_ENTER,
+        SCRIPT_TYPE_LEAVE,
+        SCRIPT_TYPE_USE,
+        SCRIPT_TYPE_LAST,
+    };
+
+    Hashmap<icoord, DataArea::TileScript> scripts[SCRIPT_TYPE_LAST];
 };
 
 #endif  // SRC_CORE_TILE_GRID_H_

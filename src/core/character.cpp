@@ -162,7 +162,9 @@ Character::moveByTile(ivec2 delta) noexcept {
     // Process triggers.
     runTileExitScript();
     if (fromTile) {
-        area->runLeaveScript(area->grid.virt2phys(fromCoord), this);
+        area->runScript(TileGrid::SCRIPT_TYPE_LEAVE,
+                        area->grid.virt2phys(fromCoord),
+                        this);
     }
 
     // Modify tile's entity count.
@@ -249,7 +251,9 @@ Character::arrived() noexcept {
 
     // Process triggers.
     if (destTile) {
-        area->runEnterScript(area->grid.virt2phys(destCoord), this);
+        area->runScript(TileGrid::SCRIPT_TYPE_ENTER,
+                        area->grid.virt2phys(destCoord),
+                        this);
     }
 
     runTileEntryScript();

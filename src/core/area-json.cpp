@@ -758,9 +758,17 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
             for (size_t i = 0; i < 5; i++) {
                 tile.layermods[i] = layermods[i];
             }
-            tile.enterScript = enterScript;
-            tile.leaveScript = leaveScript;
-            tile.useScript = useScript;
+
+            icoord phys = {X, Y, static_cast<int>(z)};
+            if (enterScript) {
+                grid.scripts[TileGrid::SCRIPT_TYPE_ENTER][phys] = enterScript;
+            }
+            if (leaveScript) {
+                grid.scripts[TileGrid::SCRIPT_TYPE_LEAVE][phys] = leaveScript;
+            }
+            if (useScript) {
+                grid.scripts[TileGrid::SCRIPT_TYPE_USE][phys] = useScript;
+            }
         }
     }
 

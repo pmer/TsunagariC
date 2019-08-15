@@ -162,10 +162,6 @@ class Tile {
  public:
     unsigned flags = 0;
 
-    DataArea::TileScript enterScript = nullptr,
-                         leaveScript = nullptr,
-                         useScript = nullptr;
-
     Optional<Exit> exits[EXITS_LENGTH];
     Optional<float> layermods[EXITS_LENGTH];
 };

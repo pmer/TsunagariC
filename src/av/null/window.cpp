@@ -85,18 +85,28 @@ GameWindow::mainLoop() noexcept {
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 #endif
     while (true) {
+        //
+        // Simulate world and draw frame.
+        //
         time_t dt = ns_to_ms(frameStart - previousFrameStart);
 
-        World::tick(static_cast<time_t>(dt));
-        World::draw(&dl);
+        World::tick(dt);
 
-        // Do nothing with the filled DisplayList.
+        if (World::needsRedraw()) {
+            World::draw(&dl);
 
-        dl.items.clear();
+            // Do nothing with the filled DisplayList because this is the null
+            // audio/video backend.
+
+            dl.items.clear();
+        }
 
         TimePoint frameEnd = SteadyClock::now();
         Duration timeTaken = frameEnd - frameStart;
 
+        //
+        // Sleep until next frame.
+        //
         Duration sleepDuration = nextFrameStart - frameEnd;
         if (sleepDuration < 0) {
             sleepDuration = 0;

@@ -58,12 +58,13 @@ GameWindow::setCaption(StringView) noexcept {}
 
 void
 GameWindow::mainLoop() noexcept {
+    DisplayList dl;
+
     const Duration idealFrameTime = s_to_ns(1) / 60;
 
     TimePoint frameStart = SteadyClock::now();
-    TimePoint previousFrameStart = frameStart - idealFrameTime;  // Bogus
-                                                                 // initial
-                                                                 // value.
+    TimePoint previousFrameStart =
+        frameStart - idealFrameTime;  // Bogus initial value.
 
     // FIXME: Should be set to right after a frame is uploaded and we can begin
     //        drawing the next frame.
@@ -87,8 +88,11 @@ GameWindow::mainLoop() noexcept {
         time_t dt = ns_to_ms(frameStart - previousFrameStart);
 
         World::tick(static_cast<time_t>(dt));
-        DisplayList dl;
         World::draw(&dl);
+
+        // Do nothing with the filled DisplayList.
+
+        dl.items.clear();
 
         TimePoint frameEnd = SteadyClock::now();
         Duration timeTaken = frameEnd - frameStart;

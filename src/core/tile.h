@@ -150,7 +150,7 @@ class Tile {
      *
      * This call is necessary to handle layermod.
      *
-	 * @param area    the area containing this Tile
+     * @param area    the area containing this Tile
      * @param here    area-space coordinate for this Tile
      * @param facing  facing vector
      */

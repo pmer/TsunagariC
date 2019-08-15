@@ -58,18 +58,7 @@ ivec2_to_dir(ivec2 v) noexcept {
 
 int
 TileGrid::getTileType(icoord phys) noexcept {
-    int x = dim.x;
-    int y = dim.y;
-
-    if (loopX) {
-        phys.x = wrap(0, phys.x, x);
-    }
-
-    if (loopY) {
-        phys.y = wrap(0, phys.y, y);
-    }
-
-    int idx = (phys.z * y + phys.y) * x + phys.x;
+    int idx = (phys.z * dim.y + phys.y) * dim.x + phys.x;
     return graphics[idx];
 }
 
@@ -82,77 +71,9 @@ void
 TileGrid::setTileType(vicoord virt, int type) noexcept {
     icoord phys = virt2phys(virt);
 
-    int x = dim.x;
-    int y = dim.y;
-
-    if (loopX) {
-        phys.x = wrap(0, phys.x, x);
-    }
-
-    if (loopY) {
-        phys.y = wrap(0, phys.y, y);
-    }
-
-    int idx = (phys.z * y + phys.y) * x + phys.x;
+    int idx = (phys.z * dim.y + phys.y) * dim.x + phys.x;
     graphics[idx] = type;
 }
-
-Tile*
-TileGrid::getTile(icoord phys) noexcept {
-    int x = dim.x;
-    int y = dim.y;
-
-    if (loopX) {
-        phys.x = wrap(0, phys.x, dim.x);
-    }
-
-    if (loopY) {
-        phys.y = wrap(0, phys.y, dim.y);
-    }
-
-    int idx = (phys.z * y + phys.y) * x + phys.x;
-    return &objects[idx];
-}
-
-Tile*
-TileGrid::getTile(vicoord virt) noexcept {
-    return getTile(virt2phys(virt));
-}
-
-Tile*
-TileGrid::getTile(rcoord virt) noexcept {
-    return getTile(virt2phys(virt));
-}
-
-const Tile*
-TileGrid::getTile(icoord phys) const noexcept {
-    int x = dim.x;
-    int y = dim.y;
-
-    if (loopX) {
-        phys.x = wrap(0, phys.x, dim.x);
-    }
-
-    if (loopY) {
-        phys.y = wrap(0, phys.y, dim.y);
-    }
-
-    assert_(inBounds(phys));
-
-    int idx = (phys.z * y + phys.y) * x + phys.x;
-    return &objects[idx];
-}
-
-const Tile*
-TileGrid::getTile(vicoord virt) const noexcept {
-    return getTile(virt2phys(virt));
-}
-
-const Tile*
-TileGrid::getTile(rcoord virt) const noexcept {
-    return getTile(virt2phys(virt));
-}
-
 
 bool
 TileGrid::inBounds(icoord phys) const noexcept {

@@ -103,14 +103,6 @@ class TileGrid {
 
     void setTileType(vicoord virt, int type) noexcept;
 
-    Tile* getTile(icoord phys) noexcept;
-    Tile* getTile(vicoord virt) noexcept;
-    Tile* getTile(rcoord virt) noexcept;
-
-    const Tile* getTile(icoord phys) const noexcept;
-    const Tile* getTile(vicoord virt) const noexcept;
-    const Tile* getTile(rcoord virt) const noexcept;
-
     //! Returns true if a Tile exists at the specified coordinate.
     bool inBounds(icoord phys) const noexcept;
     bool inBounds(vicoord virt) const noexcept;
@@ -148,7 +140,6 @@ class TileGrid {
  public:
     // 3-dimensional array of the tiles that make up the grid.
     Vector<int> graphics;
-    Vector<Tile> objects;
 
     enum LayerType {
         TILE_LAYER,

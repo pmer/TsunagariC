@@ -55,10 +55,6 @@ class Character : public Entity {
     void setTileCoords(vicoord virt) noexcept;
     void setTileCoords(rcoord virt) noexcept;
 
-    //! Get the Tile that we are standing on.
-    const Tile* getTile() const noexcept;
-    Tile* getTile() noexcept;
-
     void setArea(Area* area, vicoord position) noexcept;
 
     //! Initiate a movement within the Area.
@@ -89,8 +85,6 @@ class Character : public Entity {
     unsigned nowalkExempt;
 
     rcoord fromCoord;
-    Tile* fromTile;
-    Tile* destTile;
     Optional<Exit*> destExit;
 };
 

@@ -40,7 +40,6 @@ class Animation;
 class Area;
 struct DisplayList;
 class Image;
-class Tile;
 class TiledImage;
 
 enum SetPhaseResult { PHASE_NOTFOUND, PHASE_NOTCHANGED, PHASE_CHANGED };

@@ -30,8 +30,6 @@
 
 #include "util/int.h"
 
-struct Tile {};
-
 struct TileSet {
     int firstGid;
     size_t width;

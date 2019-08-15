@@ -355,10 +355,7 @@ Area::runScript(TileGrid::ScriptType type,
     Optional<DataArea::TileScript*> script =
         grid.scripts[type].tryAt(tile);
     if (script) {
-        Tile* t = grid.getTile(tile);
-        assert_(t);
-
-        (dataArea->*(**script))(*triggeredBy, *t);
+        (dataArea->*(**script))(*triggeredBy, tile);
     }
 }
 

@@ -129,10 +129,9 @@ AreaJSON::allocateMapLayer(TileGrid::LayerType type) noexcept {
     assert_(0 <= dim.x);
     assert_(0 <= dim.z);
 
-    grid.layerTypes.push_back(type);  // FIXME: Store different layer types in different kinds of structs.
+    grid.layerTypes.push_back(type);
 
     grid.graphics.resize(grid.graphics.size() + dim.x * dim.y);
-    grid.objects.resize(grid.objects.size() + dim.x * dim.y);
     grid.dim.z++;
 }
 

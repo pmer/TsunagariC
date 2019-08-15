@@ -36,8 +36,6 @@ Character::Character() noexcept
         : nowalkFlags(TILE_NOWALK | TILE_NOWALK_NPC),
           nowalkExempt(0),
           fromCoord({0.0, 0.0, 0.0}),
-          fromTile(nullptr),
-          destTile(nullptr),
           destExit(nullptr) {
     enterTile();
 }
@@ -110,16 +108,6 @@ Character::setTileCoords(rcoord virt) noexcept {
     enterTile();
 }
 
-const Tile*
-Character::getTile() const noexcept {
-    return area ? area->grid.getTile(r) : nullptr;
-}
-
-Tile*
-Character::getTile() noexcept {
-    return area ? area->grid.getTile(r) : nullptr;
-}
-
 void
 Character::setArea(Area* area, vicoord position) noexcept {
     leaveTile();
@@ -139,16 +127,15 @@ Character::moveByTile(ivec2 delta) noexcept {
 
     icoord dest = moveDest(facing);
 
-    fromTile = getTile();
-    destTile = area->grid.getTile(dest);
+    icoord from = getTileCoords_i();
     setDestinationCoordinate(area->grid.phys2virt_r(dest));
 
     destExit = nullptr;
-    if (fromTile) {
-        destExit = area->grid.exitAt(getTileCoords_i(), delta);
+    if (area->grid.inBounds(from)) {
+        destExit = area->grid.exitAt(from, delta);
     }
-    else if (destTile) {
-        destExit = area->grid.exits[EXIT_NORMAL].tryAt(getTileCoords_i());
+    else if (area->grid.inBounds(dest)) {
+        destExit = area->grid.exits[EXIT_NORMAL].tryAt(from);
     }
 
     if (!canMove(dest)) {
@@ -161,15 +148,14 @@ Character::moveByTile(ivec2 delta) noexcept {
 
     // Process triggers.
     runTileExitScript();
-    if (fromTile) {
-        area->runScript(TileGrid::SCRIPT_TYPE_LEAVE,
-                        area->grid.virt2phys(fromCoord),
-                        this);
+
+    if (area->grid.inBounds(from)) {
+        area->runScript(TileGrid::SCRIPT_TYPE_LEAVE, from, this);
     }
 
     // Modify tile's entity count.
-    leaveTile(area->grid.virt2phys(fromCoord));
-    enterTile(area->grid.virt2phys(destCoord));
+    leaveTile(from);
+    enterTile(dest);
 
     Sounds::play(soundPaths[StringView("step")]);
 
@@ -192,10 +178,9 @@ Character::moveByTile(ivec2 delta) noexcept {
 
 icoord
 Character::moveDest(ivec2 facing) noexcept {
-    Tile* tile = getTile();
     icoord here = getTileCoords_i();
 
-    if (tile) {
+    if (area->grid.inBounds(here)) {
         // Handle layermod.
         return area->grid.moveDest(here, facing);
     }
@@ -215,7 +200,7 @@ Character::canMove(icoord dest) noexcept {
     }
 
     bool inBounds = area->grid.inBounds(dest);
-    if (destTile && inBounds) {
+    if (inBounds) {
         // Tile is inside map. Can we move?
         if (nowalked(dest)) {
             return false;
@@ -243,19 +228,18 @@ void
 Character::arrived() noexcept {
     Entity::arrived();
 
-    if (destTile) {
+    icoord dest = area->grid.virt2phys(destCoord);
+    bool inBounds = area->grid.inBounds(dest);
+
+    if (inBounds) {
         Optional<float*> layermod =
-            area->grid.layermods[EXIT_NORMAL].tryAt(getTileCoords_i());
+            area->grid.layermods[EXIT_NORMAL].tryAt(dest);
         if (layermod) {
             r.z = **layermod;
         }
-    }
 
-    // Process triggers.
-    if (destTile) {
-        area->runScript(TileGrid::SCRIPT_TYPE_ENTER,
-                        area->grid.virt2phys(destCoord),
-                        this);
+        // Process triggers.
+        area->runScript(TileGrid::SCRIPT_TYPE_ENTER, dest, this);
     }
 
     runTileEntryScript();

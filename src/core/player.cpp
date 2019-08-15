@@ -126,8 +126,8 @@ Player::moveByTile(ivec2 delta) noexcept {
 void
 Player::useTile() noexcept {
     icoord destCoord = moveDest(facing);
-    Tile* t = area->grid.getTile(destCoord);
-    if (t) {
+    bool inBounds = area->grid.inBounds(destCoord);
+    if (inBounds) {
         area->runScript(TileGrid::SCRIPT_TYPE_USE, destCoord, this);
     }
 }

@@ -28,6 +28,7 @@
 #ifndef SRC_DATA_DATA_AREA_H_
 #define SRC_DATA_DATA_AREA_H_
 
+#include "core/vec.h"
 #include "data/inprogress.h"
 #include "util/hashtable.h"
 #include "util/int.h"
@@ -37,11 +38,10 @@
 
 class Area;
 class Entity;
-class Tile;
 
 class DataArea {
  public:
-    typedef void (DataArea::*TileScript)(Entity& triggeredBy, Tile& tile);
+    typedef void (DataArea::*TileScript)(Entity& triggeredBy, icoord tile);
 
  public:
     virtual ~DataArea() = default;

@@ -161,7 +161,6 @@ class Tile {
 
  public:
     unsigned flags = 0;
-    int entCnt = 0;  //!< Number of entities on this Tile.
 
     DataArea::TileScript enterScript = nullptr,
                          leaveScript = nullptr,

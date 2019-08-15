@@ -78,9 +78,9 @@ class Character : public Entity {
     void arrived() noexcept;
 
     void leaveTile() noexcept;
-    void leaveTile(Tile* t) noexcept;
+    void leaveTile(icoord phys) noexcept;
     void enterTile() noexcept;
-    void enterTile(Tile* t) noexcept;
+    void enterTile(icoord phys) noexcept;
 
     void runTileExitScript() noexcept;
     void runTileEntryScript() noexcept;

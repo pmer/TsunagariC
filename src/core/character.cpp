@@ -166,8 +166,8 @@ Character::moveByTile(ivec2 delta) noexcept {
     }
 
     // Modify tile's entity count.
-    leaveTile(fromTile);
-    enterTile(destTile);
+    leaveTile(area->grid.virt2phys(fromCoord));
+    enterTile(area->grid.virt2phys(destCoord));
 
     Sounds::play(soundPaths[StringView("step")]);
 
@@ -218,7 +218,7 @@ Character::canMove(icoord dest) noexcept {
         if (nowalked(*destTile)) {
             return false;
         }
-        if (destTile->entCnt) {
+        if (area->grid.occupied.contains(area->grid.virt2phys(destCoord))) {
             // Space is occupied by another Entity.
             return false;
         }
@@ -267,26 +267,23 @@ Character::arrived() noexcept {
 
 void
 Character::leaveTile() noexcept {
-    leaveTile(getTile());
+    leaveTile(getTileCoords_i());
 }
 
 void
-Character::leaveTile(Tile* t) noexcept {
-    if (t) {
-        t->entCnt--;
-    }
+Character::leaveTile(icoord phys) noexcept {
+    area->grid.occupied.erase(phys);
 }
 
 void
 Character::enterTile() noexcept {
-    enterTile(getTile());
+    enterTile(getTileCoords_i());
 }
 
 void
-Character::enterTile(Tile* t) noexcept {
-    if (t) {
-        t->entCnt++;
-    }
+Character::enterTile(icoord phys) noexcept {
+    Hashset<icoord>::KV value{phys, Unit()};
+    area->grid.occupied.insert(value);
 }
 
 void

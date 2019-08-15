@@ -161,7 +161,8 @@ namespace hopscotch {
     static CONSTEXPR11 size_t NB_RESERVED_BITS_IN_NEIGHBORHOOD = 2;
 
 
-    template<typename V, unsigned int NeighborhoodSize> class Bucket {
+    template<typename V, unsigned int NeighborhoodSize>
+    class Bucket {
      private:
         static_assert(NeighborhoodSize >= 4,
                       "NeighborhoodSize should be >= 4.");
@@ -349,18 +350,20 @@ namespace hopscotch {
  */
 template<class K, class V, unsigned int NeighborhoodSize = 62>
 class Hashmap : private hopscotch::GrowthPolicy {
- private:
+ public:
     struct KV {
         K k;
         V v;
     };
 
+ private:
     static CONSTEXPR11 bool HasValue = !IsUnit<V>::value;
 
     typedef List<KV> OverflowContainer;
 
  public:
-    template<bool IsConst> class HashmapIterator;
+    template<bool IsConst>
+    class HashmapIterator;
 
     using Iterator = HashmapIterator<false>;
     using ConstIterator = HashmapIterator<true>;
@@ -378,7 +381,8 @@ class Hashmap : private hopscotch::GrowthPolicy {
     using ConstOverflowIterator = typename OverflowContainer::ConstIterator;
 
  public:
-    template<bool IsConst> class HashmapIterator {
+    template<bool IsConst>
+    class HashmapIterator {
         friend class Hashmap;
 
      private:
@@ -685,7 +689,8 @@ class Hashmap : private hopscotch::GrowthPolicy {
     }
 
 
-    template<class K2> V& operator[](K2&& key) noexcept {
+    template<class K2>
+    V& operator[](K2&& key) noexcept {
         static_assert(HasValue, "");
 
         size_t hash = hash_(key);
@@ -833,12 +838,13 @@ class Hashmap : private hopscotch::GrowthPolicy {
     }
 
 
-    template<typename P> bool insertImpl(P&& value) noexcept {
+    template<typename P>
+    bool insertImpl(P&& value) noexcept {
         size_t hash = hash_(value.k);
         size_t ibucketForHash = bucketForHash(hash);
 
         // Check if already presents
-        auto itFind = findImpl(value.k, hash, mBuckets + ibucketForHash);
+        auto itFind = findImpl(value.k, mBuckets + ibucketForHash);
         if (itFind != end()) {
             return false;
         }

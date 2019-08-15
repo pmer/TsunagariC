@@ -48,19 +48,12 @@ class TileGrid {
     const Tile* getTile(vicoord virt) const noexcept;
     const Tile* getTile(rcoord virt) const noexcept;
 
-    //! Return the dimensions of the Tile matrix.
-    ivec3 getDimensions() const noexcept;
-    //! Return the pixel dimensions of a Tile graphic.
-    ivec2 getTileDimensions() const noexcept;
-
-    bool doesLoopInX() const noexcept;
-    bool doesLoopInY() const noexcept;
-
     //! Returns true if a Tile exists at the specified coordinate.
     bool inBounds(icoord phys) const noexcept;
     bool inBounds(vicoord virt) const noexcept;
     bool inBounds(rcoord virt) const noexcept;
 
+ public:
     // Convert between virtual and physical map coordinates. Physical
     // coordinates are the physical indexes into the Tile vector. Layer
     // depth is represented by an arbirarily chosen integer in the physical
@@ -73,7 +66,6 @@ class TileGrid {
     rcoord virt2virt(vicoord virt) const noexcept;
     vicoord virt2virt(rcoord virt) const noexcept;
 
- public:
     // Convert between virtual and physical map depths.
     int depthIndex(float depth) const noexcept;
     float indexDepth(int idx) const noexcept;
@@ -103,6 +95,8 @@ class TileGrid {
     Vector<float> idx2depth;
 
     bool loopX, loopY;
+
+    Hashset<icoord> occupied;
 };
 
 #endif  // SRC_CORE_TILE_GRID_H_

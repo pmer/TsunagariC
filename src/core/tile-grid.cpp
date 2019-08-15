@@ -130,28 +130,6 @@ TileGrid::getTile(rcoord virt) const noexcept {
 }
 
 
-ivec3
-TileGrid::getDimensions() const noexcept {
-    return dim;
-}
-
-ivec2
-TileGrid::getTileDimensions() const noexcept {
-    return tileDim;
-}
-
-
-bool
-TileGrid::doesLoopInX() const noexcept {
-    return loopX;
-}
-
-bool
-TileGrid::doesLoopInY() const noexcept {
-    return loopY;
-}
-
-
 bool
 TileGrid::inBounds(icoord phys) const noexcept {
     return (loopX || (0 <= phys.x && phys.x < dim.x)) &&

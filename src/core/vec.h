@@ -29,6 +29,8 @@
 #define SRC_CORE_VEC_H_
 
 #include "os/c.h"
+#include "util/fnv.h"
+#include "util/noexcept.h"
 
 /**
  * Virtual integer coordinate.
@@ -46,26 +48,28 @@ struct icube {
     int x2, y2, z2;
 };
 
-template<class T> class vec2 {
+template<class T>
+class vec2 {
  public:
     T x, y;
 
-    operator bool() { return x || y; }
+    operator bool() noexcept { return x || y; }
 
-    float distanceTo(vec2<T> other) {
+    float distanceTo(vec2<T> other) noexcept {
         T dx = x - other.x;
         T dy = y - other.y;
         return sqrt(dx * dx + dy * dy);
     }
 };
 
-template<class T> struct vec3 {
+template<class T>
+struct vec3 {
  public:
     T x, y, z;
 
-    operator bool() { return x || y || z; }
+    operator bool() noexcept { return x || y || z; }
 
-    float distanceTo(vec3<T> other) {
+    float distanceTo(vec3<T> other) noexcept {
         T dx = x - other.x;
         T dy = y - other.y;
         return sqrt(dx * dx + dy * dy);
@@ -74,132 +78,112 @@ template<class T> struct vec3 {
 
 template<class T>
 vec2<T>
-operator+(const vec2<T>& a, const vec2<T>& b) {
-    vec2<T> c;
-    c.x = a.x + b.x;
-    c.y = a.y + b.y;
-    return c;
+operator+(const vec2<T>& a, const vec2<T>& b) noexcept {
+    return {
+        a.x + b.x,
+        a.y + b.y
+    };
 }
 
 template<class T>
 vec3<T>
-operator+(const vec3<T>& a, const vec3<T>& b) {
-    vec3<T> c;
-    c.x = a.x + b.x;
-    c.y = a.y + b.y;
-    c.z = a.z + b.z;
-    return c;
+operator+(const vec3<T>& a, const vec3<T>& b) noexcept {
+    return {
+        a.x + b.x,
+        a.y + b.y,
+        a.z + b.z
+    };
 }
 
 template<class T>
 vec2<T>
-operator-(const vec2<T>& a, const vec2<T>& b) {
-    vec2<T> c;
-    c.x = a.x - b.x;
-    c.y = a.y - b.y;
-    return c;
+operator-(const vec2<T>& a, const vec2<T>& b) noexcept {
+    return {
+        a.x - b.x,
+        a.y - b.y
+    };
 }
 
 template<class T>
 vec3<T>
-operator-(const vec3<T>& a, const vec3<T>& b) {
-    vec3<T> c;
-    c.x = a.x - b.x;
-    c.y = a.y - b.y;
-    c.z = a.z - b.z;
-    return c;
+operator-(const vec3<T>& a, const vec3<T>& b) noexcept {
+    return {
+        a.x - b.x,
+        a.y - b.y,
+        a.z - b.z
+    };
 }
 
-template<class T> vec2<T> operator*(const vec2<T>& a, const vec2<T>& b) {
-    vec2<T> c;
-    c.x = a.x * b.x;
-    c.y = a.y * b.y;
-    return c;
+template<class T, class CO>
+vec2<T> operator*(CO co, const vec2<T>& a) noexcept {
+    return {
+        a.x * (T)co,
+        a.y * (T)co
+    };
 }
 
-template<class T> vec3<T> operator*(const vec3<T>& a, const vec3<T>& b) {
-    vec3<T> c;
-    c.x = a.x * b.x;
-    c.y = a.y * b.y;
-    c.z = a.z * b.z;
-    return c;
-}
-
-template<class T, class CO> vec2<T> operator*(CO co, const vec2<T>& a) {
-    vec2<T> c;
-    c.x = a.x * (T)co;
-    c.y = a.y * (T)co;
-    return c;
-}
-
-template<class T, class CO> vec3<T> operator*(CO co, const vec3<T>& a) {
-    vec3<T> c;
-    c.x = a.x * (T)co;
-    c.y = a.y * (T)co;
-    c.z = a.z * (T)co;
-    return c;
-}
-
-template<class T>
-vec2<T>
-operator/(const vec2<T>& a, const vec2<T>& b) {
-    vec2<T> c;
-    c.x = a.x / b.x;
-    c.y = a.y / b.y;
-    return c;
-}
-
-template<class T>
-vec3<T>
-operator/(const vec3<T>& a, const vec3<T>& b) {
-    vec3<T> c;
-    c.x = a.x / b.x;
-    c.y = a.y / b.y;
-    c.z = a.z / b.z;
-    return c;
+template<class T, class CO>
+vec3<T> operator*(CO co, const vec3<T>& a) noexcept {
+    return {
+        a.x * (T)co,
+        a.y * (T)co,
+        a.z * (T)co
+    };
 }
 
 template<class T, class CO>
 vec2<T>
-operator/(const vec2<T>& a, CO co) {
-    vec2<T> c;
-    c.x = a.x / (T)co;
-    c.y = a.y / (T)co;
-    return c;
+operator/(const vec2<T>& a, CO co) noexcept {
+    return {
+        a.x / (T)co,
+        a.y / (T)co
+    };
 }
 
 template<class T, class CO>
 vec3<T>
-operator/(const vec3<T>& a, CO co) {
-    vec3<T> c;
-    c.x = a.x / (T)co;
-    c.y = a.y / (T)co;
-    c.z = a.z / (T)co;
-    return c;
+operator/(const vec3<T>& a, CO co) noexcept {
+    return {
+        a.x / (T)co,
+        a.y / (T)co,
+        a.z / (T)co
+    };
 }
 
 template<class T>
 bool
-operator==(const vec2<T>& a, const vec2<T>& b) {
+operator==(const vec2<T>& a, const vec2<T>& b) noexcept {
     return a.x == b.x && a.y == b.y;
 }
 
 template<class T>
 bool
-operator!=(const vec2<T>& a, const vec2<T>& b) {
+operator!=(const vec2<T>& a, const vec2<T>& b) noexcept {
     return a.x != b.x || a.y != b.y;
 }
 
 template<class T>
 bool
-operator==(const vec3<T>& a, const vec3<T>& b) {
+operator==(const vec3<T>& a, const vec3<T>& b) noexcept {
     return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
 template<class T>
 bool
-operator!=(const vec3<T>& a, const vec3<T>& b) {
+operator!=(const vec3<T>& a, const vec3<T>& b) noexcept {
     return a.x != b.x || a.y != b.y || a.z != b.z;
+}
+
+template<class T>
+size_t
+hash_(vec2<T> a) noexcept {
+    return fnvHash(reinterpret_cast<const char*>(&a), sizeof(a));
+}
+
+template<class T>
+size_t
+hash_(vec3<T> a) noexcept {
+    return fnvHash(reinterpret_cast<const char*>(&a), sizeof(a));
 }
 
 //! Integer vector.

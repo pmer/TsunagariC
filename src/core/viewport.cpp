@@ -82,7 +82,7 @@ offsetForPt(rvec2 pt) noexcept {
 static void
 _jumpToEntity(const Entity* e) noexcept {
     rcoord pos = e->getPixelCoord();
-    ivec2 td = area->grid.getTileDimensions();
+    ivec2 td = area->grid.tileDim;
     rvec2 center = rvec2{pos.x + td.x / 2, pos.y + td.y / 2};
     off = offsetForPt(center);
 }

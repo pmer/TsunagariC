@@ -286,8 +286,7 @@ Character::enterTile() noexcept {
 
 void
 Character::enterTile(icoord phys) noexcept {
-    Hashset<icoord>::KV value{phys, Unit()};
-    area->grid.occupied.insert(value);
+    area->grid.occupied.insert(phys);
 }
 
 void

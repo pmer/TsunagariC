@@ -350,13 +350,12 @@ namespace hopscotch {
  */
 template<class K, class V, unsigned int NeighborhoodSize = 62>
 class Hashmap : private hopscotch::GrowthPolicy {
- public:
+ private:
     struct KV {
         K k;
         V v;
     };
 
- private:
     static CONSTEXPR11 bool HasValue = !IsUnit<V>::value;
 
     typedef List<KV> OverflowContainer;
@@ -590,9 +589,11 @@ class Hashmap : private hopscotch::GrowthPolicy {
     }
 
 
-    bool insert(const KV& value) noexcept { return insertImpl(value); }
-
-    bool insert(KV&& value) noexcept { return insertImpl(move_(value)); }
+    template<bool HasValue_ = HasValue>
+    bool
+    insert(K key, EnableIf<!HasValue_> = True()) noexcept {
+        return insertImpl(KV{move_(key), V()});
+    }
 
 
     /**

@@ -30,9 +30,10 @@
 #include "util/constexpr.h"
 #include "util/noexcept.h"
 
-template<typename T> struct Refless { typedef T value; };
-template<typename T> struct Refless<T&&> { typedef T value; };
-template<typename T> struct Refless<T&> { typedef T value; };
+template<typename T> struct Refless_ { typedef T value; };
+template<typename T> struct Refless_<T&&> { typedef T value; };
+template<typename T> struct Refless_<T&> { typedef T value; };
+template<typename T> using Refless = typename Refless_<T>::value;
 
 //
 // Move
@@ -40,9 +41,9 @@ template<typename T> struct Refless<T&> { typedef T value; };
 //
 
 template<typename T>
-inline CONSTEXPR11 typename Refless<T>::value&&
+inline CONSTEXPR11 Refless<T>&&
 move_(T&& x) noexcept {
-    return static_cast<typename Refless<T>::value&&>(x);
+    return static_cast<Refless<T>&&>(x);
 }
 
 //
@@ -52,13 +53,13 @@ move_(T&& x) noexcept {
 
 template<typename T>
 inline CONSTEXPR11 T&&
-forward_(typename Refless<T>::value& x) noexcept {
+forward_(Refless<T>& x) noexcept {
     return static_cast<T&&>(x);
 }
 
 template<typename T>
 inline CONSTEXPR11 T&&
-forward_(typename Refless<T>::value&& x) noexcept {
+forward_(Refless<T>&& x) noexcept {
     return static_cast<T&&>(x);
 }
 

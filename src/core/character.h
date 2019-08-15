@@ -73,7 +73,7 @@ class Character : public Entity {
     //! Returns true if we can move in the desired direction.
     bool canMove(icoord dest) noexcept;
 
-    bool nowalked(Tile& t) noexcept;
+    bool nowalked(icoord phys) noexcept;
 
     void arrived() noexcept;
 

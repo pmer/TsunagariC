@@ -352,12 +352,13 @@ void
 Area::runScript(TileGrid::ScriptType type,
                 icoord tile,
                 Entity* triggeredBy) noexcept {
-    auto script = grid.scripts[type].find(tile);
-    if (script != grid.scripts[type].end()) {
+    Optional<DataArea::TileScript*> script =
+        grid.scripts[type].tryAt(tile);
+    if (script) {
         Tile* t = grid.getTile(tile);
         assert_(t);
 
-        (dataArea->*(script.value()))(*triggeredBy, *t);
+        (dataArea->*(**script))(*triggeredBy, *t);
     }
 }
 

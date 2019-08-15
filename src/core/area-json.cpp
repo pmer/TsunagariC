@@ -740,8 +740,9 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
     for (int Y = y; Y < y + h; Y++) {
         for (int X = x; X < x + w; X++) {
             Tile& tile = grid.objects[(z * grid.dim.y + Y) * grid.dim.x + X];
+            icoord phys = {X, Y, static_cast<int>(z)};
 
-            tile.flags |= flags;
+            grid.flags[phys] |= flags;
             for (size_t i = 0; i < 5; i++) {
                 if (exit[i]) {
                     int dx = X - x;
@@ -759,7 +760,6 @@ AreaJSON::processObject(Unique<JSONObject> obj) noexcept {
                 tile.layermods[i] = layermods[i];
             }
 
-            icoord phys = {X, Y, static_cast<int>(z)};
             if (enterScript) {
                 grid.scripts[TileGrid::SCRIPT_TYPE_ENTER][phys] = enterScript;
             }

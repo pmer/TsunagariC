@@ -217,10 +217,10 @@ Character::canMove(icoord dest) noexcept {
     bool inBounds = area->grid.inBounds(dest);
     if (destTile && inBounds) {
         // Tile is inside map. Can we move?
-        if (nowalked(*destTile)) {
+        if (nowalked(dest)) {
             return false;
         }
-        if (area->grid.occupied.contains(area->grid.virt2phys(destCoord))) {
+        if (area->grid.occupied.contains(dest)) {
             // Space is occupied by another Entity.
             return false;
         }
@@ -233,9 +233,10 @@ Character::canMove(icoord dest) noexcept {
 }
 
 bool
-Character::nowalked(Tile& t) noexcept {
+Character::nowalked(icoord phys) noexcept {
     unsigned flags = nowalkFlags & ~nowalkExempt;
-    return (t.flags & flags) != 0;
+    Optional<unsigned*> tileFlags = area->grid.flags.tryAt(phys);
+    return tileFlags && (**tileFlags & flags) != 0;
 }
 
 void

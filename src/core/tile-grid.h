@@ -106,6 +106,8 @@ class TileGrid {
     };
 
     Hashmap<icoord, DataArea::TileScript> scripts[SCRIPT_TYPE_LAST];
+
+    Hashmap<icoord, unsigned> flags;
 };
 
 #endif  // SRC_CORE_TILE_GRID_H_

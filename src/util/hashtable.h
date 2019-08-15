@@ -666,26 +666,34 @@ class Hashmap : private hopscotch::GrowthPolicy {
     V& at(const K& key, size_t hash) noexcept {
         static_assert(HasValue, "");
 
-        return const_cast<V&>(static_cast<const Hashmap*>(this)->at(key, hash));
+        size_t ibucketForHash = bucketForHash(hash);
+
+        V* value = findValueImpl(key, mBuckets + ibucketForHash);
+        if (value != nullptr) {
+            return *value;
+        }
+        else {
+            return insertValue(ibucketForHash, hash, forward_(key), V())
+                    .value();
+        }
     }
 
 
-    Optional<const V&> at(const K& key) const noexcept {
+    Optional<V*> tryAt(const K& key) noexcept {
         static_assert(HasValue, "");
 
-        return at(key, hash_(key));
+        return tryAt(key, hash_(key));
     }
 
-    Optional<const V&> at(const K& key, size_t hash) const noexcept {
+    Optional<V*> tryAt(const K& key, size_t hash) noexcept {
         static_assert(HasValue, "");
 
-        const V* value =
-                findValueImpl(key, hash, mBuckets + bucketForHash(hash));
+        V* value = findValueImpl(key, mBuckets + bucketForHash(hash));
         if (value == nullptr) {
             return none;
         }
         else {
-            return Optional<const V&>(*value);
+            return Optional<V*>(value);
         }
     }
 

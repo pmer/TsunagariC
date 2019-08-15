@@ -160,8 +160,6 @@ class Tile {
     Optional<float> layermodAt(ivec2 dir) const noexcept;
 
  public:
-    unsigned flags = 0;
-
     Optional<Exit> exits[EXITS_LENGTH];
     Optional<float> layermods[EXITS_LENGTH];
 };

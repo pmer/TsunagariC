@@ -49,7 +49,6 @@ class InProgressTimer : public InProgress {
     typedef Function<void(float)> ProgressFn;
     typedef Function<void()> ThenFn;
 
-    InProgressTimer(time_t duration, ProgressFn progress) noexcept;
     InProgressTimer(time_t duration, ThenFn then) noexcept;
     InProgressTimer(time_t duration, ProgressFn progress, ThenFn then) noexcept;
 

@@ -57,13 +57,6 @@ InProgressSound::tick(time_t) noexcept {
     }
 }
 
-InProgressTimer::InProgressTimer(time_t duration, ProgressFn progress) noexcept
-        : duration(duration), passed(0), progress(progress) {
-    if (!progress) {
-        Log::err("InProgressTimer", "invalid 'progress'");
-    }
-}
-
 InProgressTimer::InProgressTimer(time_t duration, ThenFn then) noexcept
         : duration(duration), passed(0), then(then) {
     if (!then) {
@@ -78,9 +71,7 @@ InProgressTimer::InProgressTimer(time_t duration,
     if (!progress) {
         Log::err("InProgressTimer", "invalid 'progress'");
     }
-    if (!then) {
-        Log::err("InProgressTimer", "invalid 'then'");
-    }
+    // then can be empty
 }
 
 void

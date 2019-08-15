@@ -54,7 +54,10 @@ class String : public Vector<char> {
     String(String&& other) noexcept;
     ~String() = default;
 
-    String& operator=(const String& other) = default;
+    String& operator=(const char* other) noexcept;
+    String& operator=(StringView other) noexcept;
+
+    String& operator=(const String& other) noexcept;
     String& operator=(String&& other) noexcept;
     bool operator<(const String& other) const noexcept;
     bool operator>(const String& other) const noexcept;

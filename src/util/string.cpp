@@ -60,6 +60,24 @@ String::String(String&& other) noexcept {
 }
 
 String&
+String::operator=(const char* other) noexcept {
+    clear();
+    return *this << other;
+}
+
+String&
+String::operator=(StringView other) noexcept {
+    clear();
+    return *this << other;
+}
+
+String&
+String::operator=(const String& other) noexcept {
+    clear();
+    return *this << StringView(other);
+}
+
+String&
 String::operator=(String&& other) noexcept {
     swap(other);
     return *this;

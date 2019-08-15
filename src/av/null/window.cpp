@@ -104,8 +104,16 @@ GameWindow::mainLoop() noexcept {
 
         previousFrameStart = frameStart;
         frameStart = SteadyClock::now();
-        while (frameStart > nextFrameStart) {
-            nextFrameStart += idealFrameTime;
+        nextFrameStart += idealFrameTime;
+
+        if (frameStart > nextFrameStart) {
+            int framesDropped = 0;
+            while (frameStart > nextFrameStart) {
+                nextFrameStart += idealFrameTime;
+                framesDropped += 1;
+            }
+            Log::info("GameWindow",
+                      String() << "Dropped " << framesDropped << " frames");
         }
     }
 #ifdef __clang__

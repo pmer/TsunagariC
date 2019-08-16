@@ -32,6 +32,7 @@
 #include "cache/readercache.h"
 #include "core/music-worker.h"
 #include "core/resources.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 #include "util/rc.h"
 #include "util/string-view.h"
@@ -44,31 +45,6 @@ struct SDL2Song {
     Optional<StringView> resource;
 
     Mix_Music* mix;
-};
-
-Rc<SDL2Song> genSong(StringView name) noexcept;
-
-class SDL2Music : public MusicWorker {
- public:
-    SDL2Music() noexcept;
-    ~SDL2Music() noexcept;
-
-    void play(StringView filename) noexcept;
-
-    void stop() noexcept;
-
-    bool playing() noexcept;
-    void pause() noexcept;
-    void resume() noexcept;
-
-    void setVolume(double volume) noexcept;
-
-    void garbageCollect() noexcept;
-
- private:
-    Rc<SDL2Song> currentMusic;
-
-    ReaderCache<Rc<SDL2Song>, genSong> songs;
 };
 
 #endif  // SRC_AV_SDL2_MUSIC_H_

@@ -31,6 +31,8 @@
 #include "cache/cache-template.h"
 #include "cache/readercache.h"
 #include "core/images.h"
+#include "util/int.h"
+#include "util/noexcept.h"
 
 struct SDL2Texture {
     explicit SDL2Texture(SDL_Texture* texture) noexcept;
@@ -48,14 +50,14 @@ class SDL2Image : public Image {
  public:
     SDL2Image(SDL_Texture* texture, int width, int height) noexcept;
 
-    void draw(double dstX, double dstY, double z) noexcept final;
-    void drawSubrect(double dstX,
-                     double dstY,
-                     double z,
-                     double srcX,
-                     double srcY,
-                     double srcW,
-                     double srcH) noexcept final;
+    void draw(float dstX, float dstY, float z) noexcept final;
+    void drawSubrect(float dstX,
+                     float dstY,
+                     float z,
+                     float srcX,
+                     float srcY,
+                     float srcW,
+                     float srcH) noexcept final;
 
     SDL2Texture texture;
 };
@@ -68,14 +70,14 @@ class SDL2TiledSubImage : public Image {
                       int width,
                       int height) noexcept;
 
-    void draw(double dstX, double dstY, double z) noexcept final;
-    void drawSubrect(double dstX,
-                     double dstY,
-                     double z,
-                     double srcX,
-                     double srcY,
-                     double srcW,
-                     double srcH) noexcept final;
+    void draw(float dstX, float dstY, float z) noexcept final;
+    void drawSubrect(float dstX,
+                     float dstY,
+                     float z,
+                     float srcX,
+                     float srcY,
+                     float srcW,
+                     float srcH) noexcept final;
 
     int xOff, yOff;
     Rc<SDL2Texture> texture;
@@ -100,27 +102,6 @@ class SDL2TiledImage : public TiledImage {
     int tileH;
     int numTiles;
     Rc<SDL2Texture> texture;
-};
-
-
-Rc<Image> genImage(StringView path) noexcept;
-
-class SDL2Images : public Images {
- public:
-    Rc<Image> load(StringView path) noexcept final;
-
-    Rc<TiledImage> loadTiles(StringView path,
-                             unsigned tileW,
-                             unsigned tileH) noexcept final;
-
-    void garbageCollect() noexcept final;
-
- private:
-    ReaderCache<Rc<Image>, genImage> images;
-    // We can't use a ReaderCache here because TiledImages are constructed
-    // with three arguments, but a ReaderCache only supports the use of
-    // one.
-    Cache<Rc<TiledImage>> tiledImages;
 };
 
 #endif  // SRC_AV_SDL2_IMAGE_H_

@@ -30,6 +30,37 @@
 #include "core/measure.h"
 #include "core/resources.h"
 #include "util/int.h"
+#include "util/noexcept.h"
+
+static Rc<SDL2Sample>
+genSample(StringView name) noexcept {
+    Optional<StringView> r = resourceLoad(name);
+    if (!r) {
+        // Error logged.
+        return Rc<SDL2Sample>();
+    }
+
+    assert_(r->size < UINT32_MAX);
+
+    SDL_RWops* ops =
+            SDL_RWFromMem(static_cast<void*>(const_cast<char*>(r->data)),
+                          static_cast<int>(r->size));
+
+    TimeMeasure m(String() << "Constructed " << name << " as sample");
+    Mix_Chunk* chunk = Mix_LoadWAV_RW(ops, 1);
+
+    // We need to keep the memory (the resource) around, so put it in a struct.
+    auto sample = new SDL2Sample;
+    sample->resource = move_(r);
+    sample->chunk = chunk;
+
+    return Rc<SDL2Sample>(sample);
+}
+
+static bool initialized = false;
+static ReaderCache<Rc<SDL2Sample>, genSample> samples;
+static Vector<Rc<SoundInstance>> channels;
+
 
 void
 SDL2OpenAudio() noexcept {
@@ -38,25 +69,6 @@ SDL2OpenAudio() noexcept {
     (void)err;
     assert_(err == 0);
 }
-
-static SDL2Sounds* globalSounds = nullptr;
-
-Sounds&
-Sounds::instance() noexcept {
-    if (globalSounds == nullptr) {
-        globalSounds = new SDL2Sounds;
-    }
-    return *globalSounds;
-}
-
-SDL2Sounds&
-SDL2Sounds::instance() noexcept {
-    if (globalSounds == nullptr) {
-        globalSounds = new SDL2Sounds;
-    }
-    return *globalSounds;
-}
-
 
 SDL2Sample::~SDL2Sample() noexcept {
     Mix_FreeChunk(chunk);
@@ -98,12 +110,12 @@ SDL2SoundInstance::resume() noexcept {
 }
 
 void
-SDL2SoundInstance::volume(double volume) noexcept {
+SDL2SoundInstance::volume(float volume) noexcept {
     Mix_Volume(channel, static_cast<int>(volume * 128));
 }
 
 void
-SDL2SoundInstance::pan(double pan) noexcept {
+SDL2SoundInstance::pan(float pan) noexcept {
     auto angle = static_cast<int16_t>(pan * 90);
 
     int err = Mix_SetPosition(channel, angle, 0);
@@ -112,7 +124,7 @@ SDL2SoundInstance::pan(double pan) noexcept {
 }
 
 void
-SDL2SoundInstance::speed(double) noexcept {
+SDL2SoundInstance::speed(float) noexcept {
     // No-op. SDL2 doesn't support changing playback rate.
 }
 
@@ -122,43 +134,40 @@ SDL2SoundInstance::setDone() noexcept {
 }
 
 
-Rc<SDL2Sample>
-genSample(StringView name) noexcept {
-    Optional<StringView> r = resourceLoad(name);
-    if (!r) {
-        // Error logged.
-        return Rc<SDL2Sample>();
-    }
+static void
+setDone(int channel) noexcept {
+    assert_(channel >= 0);
+    assert_(channels.size() > static_cast<size_t>(channel));
 
-    assert_(r->size < UINT32_MAX);
-
-    SDL_RWops* ops =
-            SDL_RWFromMem(static_cast<void*>(const_cast<char*>(r->data)),
-                          static_cast<int>(r->size));
-
-    TimeMeasure m(String() << "Constructed " << name << " as sample");
-    Mix_Chunk* chunk = Mix_LoadWAV_RW(ops, 1);
-
-    // We need to keep the memory (the resource) around, so put it in a struct.
-    auto sample = new SDL2Sample;
-    sample->resource = move_(r);
-    sample->chunk = chunk;
-
-    return Rc<SDL2Sample>(sample);
+    // `channels` needs to be an Rc<SoundInstance> so the reference counter on
+    // the sound can be shared with clients of the Sounds interface (from
+    // core/sounds.h). Unfortunately, that means we need to reinterpret_cast the
+    // Rc to get access to setDone().
+    auto instance = reinterpret_cast<Rc<SDL2SoundInstance>*>(
+            &channels[static_cast<size_t>(channel)]);
+    (*instance)->setDone();
 }
 
 static void
 channelFinished(int channel) noexcept {
-    globalSounds->setDone(channel);
+    setDone(channel);
 }
 
-SDL2Sounds::SDL2Sounds() noexcept {
-    SDL2OpenAudio();
+static void
+init() noexcept {
+    if (initialized) {
+        return;
+    }
+    initialized = true;
+
+	SDL2OpenAudio();
     Mix_ChannelFinished(channelFinished);
 }
 
 Rc<SoundInstance>
-SDL2Sounds::play(StringView path) noexcept {
+Sounds::play(StringView path) noexcept {
+    init();
+
     auto sample = samples.lifetimeRequest(path);
     if (!sample) {
         // Error logged.
@@ -183,20 +192,6 @@ SDL2Sounds::play(StringView path) noexcept {
 }
 
 void
-SDL2Sounds::garbageCollect() noexcept {
+Sounds::garbageCollect() noexcept {
     samples.garbageCollect();
-}
-
-void
-SDL2Sounds::setDone(int channel) noexcept {
-    assert_(channel >= 0);
-    assert_(channels.size() > static_cast<size_t>(channel));
-
-    // `channels` needs to be an Rc<SoundInstance> so the reference counter on
-    // the sound can be shared with clients of the Sounds interface (from
-    // core/sounds.h). Unfortunately, that means we need to reinterpret_cast the
-    // Rc to get access to setDone().
-    auto instance = reinterpret_cast<Rc<SDL2SoundInstance>*>(
-            &channels[static_cast<size_t>(channel)]);
-    (*instance)->setDone();
 }

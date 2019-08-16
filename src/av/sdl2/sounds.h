@@ -32,6 +32,7 @@
 #include "cache/readercache.h"
 #include "core/resources.h"
 #include "core/sounds.h"
+#include "util/noexcept.h"
 
 void SDL2OpenAudio() noexcept;
 
@@ -55,38 +56,15 @@ class SDL2SoundInstance : public SoundInstance {
     void pause() noexcept;
     void resume() noexcept;
 
-    void volume(double volume) noexcept;
-    void pan(double pan) noexcept;
-    void speed(double speed) noexcept;
+    void volume(float volume) noexcept;
+    void pan(float pan) noexcept;
+    void speed(float speed) noexcept;
 
     void setDone() noexcept;
 
  private:
     int channel;
     enum { S_PLAYING, S_PAUSED, S_DONE } state;
-};
-
-
-Rc<SDL2Sample> genSample(StringView name) noexcept;
-
-class SDL2Sounds : public Sounds {
- public:
-    static SDL2Sounds& instance() noexcept;
-
-    SDL2Sounds() noexcept;
-
-    Rc<SoundInstance> play(StringView path) noexcept;
-
-    void garbageCollect() noexcept;
-
-    void setDone(int channel) noexcept;
-
- private:
-    SDL2Sounds(const SDL2Sounds&) = delete;
-    SDL2Sounds& operator=(const SDL2Sounds&) = delete;
-
-    ReaderCache<Rc<SDL2Sample>, genSample> samples;
-    Vector<Rc<SoundInstance>> channels;
 };
 
 #endif  // SRC_AV_SDL2_SOUNDS_H_

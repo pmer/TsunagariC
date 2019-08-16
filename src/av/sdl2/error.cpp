@@ -28,10 +28,11 @@
 
 #include "av/sdl2/sdl2.h"
 #include "core/log.h"
+#include "util/noexcept.h"
 #include "util/string.h"
 
 void
-sdlDie(StringView system, StringView function) {
+sdlDie(StringView system, StringView function) noexcept {
     String message = function;
     StringView err = SDL_GetError();
     if (err.size > 0) {

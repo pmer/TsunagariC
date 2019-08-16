@@ -33,131 +33,17 @@
 #include "core/log.h"
 #include "core/measure.h"
 #include "core/world.h"
+#include "util/noexcept.h"
 #include "util/optional.h"
 
-#define CHECK(x)      \
-    if (!(x)) {       \
-        return false; \
-    }
+SDL_Renderer* SDL2GameWindow::renderer = nullptr;
+rvec2 SDL2GameWindow::translation = {0.0, 0.0};
+rvec2 SDL2GameWindow::scaling = {0.0, 0.0};
 
-static SDL2GameWindow globalWindow;
+static TimePoint start = SteadyClock::nowMS();
 
-GameWindow*
-GameWindow::create() noexcept {
-    return globalWindow.init() ? &globalWindow : nullptr;
-}
-
-GameWindow&
-GameWindow::instance() noexcept {
-    return globalWindow;
-}
-
-SDL2GameWindow&
-SDL2GameWindow::instance() noexcept {
-    return globalWindow;
-}
-
-time_t
-GameWindow::time() noexcept {
-    TimePoint start = globalWindow.start;
-    TimePoint end = SteadyClock::nowMS();
-    return end - start;
-}
-
-SDL2GameWindow::SDL2GameWindow() noexcept
-        : start(SteadyClock::nowMS()),
-          renderer(nullptr),
-          translation{0.0, 0.0},
-          scaling{0.0, 0.0},
-          window(nullptr),
-          transform(Transform::identity()) {}
-
-bool
-SDL2GameWindow::init() noexcept {
-    {
-        // TimeMeasure m("Initializing SDL2");
-        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-            sdlDie("SDL2GameWindow", "SDL_Init");
-            return false;
-        }
-    }
-
-    {
-        TimeMeasure m("Created SDL2 window");
-
-        int width = conf.windowSize.x;
-        int height = conf.windowSize.y;
-
-        uint32_t flags = SDL_WINDOW_HIDDEN;
-        if (conf.fullscreen) {
-            flags |= SDL_WINDOW_FULLSCREEN;
-        }
-
-        window = SDL_CreateWindow("Tsunagari",
-                                  SDL_WINDOWPOS_UNDEFINED,
-                                  SDL_WINDOWPOS_UNDEFINED,
-                                  width,
-                                  height,
-                                  flags);
-
-        if (window == nullptr) {
-            sdlDie("SDL2GameWindow", "SDL_CreateWindow");
-            return false;
-        }
-    }
-
-    {
-        TimeMeasure m("Created SDL2 renderer");
-
-        renderer = SDL_CreateRenderer(
-                window,
-                -1,
-                SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-        if (renderer == nullptr) {
-            sdlDie("SDL2GameWindow", "SDL_CreateRenderer");
-            return false;
-        }
-
-        SDL_RendererInfo info;
-
-        if (SDL_GetRendererInfo(renderer, &info) < 0) {
-            sdlDie("SDL2GameWindow", "SDL_GetRendererInfo");
-            return false;
-        }
-
-        StringView name = info.name;
-        bool vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
-
-        Log::info("SDL2GameWindow",
-                  String("Rendering will be done with ")
-                          << name
-                          << (vsync ? " with vsync" : " without vsync"));
-    }
-
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
-
-    return true;
-}
-
-unsigned
-SDL2GameWindow::width() const noexcept {
-    int w, h;
-    SDL_GetWindowSize(window, &w, &h);
-    return static_cast<unsigned>(w);
-}
-
-unsigned
-SDL2GameWindow::height() const noexcept {
-    int w, h;
-    SDL_GetWindowSize(window, &w, &h);
-    return static_cast<unsigned>(h);
-}
-
-void
-SDL2GameWindow::setCaption(StringView caption) noexcept {
-    SDL_SetWindowTitle(window, String(caption).null());
-}
+static SDL_Window* window = nullptr;
+static Transform transform = Transform::identity();
 
 static int
 getRefreshRate(SDL_Window* window) noexcept {
@@ -169,72 +55,8 @@ getRefreshRate(SDL_Window* window) noexcept {
     return mode.refresh_rate;
 }
 
-void
-SDL2GameWindow::mainLoop() noexcept {
-    DisplayList display;
-
-    SDL_ShowWindow(window);
-
-    bool redrew = false;
-    time_t lastTime = 0;
-    bool presented = false;
-    bool slept = false;
-
-	time_t lastTen[10] = {};
-
-    while (window != nullptr) {
-        handleEvents();
-
-        time_t now = time();
-        if (now == lastTime) {
-            Log::info("SDL2GameWindow",
-                      String("dt will be 0")
-                              << " redrew " << redrew << " presented " << redrew
-                              << " slept " << slept);
-        }
-        lastTime = now;
-
-        World::update(time());
-
-        if (World::needsRedraw()) {
-            redrew = true;
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
-            SDL_RenderClear(renderer);
-
-            display.items.clear();
-            World::draw(&display);
-            displayListPresent(&display);
-
-            SDL_RenderPresent(renderer);
-
-            presented = true;
-            slept = false;
-
-            // TODO: Detect dropped frames.
-        }
-        else {
-            redrew = false;
-            // TODO: Question: How do we handle variable refresh rate screens?
-            Duration frameLength{s_to_ns(1) / getRefreshRate(window)};
-            SleepFor(frameLength);
-
-            presented = false;
-            slept = true;
-        }
-    }
-}
-
-void
-SDL2GameWindow::handleEvents() noexcept {
-    SDL_Event event;
-
-    while (SDL_PollEvent(&event)) {
-        handleEvent(event);
-    }
-}
-
-void
-SDL2GameWindow::handleEvent(const SDL_Event& event) noexcept {
+static void
+handleEvent(const SDL_Event& event) noexcept {
     KeyboardKey key;
 
     switch (event.type) {
@@ -275,10 +97,10 @@ SDL2GameWindow::handleEvent(const SDL_Event& event) noexcept {
             return;
         }
         if (event.type == SDL_KEYUP) {
-            emitKeyUp(key);
+            GameWindow::emitKeyUp(key);
         }
         else if (event.type == SDL_KEYDOWN) {
-            emitKeyDown(key);
+            GameWindow::emitKeyDown(key);
         }
         break;
 
@@ -292,12 +114,206 @@ SDL2GameWindow::handleEvent(const SDL_Event& event) noexcept {
     }
 }
 
+static void
+handleEvents() noexcept {
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event)) {
+        handleEvent(event);
+    }
+}
+
+static void
+updateTransform() noexcept {
+    int w, h;
+
+    SDL_GetWindowSize(window, &w, &h);
+
+    float xScale = transform[0];
+    float yScale = transform[5];
+    float x = transform[12];
+    float y = transform[13];
+
+    SDL2GameWindow::translation = {x / xScale, y / yScale};
+    SDL2GameWindow::scaling = {xScale, yScale};
+}
+
+time_t
+GameWindow::time() noexcept {
+    return SteadyClock::nowMS() - start;
+}
+
 void
-SDL2GameWindow::drawRect(double x1,
-                         double x2,
-                         double y1,
-                         double y2,
-                         uint32_t argb) noexcept {
+GameWindow::create() noexcept {
+    {
+        // TimeMeasure m("Initializing SDL2");
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+            sdlDie("SDL2GameWindow", "SDL_Init");
+        }
+    }
+
+    {
+        TimeMeasure m("Created SDL2 window");
+
+        int width = Conf::windowSize.x;
+        int height = Conf::windowSize.y;
+
+        uint32_t flags = SDL_WINDOW_HIDDEN;
+        if (Conf::fullscreen) {
+            flags |= SDL_WINDOW_FULLSCREEN;
+        }
+
+        window = SDL_CreateWindow("Tsunagari",
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  width,
+                                  height,
+                                  flags);
+
+        if (window == nullptr) {
+            sdlDie("SDL2GameWindow", "SDL_CreateWindow");
+        }
+    }
+
+    {
+        TimeMeasure m("Created SDL2 renderer");
+
+        SDL2GameWindow::renderer = SDL_CreateRenderer(
+                window,
+                -1,
+                SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+        if (SDL2GameWindow::renderer == nullptr) {
+            sdlDie("SDL2GameWindow", "SDL_CreateRenderer");
+        }
+
+        SDL_RendererInfo info;
+
+        if (SDL_GetRendererInfo(SDL2GameWindow::renderer, &info) < 0) {
+            sdlDie("SDL2GameWindow", "SDL_GetRendererInfo");
+        }
+
+        StringView name = info.name;
+        bool vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
+
+        Log::info("SDL2GameWindow",
+                  String("Rendering will be done with ")
+                          << name
+                          << (vsync ? " with vsync" : " without vsync"));
+    }
+
+    SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0x00, 0x00, 0x00, 0xFF);
+}
+
+unsigned
+GameWindow::width() noexcept {
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+    return static_cast<unsigned>(w);
+}
+
+unsigned
+GameWindow::height() noexcept {
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+    return static_cast<unsigned>(h);
+}
+
+void
+GameWindow::setCaption(StringView caption) noexcept {
+    SDL_SetWindowTitle(window, String(caption).null());
+}
+
+void
+GameWindow::mainLoop() noexcept {
+    SDL_ShowWindow(window);
+
+    DisplayList display;
+
+    int refreshRate = getRefreshRate(window);
+    const Duration idealFrameTime = s_to_ns(1) / refreshRate;
+
+	// Block until the start of a frame.
+    SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0, 0, 0, 0xFF);
+    SDL_RenderClear(SDL2GameWindow::renderer);
+    SDL_RenderPresent(SDL2GameWindow::renderer);
+    SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0, 0, 0, 0xFF);
+    SDL_RenderClear(SDL2GameWindow::renderer);
+    SDL_RenderPresent(SDL2GameWindow::renderer);
+
+	TimePoint frameStart = SteadyClock::now();
+    TimePoint previousFrameStart =
+            frameStart - idealFrameTime;  // Bogus initial value.
+
+    TimePoint nextFrameStart = frameStart + idealFrameTime;
+
+	while (window != nullptr) {
+        handleEvents();
+
+		//
+        // Simulate world and draw frame.
+        //
+        time_t dt = ns_to_ms(frameStart - previousFrameStart);
+
+		assert_(dt >= 0);
+
+		if (dt > 0) {
+            World::tick(dt);
+        } else {
+            Log::info("SDL2GameWindow", "dt == 0");
+        }
+
+		bool drew = false;
+        if (World::needsRedraw()) {
+            drew = true;
+
+            World::draw(&display);
+
+            SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0, 0, 0, 0xFF);
+            SDL_RenderClear(SDL2GameWindow::renderer);
+            displayListPresent(&display);
+            SDL_RenderPresent(SDL2GameWindow::renderer);
+
+            display.items.clear();
+        }
+
+        TimePoint frameEnd = SteadyClock::now();
+        Duration timeTaken = frameEnd - frameStart;
+
+        //
+        // Sleep until next frame.
+        //
+        Duration sleepDuration = nextFrameStart - frameEnd;
+        if (sleepDuration < 0) {
+            sleepDuration = 0;
+        }
+
+        if (!drew && sleepDuration) {
+            SleepFor(sleepDuration);
+        }
+
+        previousFrameStart = frameStart;
+        frameStart = SteadyClock::now();
+        nextFrameStart += idealFrameTime;
+
+        if (frameStart > nextFrameStart) {
+            int framesDropped = 0;
+            while (frameStart > nextFrameStart) {
+                nextFrameStart += idealFrameTime;
+                framesDropped += 1;
+            }
+            Log::info("GameWindow",
+                      String() << "Dropped " << framesDropped << " frames");
+        }
+    }
+}
+
+void
+GameWindow::drawRect(float x1,
+                     float x2,
+                     float y1,
+                     float y2,
+                     uint32_t argb) noexcept {
     auto a = static_cast<uint8_t>((argb >> 24) & 0xFF);
     auto r = static_cast<uint8_t>((argb >> 16) & 0xFF);
     auto g = static_cast<uint8_t>((argb >> 8) & 0xFF);
@@ -308,13 +324,13 @@ SDL2GameWindow::drawRect(double x1,
                   static_cast<int>(x2 - x1),
                   static_cast<int>(y2 - y1)};
 
-    SDL_SetRenderDrawColor(renderer, r, g, b, a);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderDrawColor(SDL2GameWindow::renderer, r, g, b, a);
+    SDL_SetRenderDrawBlendMode(SDL2GameWindow::renderer, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(SDL2GameWindow::renderer, &rect);
 }
 
 void
-SDL2GameWindow::scale(double x, double y, Function<void()> op) noexcept {
+GameWindow::scale(float x, float y, Function<void()> op) noexcept {
     assert_(x == y);
 
     Transform prev = transform;
@@ -331,7 +347,7 @@ SDL2GameWindow::scale(double x, double y, Function<void()> op) noexcept {
 }
 
 void
-SDL2GameWindow::translate(double x, double y, Function<void()> op) noexcept {
+GameWindow::translate(float x, float y, Function<void()> op) noexcept {
     Transform prev = transform;
 
     transform =
@@ -346,31 +362,16 @@ SDL2GameWindow::translate(double x, double y, Function<void()> op) noexcept {
 }
 
 void
-SDL2GameWindow::clip(double x,
-                     double y,
-                     double width,
-                     double height,
-                     Function<void()> op) noexcept {
+GameWindow::clip(float x,
+                 float y,
+                 float width,
+                 float height,
+                 Function<void()> op) noexcept {
     op();
 }
 
 void
-SDL2GameWindow::close() noexcept {
+GameWindow::close() noexcept {
     SDL_DestroyWindow(window);
     window = nullptr;
-}
-
-void
-SDL2GameWindow::updateTransform() noexcept {
-    int w, h;
-
-    SDL_GetWindowSize(window, &w, &h);
-
-    double xScale = transform[0];
-    double yScale = transform[5];
-    double x = transform[12];
-    double y = transform[13];
-
-    translation = {x / xScale, y / yScale};
-    scaling = {xScale, yScale};
 }

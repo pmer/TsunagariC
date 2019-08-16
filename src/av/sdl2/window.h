@@ -32,54 +32,14 @@
 #include "core/window.h"
 #include "os/chrono.h"
 #include "util/function.h"
+#include "util/noexcept.h"
 #include "util/transform.h"
 
-class SDL2GameWindow : public GameWindow {
+class SDL2GameWindow {
  public:
-    static SDL2GameWindow& instance() noexcept ;
-
-    SDL2GameWindow() noexcept;
-    ~SDL2GameWindow() = default;
-
-    bool init() noexcept;
-
-    unsigned width() const noexcept;
-    unsigned height() const noexcept;
-
-    void setCaption(StringView caption) noexcept;
-
-    void mainLoop() noexcept;
-    void handleEvents() noexcept;
-    void handleEvent(const SDL_Event& event) noexcept;
-
-    void drawRect(double x1,
-                  double x2,
-                  double y1,
-                  double y2,
-                  uint32_t argb) noexcept;
-
-    void scale(double x, double y, Function<void()> op) noexcept;
-    void translate(double x, double y, Function<void()> op) noexcept;
-    void clip(double x,
-              double y,
-              double width,
-              double height,
-              Function<void()> op) noexcept;
-
-    void close() noexcept;
-
-    TimePoint start;
-
-    SDL_Renderer* renderer;
-    rvec2 translation;
-    rvec2 scaling;
-
- private:
-    void updateTransform() noexcept;
-
- private:
-    SDL_Window* window;
-    Transform transform;
+    static SDL_Renderer* renderer;
+    static rvec2 translation;
+    static rvec2 scaling;
 };
 
 #endif  // SRC_AV_SDL2_WINDOW_H_

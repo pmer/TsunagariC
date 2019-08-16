@@ -31,19 +31,10 @@
 #include "core/measure.h"
 #include "core/resources.h"
 #include "util/int.h"
+#include "util/noexcept.h"
 #include "util/unique.h"
 
-static SDL2Music* globalMusicWorker = nullptr;
-
-MusicWorker&
-MusicWorker::instance() noexcept {
-    if (globalMusicWorker == nullptr) {
-        globalMusicWorker = new SDL2Music;
-    }
-    return *globalMusicWorker;
-}
-
-Rc<SDL2Song>
+static Rc<SDL2Song>
 genSong(StringView name) noexcept {
     Optional<StringView> r = resourceLoad(name);
     if (!r) {
@@ -68,14 +59,26 @@ genSong(StringView name) noexcept {
     return Rc<SDL2Song>(song);
 }
 
+static bool initalized = false;
+static String path;
+static int paused = 0;
+static Rc<SDL2Song> currentMusic;
+static ReaderCache<Rc<SDL2Song>, genSong> songs;
+
 
 SDL2Song::~SDL2Song() noexcept {
     Mix_FreeMusic(mix);
 }
 
 
-SDL2Music::SDL2Music() noexcept {
-    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+static void
+init() noexcept {
+    if (initalized) {
+        return;
+    }
+    initalized = true;
+
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
         sdlDie("SDL2Music", "SDL_Init");
     }
 
@@ -84,13 +87,11 @@ SDL2Music::SDL2Music() noexcept {
     }
 }
 
-SDL2Music::~SDL2Music() noexcept {
-    stop();
-}
-
 void
-SDL2Music::play(StringView filepath) noexcept {
-    if (path == filepath) {
+MusicWorker::play(StringView path_) noexcept {
+    init();
+
+	if (path == path_) {
         if (Mix_PausedMusic()) {
             paused = 0;
             Mix_PlayMusic(currentMusic->mix, -1);
@@ -98,57 +99,55 @@ SDL2Music::play(StringView filepath) noexcept {
         return;
     }
 
-    MusicWorker::play(move_(filepath));
-    TimeMeasure m(String() << "Playing " << path);
+    paused = 0;
+    path = path_;
+
+	TimeMeasure m(String() << "Playing " << path);
     if (currentMusic && !Mix_PausedMusic()) {
         Mix_HaltMusic();
     }
     currentMusic = path.size() ? songs.lifetimeRequest(path) : Rc<SDL2Song>();
     if (currentMusic) {
         Mix_PlayMusic(currentMusic->mix, -1);
-        Mix_VolumeMusic(static_cast<int>(volume * 128));
     }
 }
 
 void
-SDL2Music::stop() noexcept {
-    MusicWorker::stop();
+MusicWorker::stop() noexcept {
+    init();
+
+    paused = 0;
+    path = "";
+
     if (currentMusic) {
         Mix_HaltMusic();
     }
     currentMusic = Rc<SDL2Song>();
 }
 
-bool
-SDL2Music::playing() noexcept {
-    return currentMusic && Mix_PlayingMusic() != 0;
-}
-
 void
-SDL2Music::pause() noexcept {
+MusicWorker::pause() noexcept {
+    init();
+
     if (paused == 0 && currentMusic) {
         Mix_PauseMusic();
     }
-    MusicWorker::pause();
+
+	paused++;
 }
 
 void
-SDL2Music::resume() noexcept {
-    MusicWorker::resume();
+MusicWorker::resume() noexcept {
+    init();
+
+    paused--;
+
     if (paused == 0 && currentMusic) {
         Mix_ResumeMusic();
     }
 }
 
 void
-SDL2Music::setVolume(double volume) noexcept {
-    MusicWorker::setVolume(volume);
-    if (currentMusic) {
-        Mix_VolumeMusic(static_cast<int>(volume * 128));
-    }
-}
-
-void
-SDL2Music::garbageCollect() noexcept {
+MusicWorker::garbageCollect() noexcept {
     songs.garbageCollect();
 }

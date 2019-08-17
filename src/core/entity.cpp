@@ -227,10 +227,9 @@ Entity::calcDraw() noexcept {
     }
 }
 
-ivec2
+void
 Entity::setFacing(ivec2 facing) noexcept {
     this->facing = ivec2{bound(facing.x, -1, 1), bound(facing.y, -1, 1)};
-    return this->facing;
 }
 
 StringView

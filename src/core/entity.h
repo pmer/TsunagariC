@@ -76,7 +76,7 @@ class Entity {
 
     //! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
     //! to 'facing'.
-    ivec2 setFacing(ivec2 facing) noexcept;
+    void setFacing(ivec2 facing) noexcept;
 
     const StringView getFacing() const noexcept;
 

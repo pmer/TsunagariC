@@ -80,16 +80,18 @@ init() noexcept {
     initalized = true;
 
     if (SDL_WasInit(SDL_INIT_AUDIO) == 0) {
-        TimeMeasure m("Initialized the SDL2 audio subsystem");
-        if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-            sdlDie("SDL2Music", "SDL_Init(SDL_INIT_AUDIO)");
+        {
+            TimeMeasure m("Initialized the SDL2 audio subsystem");
+            if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+                sdlDie("SDL2Music", "SDL_Init(SDL_INIT_AUDIO)");
+            }
         }
-    }
 
-    {
-        TimeMeasure m("Opened an audio device");
-        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
-            sdlDie("SDL2Music", "Mix_OpenAudio");
+        {
+            TimeMeasure m("Opened an audio device");
+            if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+                sdlDie("SDL2Music", "Mix_OpenAudio");
+            }
         }
     }
 }

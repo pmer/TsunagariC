@@ -33,6 +33,7 @@ extern "C" {
 
 // SDL.h
 int SDL_Init(uint32_t) noexcept;
+uint32_t SDL_WasInit(uint32_t flags) noexcept;
 #define SDL_INIT_AUDIO 0x00000010
 #define SDL_INIT_VIDEO 0x00000020
 

@@ -26,6 +26,7 @@
 
 #include "av/sdl2/sounds.h"
 
+#include "av/sdl2/error.h"
 #include "av/sdl2/sdl2.h"
 #include "core/measure.h"
 #include "core/resources.h"
@@ -57,18 +58,9 @@ genSample(StringView name) noexcept {
     return Rc<SDL2Sample>(sample);
 }
 
-static bool initialized = false;
 static ReaderCache<Rc<SDL2Sample>, genSample> samples;
 static Vector<Rc<SoundInstance>> channels;
 
-
-void
-SDL2OpenAudio() noexcept {
-    // Calling these functions more than once is okay.
-    int err = SDL_Init(SDL_INIT_AUDIO);
-    (void)err;
-    assert_(err == 0);
-}
 
 SDL2Sample::~SDL2Sample() noexcept {
     Mix_FreeChunk(chunk);
@@ -155,12 +147,24 @@ channelFinished(int channel) noexcept {
 
 static void
 init() noexcept {
+    static bool initialized = false;
+
     if (initialized) {
         return;
     }
     initialized = true;
 
-	SDL2OpenAudio();
+    if (SDL_WasInit(SDL_INIT_AUDIO) != 0) {
+        return;
+    }
+
+    {
+        TimeMeasure m("Initialized the SDL2 audio subsystem");
+        if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+            sdlDie("SDL2Sounds", "SDL_Init(SDL_INIT_AUDIO)");
+        }
+    }
+
     Mix_ChannelFinished(channelFinished);
 }
 

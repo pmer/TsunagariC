@@ -237,9 +237,6 @@ GameWindow::mainLoop() noexcept {
     SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0, 0, 0, 0xFF);
     SDL_RenderClear(SDL2GameWindow::renderer);
     SDL_RenderPresent(SDL2GameWindow::renderer);
-    SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0, 0, 0, 0xFF);
-    SDL_RenderClear(SDL2GameWindow::renderer);
-    SDL_RenderPresent(SDL2GameWindow::renderer);
 
     TimePoint frameStart = SteadyClock::now();
     TimePoint previousFrameStart =

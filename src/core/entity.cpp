@@ -91,24 +91,49 @@ Entity::draw(DisplayList* display) noexcept {
 
     // TODO: Don't add to DisplayList if not on-screen.
 
-    display->items.push_back(
-            DisplayItem{phase->frame(now), rvec2{doff.x + r.x, doff.y + r.y}});
+    // X-axis is centered on tile.
+    float maxX = (area->grid.tileDim.x + imgsz.x) / 2 + r.x;
+    float minX = maxX - imgsz.x;
+    // Y-axis is aligned with bottom of tile.
+    float maxY = area->grid.tileDim.y + r.y;
+    float minY = maxY - imgsz.y;
+
+    display->items.push_back(DisplayItem{phase->frame(now),
+                                         rvec2{minX, minY}});
 }
 
 bool
 Entity::needsRedraw(const icube& visiblePixels) const noexcept {
-    time_t now = World::time();
-
-    // Don't need to redraw
-    if (!redraw && (!phase || !phase->needsRedraw(now))) {
+    if (!phase) {
+        // Entity is invisible.
         return false;
     }
 
-    // Aren't on-screen
-    if (visiblePixels.x2 < r.x || r.x + imgsz.x < visiblePixels.x1) {
+
+    if (!redraw) {
+        // Entity has not moved and has not changed phase.
+        time_t now = World::time();
+        if (!phase->needsRedraw(now)) {
+            // Entity's animation does not need an update.
+            return false;
+        }
+    }
+
+    // At this point, we know the entity is visible, and has either moved since
+    // the last frame or it wants to update its animation frame. Now we check
+    // if it is on-screen.
+
+    // X-axis is centered on tile.
+    int maxX = (area->grid.tileDim.x + imgsz.x) / 2 + r.x;
+    int minX = maxX - imgsz.x;
+    // Y-axis is aligned with bottom of tile.
+    int maxY = area->grid.tileDim.y + r.y;
+    int minY = maxY - imgsz.y;
+
+    if (visiblePixels.x2 < minX || maxX < visiblePixels.x1) {
         return false;
     }
-    if (visiblePixels.y2 < r.y || r.y + imgsz.y < visiblePixels.y1) {
+    if (visiblePixels.y2 < minY || maxY < visiblePixels.y1) {
         return false;
     }
 

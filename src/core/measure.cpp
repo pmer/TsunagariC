@@ -66,7 +66,7 @@ TimeMeasure::TimeMeasure(String description) noexcept {
     this->description = move_(description);
     start = SteadyClock::now();
 #if defined(__APPLE__) && defined(MAKE_MACOS_SIGNPOSTS)
-    signpost = getSignpost(description);
+    signpost = getSignpost(this->description);
     kdebug_signpost_start(signpost, 0, 0, 0, 0);
 #endif
 }

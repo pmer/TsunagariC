@@ -130,12 +130,12 @@ Character::moveByTile(ivec2 delta) noexcept {
     icoord from = getTileCoords_i();
     setDestinationCoordinate(area->grid.phys2virt_r(dest));
 
-    destExit = nullptr;
+    destExit = none;
     if (area->grid.inBounds(from)) {
         destExit = area->grid.exitAt(from, delta);
     }
-    else if (area->grid.inBounds(dest)) {
-        destExit = area->grid.exits[EXIT_NORMAL].tryAt(from);
+    if (!destExit && area->grid.inBounds(dest)) {
+        destExit = area->grid.exits[EXIT_NORMAL].tryAt(dest);
     }
 
     if (!canMove(dest)) {

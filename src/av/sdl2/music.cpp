@@ -101,10 +101,6 @@ MusicWorker::play(StringView path_) noexcept {
     init();
 
     if (path == path_) {
-        if (Mix_PausedMusic()) {
-            paused = 0;
-            Mix_PlayMusic(currentMusic->mix, -1);
-        }
         return;
     }
 

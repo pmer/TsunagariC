@@ -222,6 +222,7 @@ isaTTY() noexcept {
     static bool tty = false;
 
     if (!checked) {
+        checked = true;
         tty = isatty(0) != 0;
     }
     return tty;

@@ -44,6 +44,7 @@ class DataArea {
     typedef void (DataArea::*TileScript)(Entity& triggeredBy, icoord tile);
 
  public:
+    DataArea() = default;
     virtual ~DataArea() = default;
 
     Area* area = nullptr;  // borrowed reference
@@ -65,9 +66,6 @@ class DataArea {
     void turn() noexcept;
 
     Hashmap<StringView, TileScript> scripts;
-
- protected:
-    DataArea() = default;
 
  private:
     DataArea(const DataArea&) = delete;

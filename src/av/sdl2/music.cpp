@@ -100,7 +100,7 @@ void
 MusicWorker::play(StringView path_) noexcept {
     init();
 
-	if (path == path_) {
+    if (path == path_) {
         if (Mix_PausedMusic()) {
             paused = 0;
             Mix_PlayMusic(currentMusic->mix, -1);
@@ -111,7 +111,7 @@ MusicWorker::play(StringView path_) noexcept {
     paused = 0;
     path = path_;
 
-	TimeMeasure m(String() << "Playing " << path);
+    TimeMeasure m(String() << "Playing " << path);
     if (currentMusic && !Mix_PausedMusic()) {
         Mix_HaltMusic();
     }
@@ -142,7 +142,7 @@ MusicWorker::pause() noexcept {
         Mix_PauseMusic();
     }
 
-	paused++;
+    paused++;
 }
 
 void

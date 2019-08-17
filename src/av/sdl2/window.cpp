@@ -233,7 +233,7 @@ GameWindow::mainLoop() noexcept {
     int refreshRate = getRefreshRate(window);
     const Duration idealFrameTime = s_to_ns(1) / refreshRate;
 
-	// Block until the start of a frame.
+    // Block until the start of a frame.
     SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0, 0, 0, 0xFF);
     SDL_RenderClear(SDL2GameWindow::renderer);
     SDL_RenderPresent(SDL2GameWindow::renderer);
@@ -241,29 +241,29 @@ GameWindow::mainLoop() noexcept {
     SDL_RenderClear(SDL2GameWindow::renderer);
     SDL_RenderPresent(SDL2GameWindow::renderer);
 
-	TimePoint frameStart = SteadyClock::now();
+    TimePoint frameStart = SteadyClock::now();
     TimePoint previousFrameStart =
             frameStart - idealFrameTime;  // Bogus initial value.
 
     TimePoint nextFrameStart = frameStart + idealFrameTime;
 
-	while (window != nullptr) {
+    while (window != nullptr) {
         handleEvents();
 
-		//
+        //
         // Simulate world and draw frame.
         //
         time_t dt = ns_to_ms(frameStart - previousFrameStart);
 
-		assert_(dt >= 0);
+        assert_(dt >= 0);
 
-		if (dt > 0) {
+        if (dt > 0) {
             World::tick(dt);
         } else {
             Log::info("SDL2GameWindow", "dt == 0");
         }
 
-		bool drew = false;
+        bool drew = false;
         if (World::needsRedraw()) {
             drew = true;
 

@@ -78,11 +78,8 @@ init() noexcept {
     }
 
     initalized = true;
-    if (SDL_WasInit(SDL_INIT_AUDIO) != 0) {
-        return;
-    }
 
-    {
+    if (SDL_WasInit(SDL_INIT_AUDIO) == 0) {
         TimeMeasure m("Initialized the SDL2 audio subsystem");
         if (SDL_Init(SDL_INIT_AUDIO) < 0) {
             sdlDie("SDL2Music", "SDL_Init(SDL_INIT_AUDIO)");

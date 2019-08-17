@@ -257,7 +257,7 @@ GameWindow::mainLoop() noexcept {
         if (dt > 0) {
             World::tick(dt);
         } else {
-            Log::info("SDL2GameWindow", "dt == 0");
+            //Log::info("SDL2GameWindow", "dt == 0");
         }
 
         bool drew = false;

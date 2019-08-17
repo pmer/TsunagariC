@@ -151,6 +151,8 @@ MusicWorker::resume() noexcept {
 
     paused--;
 
+    assert_(paused >= 0);
+
     if (paused == 0 && currentMusic) {
         Mix_ResumeMusic();
     }

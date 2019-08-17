@@ -146,9 +146,9 @@ GameWindow::time() noexcept {
 void
 GameWindow::create() noexcept {
     {
-        // TimeMeasure m("Initializing SDL2");
+        TimeMeasure m("Initialized the SDL2 video subsystem");
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-            sdlDie("SDL2GameWindow", "SDL_Init");
+            sdlDie("SDL2GameWindow", "SDL_Init(SDL_INIT_VIDEO)");
         }
     }
 

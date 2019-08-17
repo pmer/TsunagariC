@@ -186,21 +186,21 @@ GameWindow::create() noexcept {
         if (SDL2GameWindow::renderer == nullptr) {
             sdlDie("SDL2GameWindow", "SDL_CreateRenderer");
         }
-
-        SDL_RendererInfo info;
-
-        if (SDL_GetRendererInfo(SDL2GameWindow::renderer, &info) < 0) {
-            sdlDie("SDL2GameWindow", "SDL_GetRendererInfo");
-        }
-
-        StringView name = info.name;
-        bool vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
-
-        Log::info("SDL2GameWindow",
-                  String("Rendering will be done with ")
-                          << name
-                          << (vsync ? " with vsync" : " without vsync"));
     }
+
+    SDL_RendererInfo info;
+
+    if (SDL_GetRendererInfo(SDL2GameWindow::renderer, &info) < 0) {
+        sdlDie("SDL2GameWindow", "SDL_GetRendererInfo");
+    }
+
+    StringView name = info.name;
+    bool vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
+
+    Log::info("SDL2GameWindow",
+              String("Rendering will be done with ")
+                      << name
+                      << (vsync ? " with vsync" : " without vsync"));
 
     SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0x00, 0x00, 0x00, 0xFF);
 }

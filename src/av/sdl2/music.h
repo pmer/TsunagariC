@@ -28,15 +28,9 @@
 #define SRC_AV_SDL2_MUSIC_H_
 
 #include "av/sdl2/sdl2.h"
-#include "cache/cache-template.h"
-#include "cache/readercache.h"
-#include "core/music-worker.h"
-#include "core/resources.h"
 #include "util/noexcept.h"
 #include "util/optional.h"
-#include "util/rc.h"
 #include "util/string-view.h"
-#include "util/unique.h"
 
 struct SDL2Song {
     ~SDL2Song() noexcept;

@@ -52,8 +52,8 @@
 
 #include "core/jsons.h"
 
-#include "cache/cache-template.h"
-#include "cache/readercache.h"
+#include "cache/rc-cache-impl.h"
+#include "cache/rc-reader-cache.h"
 #include "core/log.h"
 #include "core/measure.h"
 #include "core/resources.h"
@@ -393,7 +393,7 @@ genJSON(StringView path) noexcept {
     return Rc<JSONObject>(new JSONDocImpl(move_(document)));
 }
 
-static ReaderCache<Rc<JSONObject>, genJSON> documents;
+static RcReaderCache<Rc<JSONObject>, genJSON> documents;
 
 Rc<JSONObject>
 JSONs::load(StringView path) noexcept {

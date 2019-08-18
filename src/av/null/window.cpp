@@ -33,6 +33,7 @@
 #include "os/chrono.h"
 #include "os/thread.h"
 #include "util/string-view.h"
+#include "util/string.h"
 
 void
 GameWindow::create() noexcept {}

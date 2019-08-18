@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** sounds.h                           **
-** Copyright 2011-2014 Michael Reiley **
+** rc-cache.h                         **
+** Copyright 2011-2013 Michael Reiley **
 ** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
@@ -25,46 +25,33 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CORE_SOUNDS_H_
-#define SRC_CORE_SOUNDS_H_
+#ifndef SRC_CACHE_RC_CACHE_H_
+#define SRC_CACHE_RC_CACHE_H_
 
-#include "util/int.h"
-#include "util/markable.h"
+#include "util/hashtable.h"
 #include "util/string-view.h"
+#include "util/string.h"
 
-typedef Markable<int,-1> SoundID;
-typedef Markable<int,-1> PlayingSoundID;
-
-class Sounds {
+template<typename T>
+class RcCache {
  public:
-    static SoundID load(StringView path) noexcept;
+    T momentaryRequest(StringView name) noexcept;
 
-    // Free destroyed Sounds that were not recently played.
-    static void prune(time_t latestPermissibleUse) noexcept;
+    T lifetimeRequest(StringView name) noexcept;
+
+    void momentaryPut(StringView name, T data) noexcept;
+
+    void lifetimePut(StringView name, T data) noexcept;
+
+    void garbageCollect() noexcept;
+
+ private:
+    struct CacheEntry {
+        T data;
+        time_t lastUsed = 0;  // time in milliseconds
+    };
+
+    Hashmap<String, CacheEntry> map;
 };
 
-class Sound {
- public:
-     static PlayingSoundID play(SoundID id) noexcept;
-
-     static void release(SoundID id) noexcept;
-};
-
-class PlayingSound{
- public:
-    // Whether the sound is currently playing.
-    static bool isPlaying(PlayingSoundID id) noexcept;
-    // Stop playing the sound. SoundInstances cannot resume from stop().
-    // Create a new one to play again. Calls destroy().
-    static void stop(PlayingSoundID id) noexcept;
-
-    // Between 0.0 (silence) and 1.0 (full).
-    static void volume(PlayingSoundID id, float volume) noexcept;
-    // 1.0 is normal speed.
-    static void speed(PlayingSoundID id, float speed) noexcept;
-
-    // Release the resources used by this PlayingSound.
-    static void release(PlayingSoundID id) noexcept;
-};
-
-#endif  // SRC_CORE_SOUNDS_H_
+#endif  // SRC_CORE_RC_CACHE_H_

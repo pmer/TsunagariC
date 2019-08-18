@@ -169,6 +169,7 @@ SDL_Surface* IMG_Load_RW(SDL_RWops*, int) noexcept;
 // SDL_mixer.h
 typedef struct Mix_Chunk Mix_Chunk;
 typedef struct Mix_Music Mix_Music;
+int Mix_AllocateChannels(int) noexcept;
 void Mix_ChannelFinished(void (*)(int));
 void Mix_FreeChunk(Mix_Chunk*) noexcept;
 void Mix_FreeMusic(Mix_Music*) noexcept;

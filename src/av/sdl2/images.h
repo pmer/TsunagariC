@@ -28,8 +28,8 @@
 #define SRC_AV_SDL2_IMAGE_H_
 
 #include "av/sdl2/sdl2.h"
-#include "cache/cache-template.h"
-#include "cache/readercache.h"
+#include "cache/rc-cache-impl.h"
+#include "cache/rc-reader-cache.h"
 #include "core/images.h"
 #include "util/int.h"
 #include "util/noexcept.h"

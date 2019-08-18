@@ -32,6 +32,16 @@
 #include "util/string.h"
 
 void
+sdlError(StringView system, StringView function) noexcept {
+    String message = function;
+    StringView err = SDL_GetError();
+    if (err.size > 0) {
+        message << ": " << err;
+    }
+    Log::err(system, message);
+}
+
+void
 sdlDie(StringView system, StringView function) noexcept {
     String message = function;
     StringView err = SDL_GetError();

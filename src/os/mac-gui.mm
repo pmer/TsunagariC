@@ -97,29 +97,32 @@ void macSetWorkingDirectory() noexcept {
 
     mainBundle = CFBundleGetMainBundle();
     assert_(mainBundle);
-    
+
     url = CFBundleCopyBundleURL(mainBundle);
     assert_(url);
-    
+
     bool ok = CFURLGetFileSystemRepresentation(url,
                                              true,
                                              pathBytes,
                                              sizeof(pathBytes));
     (void)ok;
     assert_(ok);
-    
+
     appPath = [[NSString alloc] initWithBytesNoCopy:pathBytes
                                              length:StringView((char*)pathBytes).size + 1
                                            encoding:NSUTF8StringEncoding
                                        freeWhenDone:false];
     assert_(appPath);
-    
+
     BOOL ok2 = [[NSFileManager defaultManager] changeCurrentDirectoryPath:appPath];
     (void)ok2;
     assert_(ok2);
 
     int err = chdir("Contents/Resources");
-    assert_(err == 0);
+    (void)err;
+    // FIXME: This assert will fail if we are not in a bundle. Detect when
+    //        we are not in a bundle before this point and bail out earlier.
+    //assert_(err == 0);
 
     [appPath release];
     CFRelease(url);

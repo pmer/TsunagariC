@@ -1,7 +1,7 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** readercache.h                      **
-** Copyright 2011-2013 Michael Reiley **
+** keyboard.h                         **
+** Copyright 2011-2015 Michael Reiley **
 ** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
 
@@ -25,42 +25,21 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CACHE_READERCACHE_H_
-#define SRC_CACHE_READERCACHE_H_
+#ifndef SRC_CORE_KEYBOARD_H_
+#define SRC_CORE_KEYBOARD_H_
 
-#include "cache/cache.h"
-#include "util/string-view.h"
-
-template<typename T> using GenFn = T (*)(StringView name);
-
-template<typename T, GenFn<T> fn> class ReaderCache {
- public:
-    T momentaryRequest(StringView name) noexcept {
-        T t = cache.momentaryRequest(name);
-        if (t) {
-            return t;
-        }
-
-        t = fn(name);
-        cache.momentaryPut(name, t);
-        return t;
-    }
-
-    T lifetimeRequest(StringView name) noexcept {
-        T t = cache.lifetimeRequest(name);
-        if (t) {
-            return t;
-        }
-
-        t = fn(name);
-        cache.lifetimePut(name, t);
-        return t;
-    }
-
-    void garbageCollect() noexcept { cache.garbageCollect(); }
-
- private:
-    Cache<T> cache;
+enum KeyboardKey {
+    KBEscape = 1,
+    KBLeftControl,
+    KBRightControl,
+    KBLeftShift,
+    KBRightShift,
+    KBSpace,
+    KBLeftArrow,
+    KBRightArrow,
+    KBUpArrow,
+    KBDownArrow,
+    KB_SIZE,
 };
 
-#endif  // SRC_CACHE_READERCACHE_H_
+#endif  // SRC_CORE_KEYBOARD_H_

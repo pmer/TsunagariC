@@ -116,7 +116,6 @@ if(AV_SDL2)
                 src/av/sdl2/music.cpp
                 src/av/sdl2/music.h
                 src/av/sdl2/sounds.cpp
-                src/av/sdl2/sounds.h
                 src/av/sdl2/window.cpp
                 src/av/sdl2/window.h
     )
@@ -138,9 +137,9 @@ if(AV_GOSU)
 endif()
 
 target_sources(tsunagari
-    PUBLIC src/cache/cache-template.h
-    PUBLIC src/cache/cache.h
-    PUBLIC src/cache/readercache.h
+    PUBLIC src/cache/rc-cache-impl.h
+    PUBLIC src/cache/rc-cache.h
+    PUBLIC src/cache/rc-reader-cache.h
 )
 
 target_sources(tsunagari
@@ -329,12 +328,14 @@ target_sources(tsunagari
     PUBLIC  src/util/jobs.h
     PUBLIC  src/util/likely.h
     PUBLIC  src/util/list.h
+    PUBLIC  src/util/markable.h
     PUBLIC  src/util/math2.h
     PUBLIC  src/util/meta.h
     PUBLIC  src/util/move.h
     PUBLIC  src/util/new.h
     PUBLIC  src/util/noexcept.h
     PUBLIC  src/util/optional.h
+    PUBLIC  src/util/pool.h
     PRIVATE src/util/random.cpp
     PUBLIC  src/util/random.h
     PUBLIC  src/util/rc.h

@@ -52,7 +52,7 @@ class InProgressSound : public InProgress {
     void tick(time_t dt) noexcept;
 
  private:
-    Rc<SoundInstance> sound;
+    PlayingSoundID sound;
     ThenFn then;
 };
 

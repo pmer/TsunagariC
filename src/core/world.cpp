@@ -31,6 +31,7 @@
 #include "core/area.h"
 #include "core/character.h"
 #include "core/client-conf.h"
+#include "core/client-conf.h"
 #include "core/display-list.h"
 #include "core/images.h"
 #include "core/jsons.h"
@@ -284,8 +285,10 @@ World::restoreKeys() noexcept {
 
 void
 World::garbageCollect() noexcept {
+    time_t latestPermissibleUse = total - Conf::cacheTTL * 1000;
+
     Images::garbageCollect();
     JSONs::garbageCollect();
     Music::garbageCollect();
-    Sounds::garbageCollect();
+    Sounds::prune(latestPermissibleUse);
 }

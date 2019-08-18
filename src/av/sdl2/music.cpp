@@ -27,11 +27,14 @@
 #include "av/sdl2/music.h"
 
 #include "av/sdl2/error.h"
-#include "av/sdl2/sounds.h"
+#include "cache/rc-cache-impl.h"
+#include "cache/rc-reader-cache.h"
 #include "core/measure.h"
+#include "core/music-worker.h"
 #include "core/resources.h"
 #include "util/int.h"
 #include "util/noexcept.h"
+#include "util/rc.h"
 #include "util/unique.h"
 
 static Rc<SDL2Song>
@@ -63,7 +66,7 @@ static bool initalized = false;
 static String path;
 static int paused = 0;
 static Rc<SDL2Song> currentMusic;
-static ReaderCache<Rc<SDL2Song>, genSong> songs;
+static RcReaderCache<Rc<SDL2Song>, genSong> songs;
 
 
 SDL2Song::~SDL2Song() noexcept {

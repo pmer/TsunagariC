@@ -1,6 +1,6 @@
 /***************************************
 ** Tsunagari Tile Engine              **
-** cache-template.h                   **
+** rc-cache-impl.h                    **
 ** Copyright 2011-2014 Michael Reiley **
 ** Copyright 2011-2019 Paul Merrill   **
 ***************************************/
@@ -25,10 +25,10 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_CACHE_CACHE_TEMPLATE_CPP_
-#define SRC_CACHE_CACHE_TEMPLATE_CPP_
+#ifndef SRC_CACHE_RC_CACHE_IMPL_CPP_
+#define SRC_CACHE_RC_CACHE_IMPL_CPP_
 
-#include "cache/cache.h"
+#include "cache/rc-cache.h"
 #include "core/client-conf.h"
 #include "core/log.h"
 #include "core/world.h"
@@ -36,74 +36,74 @@
 
 #define IN_USE_NOW -1
 
-template<class T>
+template<typename T>
 T
-Cache<T>::momentaryRequest(StringView name) noexcept {
+RcCache<T>::momentaryRequest(StringView name) noexcept {
     auto it = map.find(name);
     if (it != map.end()) {
-        //      Log::info("Cache", String() << name << ": requested (cached)");
+        // Log::info("RcCache", String() << name << ": requested (cached)");
         CacheEntry& entry = it.value();
         // Set lastUsed to now because it won't be used
         // by the time garbageCollect() gets to it.
         entry.lastUsed = World::time();
-        return entry.resource;
+        return entry.data;
     }
-    Log::info("Cache", String() << name << ": requested");
+    Log::info("RcCache", String() << name << ": requested");
     return T();
 }
 
-template<class T>
+template<typename T>
 T
-Cache<T>::lifetimeRequest(StringView name) noexcept {
+RcCache<T>::lifetimeRequest(StringView name) noexcept {
     auto it = map.find(name);
     if (it != map.end()) {
-        //      Log::info("Cache", String() << name << ": requested (cached)");
+        // Log::info("RcCache", String() << name << ": requested (cached)");
         CacheEntry& entry = it.value();
         entry.lastUsed = IN_USE_NOW;
-        return entry.resource;
+        return entry.data;
     }
-    Log::info("Cache", String() << name << ": requested");
+    Log::info("RcCache", String() << name << ": requested");
     return T();
 }
 
-template<class T>
+template<typename T>
 void
-Cache<T>::momentaryPut(StringView name, T data) noexcept {
+RcCache<T>::momentaryPut(StringView name, T data) noexcept {
     CacheEntry entry;
-    entry.resource = data;
+    entry.data = data;
     time_t now = World::time();
     entry.lastUsed = now;
     map[name] = entry;
 }
 
-template<class T>
+template<typename T>
 void
-Cache<T>::lifetimePut(StringView name, T data) noexcept {
+RcCache<T>::lifetimePut(StringView name, T data) noexcept {
     CacheEntry entry;
-    entry.resource = data;
+    entry.data = data;
     entry.lastUsed = IN_USE_NOW;
     map[name] = entry;
 }
 
-template<class T>
+template<typename T>
 void
-Cache<T>::garbageCollect() noexcept {
+RcCache<T>::garbageCollect() noexcept {
     time_t now = World::time();
     Vector<String> dead;
     for (auto it = map.begin(); it != map.end(); it++) {
         StringView name = it.key();
         CacheEntry& cache = it.value();
-        bool unused = !cache.resource || cache.resource.unique();
+        bool unused = !cache.data || cache.data.unique();
         if (!unused) {
             continue;
         }
         if (cache.lastUsed == IN_USE_NOW) {
             cache.lastUsed = now;
-            //          Log::info("Cache", String() << name << ": unused");
+            // Log::info("RcCache", String() << name << ": unused");
         }
         else if (now > cache.lastUsed + Conf::cacheTTL * 1000) {
             dead.push_back(name);
-            Log::info("Cache", String() << name << ": purged");
+            Log::info("RcCache", String() << name << ": purged");
         }
     }
     for (auto it = dead.begin(); it != dead.end(); it++) {
@@ -111,4 +111,4 @@ Cache<T>::garbageCollect() noexcept {
     }
 }
 
-#endif  // SRC_CACHE_CACHE_TEMPLATE_CPP_
+#endif  // SRC_CACHE_RC_CACHE_IMPL_CPP_

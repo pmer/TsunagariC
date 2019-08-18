@@ -157,7 +157,10 @@ Character::moveByTile(ivec2 delta) noexcept {
     leaveTile(from);
     enterTile(dest);
 
-    Sounds::play(soundPaths[StringView("step")]);
+    SoundID sid = Sounds::load(soundPaths[StringView("step")]);
+    PlayingSoundID psid = Sound::play(sid);
+    PlayingSound::release(psid);
+    Sound::release(sid);
 
     switch (Conf::moveMode) {
     case Conf::TURN:

@@ -26,8 +26,18 @@
 
 #include "core/sounds.h"
 
-Rc<SoundInstance> Sounds::play(StringView) noexcept {
-    return Rc<SoundInstance>();
-}
+#include "util/int.h"
+#include "util/noexcept.h"
+#include "util/string-view.h"
 
-void Sounds::garbageCollect() noexcept {}
+SoundID Sounds::load(StringView path) noexcept { return mark; }
+void Sounds::prune(time_t latestPermissibleUse) noexcept {}
+
+PlayingSoundID Sound::play(SoundID id) noexcept { return mark; }
+void Sound::release(SoundID id) noexcept {}
+
+bool PlayingSound::isPlaying(PlayingSoundID id) noexcept { return false; }
+void PlayingSound::stop(PlayingSoundID id) noexcept {}
+void PlayingSound::volume(PlayingSoundID id, float volume) noexcept {}
+void PlayingSound::speed(PlayingSoundID id, float speed) noexcept {}
+void PlayingSound::release(PlayingSoundID id) noexcept {}

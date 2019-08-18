@@ -28,10 +28,10 @@
 #ifndef SRC_CORE_WORLD_H_
 #define SRC_CORE_WORLD_H_
 
+#include "core/keyboard.h"
 #include "core/vec.h"
-#include "core/window.h"  // for KeyboardKey
 #include "util/int.h"
-#include "util/string.h"
+#include "util/string-view.h"
 #include "util/vector.h"
 
 class Area;

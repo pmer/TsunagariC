@@ -32,25 +32,25 @@
 #include "util/string-view.h"
 #include "util/string.h"
 
-template<class T> class Cache {
+template<typename T>
+class Cache {
  public:
-    T momentaryRequest(StringView name) noexcept;
+    Optional<T*> acquire(StringView key) noexcept;
+    void release(StringView key, time_t now) noexcept;
 
-    T lifetimeRequest(StringView name) noexcept;
+    void set(StringView key, T data) noexcept;
 
-    void momentaryPut(StringView name, T data) noexcept;
-
-    void lifetimePut(StringView name, T data) noexcept;
-
-    void garbageCollect() noexcept;
+    void garbageCollect(time_t lastUsedBefore) noexcept;
 
  private:
-    struct CacheEntry {
-        T resource;
-        time_t lastUsed = 0;  // time in milliseconds
+    struct Entry {
+        T data;
+        int numUsing;
+        time_t lastUsed;
     };
 
-    Hashmap<String, CacheEntry> map;
+    Hashmap<String, Entry> entries;
+
 };
 
 #endif  // SRC_CORE_CACHE_H_

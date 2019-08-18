@@ -249,6 +249,7 @@ unsigned long strtoul(const char*, char**, int) noexcept;
 extern "C" {
 void* memchr(const void*, int, size_t) noexcept;
 int memcmp(const void*, const void*, size_t) noexcept;
+void *memcpy(void*, const void*, size_t) noexcept;
 void* memmem(const void*, size_t, const void*, size_t) noexcept;
 size_t strlen(char const*) noexcept;
 }

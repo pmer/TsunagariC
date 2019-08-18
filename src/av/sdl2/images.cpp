@@ -97,11 +97,11 @@ genTiledImage(StringView path, unsigned tileW, unsigned tileH) noexcept {
                                              static_cast<int>(tileH)));
 }
 
-static ReaderCache<Rc<Image>, genImage> images;
+static RcReaderCache<Rc<Image>, genImage> images;
 // We can't use a ReaderCache here because TiledImages are constructed
 // with three arguments, but a ReaderCache only supports the use of
 // one.
-static Cache<Rc<TiledImage>> tiledImages;
+static RcCache<Rc<TiledImage>> tiledImages;
 
 
 SDL2Texture::SDL2Texture(SDL_Texture* texture) noexcept : texture(texture) {}

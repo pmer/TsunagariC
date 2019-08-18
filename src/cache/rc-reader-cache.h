@@ -1,8 +1,9 @@
-/*************************************
-** Tsunagari Tile Engine            **
-** sounds.h                         **
-** Copyright 2016-2019 Paul Merrill **
-*************************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** rc-reader-cache.h                  **
+** Copyright 2011-2013 Michael Reiley **
+** Copyright 2011-2019 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,47 +25,44 @@
 // IN THE SOFTWARE.
 // **********
 
-#ifndef SRC_AV_SDL2_SOUNDS_H_
-#define SRC_AV_SDL2_SOUNDS_H_
+#ifndef SRC_CACHE_RC_READER_CACHE_H_
+#define SRC_CACHE_RC_READER_CACHE_H_
 
-#include "av/sdl2/sdl2.h"
-#include "cache/cache-template.h"
-#include "cache/readercache.h"
-#include "core/resources.h"
-#include "core/sounds.h"
-#include "util/noexcept.h"
+#include "cache/rc-cache.h"
+#include "util/string-view.h"
 
-void SDL2OpenAudio() noexcept;
+template<typename T>
+using GenFn = T (*)(StringView name);
 
-struct SDL2Sample {
-    ~SDL2Sample() noexcept;
-
-    // The Mix_Chunk needs the music data to be kept around for its lifetime.
-    Optional<StringView> resource;
-
-    Mix_Chunk* chunk;
-};
-
-class SDL2SoundInstance : public SoundInstance {
+template<typename T, GenFn<T> fn>
+class RcReaderCache {
  public:
-    SDL2SoundInstance(int channel) noexcept;
+    T momentaryRequest(StringView name) noexcept {
+        T t = cache.momentaryRequest(name);
+        if (t) {
+            return t;
+        }
 
-    bool playing() noexcept;
-    void stop() noexcept;
+        t = fn(name);
+        cache.momentaryPut(name, t);
+        return t;
+    }
 
-    bool paused() noexcept;
-    void pause() noexcept;
-    void resume() noexcept;
+    T lifetimeRequest(StringView name) noexcept {
+        T t = cache.lifetimeRequest(name);
+        if (t) {
+            return t;
+        }
 
-    void volume(float volume) noexcept;
-    void pan(float pan) noexcept;
-    void speed(float speed) noexcept;
+        t = fn(name);
+        cache.lifetimePut(name, t);
+        return t;
+    }
 
-    void setDone() noexcept;
+    void garbageCollect() noexcept { cache.garbageCollect(); }
 
  private:
-    int channel;
-    enum { S_PLAYING, S_PAUSED, S_DONE } state;
+    RcCache<T> cache;
 };
 
-#endif  // SRC_AV_SDL2_SOUNDS_H_
+#endif  // SRC_CACHE_RC_READER_CACHE_H_

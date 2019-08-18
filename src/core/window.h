@@ -28,29 +28,13 @@
 #ifndef SRC_CORE_WINDOW_H_
 #define SRC_CORE_WINDOW_H_
 
+#include "core/keyboard.h"
 #include "util/bitrecord.h"
 #include "util/function.h"
 #include "util/string-view.h"
 
-enum KeyboardKey {
-    KBEscape = 1,
-    KBLeftControl,
-    KBRightControl,
-    KBLeftShift,
-    KBRightShift,
-    KBSpace,
-    KBLeftArrow,
-    KBRightArrow,
-    KBUpArrow,
-    KBDownArrow,
-    KB_SIZE,
-};
-
-//! GameWindow Class
-/*!
-    This class is structurally the main class of the Tsunagari Tile Engine.
-    It handles input and drawing.
-*/
+// This class is structurally the main class of the Tsunagari Tile Engine.
+// It handles input and drawing.
 class GameWindow {
  public:
     static void create() noexcept;

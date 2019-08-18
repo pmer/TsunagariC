@@ -32,8 +32,8 @@
 #include "util/vector.h"
 
 struct DisplayItem {
-    Image* image;       // TODO: Move to ImageKey.
-    rvec2 destination;  // TODO: Move to float.
+    ImageID image;
+    rvec2 destination;
 };
 
 struct DisplayList {

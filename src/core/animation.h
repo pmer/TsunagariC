@@ -30,7 +30,6 @@
 
 #include "core/images.h"
 #include "util/int.h"
-#include "util/rc.h"
 #include "util/vector.h"
 
 /**
@@ -56,7 +55,7 @@ class Animation {
      *
      * @param frame static image
      */
-    explicit Animation(Rc<Image> frame) noexcept;
+    explicit Animation(ImageID frame) noexcept;
 
     /**
      * Constructs a Animation from a list of frames.
@@ -68,7 +67,7 @@ class Animation {
      * @param frameTime length of time in milliseconds that each frame
      *        will display for
      */
-    Animation(Vector<Rc<Image>> frames, time_t frameTime) noexcept;
+    Animation(Vector<ImageID> frames, time_t frameTime) noexcept;
 
     /**
      * Starts the animation over.
@@ -89,16 +88,16 @@ class Animation {
      *
      * @now current time in milliseconds
      */
-    Image* frame(time_t now) noexcept;
+    ImageID frame(time_t now) noexcept;
 
     /**
      * Returns the last image that should have been displayed.
      */
-    Image* frame() const noexcept;
+    ImageID frame() const noexcept;
 
  private:
     /** List of images in animation. */
-    Vector<Rc<Image>> frames;
+    Vector<ImageID> frames;
 
     /** Length of each frame in animation in milliseconds. */
     time_t frameTime;

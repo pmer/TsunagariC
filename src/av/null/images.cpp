@@ -26,40 +26,21 @@
 
 #include "core/images.h"
 
-class NullImage : public Image {
- public:
-    NullImage() noexcept : Image(0, 0) {}
-
-    void draw(float, float, float) noexcept final {}
-    void drawSubrect(float,
-                     float,
-                     float,
-                     float,
-                     float,
-                     float,
-                     float) noexcept final {}
-};
-
-
-class NullTiledImage : public TiledImage {
- public:
-    size_t size() const noexcept final { return 1000; }
-
-    Rc<Image> operator[](size_t) const noexcept final {
-        return Rc<Image>(new NullImage);
-    }
-};
-
-
-Rc<Image>
-Images::load(StringView) noexcept {
-    return Rc<Image>();
+ImageID Images::load(StringView path) noexcept { return ImageID(0); }
+TiledImageID Images::loadTiles(StringView path,
+                               int tileWidth,
+                               int tileHeight) noexcept {
+    return TiledImageID(0);
 }
+void Images::prune(time_t latestPermissibleUse) noexcept {}
 
-Rc<TiledImage>
-Images::loadTiles(StringView, unsigned, unsigned) noexcept {
-    return Rc<TiledImage>(new NullTiledImage);
+int TiledImage::size(TiledImageID tiid) noexcept { return 1000; }
+ImageID TiledImage::getTile(TiledImageID tiid, int i) noexcept {
+    return ImageID(0);
 }
+void TiledImage::release(TiledImageID tiid) noexcept {}
 
-void
-Images::garbageCollect() noexcept {}
+void Image::draw(ImageID iid, float x, float y, float z) noexcept {}
+int Image::width(ImageID iid) noexcept { return 1; }
+int Image::height(ImageID iid) noexcept { return 1; }
+void Image::release(ImageID iid) noexcept {}

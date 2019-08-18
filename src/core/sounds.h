@@ -45,26 +45,26 @@ class Sounds {
 
 class Sound {
  public:
-     static PlayingSoundID play(SoundID id) noexcept;
+     static PlayingSoundID play(SoundID sid) noexcept;
 
-     static void release(SoundID id) noexcept;
+     static void release(SoundID sid) noexcept;
 };
 
 class PlayingSound {
  public:
     // Whether the sound is currently playing.
-    static bool isPlaying(PlayingSoundID id) noexcept;
+    static bool isPlaying(PlayingSoundID psid) noexcept;
     // Stop playing the sound. SoundInstances cannot resume from stop().
     // Create a new one to play again. Calls destroy().
-    static void stop(PlayingSoundID id) noexcept;
+    static void stop(PlayingSoundID psid) noexcept;
 
     // Between 0.0 (silence) and 1.0 (full).
-    static void volume(PlayingSoundID id, float volume) noexcept;
+    static void volume(PlayingSoundID psid, float volume) noexcept;
     // 1.0 is normal speed.
-    static void speed(PlayingSoundID id, float speed) noexcept;
+    static void speed(PlayingSoundID psid, float speed) noexcept;
 
     // Release the resources used by this PlayingSound.
-    static void release(PlayingSoundID id) noexcept;
+    static void release(PlayingSoundID psid) noexcept;
 };
 
 #endif  // SRC_CORE_SOUNDS_H_

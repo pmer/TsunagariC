@@ -366,8 +366,6 @@ Entity::processDescriptor() noexcept {
 
 bool
 Entity::processSprite(Unique<JSONObject> sprite) noexcept {
-    Rc<TiledImage> tiles;
-
     CHECK(sprite->hasObject("sheet"));
     CHECK(sprite->hasObject("phases"));
 
@@ -379,16 +377,14 @@ Entity::processSprite(Unique<JSONObject> sprite) noexcept {
     imgsz.x = sheet->intAt("tile_width");
     imgsz.y = sheet->intAt("tile_height");
     StringView path = sheet->stringAt("path");
-    tiles = Images::loadTiles(path,
-                              static_cast<unsigned>(imgsz.x),
-                              static_cast<unsigned>(imgsz.y));
+    TiledImageID tiles = Images::loadTiles(path, imgsz.x, imgsz.y);
     CHECK(tiles);
 
-    return processPhases(sprite->objectAt("phases"), *tiles);
+    return processPhases(sprite->objectAt("phases"), tiles);
 }
 
 bool
-Entity::processPhases(Unique<JSONObject> phases, TiledImage& tiles) noexcept {
+Entity::processPhases(Unique<JSONObject> phases, TiledImageID tiles) noexcept {
     for (StringView name : phases->names()) {
         CHECK(phases->hasObject(name));
         CHECK(processPhase(name, phases->objectAt(name), tiles));
@@ -410,18 +406,20 @@ intArrayToVector(Unique<JSONArray> array) noexcept {
 bool
 Entity::processPhase(StringView name,
                      Unique<JSONObject> phase,
-                     TiledImage& tiles) noexcept {
+                     TiledImageID tiles) noexcept {
     // Each phase requires a 'name' and a 'frame' or 'frames'. Additionally,
     // 'speed' is required if 'frames' is found.
     CHECK(phase->hasUnsigned("frame") || phase->hasArray("frames"));
 
+    int nTiles = TiledImage::size(tiles);
+
     if (phase->hasUnsigned("frame")) {
         unsigned frame = phase->unsignedAt("frame");
-        if (frame >= tiles.size()) {
+        if (frame >= nTiles) {
             Log::err(descriptor, "<phase> frame attribute index out of bounds");
             return false;
         }
-        const auto& image = tiles[(size_t)frame];
+        ImageID image = TiledImage::getTile(tiles, frame);
         phases[name] = Animation(image);
     }
     else if (phase->hasArray("frames")) {
@@ -434,15 +432,14 @@ Entity::processPhase(StringView name,
         float fps = phase->floatAt("speed");
 
         Vector<int> frames = intArrayToVector(phase->arrayAt("frames"));
-        Vector<Rc<Image>> images;
-        for (auto it = frames.begin(); it != frames.end(); it++) {
-            int i = *it;
-            if (i < 0 || (int)tiles.size() < i) {
+        Vector<ImageID> images;
+        for (int i : frames) {
+            if (i < 0 || nTiles < i) {
                 Log::err(descriptor,
                          "<phase> frames attribute index out of bounds");
                 return false;
             }
-            images.push_back(tiles[(size_t)i]);
+            images.push_back(TiledImage::getTile(tiles, i));
         }
 
         phases[name] = Animation(move_(images), (time_t)(1000.0 / fps));

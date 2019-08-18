@@ -80,7 +80,7 @@ class AreaJSON : public Area {
                             int firstGid) noexcept;
     bool processTileType(Unique<JSONObject> obj,
                          Animation& graphic,
-                         Rc<TiledImage>& img,
+                         TiledImageID img,
                          int id) noexcept;
     bool processLayer(Unique<JSONObject> obj) noexcept;
     bool processLayerProperties(Unique<JSONObject> obj) noexcept;
@@ -290,8 +290,6 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
 
     assert_(firstGid == tileGraphics.size());
 
-    Rc<TiledImage> img;
-
     unsigned tilex, tiley;
     unsigned pixelw, pixelh;
     unsigned width, height;
@@ -307,7 +305,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
     tiley = obj->unsignedAt("tileheight");
 
     CHECK(tilex > 0 && tiley > 0);
-    CHECK(tilex <= UINT32_MAX && tiley <= UINT32_MAX);
+    CHECK(tilex <= 0x7FFF && tiley <= 0x7FFF);  // Reasonable limit?
 
     if (grid.tileDim && grid.tileDim.x != tilex && grid.tileDim.y != tiley) {
         Log::err(descriptor,
@@ -326,16 +324,19 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
     tileSets[imgSource] = TileSet{firstGid, (size_t)width, (size_t)height};
 
     // Load tileset image.
-    img = Images::loadTiles(imgSource, tilex, tiley);
-    if (!img) {
+    TiledImageID images = Images::loadTiles(imgSource, tilex, tiley);
+    if (!images) {
         Log::err(descriptor, "Tileset image not found");
         return false;
     }
 
+    int nTiles = TiledImage::size(images);
+    tileGraphics.reserve(nTiles);
+
     // Initialize "vanilla" tile type array.
-    for (size_t i = 0; i < img->size(); i++) {
-        auto image = (*img)[i];
-        tileGraphics.push_back(Animation(move_(image)));
+    for (int i = 0; i < nTiles; i++) {
+        ImageID image = TiledImage::getTile(images, i);
+        tileGraphics.push_back(Animation(image));
     }
 
     if (obj->hasObject("tileproperties")) {
@@ -358,7 +359,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
                 return false;
             }
             size_t id__ = *id_;
-            if (img->size() <= id__) {
+            if (nTiles <= id__) {
                 Log::err(descriptor, "Tile type id is invalid");
                 return false;
             }
@@ -369,7 +370,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
             Animation& graphic = tileGraphics[gid];
             if (!processTileType(move_(tileProperties),
                                  graphic,
-                                 img,
+                                 images,
                                  static_cast<int>(id__))) {
                 return false;
             }
@@ -382,7 +383,7 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
 bool
 AreaJSON::processTileType(Unique<JSONObject> obj,
                           Animation& graphic,
-                          Rc<TiledImage>& img,
+                          TiledImageID images,
                           int id) noexcept {
     /*
       {
@@ -395,8 +396,10 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
     // to worry about it.
 
     // If a Tile is animated, it needs both member frames and a speed.
-    Vector<Rc<Image>> framesvec;
+    Vector<ImageID> framesvec;
     Optional<int> frameLen;
+
+    int nTiles = TiledImage::size(images);
 
     if (obj->hasString("frames")) {
         String memtemp;
@@ -426,13 +429,13 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
 
             unsigned idx_ = *idx;
 
-            if (img->size() <= idx_) {
+            if (nTiles <= idx_) {
                 Log::err(descriptor,
                          "frame index out of range for animated tile");
                 return false;
             }
 
-            framesvec.push_back((*img)[idx_]);
+            framesvec.push_back(TiledImage::getTile(images, idx_));
         }
     }
     if (obj->hasString("speed")) {

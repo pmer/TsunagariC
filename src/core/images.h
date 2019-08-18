@@ -28,67 +28,45 @@
 #ifndef SRC_CORE_IMAGES_H_
 #define SRC_CORE_IMAGES_H_
 
-#include "util/rc.h"
+#include "util/int.h"
+#include "util/markable.h"
 #include "util/string-view.h"
 
-class Image {
- public:
-    virtual ~Image() = default;
-
-    virtual void draw(float dstX, float dstY, float z) noexcept = 0;
-    virtual void drawSubrect(float dstX,
-                             float dstY,
-                             float z,
-                             float srcX,
-                             float srcY,
-                             float srcW,
-                             float srcH) noexcept = 0;
-
-    unsigned width() const noexcept;
-    unsigned height() const noexcept;
-
- protected:
-    Image(unsigned width, unsigned height) noexcept;
-
-    unsigned _width;
-    unsigned _height;
-
- private:
-    Image(const Image&) = delete;
-    Image& operator=(const Image&) = delete;
-};
-
-
-class TiledImage {
- public:
-    virtual ~TiledImage() = default;
-
-    virtual size_t size() const noexcept = 0;
-
-    virtual Rc<Image> operator[](size_t n) const noexcept = 0;
-
- protected:
-    TiledImage() = default;
-
- private:
-    TiledImage(const TiledImage&) = delete;
-    TiledImage& operator=(const TiledImage&) = delete;
-};
-
+typedef Markable<int,-1> TiledImageID;
+typedef Markable<int,-1> ImageID;
 
 class Images {
  public:
-    //! Load an image from the file at the given path.
-    static Rc<Image> load(StringView path) noexcept;
+    // Load an image from the file at the given path.
+    static ImageID load(StringView path) noexcept;
 
-    //! Load an image of tiles from the file at the given path. Each tile
-    //! with have width and heigh as specified.
-    static Rc<TiledImage> loadTiles(StringView path,
-                                     unsigned tileW,
-                                     unsigned tileH) noexcept;
+    // Load an image of tiles from the file at the given path. Each tile
+    // with width and heigh as specified.
+    static TiledImageID loadTiles(StringView path,
+                                  int tileWidth,
+                                  int tileHeight) noexcept;
 
-    //! Free images not recently used.
-    static void garbageCollect() noexcept;
+    // Free images not recently used.
+    static void prune(time_t latestPermissibleUse) noexcept;
+};
+
+class TiledImage {
+ public:
+    static int size(TiledImageID tiid) noexcept;
+
+    static ImageID getTile(TiledImageID tiid, int i) noexcept;
+
+    static void release(TiledImageID tiid) noexcept;
+};
+
+class Image {
+ public:
+    static void draw(ImageID iid, float x, float y, float z) noexcept;
+
+    static int width(ImageID iid) noexcept;
+    static int height(ImageID iid) noexcept;
+
+    static void release(ImageID iid) noexcept;
 };
 
 #endif  // SRC_CORE_IMAGES_H_

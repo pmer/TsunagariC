@@ -391,7 +391,7 @@ Area::drawTiles(DisplayList* display, const icube& tiles, int z) {
                 tileGraphics[type].frame(now);
             }
 
-            Image* img = tileGraphics[type].frame();
+            ImageID img = tileGraphics[type].frame();
             if (img) {
                 rvec2 drawPos{float(x * width), float(y * height)};
                 // drawPos.z = depth + drawPos.y / tileDimY *

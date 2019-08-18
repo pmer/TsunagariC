@@ -48,9 +48,9 @@ struct SDL2Sound {
 
 static bool operator==(SDL2Sound a, SDL2Sound b) noexcept {
     return a.numUsers == b.numUsers &&
-        a.lastUse == b.lastUse &&
-        a.frames == b.frames &&
-        a.chunk == b.chunk;
+           a.lastUse == b.lastUse &&
+           a.frames == b.frames &&
+           a.chunk == b.chunk;
 }
 
 struct SDL2PlayingSound {

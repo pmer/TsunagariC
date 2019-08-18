@@ -33,12 +33,12 @@
 Animation::Animation() noexcept
         : frameTime(1), cycleTime(1), frameShowing(0), offset(0) {}
 
-Animation::Animation(Rc<Image> frame) noexcept
+Animation::Animation(ImageID frame) noexcept
         : frameTime(1), cycleTime(1), frameShowing(0), offset(0) {
-    frames.push_back(move_(frame));
+    frames.push_back(frame);
 }
 
-Animation::Animation(Vector<Rc<Image>> frames, time_t frameTime) noexcept
+Animation::Animation(Vector<ImageID> frames, time_t frameTime) noexcept
         : frames(move_(frames)),
           frameTime(frameTime),
           frameShowing(0),
@@ -64,31 +64,31 @@ Animation::needsRedraw(time_t now) const noexcept {
     return frame != frameShowing;
 }
 
-Image*
+ImageID
 Animation::frame(time_t now) noexcept {
     assert_(now >= 0);
 
     if (frames.empty()) {
-        return nullptr;
+        return mark;
     }
     if (frames.size() == 1) {
-        return frames[0].get();
+        return frames[0];
     }
 
     time_t pos = now - offset;
     frameShowing = (size_t)((pos % cycleTime) / frameTime);
 
-    return frames[frameShowing].get();
+    return frames[frameShowing];
 }
 
-Image*
+ImageID
 Animation::frame() const noexcept {
     if (frames.empty()) {
-        return nullptr;
+        return mark;
     }
     if (frames.size() == 1) {
-        return frames[0].get();
+        return frames[0];
     }
 
-    return frames[frameShowing].get();
+    return frames[frameShowing];
 }

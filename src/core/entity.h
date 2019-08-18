@@ -29,6 +29,7 @@
 #define SRC_CORE_ENTITY_H_
 
 #include "core/animation.h"
+#include "core/images.h"
 #include "core/jsons.h"
 #include "core/vec.h"
 #include "util/function.h"
@@ -39,8 +40,6 @@
 class Animation;
 class Area;
 struct DisplayList;
-class Image;
-class TiledImage;
 
 enum SetPhaseResult { PHASE_NOTFOUND, PHASE_NOTCHANGED, PHASE_CHANGED };
 
@@ -144,10 +143,10 @@ class Entity {
     // JSON parsing functions used in constructing an Entity
     bool processDescriptor() noexcept;
     bool processSprite(Unique<JSONObject> sprite) noexcept;
-    bool processPhases(Unique<JSONObject> phases, TiledImage& tiles) noexcept;
+    bool processPhases(Unique<JSONObject> phases, TiledImageID tiles) noexcept;
     bool processPhase(StringView name,
                       Unique<JSONObject> phase,
-                      TiledImage& tiles) noexcept;
+                      TiledImageID tiles) noexcept;
     bool processSounds(Unique<JSONObject> sounds) noexcept;
     bool processSound(StringView name, StringView path) noexcept;
     bool processScripts(Unique<JSONObject> scripts) noexcept;

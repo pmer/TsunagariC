@@ -103,6 +103,7 @@ SDL_RWops* SDL_RWFromMem(void*, int) noexcept;
 
 // SDL_surface.h
 typedef struct SDL_Surface SDL_Surface;
+void SDL_FreeSurface(SDL_Surface*) noexcept;
 
 // SDL_video.h
 typedef struct SDL_Window SDL_Window;

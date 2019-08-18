@@ -112,7 +112,6 @@ if(AV_SDL2)
         PRIVATE src/av/sdl2/error.cpp
                 src/av/sdl2/error.h
                 src/av/sdl2/images.cpp
-                src/av/sdl2/images.h
                 src/av/sdl2/music.cpp
                 src/av/sdl2/music.h
                 src/av/sdl2/sounds.cpp
@@ -160,7 +159,6 @@ target_sources(tsunagari
     PRIVATE src/core/display-list.h
     PRIVATE src/core/entity.cpp
     PUBLIC  src/core/entity.h
-    PRIVATE src/core/images.cpp
     PUBLIC  src/core/images.h
     PRIVATE src/core/jsons.cpp
     PUBLIC  src/core/jsons.h

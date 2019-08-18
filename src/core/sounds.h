@@ -50,7 +50,7 @@ class Sound {
      static void release(SoundID id) noexcept;
 };
 
-class PlayingSound{
+class PlayingSound {
  public:
     // Whether the sound is currently playing.
     static bool isPlaying(PlayingSoundID id) noexcept;

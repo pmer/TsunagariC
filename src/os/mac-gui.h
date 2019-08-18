@@ -1,9 +1,9 @@
-/****************************************
-** Tsunagari Tile Engine               **
-** os/mac-gui.h                        **
-** Copyright 2013      Michael Reiley  **
-** Copyright 2013-2019 Paul Merrill    **
-****************************************/
+/***************************************
+** Tsunagari Tile Engine              **
+** os/mac-gui.h                       **
+** Copyright 2013      Michael Reiley **
+** Copyright 2013-2019 Paul Merrill   **
+***************************************/
 
 // **********
 // Permission is hereby granted, free of charge, to any person obtaining a copy

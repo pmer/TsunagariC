@@ -57,9 +57,18 @@ typedef long time_t;
 typedef int64_t time_t;
 #endif
 
-static CONSTEXPR11 int32_t INT32_MAX = 0x7fffffff;
-static CONSTEXPR11 uint32_t UINT32_MAX = 0xffffffff;
+static const CONSTEXPR11 int32_t INT32_MAX = 0x7fffffff;
+static const CONSTEXPR11 uint32_t UINT32_MAX = 0xffffffff;
+static const CONSTEXPR11 int64_t UINT64_MAX = 0xffffffffffffffff;
 
-static CONSTEXPR11 float M_PI = 3.14159265358979323846;
+#if defined(_WIN64)
+static const CONSTEXPR11 size_t SIZE_MAX = 0xffffffffffffffff;
+#elif defined(_WIN32)
+static const CONSTEXPR11 size_t SIZE_MAX = 0xffffffff;
+#else
+static const CONSTEXPR11 size_t SIZE_MAX = __SIZE_MAX__;
+#endif
+
+static const CONSTEXPR11 float M_PI = 3.14159265358979323846;
 
 #endif  // SRC_UTIL_INT_H_

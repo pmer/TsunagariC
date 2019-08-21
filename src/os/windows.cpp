@@ -104,9 +104,9 @@ constexpr DWORD ATTACH_PARENT_PROCESS = -1;
 constexpr UINT MB_OK = 0x00000000L;
 }
 
-char dirSeparator = '\\';
+const char dirSeparator = '\\';
 
-Optional<uint64_t>
+Filesize
 getFileSize(StringView path) noexcept {
     HANDLE file = CreateFile(String(path).null(),
                              FILE_READ_ATTRIBUTES,
@@ -116,20 +116,20 @@ getFileSize(StringView path) noexcept {
                              0,
                              nullptr);
     if (file == INVALID_HANDLE_VALUE) {
-        return none;
+        return mark;
     }
 
     LARGE_INTEGER size;
     BOOL ok = GetFileSizeEx(file, &size);
     if (!ok) {
-        return none;
+        return mark;
     }
 
     ok = CloseHandle(file);
     (void)ok;
     assert_(ok);
 
-    return Optional<uint64_t>(static_cast<uint64_t>(size.QuadPart));
+    return Filesize(static_cast<uint64_t>(size.QuadPart));
 }
 
 bool
@@ -239,7 +239,7 @@ listDir(StringView path) noexcept {
 
 Optional<String>
 readFile(StringView path) noexcept {
-    Optional<uint64_t> size__ = getFileSize(path);
+    Filesize size__ = getFileSize(path);
     if (!size__) {
         return none;
     }

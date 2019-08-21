@@ -300,7 +300,7 @@ splitStr(StringView input, StringView delimiter) noexcept {
     Vector<StringView> strlist;
     size_t i = 0;
 
-    for (Optional<size_t> pos = input.find(delimiter); pos;
+    for (StringPosition pos = input.find(delimiter); pos;
          pos = input.find(delimiter, i)) {
         strlist.push_back(input.substr(i, *pos - i));
         i = *pos + delimiter.size;
@@ -316,7 +316,7 @@ Optional<Vector<int>>
 parseRanges(StringView format) noexcept {
     Vector<int> ints;
     for (StringView range : splitStr(format, ",")) {
-        Optional<size_t> dash = range.find("-");
+        StringPosition dash = range.find('-');
 
         if (!dash) {
             Optional<int> i = parseInt(range);

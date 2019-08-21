@@ -28,14 +28,18 @@
 #define SRC_OS_OS_H_
 
 #include "util/int.h"
+#include "util/markable.h"
 #include "util/noexcept.h"
+#include "util/optional.h"
 #include "util/string-view.h"
 #include "util/string.h"
 #include "util/vector.h"
 
-extern char dirSeparator;
+extern const char dirSeparator;
 
-Optional<uint64_t> getFileSize(StringView path) noexcept;
+typedef Markable<uint64_t, UINT64_MAX> Filesize;
+
+Filesize getFileSize(StringView path) noexcept;
 bool writeFile(StringView path, uint32_t length, void* data) noexcept;
 bool writeFileVec(StringView path,
                   uint32_t count,

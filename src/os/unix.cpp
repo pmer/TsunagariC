@@ -30,21 +30,17 @@
 #include "os/unix-mutex.h"
 #include "util/vector.h"
 
-char dirSeparator = '/';
+const char dirSeparator = '/';
 
-Optional<uint64_t>
-getFileSize(String& path) noexcept {
-    struct stat status;
+Filesize
+getFileSize(StringView path_) noexcept {
+    String path(path_);
+
+	struct stat status;
     if (stat(path.null(), &status)) {
-        return Optional<uint64_t>();
+        return mark;
     }
-    return Optional<uint64_t>(static_cast<uint64_t>(status.st_size));
-}
-
-Optional<uint64_t>
-getFileSize(StringView path) noexcept {
-    String path_(path);
-    return getFileSize(path_);
+    return Filesize(static_cast<uint64_t>(status.st_size));
 }
 
 bool

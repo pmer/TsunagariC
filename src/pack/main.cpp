@@ -152,7 +152,7 @@ listArchive(StringView archivePath) noexcept {
 
 static Optional<StringView>
 getParentPath(StringView path) noexcept {
-    Optional<size_t> sep = path.rfind(dirSeparator);
+    StringPosition sep = path.rfind(dirSeparator);
     if (!sep) {
         return none;
     }
@@ -233,7 +233,7 @@ extractArchive(StringView archivePath) noexcept {
 int
 main(int argc, char* argv[]) noexcept {
     exe = argv[0];
-    Optional<size_t> dir = exe.view().rfind(dirSeparator);
+    StringPosition dir = exe.view().rfind(dirSeparator);
     if (dir) {
         exe = exe.view().substr(*dir + 1);
     }

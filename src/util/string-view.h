@@ -30,8 +30,10 @@
 #include "os/c.h"
 #include "util/constexpr.h"
 #include "util/int.h"
+#include "util/markable.h"
 #include "util/noexcept.h"
-#include "util/optional.h"
+
+typedef Markable<size_t,SIZE_MAX> StringPosition;
 
 class StringView {
  public:
@@ -51,10 +53,10 @@ class StringView {
     inline CONSTEXPR11 const char* begin() const noexcept { return data; }
     inline CONSTEXPR11 const char* end() const noexcept { return data + size; }
 
-    Optional<size_t> find(char needle) const noexcept;
-    Optional<size_t> find(StringView needle) const noexcept;
-    Optional<size_t> find(StringView needle, size_t start) const noexcept;
-    Optional<size_t> rfind(char needle) const noexcept;
+    StringPosition find(char needle) const noexcept;
+    StringPosition find(StringView needle) const noexcept;
+    StringPosition find(StringView needle, size_t start) const noexcept;
+    StringPosition rfind(char needle) const noexcept;
 
 	CONSTEXPR14 StringView substr(const size_t from) const noexcept {
         assert_(from <= this->size);

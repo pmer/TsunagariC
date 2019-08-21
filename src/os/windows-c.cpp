@@ -34,20 +34,20 @@ extern "C" {
 typedef struct {
     struct __crt_locale_data* locinfo;
     struct __crt_multibyte_data* mbcinfo;
-} * _locale_t;
+} *_locale_t;
 typedef char* va_list;
 
-_ACRTIMP int __cdecl __stdio_common_vfprintf(unsigned __int64 _Options,
-                                             FILE* _Stream,
-                                             char const* _Format,
-                                             _locale_t _Locale,
-                                             va_list _ArgList) noexcept;
-_ACRTIMP int __cdecl __stdio_common_vsprintf(unsigned __int64 _Options,
-                                             char* _Buffer,
-                                             size_t _BufferCount,
-                                             char const* _Format,
-                                             _locale_t _Locale,
-                                             va_list _ArgList) noexcept;
+_ACRTIMP int __cdecl __stdio_common_vfprintf(unsigned __int64,
+                                             FILE*,
+                                             char const*,
+                                             _locale_t,
+                                             va_list) noexcept;
+_ACRTIMP int __cdecl __stdio_common_vsprintf(unsigned __int64,
+                                             char*,
+                                             size_t,
+                                             char const*,
+                                             _locale_t,
+                                             va_list) noexcept;
 
 #ifdef _WIN64
 #define _VA_ALIGN 8

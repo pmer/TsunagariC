@@ -81,7 +81,7 @@ typedef struct _iobuf {
     void* _Placeholder;
 } FILE;
 
-_ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned _Ix) noexcept;
+_ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned) noexcept;
 
 #define stdin (__acrt_iob_func(0))
 #define stdout (__acrt_iob_func(1))
@@ -89,54 +89,54 @@ _ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned _Ix) noexcept;
 
 typedef __int64 __time64_t;
 
-_ACRTIMP __time64_t __cdecl _time64(__time64_t* _Time) noexcept;
-_ACRTIMP __declspec(noreturn) void __cdecl exit(int _Code) noexcept;
-_ACRTIMP void __cdecl free(void* _Block) noexcept;
-_ACRTIMP _CRTRESTRICT void* __cdecl malloc(size_t _Size) noexcept;
+_ACRTIMP __time64_t __cdecl _time64(__time64_t*) noexcept;
+_ACRTIMP __declspec(noreturn) void __cdecl exit(int) noexcept;
+_ACRTIMP void __cdecl free(void*) noexcept;
+_ACRTIMP _CRTRESTRICT void* __cdecl malloc(size_t) noexcept;
 _ACRTIMP int __cdecl rand() noexcept;
-_ACRTIMP void __cdecl srand(unsigned int _Seed) noexcept;
+_ACRTIMP void __cdecl srand(unsigned int) noexcept;
 
-void* __cdecl memchr(const void* buf, int chr, size_t cnt) noexcept;
-int __cdecl memcmp(void const* dst, void const* src, size_t size) noexcept;
-void* __cdecl memcpy(void* _Dst, void const* _Src, size_t _Size) noexcept;
-size_t __cdecl strlen(char const* _Str) noexcept;
+void* __cdecl memchr(const void*, int, size_t) noexcept;
+int __cdecl memcmp(void const*, void const*, size_t) noexcept;
+void* __cdecl memcpy(void*, void const*, size_t) noexcept;
+size_t __cdecl strlen(char const*) noexcept;
 
-int __cdecl abs(int _X) noexcept;
-double __cdecl atan2(double _Y, double _X) noexcept;
-_ACRTIMP double __cdecl ceil(double _X) noexcept;
+int __cdecl abs(int) noexcept;
+double __cdecl atan2(double, double) noexcept;
+_ACRTIMP double __cdecl ceil(double) noexcept;
 #if defined _M_X64
-_ACRTIMP float __cdecl ceilf(float _X) noexcept;
+_ACRTIMP float __cdecl ceilf(float) noexcept;
 #else
 __inline float __CRTDECL
 ceilf(float _X) noexcept {
     return (float)ceil(_X);
 }
 #endif
-double __cdecl cos(double _X) noexcept;
-_ACRTIMP double __cdecl floor(double _X) noexcept;
-double __cdecl sin(double _X) noexcept;
-double __cdecl sqrt(double _X) noexcept;
+double __cdecl cos(double) noexcept;
+_ACRTIMP double __cdecl floor(double) noexcept;
+double __cdecl sin(double) noexcept;
+double __cdecl sqrt(double) noexcept;
 
-_ACRTIMP double __cdecl strtod(char const* _String,
-                               char** _EndPtr) noexcept;
-_ACRTIMP long __cdecl strtol(char const* _String,
-                             char** _EndPtr,
-                             int _Radix) noexcept;
-_ACRTIMP unsigned long __cdecl strtoul(char const* _String,
-                                       char** _EndPtr,
-                                       int _Radix) noexcept;
-_ACRTIMP int __cdecl atoi(char const* _String) noexcept;
+_ACRTIMP double __cdecl strtod(char const*,
+                               char**) noexcept;
+_ACRTIMP long __cdecl strtol(char const*,
+                             char**,
+                             int) noexcept;
+_ACRTIMP unsigned long __cdecl strtoul(char const*,
+                                       char**,
+                                       int) noexcept;
+_ACRTIMP int __cdecl atoi(char const*) noexcept;
 
-_ACRTIMP int* __cdecl _errno(void);
+_ACRTIMP int* __cdecl _errno();
 #define errno (*_errno())
 }
 __pragma(pack(pop));
 
 extern "C" {
-void* memmem(const void* haystack,
-             size_t h_sz,
-             const void* needle,
-             size_t n_sz) noexcept;
+void* memmem(const void*,
+             size_t,
+             const void*,
+             size_t) noexcept;
 }
 
 static inline time_t __CRTDECL
@@ -144,12 +144,12 @@ time(time_t* _Time) noexcept {
     return _time64(reinterpret_cast<__time64_t*>(_Time));
 }
 
-int __CRTDECL fprintf(FILE* const _Stream,
-                      char const* const _Format,
+int __CRTDECL fprintf(FILE* const,
+                      char const* const,
                       ...) noexcept;
-int __CRTDECL printf(char const* const _Format, ...) noexcept;
-int __CRTDECL sprintf(char* const _Buffer,
-                      char const* const _Format,
+int __CRTDECL printf(char const* const, ...) noexcept;
+int __CRTDECL sprintf(char* const,
+                      char const* const,
                       ...) noexcept;
 
 #endif  // SRC_OS_WINDOWS_C_H_

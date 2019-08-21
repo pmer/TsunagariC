@@ -24,9 +24,8 @@
 // IN THE SOFTWARE.
 // **********
 
-#include "av/sdl2/music.h"
-
 #include "av/sdl2/error.h"
+#include "av/sdl2/sdl2.h"
 #include "cache/rc-cache-impl.h"
 #include "cache/rc-reader-cache.h"
 #include "core/measure.h"
@@ -34,8 +33,18 @@
 #include "core/resources.h"
 #include "util/int.h"
 #include "util/noexcept.h"
+#include "util/optional.h"
 #include "util/rc.h"
-#include "util/unique.h"
+#include "util/string-view.h"
+
+struct SDL2Song {
+    ~SDL2Song() noexcept;
+
+    // The Mix_Music needs the music data to be kept around for its lifetime.
+    StringView resource;
+
+    Mix_Music* mix;
+};
 
 static Rc<SDL2Song>
 genSong(StringView name) noexcept {
@@ -56,7 +65,7 @@ genSong(StringView name) noexcept {
 
     // We need to keep the memory (the resource) around, so put it in a struct.
     SDL2Song* song = new SDL2Song;
-    song->resource = move_(r);
+    song->resource = *r;
     song->mix = music;
 
     return Rc<SDL2Song>(song);

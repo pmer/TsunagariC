@@ -113,7 +113,6 @@ if(AV_SDL2)
                 src/av/sdl2/error.h
                 src/av/sdl2/images.cpp
                 src/av/sdl2/music.cpp
-                src/av/sdl2/music.h
                 src/av/sdl2/sounds.cpp
                 src/av/sdl2/window.cpp
                 src/av/sdl2/window.h

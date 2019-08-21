@@ -98,6 +98,7 @@ _ACRTIMP void __cdecl srand(unsigned int _Seed) noexcept;
 
 void* __cdecl memchr(const void* buf, int chr, size_t cnt) noexcept;
 int __cdecl memcmp(void const* dst, void const* src, size_t size) noexcept;
+void* __cdecl memcpy(void* _Dst, void const* _Src, size_t _Size) noexcept;
 size_t __cdecl strlen(char const* _Str) noexcept;
 
 int __cdecl abs(int _X) noexcept;

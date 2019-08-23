@@ -53,17 +53,6 @@ static StringView directions[][3] = {
 };
 
 
-Entity::Entity() noexcept
-        : dead(false),
-          redraw(true),
-          area(nullptr),
-          r{0.0, 0.0, 0.0},
-          frozen(false),
-          moving(false),
-          phase(nullptr),
-          phaseName(""),
-          facing{0, 0} {}
-
 bool
 Entity::init(StringView descriptor, StringView initialPhase) noexcept {
     this->descriptor = descriptor;

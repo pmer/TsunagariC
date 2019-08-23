@@ -57,7 +57,7 @@ enum SetPhaseResult { PHASE_NOTFOUND, PHASE_NOTCHANGED, PHASE_CHANGED };
 */
 class Entity {
  public:
-    Entity() noexcept;
+    Entity() = default;
     virtual ~Entity() = default;
 
     //! Entity initializer
@@ -156,34 +156,36 @@ class Entity {
 
  protected:
     //! Set to true if the Entity was destroyed this tick.
-    bool dead;
+    bool dead = false;
 
     //! Set to true if the Entity wants the screen to be redrawn.
-    bool redraw;
+    bool redraw = true;
 
     //! Pointer to Area this Entity is located on.
-    Area* area;
-    rcoord r;     //!< real x,y position: hold partial pixel transversal
-    rcoord doff;  //!< Drawing offset to center entity on tile.
+    Area* area = nullptr;
+    //! Real x,y position: hold partial pixel transversal
+    rcoord r = {0.0, 0.0, 0.0};
+    //! Drawing offset to center entity on tile.
+    rcoord doff;
 
     String descriptor;
 
-    bool frozen;
+    bool frozen = false;
 
     float tilesPerSecond;
     float pixelsPerSecond;
 
     //! True if currently moving to a new coordinate in an Area.
-    bool moving;
+    bool moving = false;
 
     rcoord destCoord;
     float angleToDest;
 
     ivec2 imgsz;
     Hashmap<String, Animation> phases;
-    Animation* phase;
-    String phaseName;
-    ivec2 facing;
+    Animation* phase = nullptr;
+    String phaseName = "";
+    ivec2 facing = {0, 0};
 
     //! Map from effect name to filenames.
     //!  e.g.: ["step"] = "sounds/player_step.oga"

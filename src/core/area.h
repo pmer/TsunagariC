@@ -62,9 +62,6 @@ class AreaJSON;
 */
 class Area {
  public:
-    //! Parse the file specified.
-    Area(Player* player, StringView filename);
-
     //! Prepare game state for this Area to be in focus.
     void focus();
 

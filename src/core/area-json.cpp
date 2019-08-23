@@ -39,6 +39,7 @@
 #include "core/tile.h"
 #include "core/window.h"
 #include "core/world.h"
+#include "data/data-world.h"
 #include "os/c.h"
 #include "util/assert.h"
 #include "util/int.h"
@@ -103,9 +104,12 @@ makeAreaFromJSON(Player* player, StringView filename) noexcept {
 }
 
 
-AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept
-        : Area(player, descriptor) {
+AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept {
     TimeMeasure m(String() << "Constructed " << descriptor << " as area-json");
+
+	dataArea = DataWorld::instance().area(descriptor);
+    this->player = player;
+    this->descriptor = descriptor;
 
     // Add TileType #0. Not used, but Tiled's gids start from 1.
     tileGraphics.resize(1);

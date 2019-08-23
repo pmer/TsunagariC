@@ -47,12 +47,6 @@
 #include "util/hashtable.h"
 #include "util/math2.h"
 
-Area::Area(Player* player, StringView descriptor)
-        : dataArea(DataWorld::instance().area(descriptor)),
-          player(player),
-          descriptor(descriptor) {
-}
-
 void
 Area::focus() {
     if (!beenFocused) {

@@ -62,11 +62,8 @@ class AreaJSON;
 */
 class Area {
  public:
+    //! Parse the file specified.
     Area(Player* player, StringView filename);
-
-    //! Parse the file specified in the constructor, generating a full Area
-    //! object. Must be called before use.
-    virtual bool init() = 0;
 
     //! Prepare game state for this Area to be in focus.
     void focus();

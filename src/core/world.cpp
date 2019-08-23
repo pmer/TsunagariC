@@ -200,7 +200,7 @@ World::focusArea(StringView filename, vicoord playerPos) noexcept {
         return false;
     }
 
-    if (!newArea->init()) {
+    if (!newArea->ok) {
         return false;
     }
 

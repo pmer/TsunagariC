@@ -63,10 +63,6 @@ class AreaJSON : public Area {
  public:
     AreaJSON(Player* player, StringView filename) noexcept;
 
-    //! Parse the file specified in the constructor, generating a full Area
-    //! object. Must be called before use.
-    bool init() noexcept;
-
  private:
     //! Allocate Tile objects for one layer of map.
     void allocateMapLayer(TileGrid::LayerType type) noexcept;
@@ -109,17 +105,13 @@ makeAreaFromJSON(Player* player, StringView filename) noexcept {
 
 AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept
         : Area(player, descriptor) {
+    TimeMeasure m(String() << "Constructed " << descriptor << " as area-json");
+
     // Add TileType #0. Not used, but Tiled's gids start from 1.
     tileGraphics.resize(1);
-}
 
-bool
-AreaJSON::init() noexcept {
-    TimeMeasure m(String() << "Constructed " << descriptor << " as area-json");
     ok = processDescriptor();
-    return ok;
 }
-
 
 void
 AreaJSON::allocateMapLayer(TileGrid::LayerType type) noexcept {

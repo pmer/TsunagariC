@@ -98,9 +98,9 @@ class AreaJSON : public Area {
 };
 
 
-Unique<Area>
+Area*
 makeAreaFromJSON(Player* player, StringView filename) noexcept {
-    return Unique<Area>(new AreaJSON(player, filename));
+    return new AreaJSON(player, filename);
 }
 
 

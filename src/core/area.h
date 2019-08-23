@@ -33,7 +33,6 @@
 #include "core/tile-grid.h"
 #include "core/tile.h"
 #include "core/vec.h"
-#include "data/data-area.h"
 #include "util/hashtable.h"
 #include "util/optional.h"
 #include "util/string-view.h"
@@ -41,13 +40,13 @@
 
 #define ISOMETRIC_ZOFF_PER_TILE 0.001
 
+class AreaJSON;
 class Character;
+class DataArea;
 struct DisplayList;
 class NPC;
 class Overlay;
 class Player;
-
-class AreaJSON;
 
 //! An Area represents one map, or screen, in a World.
 /*!

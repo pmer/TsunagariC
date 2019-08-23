@@ -59,7 +59,7 @@ class Player;
 
 static Rc<Image> pauseInfo;
 
-static Hashmap<String, Unique<Area>> areas;
+static Hashmap<String, Area*> areas;
 static Area* area = nullptr;
 static Unique<Player> player = new Player;
 
@@ -188,14 +188,14 @@ World::turn() noexcept {
 
 bool
 World::focusArea(StringView filename, vicoord playerPos) noexcept {
-    auto entry = areas.find(filename);
-    if (entry != areas.end()) {
-        Area* rawArea = entry.value().get();
-        focusArea(rawArea, playerPos);
+    Optional<Area**> cachedArea = areas.tryAt(filename);
+    if (cachedArea) {
+        Area* area = **cachedArea;
+        focusArea(area, playerPos);
         return true;
-    }
+	}
 
-    Unique<Area> newArea = makeAreaFromJSON(player.get(), filename);
+    Area* newArea = makeAreaFromJSON(player.get(), filename);
     if (!newArea) {
         return false;
     }
@@ -209,13 +209,12 @@ World::focusArea(StringView filename, vicoord playerPos) noexcept {
         return false;
     }
 
-    Area* rawArea = newArea.get();
-    dataArea->area = rawArea;  // FIXME: Pass Area by parameter, not
+    dataArea->area = newArea;  // FIXME: Pass Area by parameter, not
                                // member variable so we can avoid this
                                // pointer.
-    areas[filename] = move_(newArea);
+    areas[filename] = newArea;
 
-    focusArea(rawArea, playerPos);
+    focusArea(newArea, playerPos);
 
     return true;
 }

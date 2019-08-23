@@ -29,11 +29,10 @@
 #define SRC_CORE_AREA_JSON_H_
 
 #include "util/string-view.h"
-#include "util/unique.h"
 
 class Area;
 class Player;
 
-Unique<Area> makeAreaFromJSON(Player* player, StringView filename) noexcept;
+Area* makeAreaFromJSON(Player* player, StringView filename) noexcept;
 
 #endif  // SRC_CORE_AREA_JSON_H_

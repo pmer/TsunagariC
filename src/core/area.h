@@ -28,13 +28,14 @@
 #ifndef SRC_CORE_AREA_H_
 #define SRC_CORE_AREA_H_
 
-#include "core/entity.h"
+#include "core/animation.h"
 #include "core/keyboard.h"
 #include "core/tile-grid.h"
 #include "core/tile.h"
 #include "core/vec.h"
 #include "util/hashtable.h"
 #include "util/optional.h"
+#include "util/rc.h"
 #include "util/string-view.h"
 #include "util/string.h"
 
@@ -44,6 +45,7 @@ class AreaJSON;
 class Character;
 class DataArea;
 struct DisplayList;
+class Entity;
 class NPC;
 class Overlay;
 class Player;

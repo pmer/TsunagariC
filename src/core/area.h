@@ -29,10 +29,10 @@
 #define SRC_CORE_AREA_H_
 
 #include "core/entity.h"
+#include "core/keyboard.h"
 #include "core/tile-grid.h"
 #include "core/tile.h"
 #include "core/vec.h"
-#include "core/window.h"
 #include "data/data-area.h"
 #include "util/hashtable.h"
 #include "util/optional.h"

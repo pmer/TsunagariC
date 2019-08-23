@@ -182,7 +182,7 @@ bool writeFileVec(String& path, uint32_t count, uint32_t* lengths, void** datas)
 
 Optional<String>
 readFile(String& path) noexcept {
-    Optional<uint64_t> size = getFileSize(path);
+    Filesize size = getFileSize(path);
     if (!size) {
         return Optional<String>();
     }

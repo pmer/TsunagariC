@@ -28,15 +28,16 @@
 #ifndef SRC_CORE_RESOURCES_H_
 #define SRC_CORE_RESOURCES_H_
 
+#include "util/noexcept.h"
 #include "util/optional.h"
 #include "util/string-view.h"
 
-/**
- * Provides data and resource extraction for a World.
- * Each World comes bundled with associated data.
- */
-
-//! Load a resource from the file at the given path.
-Optional<StringView> resourceLoad(StringView path) noexcept;
+// Provides data and resource extraction for a World.
+// Each World comes bundled with associated data.
+class Resources {
+ public:
+    // Load a resource from the file at the given path.
+    static Optional<StringView> load(StringView path) noexcept;
+};
 
 #endif  // SRC_CORE_RESOURCES_H_

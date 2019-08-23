@@ -377,7 +377,7 @@ JSONDocImpl::get() noexcept {
 
 Rc<JSONObject>
 genJSON(StringView path) noexcept {
-    Optional<StringView> r = resourceLoad(path);
+    Optional<StringView> r = Resources::load(path);
     if (!r) {
         return Rc<JSONObject>();
     }

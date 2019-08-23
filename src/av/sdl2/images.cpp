@@ -80,7 +80,7 @@ static Pool<SDL2TiledImage> tiledImagePool;
 
 static SDL2Image
 makeImage(StringView path) {
-    Optional<StringView> r = resourceLoad(path);
+    Optional<StringView> r = Resources::load(path);
     if (!r) {
         // Error logged.
         return SDL2Image();
@@ -136,7 +136,7 @@ makeTiledImage(StringView path, int tileWidth, int tileHeight) {
     assert_(tileWidth <= 4096);
     assert_(tileHeight <= 4096);
 
-    Optional<StringView> r = resourceLoad(path);
+    Optional<StringView> r = Resources::load(path);
     if (!r) {
         // Error logged.
         return SDL2TiledImage();

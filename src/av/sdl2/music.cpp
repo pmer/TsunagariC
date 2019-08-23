@@ -48,7 +48,7 @@ struct SDL2Song {
 
 static Rc<SDL2Song>
 genSong(StringView name) noexcept {
-    Optional<StringView> r = resourceLoad(name);
+    Optional<StringView> r = Resources::load(name);
     if (!r) {
         // Error logged.
         return Rc<SDL2Song>();

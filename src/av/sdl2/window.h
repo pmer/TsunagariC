@@ -29,11 +29,6 @@
 
 #include "av/sdl2/sdl2.h"
 #include "core/vec.h"
-#include "core/window.h"
-#include "os/chrono.h"
-#include "util/function.h"
-#include "util/noexcept.h"
-#include "util/transform.h"
 
 class SDL2GameWindow {
  public:

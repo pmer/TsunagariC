@@ -32,9 +32,13 @@
 #include "core/display-list.h"
 #include "core/log.h"
 #include "core/measure.h"
+#include "core/window.h"
 #include "core/world.h"
+#include "os/chrono.h"
+#include "util/function.h"
 #include "util/noexcept.h"
 #include "util/optional.h"
+#include "util/transform.h"
 
 SDL_Renderer* SDL2GameWindow::renderer = nullptr;
 rvec2 SDL2GameWindow::translation = {0.0, 0.0};

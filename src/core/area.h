@@ -47,6 +47,8 @@ class NPC;
 class Overlay;
 class Player;
 
+class AreaJSON;
+
 //! An Area represents one map, or screen, in a World.
 /*!
     The Area class manages a three-dimensional structure of Tiles and a set
@@ -61,7 +63,6 @@ class Player;
 class Area {
  public:
     Area(Player* player, StringView filename);
-    virtual ~Area() = default;
 
     //! Parse the file specified in the constructor, generating a full Area
     //! object. Must be called before use.
@@ -126,6 +127,8 @@ class Area {
  public:
     TileGrid grid;
 
+    bool ok = true;
+
  protected:
     //! Calculate frame to show for each type of tile
     void drawTiles(DisplayList* display, const icube& tiles, int z);
@@ -141,21 +144,22 @@ class Area {
     Vector<Rc<Character>> characters;
     Vector<Rc<Overlay>> overlays;
 
-
-    bool beenFocused;
-    bool redraw;
-    uint32_t colorOverlayARGB;
+    bool beenFocused = false;
+    bool redraw = true;
+    uint32_t colorOverlayARGB = 0x00000000;
 
     DataArea* dataArea;
 
     Player* player;
 
     // The following contain filenames such that they may be loaded lazily.
-    const String descriptor;
+    String descriptor;
 
     String name;
     String author;
     Optional<String> musicPath;
+
+    friend AreaJSON;
 };
 
 #endif  // SRC_CORE_AREA_H_

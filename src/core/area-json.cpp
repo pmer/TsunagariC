@@ -116,7 +116,8 @@ AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept
 bool
 AreaJSON::init() noexcept {
     TimeMeasure m(String() << "Constructed " << descriptor << " as area-json");
-    return processDescriptor();
+    ok = processDescriptor();
+    return ok;
 }
 
 

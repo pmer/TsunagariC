@@ -148,11 +148,11 @@ class TileGrid {
     Vector<LayerType> layerTypes;
 
     // 3-dimensional length of map.
-    ivec3 dim;
+    ivec3 dim = {0, 0, 0};
 
     // Pixel size for each tile in area. All tiles in a TileGrid must be the
     // same size.
-    ivec2 tileDim;
+    ivec2 tileDim = {0, 0};
 
     // Maps virtual float-point depths to an index in our map array.
     Hashmap<float, int> depth2idx;
@@ -160,7 +160,8 @@ class TileGrid {
     // Maps an index in our map array to a virtual float-point depth.
     Vector<float> idx2depth;
 
-    bool loopX, loopY;
+    bool loopX = false;
+    bool loopY = false;
 
     Hashset<icoord> occupied;
 

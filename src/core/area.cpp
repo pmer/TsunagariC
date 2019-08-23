@@ -50,14 +50,7 @@
 Area::Area(Player* player, StringView descriptor)
         : dataArea(DataWorld::instance().area(descriptor)),
           player(player),
-          colorOverlayARGB(0),
-          beenFocused(false),
-          redraw(true),
           descriptor(descriptor) {
-    grid.dim = ivec3{0, 0, 0};
-    grid.tileDim = ivec2{0, 0};
-    grid.loopX = false;
-    grid.loopY = false;
 }
 
 void

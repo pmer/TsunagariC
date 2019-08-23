@@ -43,27 +43,26 @@ struct DisplayList;
 
 enum SetPhaseResult { PHASE_NOTFOUND, PHASE_NOTCHANGED, PHASE_CHANGED };
 
-//! An Entity represents one 'thing' that will be rendered to the screen.
-/*!
-    An Entity might be a dynamic game object such as a monster, NPC, or
-    item.  Entity can handle animated images that cycle through their
-    frames over time. It also has the capacity to switch between a couple
-    different images on demand.
-
-    For example, you might have a Entity for a player character with
-    animated models for walking in each possible movement direction (up,
-    down, left, right) along with static standing-still images for each
-    direction.
-*/
+// An Entity represents one 'thing' that will be rendered to the screen.
+//
+// An Entity might be a dynamic game object such as a monster, NPC, or
+// item.  Entity can handle animated images that cycle through their
+// frames over time. It also has the capacity to switch between a couple
+// different images on demand.
+//
+// For example, you might have a Entity for a player character with
+// animated models for walking in each possible movement direction (up,
+// down, left, right) along with static standing-still images for each
+// direction.
 class Entity {
  public:
     Entity() = default;
     virtual ~Entity() = default;
 
-    //! Entity initializer
+    // Entity initializer
     virtual bool init(StringView descriptor, StringView initialPhase) noexcept;
 
-    //! Entity destroyer.
+    // Entity destroyer.
     virtual void destroy() noexcept;
 
     void draw(DisplayList* display) noexcept;
@@ -73,14 +72,14 @@ class Entity {
     virtual void tick(time_t dt) noexcept;
     virtual void turn() noexcept;
 
-    //! Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
-    //! to 'facing'.
+    // Normalize each of the X-Y axes into [-1, 0, or 1] and saves value
+    // to 'facing'.
     void setFacing(ivec2 facing) noexcept;
 
     const StringView getFacing() const noexcept;
 
-    //! Change the graphic. Returns true if it was changed to something
-    //! different.
+    // Change the graphic. Returns true if it was changed to something
+    // different.
     bool setPhase(StringView name) noexcept;
 
     ivec2 getImageSize() const noexcept;
@@ -89,22 +88,22 @@ class Entity {
     void setAnimationMoving() noexcept;
 
 
-    //! The offset from the upper-left of the Area to the upper-left of the
-    //! Tile the Entity is standing on.
+    // The offset from the upper-left of the Area to the upper-left of the
+    // Tile the Entity is standing on.
     rcoord getPixelCoord() const noexcept;
 
 
-    //! Gets the Entity's current Area.
+    // Gets the Entity's current Area.
     Area* getArea() noexcept;
 
-    //! Specifies the Area object this entity will ask when looking for
-    //! nearby Tiles. Doesn't change x,y,z position.
+    // Specifies the Area object this entity will ask when looking for
+    // nearby Tiles. Doesn't change x,y,z position.
     virtual void setArea(Area* area) noexcept;
 
 
-    //! Gets speed in pixels per second.
+    // Gets speed in pixels per second.
     float getSpeedInPixels() const noexcept;
-    //! Gets speed in tiles per second.
+    // Gets speed in tiles per second.
     float getSpeedInTiles() const noexcept;
 
 
@@ -117,16 +116,16 @@ class Entity {
     void attach(OnTickFn fn) noexcept;
     void attach(OnTurnFn fn) noexcept;
 
-    //! Script hooks.
+    // Script hooks.
     // ScriptRef tickScript, turnScript, tileEntryScript,
     //            tileExitScript;
 
 
  protected:
-    //! Precalculate various drawing measurements.
+    // Precalculate various drawing measurements.
     void calcDraw() noexcept;
 
-    //! Gets a string describing a direction.
+    // Gets a string describing a direction.
     StringView directionStr(ivec2 facing) const noexcept;
 
     enum SetPhaseResult _setPhase(StringView name) noexcept;
@@ -135,9 +134,9 @@ class Entity {
 
     void moveTowardDestination(time_t dt) noexcept;
 
-    //! arrived() is called when an Entity arrives at its destination.  If
-    //! it is ordered to begin moving again from within arrived(), then the
-    //! Entity’s graphics will appear as if it never stopped moving.
+    // arrived() is called when an Entity arrives at its destination.  If
+    // it is ordered to begin moving again from within arrived(), then the
+    // Entity’s graphics will appear as if it never stopped moving.
     virtual void arrived() noexcept;
 
     // JSON parsing functions used in constructing an Entity
@@ -155,17 +154,17 @@ class Entity {
 
 
  protected:
-    //! Set to true if the Entity was destroyed this tick.
+    // Set to true if the Entity was destroyed this tick.
     bool dead = false;
 
-    //! Set to true if the Entity wants the screen to be redrawn.
+    // Set to true if the Entity wants the screen to be redrawn.
     bool redraw = true;
 
-    //! Pointer to Area this Entity is located on.
+    // Pointer to Area this Entity is located on.
     Area* area = nullptr;
-    //! Real x,y position: hold partial pixel transversal
+    // Real x,y position: hold partial pixel transversal
     rcoord r = {0.0, 0.0, 0.0};
-    //! Drawing offset to center entity on tile.
+    // Drawing offset to center entity on tile.
     rcoord doff;
 
     String descriptor;
@@ -175,7 +174,7 @@ class Entity {
     float tilesPerSecond;
     float pixelsPerSecond;
 
-    //! True if currently moving to a new coordinate in an Area.
+    // True if currently moving to a new coordinate in an Area.
     bool moving = false;
 
     rcoord destCoord;
@@ -187,8 +186,8 @@ class Entity {
     String phaseName = "";
     ivec2 facing = {0, 0};
 
-    //! Map from effect name to filenames.
-    //!  e.g.: ["step"] = "sounds/player_step.oga"
+    // Map from effect name to filenames.
+    //  e.g.: ["step"] = "sounds/player_step.oga"
     Hashmap<String, String> soundPaths;
 
     Vector<OnTickFn> onTickFns;

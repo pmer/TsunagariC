@@ -44,14 +44,14 @@ GameWindow::time() noexcept {
     return ns_to_ms(now);
 }
 
-unsigned
+int
 GameWindow::width() noexcept {
-    return static_cast<unsigned>(Conf::windowSize.x);
+    return Conf::windowSize.x;
 }
 
-unsigned
+int
 GameWindow::height() noexcept {
-    return static_cast<unsigned>(Conf::windowSize.y);
+    return Conf::windowSize.y;
 }
 
 void

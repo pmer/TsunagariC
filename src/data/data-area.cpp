@@ -67,7 +67,7 @@ void
 DataArea::playSoundEffect(StringView sound) noexcept {
     SoundID sid = Sounds::load(sound);
     PlayingSoundID psid = Sound::play(sid);
-    PlayingSound::speed(psid, 1.0 + randFloat(-0.03, 0.03));
+    PlayingSound::speed(psid, 1.0f + randFloat(-0.03f, 0.03f));
     PlayingSound::release(psid);
     Sound::release(sid);
 }

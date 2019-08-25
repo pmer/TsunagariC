@@ -43,10 +43,10 @@ class GameWindow {
     static time_t time() noexcept;
 
     //! Width of the window in pixels.
-    static unsigned width() noexcept;
+    static int width() noexcept;
 
     //! Height of the window in pixels.
-    static unsigned height() noexcept;
+    static int height() noexcept;
 
     //! Set window manager caption.
     static void setCaption(StringView caption) noexcept;

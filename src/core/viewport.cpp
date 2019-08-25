@@ -65,8 +65,8 @@ static rvec2
 boundToArea(rvec2 pt) noexcept {
     icoord ad = area->grid.dim;
     ivec2 td = area->grid.tileDim;
-    float areaWidth = ad.x * td.x;
-    float areaHeight = ad.y * td.y;
+    float areaWidth = static_cast<float>(ad.x * td.x);
+    float areaHeight = static_cast<float>(ad.y * td.y);
     bool loopX = area->grid.loopX;
     bool loopY = area->grid.loopY;
 

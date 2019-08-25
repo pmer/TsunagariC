@@ -113,10 +113,10 @@ Entity::needsRedraw(const icube& visiblePixels) const noexcept {
     // if it is on-screen.
 
     // X-axis is centered on tile.
-    int maxX = (area->grid.tileDim.x + imgsz.x) / 2 + r.x;
+    int maxX = (area->grid.tileDim.x + imgsz.x) / 2 + static_cast<int>(r.x);
     int minX = maxX - imgsz.x;
     // Y-axis is aligned with bottom of tile.
-    int maxY = area->grid.tileDim.y + r.y;
+    int maxY = area->grid.tileDim.y + static_cast<int>(r.y);
     int minY = maxY - imgsz.y;
 
     if (visiblePixels.x2 < minX || maxX < visiblePixels.x1) {
@@ -205,7 +205,7 @@ Entity::setArea(Area* area) noexcept {
 
 float
 Entity::getSpeedInPixels() const noexcept {
-    float tileWidth = area->grid.tileDim.x;
+    float tileWidth = static_cast<float>(area->grid.tileDim.x);
     return getSpeedInTiles() * tileWidth;
 }
 
@@ -235,9 +235,9 @@ Entity::calcDraw() noexcept {
         ivec2 tile = area->grid.tileDim;
 
         // X-axis is centered on tile.
-        doff.x = (tile.x - imgsz.x) / 2;
+        doff.x = static_cast<float>((tile.x - imgsz.x) / 2);
         // Y-axis is aligned with bottom of tile.
-        doff.y = tile.y - imgsz.y;
+        doff.y = static_cast<float>(tile.y - imgsz.y);
     }
 }
 
@@ -278,7 +278,7 @@ Entity::setDestinationCoordinate(rcoord destCoord) noexcept {
     r.z = destCoord.z;
 
     this->destCoord = destCoord;
-    angleToDest = atan2(destCoord.y - r.y, destCoord.x - r.x);
+    angleToDest = static_cast<float>(atan2(destCoord.y - r.y, destCoord.x - r.x));
 }
 
 void
@@ -289,12 +289,12 @@ Entity::moveTowardDestination(time_t dt) noexcept {
 
     redraw = true;
 
-    float traveledPixels = pixelsPerSecond * (float)dt / 1000.0;
+    float traveledPixels = pixelsPerSecond * static_cast<float>(dt) / 1000.0f;
     float toDestPixels = r.distanceTo(destCoord);
     if (toDestPixels > traveledPixels) {
         // The destination has not been reached yet.
-        r.x += cos(angleToDest) * traveledPixels;
-        r.y += sin(angleToDest) * traveledPixels;
+        r.x += static_cast<float>(cos(angleToDest)) * traveledPixels;
+        r.y += static_cast<float>(sin(angleToDest)) * traveledPixels;
     }
     else {
         // We have arrived at the destination.
@@ -305,8 +305,8 @@ Entity::moveTowardDestination(time_t dt) noexcept {
         // If arrived() starts a new movement, rollover unused traveled
         // pixels and leave the the moving animation.
         if (moving) {
-            float percent = 1.0 - toDestPixels / traveledPixels;
-            time_t rem = (time_t)(percent * (float)dt);
+            float percent = 1.0f - toDestPixels / traveledPixels;
+            time_t rem = static_cast<time_t>(percent * static_cast<float>(dt));
             moveTowardDestination(rem);
         }
         else {
@@ -403,7 +403,12 @@ Entity::processPhase(StringView name,
     int nTiles = TiledImage::size(tiles);
 
     if (phase->hasUnsigned("frame")) {
-        unsigned frame = phase->unsignedAt("frame");
+        unsigned frame_ = phase->unsignedAt("frame");
+        if (frame_ > INT32_MAX) {
+            Log::err(descriptor, "<phase> frame attribute index out of bounds");
+            return false;
+        }
+        int frame = static_cast<int>(frame_);
         if (frame >= nTiles) {
             Log::err(descriptor, "<phase> frame attribute index out of bounds");
             return false;

@@ -77,27 +77,27 @@ displayListPresent(DisplayList* display) noexcept {
                         Image::draw(item.image,
                                     item.destination.x,
                                     item.destination.y,
-                                    0.0);
+                                    0);
                     }
                 });
             });
         });
 
         if ((display->colorOverlayARGB & 0xFF000000) != 0) {
-            unsigned ww = GameWindow::width();
-            unsigned wh = GameWindow::height();
+            float ww = static_cast<float>(GameWindow::width());
+            float wh = static_cast<float>(GameWindow::height());
             GameWindow::drawRect(0, ww, 0, wh, display->colorOverlayARGB);
         }
     });
 
     if (display->paused) {
-        unsigned ww = GameWindow::width();
-        unsigned wh = GameWindow::height();
+        float ww = static_cast<float>(GameWindow::width());
+        float wh = static_cast<float>(GameWindow::height());
         GameWindow::drawRect(0, ww, 0, wh, 0x7F000000);
         ImageID pauseInfo = Images::load("resource/pause_overlay.png");
         if (pauseInfo) {
-            unsigned iw = Image::width(pauseInfo);
-            unsigned ih = Image::height(pauseInfo);
+            float iw = static_cast<float>(Image::width(pauseInfo));
+            float ih = static_cast<float>(Image::height(pauseInfo));
             float top = 1e10;
             Image::draw(pauseInfo, ww / 2 - iw / 2, wh / 2 - ih / 2, top);
         }

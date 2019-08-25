@@ -269,7 +269,7 @@ parseFloat(String& s) noexcept {
     errno = 0;
 
     char* end;
-    float d = strtod(s.null(), &end);
+    float d = static_cast<float>(strtod(s.null(), &end));
 
     if (end != s.data() + s.size()) {
         return none;

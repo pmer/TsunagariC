@@ -107,7 +107,7 @@ makeAreaFromJSON(Player* player, StringView filename) noexcept {
 AreaJSON::AreaJSON(Player* player, StringView descriptor) noexcept {
     TimeMeasure m(String() << "Constructed " << descriptor << " as area-json");
 
-	dataArea = DataWorld::instance().area(descriptor);
+    dataArea = DataWorld::instance().area(descriptor);
     this->player = player;
     this->descriptor = descriptor;
 
@@ -355,14 +355,18 @@ AreaJSON::processTileSetFile(Rc<JSONObject> obj,
                 Log::err(descriptor, "Tile type id is invalid");
                 return false;
             }
-            size_t id__ = *id_;
+            if (*id_ > INT32_MAX) {
+                Log::err(descriptor, "Tile type id is invalid");
+                return false;
+            }
+            int id__ = static_cast<int>(*id_);
             if (nTiles <= id__) {
                 Log::err(descriptor, "Tile type id is invalid");
                 return false;
             }
 
             // "gid" is the global area-wide id of the tile.
-            size_t gid = id__ + (size_t)firstGid;
+            int gid = id__ + firstGid;
 
             Animation& graphic = tileGraphics[gid];
             if (!processTileType(move_(tileProperties),
@@ -423,8 +427,12 @@ AreaJSON::processTileType(Unique<JSONObject> obj,
                          "couldn't parse frame index for animated tile");
                 return false;
             }
+            if (*idx > INT32_MAX) {
+                Log::err(descriptor, "frame index out of bounds");
+                return false;
+            }
 
-            unsigned idx_ = *idx;
+            int idx_ = static_cast<int>(*idx);
 
             if (nTiles <= idx_) {
                 Log::err(descriptor,

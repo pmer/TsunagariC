@@ -252,7 +252,7 @@ JSONObjectImpl::unsignedAt(StringView name) noexcept {
 }
 float
 JSONObjectImpl::floatAt(StringView name) noexcept {
-    return get()[str(name)].GetDouble();
+    return static_cast<float>(get()[str(name)].GetDouble());
 }
 StringView
 JSONObjectImpl::stringAt(StringView name) noexcept {
@@ -336,7 +336,7 @@ JSONArrayImpl::unsignedAt(size_t index) noexcept {
 }
 float
 JSONArrayImpl::floatAt(size_t index) noexcept {
-    return at(index).GetDouble();
+    return static_cast<float>(at(index).GetDouble());
 }
 StringView
 JSONArrayImpl::stringAt(size_t index) noexcept {

@@ -72,7 +72,7 @@ struct vec3 {
     float distanceTo(vec3<T> other) noexcept {
         T dx = x - other.x;
         T dy = y - other.y;
-        return sqrt(dx * dx + dy * dy);
+        return static_cast<float>(sqrt(dx * dx + dy * dy));
     }
 };
 

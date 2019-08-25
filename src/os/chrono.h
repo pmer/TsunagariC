@@ -50,11 +50,11 @@ s_to_ns(Duration d) {
 }
 constexpr float
 ms_to_s_d(Duration d) {
-    return d / 1000.0;
+    return d / 1000.0f;
 }
 constexpr float
 ns_to_s_d(Duration d) {
-    return d / 1000000000.0;
+    return d / 1000000000.0f;
 }
 
 class SteadyClock {

@@ -59,7 +59,7 @@ typedef int64_t time_t;
 
 static const CONSTEXPR11 int32_t INT32_MAX = 0x7fffffff;
 static const CONSTEXPR11 uint32_t UINT32_MAX = 0xffffffff;
-static const CONSTEXPR11 int64_t UINT64_MAX = 0xffffffffffffffff;
+static const CONSTEXPR11 uint64_t UINT64_MAX = 0xffffffffffffffff;
 
 #if defined(_WIN64)
 static const CONSTEXPR11 size_t SIZE_MAX = 0xffffffffffffffff;

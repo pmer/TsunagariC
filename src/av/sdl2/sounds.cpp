@@ -39,11 +39,11 @@
 #include "util/pool.h"
 
 struct SDL2Sound {
-    int numUsers = 0;
-    time_t lastUse = 0;
+    int numUsers;
+    time_t lastUse;
 
     StringView frames;  // Audio frames.
-    Mix_Chunk* chunk = nullptr;  // Decoding configuration.
+    Mix_Chunk* chunk;   // Decoding configuration.
 };
 
 static bool operator==(SDL2Sound a, SDL2Sound b) noexcept {
@@ -54,10 +54,10 @@ static bool operator==(SDL2Sound a, SDL2Sound b) noexcept {
 }
 
 struct SDL2PlayingSound {
-    bool playing = false;
-    bool inUse = false;
+    bool playing;
+    bool inUse;
 
-    int channel = -1;
+    int channel;
 };
 
 static Hashmap<String, SoundID> soundIDs;

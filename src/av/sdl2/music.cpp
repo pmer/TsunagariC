@@ -46,7 +46,8 @@ struct SDL2Song {
     Mix_Music* mix;
 };
 
-static Rc<SDL2Song>
+namespace {
+Rc<SDL2Song>
 genSong(StringView name) noexcept {
     Optional<StringView> r = Resources::load(name);
     if (!r) {
@@ -69,6 +70,7 @@ genSong(StringView name) noexcept {
     song->mix = music;
 
     return Rc<SDL2Song>(song);
+}
 }
 
 static bool initalized = false;

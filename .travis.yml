@@ -3,13 +3,26 @@ language: cpp
 os: osx
 osx_image: xcode10.2
 
-addons:
- homebrew:
-   packages:
-     - cmake
-
-script:
-  - mkdir build
-  - cd build
-  - cmake ..
-  - cmake --build .
+matrix:
+  include:
+    - addons:
+       homebrew:
+         packages:
+           - cmake
+      script:
+        - mkdir build
+        - cd build
+        - cmake ..
+        - cmake --build .
+    - addons:
+       homebrew:
+         packages:
+           - cmake
+           - sdl2
+           - sdl2_image
+           - sdl2_mixer
+      script:
+        - mkdir build
+        - cd build
+        - cmake .. -DAV_SDL2=On
+        - cmake --build .

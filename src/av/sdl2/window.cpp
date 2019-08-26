@@ -199,7 +199,7 @@ GameWindow::create() noexcept {
     }
 
     StringView name = info.name;
-    bool vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
+    bool vsync = (info.flags & SDL_RENDERER_PRESENTVSYNC) != 0;
 
     Log::info("SDL2GameWindow",
               String("Rendering will be done with ")

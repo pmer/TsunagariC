@@ -209,18 +209,18 @@ GameWindow::create() noexcept {
     SDL_SetRenderDrawColor(SDL2GameWindow::renderer, 0x00, 0x00, 0x00, 0xFF);
 }
 
-unsigned
+int
 GameWindow::width() noexcept {
     int w, h;
     SDL_GetWindowSize(window, &w, &h);
-    return static_cast<unsigned>(w);
+    return w;
 }
 
-unsigned
+int
 GameWindow::height() noexcept {
     int w, h;
     SDL_GetWindowSize(window, &w, &h);
-    return static_cast<unsigned>(h);
+    return h;
 }
 
 void
